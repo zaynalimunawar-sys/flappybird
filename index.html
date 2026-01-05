@@ -840,6 +840,25 @@
           messageEl.textContent = '⚠️ You already have Admin Bird!';
           messageEl.className = 'code-message';
         }
+      } else if (code.toLowerCase() === 'adminonly') {
+        shopItems.forEach(item => {
+          item.owned = true;
+          if (!ownedSkins.includes(item.id)) {
+            ownedSkins.push(item.id);
+          }
+        });
+        totalCoins += 99999;
+        bestScore = 99999;
+        localStorage.setItem('ownedSkins', JSON.stringify(ownedSkins));
+        localStorage.setItem('totalCoins', totalCoins);
+        localStorage.setItem('flappyBestScore', bestScore);
+        redeemedCodes.push(code.toLowerCase());
+        localStorage.setItem('redeemedCodes', JSON.stringify(redeemedCodes));
+        messageEl.textContent = '🔥 GOD MODE ACTIVATED! ALL UNLOCKED + 99999 COINS + 99999 SCORE! 🔥';
+        messageEl.className = 'code-message code-success';
+        showNotification('⚡ ADMIN ONLY! ⚡');
+        checkBadges();
+        input.value = '';
       } else {
         messageEl.textContent = '❌ Invalid code!';
         messageEl.className = 'code-message code-error';
