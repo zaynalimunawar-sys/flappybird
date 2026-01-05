@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Flappy Bird HD</title>
+  <title>Flappy Bird - Shop Edition</title>
   <style>
     * {
       margin: 0;
@@ -37,7 +37,7 @@
       height: 100%;
     }
 
-    #startScreen, #gameOverScreen {
+    #startScreen, #gameOverScreen, #shopScreen, #codesScreen, #badgesScreen {
       position: absolute;
       top: 0;
       left: 0;
@@ -52,7 +52,7 @@
       z-index: 10;
     }
 
-    #gameOverScreen {
+    #gameOverScreen, #shopScreen, #codesScreen, #badgesScreen {
       display: none;
     }
 
@@ -64,7 +64,7 @@
       -webkit-text-fill-color: transparent;
       background-clip: text;
       text-shadow: 0 5px 15px rgba(0,0,0,0.3);
-      margin-bottom: 30px;
+      margin-bottom: 20px;
       font-family: 'Comic Sans MS', cursive;
       animation: titleFloat 3s ease-in-out infinite;
       text-align: center;
@@ -78,47 +78,27 @@
     }
 
     .instruction {
-      font-size: 22px;
+      font-size: 20px;
       color: white;
       text-shadow: 0 3px 10px rgba(0,0,0,0.5);
-      margin-bottom: 30px;
-      animation: pulse 2s ease-in-out infinite;
+      margin-bottom: 20px;
       text-align: center;
       width: 100%;
       padding: 0 20px;
     }
 
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.6; }
-    }
-
     .btn {
       background: linear-gradient(135deg, #ffd700 0%, #ffaa00 100%);
       border: none;
-      padding: 18px 50px;
-      font-size: 26px;
+      padding: 15px 40px;
+      font-size: 22px;
       font-weight: bold;
       color: #000;
       cursor: pointer;
       border-radius: 50px;
-      text-shadow: none;
       transition: all 0.3s;
       box-shadow: 0 10px 30px rgba(255, 215, 0, 0.4), 0 5px 15px rgba(0,0,0,0.3);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .btn::before {
-      content: '✨';
-      position: absolute;
-      font-size: 20px;
-      animation: sparkle 1.5s ease-in-out infinite;
-    }
-
-    @keyframes sparkle {
-      0%, 100% { opacity: 0; transform: translate(-20px, -20px) rotate(0deg); }
-      50% { opacity: 1; transform: translate(20px, 20px) rotate(180deg); }
+      margin: 8px;
     }
 
     .btn:hover {
@@ -130,40 +110,72 @@
       transform: translateY(-2px) scale(1.02);
     }
 
-    .btn span {
-      position: relative;
-      z-index: 1;
+    .btn-secondary {
+      background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+      color: white;
+    }
+
+    #score, #coins {
+      position: absolute;
+      top: 20px;
+      font-size: 42px;
+      font-weight: bold;
+      color: white;
+      text-shadow: 0 4px 8px rgba(0,0,0,0.5);
+      z-index: 5;
+      pointer-events: none;
     }
 
     #score {
-      position: absolute;
-      top: 40px;
-      width: 100%;
-      text-align: center;
-      font-size: 56px;
-      font-weight: bold;
-      background: linear-gradient(45deg, #fff, #ffd700, #fff);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
-      z-index: 5;
-      pointer-events: none;
-      animation: scoreGlow 2s ease-in-out infinite;
+      left: 20px;
     }
 
-    @keyframes scoreGlow {
-      0%, 100% { filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5)); }
-      50% { filter: drop-shadow(0 6px 20px rgba(255,215,0,0.8)); }
+    #coins {
+      right: 20px;
+      color: #ffd700;
+    }
+
+    #streak {
+      position: absolute;
+      top: 70px;
+      width: 100%;
+      text-align: center;
+      font-size: 32px;
+      font-weight: bold;
+      color: #ff6b6b;
+      text-shadow: 0 0 10px rgba(255,107,107,0.8), 0 4px 8px rgba(0,0,0,0.5);
+      z-index: 5;
+      pointer-events: none;
+      opacity: 0;
+      animation: streakPulse 0.5s ease-in-out infinite;
+    }
+
+    @keyframes streakPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    #notification {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 48px;
+      font-weight: bold;
+      color: #ffd700;
+      text-shadow: 0 0 20px rgba(255,215,0,1), 0 5px 15px rgba(0,0,0,0.8);
+      z-index: 6;
+      pointer-events: none;
+      opacity: 0;
     }
 
     .finalScore {
-      font-size: 38px;
+      font-size: 28px;
       color: white;
       text-shadow: 0 3px 10px rgba(0,0,0,0.5);
-      margin: 15px 0;
+      margin: 8px 0;
       background: rgba(255,255,255,0.1);
-      padding: 15px 40px;
+      padding: 10px 30px;
       border-radius: 20px;
       backdrop-filter: blur(5px);
       text-align: center;
@@ -173,24 +185,349 @@
       color: #ffd700;
       font-weight: bold;
     }
+
+    .achievement {
+      font-size: 20px;
+      color: #4ade80;
+      margin: 4px 0;
+      animation: achievementPop 0.5s ease-out;
+    }
+
+    @keyframes achievementPop {
+      0% { transform: scale(0); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+
+    .shop-item {
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      padding: 15px 25px;
+      margin: 10px 0;
+      width: 320px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border: 2px solid rgba(255,255,255,0.2);
+      transition: all 0.3s;
+    }
+
+    .shop-item:hover {
+      transform: scale(1.05);
+      background: rgba(255,255,255,0.25);
+    }
+
+    .shop-item.admin-item {
+      border: 3px solid rgba(255,0,0,0.5);
+      background: rgba(255,0,0,0.1);
+      animation: adminItemGlow 2s ease-in-out infinite;
+    }
+
+    @keyframes adminItemGlow {
+      0%, 100% { box-shadow: 0 0 20px rgba(255,0,0,0.4); }
+      50% { box-shadow: 0 0 35px rgba(255,0,0,0.7); }
+    }
+
+    .shop-item-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .shop-item-icon {
+      font-size: 40px;
+    }
+
+    .shop-item-details {
+      text-align: left;
+    }
+
+    .shop-item-name {
+      font-size: 22px;
+      font-weight: bold;
+      color: white;
+      text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    }
+
+    .shop-item-price {
+      font-size: 18px;
+      color: #ffd700;
+      font-weight: bold;
+    }
+
+    .shop-btn {
+      background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      font-weight: bold;
+      color: white;
+      cursor: pointer;
+      border-radius: 25px;
+      transition: all 0.3s;
+      box-shadow: 0 5px 15px rgba(74, 222, 128, 0.4);
+    }
+
+    .shop-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 8px 20px rgba(74, 222, 128, 0.6);
+    }
+
+    .shop-btn:disabled {
+      background: #6c757d;
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    .owned {
+      background: #6c757d;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 25px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .equipped {
+      background: linear-gradient(135deg, #ffd700 0%, #ffaa00 100%);
+      color: #000;
+      padding: 10px 20px;
+      border-radius: 25px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .admin-badge {
+      background: linear-gradient(135deg, #ff0000 0%, #ff6b6b 100%);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 25px;
+      font-size: 14px;
+      font-weight: bold;
+      animation: adminGlow 2s ease-in-out infinite;
+    }
+
+    @keyframes adminGlow {
+      0%, 100% { box-shadow: 0 0 20px rgba(255,0,0,0.6); }
+      50% { box-shadow: 0 0 30px rgba(255,0,0,1); }
+    }
+
+    .shop-header {
+      font-size: 36px;
+      color: #ffd700;
+      margin-bottom: 20px;
+      text-shadow: 0 3px 10px rgba(0,0,0,0.5);
+    }
+
+    .shop-coins {
+      font-size: 32px;
+      color: white;
+      margin-bottom: 20px;
+      text-shadow: 0 3px 10px rgba(0,0,0,0.5);
+    }
+
+    .shop-content {
+      max-height: 350px;
+      overflow-y: auto;
+      padding: 10px;
+    }
+
+    .shop-content::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .shop-content::-webkit-scrollbar-track {
+      background: rgba(0,0,0,0.2);
+      border-radius: 10px;
+    }
+
+    .shop-content::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.3);
+      border-radius: 10px;
+    }
+
+    .code-input-container {
+      margin: 30px 0;
+    }
+
+    .code-input {
+      background: rgba(255,255,255,0.2);
+      border: 3px solid rgba(255,255,255,0.4);
+      border-radius: 15px;
+      padding: 15px 25px;
+      font-size: 22px;
+      color: white;
+      text-align: center;
+      width: 320px;
+      font-weight: bold;
+      transition: all 0.3s;
+      backdrop-filter: blur(10px);
+    }
+
+    .code-input::placeholder {
+      color: rgba(255,255,255,0.6);
+    }
+
+    .code-input:focus {
+      outline: none;
+      border-color: #ffd700;
+      box-shadow: 0 0 20px rgba(255,215,0,0.5);
+    }
+
+    .code-message {
+      font-size: 20px;
+      color: white;
+      text-shadow: 0 3px 10px rgba(0,0,0,0.5);
+      margin-top: 20px;
+      min-height: 30px;
+      font-weight: bold;
+    }
+
+    .code-success {
+      color: #4ade80;
+      animation: successPulse 0.5s ease-out;
+    }
+
+    .code-error {
+      color: #ff6b6b;
+      animation: errorShake 0.5s ease-out;
+    }
+
+    @keyframes successPulse {
+      0% { transform: scale(0.8); opacity: 0; }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes errorShake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-10px); }
+      75% { transform: translateX(10px); }
+    }
+
+    .badge-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      max-height: 400px;
+      overflow-y: auto;
+      padding: 10px;
+      width: 350px;
+    }
+
+    .badge-card {
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      padding: 20px;
+      border: 2px solid rgba(255,255,255,0.2);
+      text-align: center;
+      transition: all 0.3s;
+    }
+
+    .badge-card:hover {
+      transform: scale(1.05);
+      background: rgba(255,255,255,0.25);
+    }
+
+    .badge-card.unlocked {
+      border-color: #4ade80;
+      box-shadow: 0 0 20px rgba(74, 222, 128, 0.4);
+    }
+
+    .badge-card.locked {
+      opacity: 0.5;
+      filter: grayscale(100%);
+    }
+
+    .badge-icon {
+      font-size: 50px;
+      margin-bottom: 10px;
+    }
+
+    .badge-name {
+      font-size: 16px;
+      font-weight: bold;
+      color: white;
+      margin-bottom: 5px;
+    }
+
+    .badge-desc {
+      font-size: 12px;
+      color: rgba(255,255,255,0.8);
+    }
+
+    .badge-status {
+      margin-top: 8px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .badge-status.unlocked {
+      color: #4ade80;
+    }
+
+    .badge-status.locked {
+      color: #ff6b6b;
+    }
   </style>
 </head>
 <body>
   <div id="gameContainer">
     <canvas id="gameCanvas" width="400" height="600"></canvas>
     <div id="score">0</div>
+    <div id="coins">🪙 0</div>
+    <div id="streak"></div>
+    <div id="notification"></div>
 
     <div id="startScreen">
       <div class="title">🐦 Flappy Bird 🐦</div>
-      <div class="instruction">✨ CLICK or SPACE to Flap ✨</div>
-      <button class="btn" onclick="startGame()"><span>START GAME</span></button>
+      <div class="instruction">
+        ✨ CLICK or SPACE to Flap ✨<br>
+        🪙 Collect Coins!<br>
+        🔥 Get Streaks!<br>
+        🎯 Unlock Achievements!
+      </div>
+      <button class="btn" onclick="startGame()">START GAME</button>
+      <button class="btn" onclick="openShop()">🏪 SHOP</button>
+      <button class="btn" onclick="openCodes()">🔑 CODES</button>
+      <button class="btn" onclick="openBadges()">🏆 BADGES</button>
     </div>
 
     <div id="gameOverScreen">
       <div class="title">Game Over!</div>
       <div class="finalScore">Score: <span id="finalScore">0</span></div>
+      <div class="finalScore">Coins: <span id="finalCoins">0</span></div>
+      <div class="finalScore">Total: <span id="totalCoins">0</span></div>
       <div class="finalScore">Best: <span id="bestScore">0</span></div>
-      <button class="btn" onclick="restartGame()"><span>PLAY AGAIN</span></button>
+      <div id="achievementsList"></div>
+      <button class="btn" onclick="restartGame()">PLAY AGAIN</button>
+      <button class="btn btn-secondary" onclick="toMainMenu()">MAIN MENU</button>
+    </div>
+
+    <div id="shopScreen">
+      <div class="title">🏪 Shop 🏪</div>
+      <div class="shop-coins">Your Coins: <span id="shopTotalCoins">0</span> 🪙</div>
+      <div class="shop-content" id="shopItems"></div>
+      <button class="btn btn-secondary" onclick="closeShop()" style="margin-top: 20px;">BACK</button>
+    </div>
+
+    <div id="codesScreen">
+      <div class="title">🔑 Codes 🔑</div>
+      <div class="instruction">Enter a secret code below:</div>
+      <div class="code-input-container">
+        <input type="text" id="codeInput" class="code-input" placeholder="Enter Code Here" maxlength="30">
+      </div>
+      <button class="btn" onclick="redeemCode()">REDEEM CODE</button>
+      <div class="code-message" id="codeMessage"></div>
+      <button class="btn btn-secondary" onclick="closeCodes()" style="margin-top: 20px;">BACK</button>
+    </div>
+
+    <div id="badgesScreen">
+      <div class="title">🏆 Badges 🏆</div>
+      <div class="badge-grid" id="badgeGrid"></div>
+      <button class="btn btn-secondary" onclick="closeBadges()" style="margin-top: 20px;">BACK</button>
     </div>
   </div>
 
@@ -201,7 +538,150 @@
     let gameStarted = false;
     let gameOver = false;
     let score = 0;
-    let bestScore = localStorage.getItem('flappyBestScore') || 0;
+    let sessionCoins = 0;
+    let totalCoins = parseInt(localStorage.getItem('totalCoins')) || 0;
+    let bestScore = parseInt(localStorage.getItem('flappyBestScore')) || 0;
+    let streak = 0;
+    let maxStreak = 0;
+    let totalGamesPlayed = parseInt(localStorage.getItem('totalGamesPlayed')) || 0;
+
+    // Badges system
+    const badges = [
+      { id: 'first_game', name: 'First Flight', emoji: '🐣', desc: 'Play your first game', requirement: () => totalGamesPlayed >= 1 },
+      { id: 'score_10', name: 'Rookie', emoji: '🥉', desc: 'Score 10 points', requirement: () => bestScore >= 10 },
+      { id: 'score_25', name: 'Pro', emoji: '🥈', desc: 'Score 25 points', requirement: () => bestScore >= 25 },
+      { id: 'score_50', name: 'Expert', emoji: '🥇', desc: 'Score 50 points', requirement: () => bestScore >= 50 },
+      { id: 'coins_100', name: 'Coin Collector', emoji: '💰', desc: 'Collect 100 coins', requirement: () => totalCoins >= 100 },
+      { id: 'coins_500', name: 'Rich', emoji: '💎', desc: 'Collect 500 coins', requirement: () => totalCoins >= 500 },
+      { id: 'all_skins', name: 'Collector', emoji: '🎨', desc: 'Buy all regular skins', requirement: () => ownedSkins.length >= 9 },
+      { id: 'admin', name: 'Admin', emoji: '👑', desc: 'Unlock Admin Bird', requirement: () => ownedSkins.includes('adminduck') }
+    ];
+
+    let unlockedBadges = JSON.parse(localStorage.getItem('unlockedBadges')) || [];
+
+    // Shop items
+    const shopItems = [
+      { id: 'yellow', name: 'Yellow Bird', emoji: '🐤', price: 0, owned: true, faceForward: true, isAdmin: false },
+      { id: 'red', name: 'Red Bird', emoji: '🐦', price: 50, owned: false, faceForward: true, isAdmin: false },
+      { id: 'blue', name: 'Blue Bird', emoji: '🐦‍⬛', price: 100, owned: false, faceForward: true, isAdmin: false },
+      { id: 'pink', name: 'Pink Bird', emoji: '🦩', price: 150, owned: false, faceForward: true, isAdmin: false },
+      { id: 'eagle', name: 'Eagle', emoji: '🦅', price: 200, owned: false, faceForward: true, isAdmin: false },
+      { id: 'parrot', name: 'Parrot', emoji: '🦜', price: 250, owned: false, faceForward: true, isAdmin: false },
+      { id: 'owl', name: 'Owl', emoji: '🦉', price: 300, owned: false, faceForward: false, isAdmin: false },
+      { id: 'penguin', name: 'Penguin', emoji: '🐧', price: 400, owned: false, faceForward: false, isAdmin: false },
+      { id: 'swan', name: 'Swan', emoji: '🦢', price: 500, owned: false, faceForward: true, isAdmin: false },
+      { id: 'adminduck', name: '👑 ADMIN BIRD 👑', emoji: '👑', price: 99999, owned: false, faceForward: true, isAdmin: true }
+    ];
+
+    let ownedSkins = JSON.parse(localStorage.getItem('ownedSkins')) || ['yellow'];
+    let equippedSkin = localStorage.getItem('equippedSkin') || 'yellow';
+    let redeemedCodes = JSON.parse(localStorage.getItem('redeemedCodes')) || [];
+
+    shopItems.forEach(item => {
+      item.owned = ownedSkins.includes(item.id);
+    });
+
+    // Sound effects using Web Audio API
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+    function playSound(type) {
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+
+      if (type === 'flap') {
+        oscillator.frequency.value = 440;
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.1);
+      } else if (type === 'coin') {
+        oscillator.frequency.value = 880;
+        gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.15);
+      } else if (type === 'score') {
+        oscillator.frequency.value = 660;
+        gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.2);
+      } else if (type === 'die') {
+        // "GET OUT" style sound - dramatic descending tone
+        oscillator.frequency.setValueAtTime(440, audioContext.currentTime);
+        oscillator.frequency.exponentialRampToValueAtTime(110, audioContext.currentTime + 0.5);
+        gainNode.gain.setValueAtTime(0.4, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.5);
+      }
+    }
+
+    function checkBadges() {
+      let newlyUnlocked = [];
+      badges.forEach(badge => {
+        if (!unlockedBadges.includes(badge.id) && badge.requirement()) {
+          unlockedBadges.push(badge.id);
+          newlyUnlocked.push(badge);
+        }
+      });
+
+      if (newlyUnlocked.length > 0) {
+        localStorage.setItem('unlockedBadges', JSON.stringify(unlockedBadges));
+        newlyUnlocked.forEach(badge => {
+          setTimeout(() => showNotification('🏆 ' + badge.name), 500);
+        });
+      }
+    }
+
+    function openBadges() {
+      document.getElementById('startScreen').style.display = 'none';
+      document.getElementById('badgesScreen').style.display = 'flex';
+      renderBadges();
+    }
+
+    function closeBadges() {
+      document.getElementById('badgesScreen').style.display = 'none';
+      document.getElementById('startScreen').style.display = 'flex';
+    }
+
+    function renderBadges() {
+      const container = document.getElementById('badgeGrid');
+      container.innerHTML = '';
+
+      badges.forEach(badge => {
+        const isUnlocked = unlockedBadges.includes(badge.id);
+
+        const card = document.createElement('div');
+        card.className = 'badge-card ' + (isUnlocked ? 'unlocked' : 'locked');
+
+        const icon = document.createElement('div');
+        icon.className = 'badge-icon';
+        icon.textContent = badge.emoji;
+
+        const name = document.createElement('div');
+        name.className = 'badge-name';
+        name.textContent = badge.name;
+
+        const desc = document.createElement('div');
+        desc.className = 'badge-desc';
+        desc.textContent = badge.desc;
+
+        const status = document.createElement('div');
+        status.className = 'badge-status ' + (isUnlocked ? 'unlocked' : 'locked');
+        status.textContent = isUnlocked ? '✓ UNLOCKED' : '🔒 LOCKED';
+
+        card.appendChild(icon);
+        card.appendChild(name);
+        card.appendChild(desc);
+        card.appendChild(status);
+
+        container.appendChild(card);
+      });
+    }
 
     const bird = {
       x: 80,
@@ -223,7 +703,6 @@
     const groundHeight = 100;
     let groundX = 0;
 
-    // Clouds
     let clouds = [];
     for (let i = 0; i < 5; i++) {
       clouds.push({
@@ -235,8 +714,9 @@
       });
     }
 
-    // Particles for flap effect
     let particles = [];
+    let coins = [];
+    let achievements = [];
 
     class Particle {
       constructor(x, y) {
@@ -265,18 +745,226 @@
       }
     }
 
+    class Coin {
+      constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.size = 20;
+        this.collected = false;
+        this.rotation = 0;
+      }
+
+      update() {
+        this.x -= pipeSpeed;
+        this.rotation += 0.1;
+      }
+
+      draw() {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.rotation);
+        ctx.font = this.size + 'px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = '#ffd700';
+        ctx.fillText('🪙', 0, 0);
+        ctx.restore();
+      }
+
+      checkCollision(bird) {
+        const dist = Math.hypot(this.x - (bird.x + bird.width/2), this.y - (bird.y + bird.height/2));
+        return dist < this.size + bird.width/2;
+      }
+    }
+
+    function openShop() {
+      document.getElementById('startScreen').style.display = 'none';
+      document.getElementById('shopScreen').style.display = 'flex';
+      document.getElementById('shopTotalCoins').textContent = totalCoins;
+      renderShop();
+    }
+
+    function closeShop() {
+      document.getElementById('shopScreen').style.display = 'none';
+      document.getElementById('startScreen').style.display = 'flex';
+    }
+
+    function openCodes() {
+      document.getElementById('startScreen').style.display = 'none';
+      document.getElementById('codesScreen').style.display = 'flex';
+      document.getElementById('codeInput').value = '';
+      document.getElementById('codeMessage').textContent = '';
+      document.getElementById('codeMessage').className = 'code-message';
+    }
+
+    function closeCodes() {
+      document.getElementById('codesScreen').style.display = 'none';
+      document.getElementById('startScreen').style.display = 'flex';
+    }
+
+    function redeemCode() {
+      const input = document.getElementById('codeInput');
+      const code = input.value.trim();
+      const messageEl = document.getElementById('codeMessage');
+
+      if (!code) {
+        messageEl.textContent = '❌ Please enter a code!';
+        messageEl.className = 'code-message code-error';
+        return;
+      }
+
+      if (redeemedCodes.includes(code.toLowerCase())) {
+        messageEl.textContent = '❌ Code already redeemed!';
+        messageEl.className = 'code-message code-error';
+        return;
+      }
+
+      if (code.toLowerCase() === 'zaynthebest') {
+        const adminBird = shopItems.find(s => s.id === 'adminduck');
+        if (!adminBird.owned) {
+          adminBird.owned = true;
+          ownedSkins.push('adminduck');
+          localStorage.setItem('ownedSkins', JSON.stringify(ownedSkins));
+          redeemedCodes.push(code.toLowerCase());
+          localStorage.setItem('redeemedCodes', JSON.stringify(redeemedCodes));
+
+          messageEl.textContent = '✅ ADMIN BIRD UNLOCKED! 👑';
+          messageEl.className = 'code-message code-success';
+
+          showNotification('👑 ADMIN BIRD!');
+          checkBadges();
+
+          input.value = '';
+        } else {
+          messageEl.textContent = '⚠️ You already have Admin Bird!';
+          messageEl.className = 'code-message';
+        }
+      } else {
+        messageEl.textContent = '❌ Invalid code!';
+        messageEl.className = 'code-message code-error';
+      }
+    }
+
+    document.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter' && document.getElementById('codesScreen').style.display === 'flex') {
+        redeemCode();
+      }
+    });
+
+    function toMainMenu() {
+      document.getElementById('gameOverScreen').style.display = 'none';
+      document.getElementById('startScreen').style.display = 'flex';
+    }
+
+    function renderShop() {
+      const container = document.getElementById('shopItems');
+      container.innerHTML = '';
+
+      shopItems.forEach(item => {
+        if (item.isAdmin && !item.owned) return;
+
+        const div = document.createElement('div');
+        div.className = item.isAdmin ? 'shop-item admin-item' : 'shop-item';
+
+        const info = document.createElement('div');
+        info.className = 'shop-item-info';
+
+        const icon = document.createElement('div');
+        icon.className = 'shop-item-icon';
+        icon.textContent = item.emoji;
+
+        const details = document.createElement('div');
+        details.className = 'shop-item-details';
+
+        const name = document.createElement('div');
+        name.className = 'shop-item-name';
+        name.textContent = item.name;
+
+        const price = document.createElement('div');
+        price.className = 'shop-item-price';
+        price.textContent = item.price + ' 🪙';
+
+        details.appendChild(name);
+        if (!item.owned && !item.isAdmin) {
+          details.appendChild(price);
+        }
+
+        info.appendChild(icon);
+        info.appendChild(details);
+        div.appendChild(info);
+
+        if (item.id === equippedSkin) {
+          const equipped = document.createElement('div');
+          equipped.className = item.isAdmin ? 'admin-badge' : 'equipped';
+          equipped.textContent = item.isAdmin ? '👑 ADMIN' : 'EQUIPPED';
+          div.appendChild(equipped);
+        } else if (item.owned) {
+          const equipBtn = document.createElement('button');
+          equipBtn.className = 'shop-btn';
+          equipBtn.textContent = 'EQUIP';
+          equipBtn.onclick = () => equipSkin(item.id);
+          div.appendChild(equipBtn);
+        } else {
+          const buyBtn = document.createElement('button');
+          buyBtn.className = 'shop-btn';
+          buyBtn.textContent = 'BUY';
+          buyBtn.disabled = totalCoins < item.price;
+          buyBtn.onclick = () => buySkin(item.id);
+          div.appendChild(buyBtn);
+        }
+
+        container.appendChild(div);
+      });
+    }
+
+    function buySkin(id) {
+      const item = shopItems.find(i => i.id === id);
+      if (totalCoins >= item.price) {
+        totalCoins -= item.price;
+        item.owned = true;
+        ownedSkins.push(id);
+        localStorage.setItem('totalCoins', totalCoins);
+        localStorage.setItem('ownedSkins', JSON.stringify(ownedSkins));
+        document.getElementById('shopTotalCoins').textContent = totalCoins;
+        renderShop();
+        showNotification('✅ Purchased!');
+        checkBadges();
+      }
+    }
+
+    function equipSkin(id) {
+      equippedSkin = id;
+      localStorage.setItem('equippedSkin', equippedSkin);
+      renderShop();
+      const item = shopItems.find(s => s.id === id);
+      showNotification(item.isAdmin ? '👑 ADMIN MODE!' : '✨ Equipped!');
+    }
+
     function startGame() {
       document.getElementById('startScreen').style.display = 'none';
       gameStarted = true;
       gameOver = false;
       score = 0;
+      sessionCoins = 0;
+      streak = 0;
+      maxStreak = 0;
       bird.y = 250;
       bird.velocity = 0;
       bird.rotation = 0;
       pipes = [];
       particles = [];
+      coins = [];
+      achievements = [];
       frameCount = 0;
       document.getElementById('score').textContent = '0';
+      document.getElementById('coins').textContent = '🪙 0';
+      document.getElementById('streak').style.opacity = '0';
+
+      totalGamesPlayed++;
+      localStorage.setItem('totalGamesPlayed', totalGamesPlayed);
+      checkBadges();
+
       gameLoop();
     }
 
@@ -290,7 +978,8 @@
       bird.velocity = bird.jumpStrength;
       bird.rotation = -25;
 
-      // Create flap particles
+      playSound('flap');
+
       for (let i = 0; i < 6; i++) {
         particles.push(new Particle(bird.x, bird.y + bird.height / 2));
       }
@@ -326,8 +1015,57 @@
         topHeight: topHeight,
         bottomY: topHeight + pipeGap,
         passed: false,
-        highlight: false
+        highlight: false,
+        coinSpawned: false
       });
+    }
+
+    function spawnCoin(pipe) {
+      if (!pipe.coinSpawned && Math.random() < 0.7) {
+        const coinY = pipe.topHeight + pipeGap / 2;
+        coins.push(new Coin(pipe.x + pipeWidth / 2, coinY));
+        pipe.coinSpawned = true;
+      }
+    }
+
+    function showNotification(text) {
+      const el = document.getElementById('notification');
+      el.textContent = text;
+      el.style.opacity = '1';
+      el.style.transform = 'translate(-50%, -50%) scale(1)';
+
+      setTimeout(() => {
+        el.style.transition = 'all 0.5s';
+        el.style.opacity = '0';
+        el.style.transform = 'translate(-50%, -50%) scale(1.5)';
+      }, 800);
+    }
+
+    function checkAchievements() {
+      const newAchievements = [];
+
+      if (score >= 10 && !achievements.includes('First 10!')) {
+        achievements.push('First 10!');
+        newAchievements.push('🎯 First 10!');
+      }
+      if (score >= 25 && !achievements.includes('Quarter Century!')) {
+        achievements.push('Quarter Century!');
+        newAchievements.push('🌟 Quarter Century!');
+      }
+      if (score >= 50 && !achievements.includes('Halfway to 100!')) {
+        achievements.push('Halfway to 100!');
+        newAchievements.push('🔥 Halfway to 100!');
+      }
+      if (sessionCoins >= 20 && !achievements.includes('Coin Collector!')) {
+        achievements.push('Coin Collector!');
+        newAchievements.push('🪙 Coin Collector!');
+      }
+      if (streak >= 5 && !achievements.includes('Streak Master!')) {
+        achievements.push('Streak Master!');
+        newAchievements.push('⭐ Streak Master!');
+      }
+
+      return newAchievements;
     }
 
     function update() {
@@ -342,7 +1080,6 @@
       bird.velocity += bird.gravity;
       bird.y += bird.velocity;
 
-      // Smooth rotation
       if (bird.velocity < 0) {
         bird.rotation = Math.max(-25, bird.rotation - 2);
       } else {
@@ -352,7 +1089,10 @@
       pipes.forEach((pipe, index) => {
         pipe.x -= pipeSpeed;
 
-        // Highlight pipe when bird passes through
+        if (!pipe.coinSpawned && pipe.x < canvas.width - 100) {
+          spawnCoin(pipe);
+        }
+
         if (bird.x > pipe.x && bird.x < pipe.x + pipeWidth) {
           pipe.highlight = true;
         }
@@ -360,7 +1100,21 @@
         if (!pipe.passed && pipe.x + pipeWidth < bird.x) {
           pipe.passed = true;
           score++;
+          streak++;
+          maxStreak = Math.max(maxStreak, streak);
           document.getElementById('score').textContent = score;
+
+          playSound('score');
+
+          if (streak >= 3) {
+            document.getElementById('streak').textContent = '🔥 STREAK x' + streak + '!';
+            document.getElementById('streak').style.opacity = '1';
+          }
+
+          const newAchievements = checkAchievements();
+          if (newAchievements.length > 0) {
+            showNotification(newAchievements[0]);
+          }
         }
 
         if (pipe.x + pipeWidth < 0) {
@@ -368,7 +1122,26 @@
         }
       });
 
-      // Update clouds
+      coins.forEach((coin, index) => {
+        coin.update();
+
+        if (!coin.collected && coin.checkCollision(bird)) {
+          coin.collected = true;
+          sessionCoins++;
+          totalCoins++;
+          document.getElementById('coins').textContent = '🪙 ' + sessionCoins;
+          localStorage.setItem('totalCoins', totalCoins);
+          showNotification('+1 🪙');
+          playSound('coin');
+          checkBadges();
+          coins.splice(index, 1);
+        }
+
+        if (coin.x < -50) {
+          coins.splice(index, 1);
+        }
+      });
+
       clouds.forEach(cloud => {
         cloud.x -= cloud.speed;
         if (cloud.x + cloud.width < 0) {
@@ -377,7 +1150,6 @@
         }
       });
 
-      // Update particles
       particles.forEach((particle, index) => {
         particle.update();
         if (particle.life <= 0) {
@@ -411,19 +1183,45 @@
     function endGame() {
       if (gameOver) return;
       gameOver = true;
+      streak = 0;
+      document.getElementById('streak').style.opacity = '0';
+
+      playSound('die');
 
       if (score > bestScore) {
         bestScore = score;
         localStorage.setItem('flappyBestScore', bestScore);
       }
 
+      checkBadges();
+
       document.getElementById('finalScore').textContent = score;
+      document.getElementById('finalCoins').textContent = sessionCoins;
+      document.getElementById('totalCoins').textContent = totalCoins;
       document.getElementById('bestScore').textContent = bestScore;
+
+      const achievementsList = document.getElementById('achievementsList');
+      achievementsList.innerHTML = '';
+      achievements.forEach(ach => {
+        const div = document.createElement('div');
+        div.className = 'achievement';
+        div.textContent = '✨ ' + ach;
+        achievementsList.appendChild(div);
+      });
+
       document.getElementById('gameOverScreen').style.display = 'flex';
     }
 
+    function getCurrentSkin() {
+      return shopItems.find(s => s.id === equippedSkin);
+    }
+
+    function shouldFaceForward() {
+      const skin = getCurrentSkin();
+      return skin ? skin.faceForward : true;
+    }
+
     function draw() {
-      // Sky gradient
       const skyGradient = ctx.createLinearGradient(0, 0, 0, canvas.height - groundHeight);
       skyGradient.addColorStop(0, '#87CEEB');
       skyGradient.addColorStop(0.5, '#98D8E8');
@@ -431,7 +1229,6 @@
       ctx.fillStyle = skyGradient;
       ctx.fillRect(0, 0, canvas.width, canvas.height - groundHeight);
 
-      // Draw clouds
       clouds.forEach(cloud => {
         ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
         ctx.beginPath();
@@ -441,11 +1238,9 @@
         ctx.fill();
       });
 
-      // Draw pipes
       pipes.forEach(pipe => {
         const pipeColor = pipe.highlight ? '#4a9b4a' : '#5cb85c';
 
-        // Top pipe
         const topPipeGradient = ctx.createLinearGradient(pipe.x, 0, pipe.x + pipeWidth, 0);
         topPipeGradient.addColorStop(0, pipeColor);
         topPipeGradient.addColorStop(0.5, '#6fd16f');
@@ -453,28 +1248,22 @@
         ctx.fillStyle = topPipeGradient;
         ctx.fillRect(pipe.x, 0, pipeWidth, pipe.topHeight);
 
-        // Top pipe cap
         ctx.fillStyle = '#6fd16f';
         ctx.fillRect(pipe.x - 3, pipe.topHeight - 25, pipeWidth + 6, 25);
 
-        // Shine
         ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
         ctx.fillRect(pipe.x + 5, 0, 8, pipe.topHeight);
 
-        // Bottom pipe
         ctx.fillStyle = topPipeGradient;
         ctx.fillRect(pipe.x, pipe.bottomY, pipeWidth, canvas.height - groundHeight - pipe.bottomY);
 
-        // Bottom pipe cap
         ctx.fillStyle = '#6fd16f';
         ctx.fillRect(pipe.x - 3, pipe.bottomY, pipeWidth + 6, 25);
 
-        // Shine
         ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
         ctx.fillRect(pipe.x + 5, pipe.bottomY, 8, canvas.height - groundHeight - pipe.bottomY);
       });
 
-      // Ground
       const groundGradient = ctx.createLinearGradient(0, canvas.height - groundHeight, 0, canvas.height);
       groundGradient.addColorStop(0, '#8B7355');
       groundGradient.addColorStop(0.3, '#A0826D');
@@ -482,13 +1271,11 @@
       ctx.fillStyle = groundGradient;
       ctx.fillRect(0, canvas.height - groundHeight, canvas.width, groundHeight);
 
-      // Grass
       ctx.fillStyle = '#5A7C42';
       for (let i = 0; i < canvas.width + 30; i += 30) {
         ctx.fillRect(i + groundX, canvas.height - groundHeight, 15, 5);
       }
 
-      // Flowers
       ctx.fillStyle = '#FF6B9D';
       for (let i = 0; i < canvas.width + 40; i += 40) {
         ctx.beginPath();
@@ -496,13 +1283,11 @@
         ctx.fill();
       }
 
-      // Draw particles
+      coins.forEach(coin => coin.draw());
       particles.forEach(particle => particle.draw());
 
-      // Draw bird
       ctx.save();
 
-      // Shadow
       ctx.globalAlpha = 0.3;
       ctx.fillStyle = '#000';
       ctx.beginPath();
@@ -510,60 +1295,23 @@
       ctx.fill();
       ctx.globalAlpha = 1;
 
+      const skin = getCurrentSkin();
+
+      if (skin && skin.isAdmin) {
+        ctx.shadowBlur = 25;
+        ctx.shadowColor = '#ffd700';
+      }
+
       ctx.translate(bird.x + bird.width / 2, bird.y + bird.height / 2);
-      ctx.rotate((bird.rotation * Math.PI) / 180);
 
-      // Bird body
-      const birdGradient = ctx.createRadialGradient(-5, -5, 0, 0, 0, bird.width / 2);
-      birdGradient.addColorStop(0, '#FFE66D');
-      birdGradient.addColorStop(1, '#FFD700');
-      ctx.fillStyle = birdGradient;
-      ctx.beginPath();
-      ctx.arc(0, 0, bird.width / 2, 0, Math.PI * 2);
-      ctx.fill();
+      if (shouldFaceForward()) {
+        ctx.rotate((bird.rotation * Math.PI) / 180);
+      }
 
-      // Wing
-      const wingOffset = Math.sin(frameCount * 0.3) * 3;
-      ctx.fillStyle = '#FFAA00';
-      ctx.beginPath();
-      ctx.ellipse(-8, 2 + wingOffset, 10, 14, -0.3, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Wing detail
-      ctx.fillStyle = '#FF8C00';
-      ctx.beginPath();
-      ctx.ellipse(-8, 2 + wingOffset, 6, 10, -0.3, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Eye white
-      ctx.fillStyle = 'white';
-      ctx.beginPath();
-      ctx.arc(10, -6, 6, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Eye shine
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
-      ctx.beginPath();
-      ctx.arc(11, -7, 2.5, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Pupil
-      ctx.fillStyle = '#000';
-      ctx.beginPath();
-      ctx.arc(12, -5, 3.5, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Beak
-      const beakGradient = ctx.createLinearGradient(15, -2, 25, 2);
-      beakGradient.addColorStop(0, '#FF8C00');
-      beakGradient.addColorStop(1, '#FF6B00');
-      ctx.fillStyle = beakGradient;
-      ctx.beginPath();
-      ctx.moveTo(15, 0);
-      ctx.lineTo(25, -2);
-      ctx.lineTo(25, 2);
-      ctx.closePath();
-      ctx.fill();
+      ctx.font = '50px Arial';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(skin ? skin.emoji : '🐤', 0, 0);
 
       ctx.restore();
     }
