@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Flappy Bird - HD</title>
+  <title>Flappy Bird HD</title>
   <style>
     * {
       margin: 0;
@@ -67,6 +67,9 @@
       margin-bottom: 30px;
       font-family: 'Comic Sans MS', cursive;
       animation: titleFloat 3s ease-in-out infinite;
+      text-align: center;
+      width: 100%;
+      padding: 0 20px;
     }
 
     @keyframes titleFloat {
@@ -80,6 +83,9 @@
       text-shadow: 0 3px 10px rgba(0,0,0,0.5);
       margin-bottom: 30px;
       animation: pulse 2s ease-in-out infinite;
+      text-align: center;
+      width: 100%;
+      padding: 0 20px;
     }
 
     @keyframes pulse {
@@ -104,21 +110,15 @@
     }
 
     .btn::before {
-      content: '';
+      content: '✨';
       position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 0;
-      height: 0;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.5);
-      transform: translate(-50%, -50%);
-      transition: width 0.6s, height 0.6s;
+      font-size: 20px;
+      animation: sparkle 1.5s ease-in-out infinite;
     }
 
-    .btn:hover::before {
-      width: 300px;
-      height: 300px;
+    @keyframes sparkle {
+      0%, 100% { opacity: 0; transform: translate(-20px, -20px) rotate(0deg); }
+      50% { opacity: 1; transform: translate(20px, 20px) rotate(180deg); }
     }
 
     .btn:hover {
@@ -166,6 +166,7 @@
       padding: 15px 40px;
       border-radius: 20px;
       backdrop-filter: blur(5px);
+      text-align: center;
     }
 
     .finalScore span {
@@ -205,24 +206,24 @@
     const bird = {
       x: 80,
       y: 250,
-      width: 34,
-      height: 24,
+      width: 40,
+      height: 30,
       velocity: 0,
-      gravity: 0.4,
-      jumpStrength: -7.5,
+      gravity: 0.35,
+      jumpStrength: -7,
       rotation: 0
     };
 
     const pipeWidth = 52;
-    const pipeGap = 150;
-    const pipeSpeed = 1.8;
+    const pipeGap = 160;
+    const pipeSpeed = 2;
     let pipes = [];
     let frameCount = 0;
 
     const groundHeight = 100;
     let groundX = 0;
 
-    // Cloud particles
+    // Clouds
     let clouds = [];
     for (let i = 0; i < 5; i++) {
       clouds.push({
@@ -234,6 +235,36 @@
       });
     }
 
+    // Particles for flap effect
+    let particles = [];
+
+    class Particle {
+      constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.vx = (Math.random() - 0.5) * 3;
+        this.vy = Math.random() * 2 + 1;
+        this.life = 1;
+        this.decay = 0.02;
+        this.size = 3 + Math.random() * 3;
+      }
+
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.life -= this.decay;
+      }
+
+      draw() {
+        ctx.globalAlpha = this.life;
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      }
+    }
+
     function startGame() {
       document.getElementById('startScreen').style.display = 'none';
       gameStarted = true;
@@ -243,6 +274,7 @@
       bird.velocity = 0;
       bird.rotation = 0;
       pipes = [];
+      particles = [];
       frameCount = 0;
       document.getElementById('score').textContent = '0';
       gameLoop();
@@ -257,6 +289,11 @@
       if (!gameStarted || gameOver) return;
       bird.velocity = bird.jumpStrength;
       bird.rotation = -25;
+
+      // Create flap particles
+      for (let i = 0; i < 6; i++) {
+        particles.push(new Particle(bird.x, bird.y + bird.height / 2));
+      }
     }
 
     canvas.addEventListener('mousedown', function(e) {
@@ -288,7 +325,8 @@
         x: canvas.width,
         topHeight: topHeight,
         bottomY: topHeight + pipeGap,
-        passed: false
+        passed: false,
+        highlight: false
       });
     }
 
@@ -297,22 +335,27 @@
 
       frameCount++;
 
-      if (frameCount % 100 === 0) {
+      if (frameCount % 120 === 0) {
         createPipe();
       }
 
       bird.velocity += bird.gravity;
       bird.y += bird.velocity;
 
+      // Smooth rotation
       if (bird.velocity < 0) {
-        bird.rotation = Math.max(-25, bird.rotation);
+        bird.rotation = Math.max(-25, bird.rotation - 2);
       } else {
-        bird.rotation += 2.5;
-        bird.rotation = Math.min(90, bird.rotation);
+        bird.rotation = Math.min(90, bird.rotation + 2.5);
       }
 
       pipes.forEach((pipe, index) => {
         pipe.x -= pipeSpeed;
+
+        // Highlight pipe when bird passes through
+        if (bird.x > pipe.x && bird.x < pipe.x + pipeWidth) {
+          pipe.highlight = true;
+        }
 
         if (!pipe.passed && pipe.x + pipeWidth < bird.x) {
           pipe.passed = true;
@@ -334,6 +377,14 @@
         }
       });
 
+      // Update particles
+      particles.forEach((particle, index) => {
+        particle.update();
+        if (particle.life <= 0) {
+          particles.splice(index, 1);
+        }
+      });
+
       groundX -= pipeSpeed;
       if (groundX <= -30) groundX = 0;
 
@@ -341,22 +392,16 @@
     }
 
     function checkCollisions() {
-      if (bird.y + bird.height >= canvas.height - groundHeight) {
+      if (bird.y + bird.height >= canvas.height - groundHeight || bird.y <= 0) {
         endGame();
       }
 
-      if (bird.y <= 0) {
-        endGame();
-      }
-
-      const hitboxReduction = 3;
+      const hitboxReduction = 4;
       pipes.forEach(pipe => {
         if (bird.x + bird.width - hitboxReduction > pipe.x && 
             bird.x + hitboxReduction < pipe.x + pipeWidth) {
-          if (bird.y + hitboxReduction < pipe.topHeight) {
-            endGame();
-          }
-          if (bird.y + bird.height - hitboxReduction > pipe.bottomY) {
+          if (bird.y + hitboxReduction < pipe.topHeight || 
+              bird.y + bird.height - hitboxReduction > pipe.bottomY) {
             endGame();
           }
         }
@@ -378,7 +423,7 @@
     }
 
     function draw() {
-      // Beautiful gradient sky
+      // Sky gradient
       const skyGradient = ctx.createLinearGradient(0, 0, 0, canvas.height - groundHeight);
       skyGradient.addColorStop(0, '#87CEEB');
       skyGradient.addColorStop(0.5, '#98D8E8');
@@ -396,24 +441,23 @@
         ctx.fill();
       });
 
-      // Draw pipes with gradient
+      // Draw pipes
       pipes.forEach(pipe => {
+        const pipeColor = pipe.highlight ? '#4a9b4a' : '#5cb85c';
+
         // Top pipe
         const topPipeGradient = ctx.createLinearGradient(pipe.x, 0, pipe.x + pipeWidth, 0);
-        topPipeGradient.addColorStop(0, '#5cb85c');
+        topPipeGradient.addColorStop(0, pipeColor);
         topPipeGradient.addColorStop(0.5, '#6fd16f');
         topPipeGradient.addColorStop(1, '#4a9b4a');
         ctx.fillStyle = topPipeGradient;
         ctx.fillRect(pipe.x, 0, pipeWidth, pipe.topHeight);
 
-        // Top pipe cap with shine
-        const capGradient = ctx.createLinearGradient(pipe.x, pipe.topHeight - 25, pipe.x, pipe.topHeight);
-        capGradient.addColorStop(0, '#6fd16f');
-        capGradient.addColorStop(1, '#4a9b4a');
-        ctx.fillStyle = capGradient;
-        ctx.fillRect(pipe.x - 2, pipe.topHeight - 25, pipeWidth + 4, 25);
+        // Top pipe cap
+        ctx.fillStyle = '#6fd16f';
+        ctx.fillRect(pipe.x - 3, pipe.topHeight - 25, pipeWidth + 6, 25);
 
-        // Shine effect on pipes
+        // Shine
         ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
         ctx.fillRect(pipe.x + 5, 0, 8, pipe.topHeight);
 
@@ -422,18 +466,15 @@
         ctx.fillRect(pipe.x, pipe.bottomY, pipeWidth, canvas.height - groundHeight - pipe.bottomY);
 
         // Bottom pipe cap
-        const bottomCapGradient = ctx.createLinearGradient(pipe.x, pipe.bottomY, pipe.x, pipe.bottomY + 25);
-        bottomCapGradient.addColorStop(0, '#6fd16f');
-        bottomCapGradient.addColorStop(1, '#4a9b4a');
-        ctx.fillStyle = bottomCapGradient;
-        ctx.fillRect(pipe.x - 2, pipe.bottomY, pipeWidth + 4, 25);
+        ctx.fillStyle = '#6fd16f';
+        ctx.fillRect(pipe.x - 3, pipe.bottomY, pipeWidth + 6, 25);
 
-        // Shine on bottom pipe
+        // Shine
         ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
         ctx.fillRect(pipe.x + 5, pipe.bottomY, 8, canvas.height - groundHeight - pipe.bottomY);
       });
 
-      // Draw beautiful ground
+      // Ground
       const groundGradient = ctx.createLinearGradient(0, canvas.height - groundHeight, 0, canvas.height);
       groundGradient.addColorStop(0, '#8B7355');
       groundGradient.addColorStop(0.3, '#A0826D');
@@ -441,13 +482,13 @@
       ctx.fillStyle = groundGradient;
       ctx.fillRect(0, canvas.height - groundHeight, canvas.width, groundHeight);
 
-      // Ground grass pattern
+      // Grass
       ctx.fillStyle = '#5A7C42';
       for (let i = 0; i < canvas.width + 30; i += 30) {
         ctx.fillRect(i + groundX, canvas.height - groundHeight, 15, 5);
       }
 
-      // Ground flowers
+      // Flowers
       ctx.fillStyle = '#FF6B9D';
       for (let i = 0; i < canvas.width + 40; i += 40) {
         ctx.beginPath();
@@ -455,7 +496,10 @@
         ctx.fill();
       }
 
-      // Draw bird with shadow
+      // Draw particles
+      particles.forEach(particle => particle.draw());
+
+      // Draw bird
       ctx.save();
 
       // Shadow
@@ -469,7 +513,7 @@
       ctx.translate(bird.x + bird.width / 2, bird.y + bird.height / 2);
       ctx.rotate((bird.rotation * Math.PI) / 180);
 
-      // Bird body with gradient
+      // Bird body
       const birdGradient = ctx.createRadialGradient(-5, -5, 0, 0, 0, bird.width / 2);
       birdGradient.addColorStop(0, '#FFE66D');
       birdGradient.addColorStop(1, '#FFD700');
@@ -478,46 +522,46 @@
       ctx.arc(0, 0, bird.width / 2, 0, Math.PI * 2);
       ctx.fill();
 
-      // Bird wing with animation
-      const wingOffset = Math.sin(frameCount * 0.2) * 2;
+      // Wing
+      const wingOffset = Math.sin(frameCount * 0.3) * 3;
       ctx.fillStyle = '#FFAA00';
       ctx.beginPath();
-      ctx.ellipse(-5, 2 + wingOffset, 8, 12, -0.3, 0, Math.PI * 2);
+      ctx.ellipse(-8, 2 + wingOffset, 10, 14, -0.3, 0, Math.PI * 2);
       ctx.fill();
 
       // Wing detail
       ctx.fillStyle = '#FF8C00';
       ctx.beginPath();
-      ctx.ellipse(-5, 2 + wingOffset, 5, 8, -0.3, 0, Math.PI * 2);
+      ctx.ellipse(-8, 2 + wingOffset, 6, 10, -0.3, 0, Math.PI * 2);
       ctx.fill();
 
-      // Bird eye (white)
+      // Eye white
       ctx.fillStyle = 'white';
       ctx.beginPath();
-      ctx.arc(8, -5, 5, 0, Math.PI * 2);
+      ctx.arc(10, -6, 6, 0, Math.PI * 2);
       ctx.fill();
 
       // Eye shine
       ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
       ctx.beginPath();
-      ctx.arc(9, -6, 2, 0, Math.PI * 2);
+      ctx.arc(11, -7, 2.5, 0, Math.PI * 2);
       ctx.fill();
 
-      // Bird pupil
+      // Pupil
       ctx.fillStyle = '#000';
       ctx.beginPath();
-      ctx.arc(10, -4, 3, 0, Math.PI * 2);
+      ctx.arc(12, -5, 3.5, 0, Math.PI * 2);
       ctx.fill();
 
-      // Bird beak with gradient
-      const beakGradient = ctx.createLinearGradient(12, -2, 20, 2);
+      // Beak
+      const beakGradient = ctx.createLinearGradient(15, -2, 25, 2);
       beakGradient.addColorStop(0, '#FF8C00');
       beakGradient.addColorStop(1, '#FF6B00');
       ctx.fillStyle = beakGradient;
       ctx.beginPath();
-      ctx.moveTo(12, 0);
-      ctx.lineTo(20, -2);
-      ctx.lineTo(20, 2);
+      ctx.moveTo(15, 0);
+      ctx.lineTo(25, -2);
+      ctx.lineTo(25, 2);
       ctx.closePath();
       ctx.fill();
 
