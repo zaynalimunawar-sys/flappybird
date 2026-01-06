@@ -667,118 +667,167 @@
             50% { box-shadow: 0 0 35px rgba(245, 158, 11, 0.7), 0 10px 30px rgba(0,0,0,0.15); }
         }
 
+        /* LOOT BOXES */
+        .box-container {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .box-item {
+            background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.95) 100%);
+            padding: 20px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.4s;
+            text-align: center;
+            min-width: 140px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        }
+
+        .box-item:hover {
+            transform: translateY(-10px) scale(1.05);
+        }
+
+        .box-icon {
+            font-size: 50px;
+            margin-bottom: 10px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .box-name {
+            font-weight: 900;
+            font-size: 14px;
+            color: #667eea;
+            margin-bottom: 6px;
+        }
+
+        .box-price {
+            font-weight: 800;
+            font-size: 18px;
+            color: #f59e0b;
+            margin-bottom: 6px;
+        }
+
+        .box-desc {
+            font-weight: 600;
+            font-size: 10px;
+            color: #6b7280;
+            line-height: 1.4;
+        }
+
+        .box-common {
+            border: 3px solid #9ca3af;
+        }
+
+        .box-rare {
+            border: 3px solid #3b82f6;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3), 0 15px 40px rgba(0,0,0,0.2);
+        }
+
+        .box-legendary {
+            border: 3px solid #f59e0b;
+            box-shadow: 0 0 30px rgba(245, 158, 11, 0.5), 0 15px 40px rgba(0,0,0,0.2);
+            animation: box-legendary-glow 2s ease-in-out infinite;
+        }
+
+        .box-admin {
+            border: 3px solid #dc2626;
+            background: linear-gradient(135deg, rgba(255,0,0,0.1) 0%, rgba(255,255,255,0.95) 100%);
+            box-shadow: 0 0 35px rgba(220, 38, 38, 0.6), 0 15px 40px rgba(0,0,0,0.2);
+            animation: box-admin-glow 2s ease-in-out infinite;
+        }
+
+        @keyframes box-legendary-glow {
+            0%, 100% { box-shadow: 0 0 30px rgba(245, 158, 11, 0.5), 0 15px 40px rgba(0,0,0,0.2); }
+            50% { box-shadow: 0 0 45px rgba(245, 158, 11, 0.8), 0 15px 40px rgba(0,0,0,0.2); }
+        }
+
+        @keyframes box-admin-glow {
+            0%, 100% { box-shadow: 0 0 35px rgba(220, 38, 38, 0.6), 0 15px 40px rgba(0,0,0,0.2); }
+            50% { box-shadow: 0 0 50px rgba(220, 38, 38, 0.9), 0 15px 40px rgba(0,0,0,0.2); }
+        }
+
+        .opening-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .opening-box {
+            font-size: 150px;
+            animation: shake 0.5s ease-in-out infinite;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: rotate(-5deg); }
+            50% { transform: rotate(5deg); }
+        }
+
+        .reveal-reward {
+            font-size: 120px;
+            animation: reveal 1s ease-out forwards;
+            opacity: 0;
+        }
+
+        @keyframes reveal {
+            0% { opacity: 0; transform: scale(0); }
+            50% { opacity: 1; transform: scale(1.3); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .reveal-text {
+            font-size: 32px;
+            font-weight: 900;
+            color: white;
+            margin-top: 20px;
+            animation: fadeIn 1s ease-out forwards;
+            opacity: 0;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
         /* MOBILE RESPONSIVE */
         @media only screen and (max-width: 850px) {
-            body {
-                padding: 0;
-            }
-
+            body { padding: 0; }
             #gameContainer {
                 width: 100vw;
                 height: 100vh;
-                max-width: 100%;
-                max-height: 100%;
                 border-radius: 0;
             }
-
-            .title {
-                font-size: 48px !important;
-                letter-spacing: -2px;
+            .title { font-size: 42px !important; }
+            .tagline { font-size: 11px !important; }
+            .btn { padding: 14px 28px !important; font-size: 13px !important; }
+            .shop-container, .milestone-container, .box-container { 
+                max-height: 55vh !important; 
+                gap: 8px !important; 
             }
-
-            .tagline {
-                font-size: 12px !important;
-                margin-bottom: 30px !important;
-            }
-
-            .subtitle {
-                font-size: 14px !important;
-                margin-bottom: 30px !important;
-            }
-
-            .btn {
-                padding: 15px 30px !important;
-                font-size: 14px !important;
-                margin: 5px !important;
-            }
-
-            .btn-small {
-                padding: 12px 25px !important;
-                font-size: 12px !important;
-            }
-
-            .emoji {
-                font-size: 50px !important;
-            }
-
-            .shop-container, .milestone-container {
-                max-height: 60vh !important;
-                gap: 10px !important;
-            }
-
-            .ball-item {
-                min-width: 90px !important;
-                padding: 12px 15px !important;
-            }
-
-            .ball-preview {
-                font-size: 35px !important;
-            }
-
-            .ball-name {
-                font-size: 11px !important;
-            }
-
-            .ball-price {
-                font-size: 12px !important;
-            }
-
-            .ball-rarity {
-                font-size: 8px !important;
-            }
-
-            .milestone-item {
-                min-width: 140px !important;
-                padding: 15px 18px !important;
-            }
-
-            .coins-display {
-                font-size: 20px !important;
-                padding: 10px 25px !important;
-            }
-
-            .stats-container {
-                min-width: 300px !important;
-                padding: 25px 30px !important;
-            }
-
-            .hud-box {
-                padding: 12px 20px !important;
-            }
-
-            .hud-value {
-                font-size: 32px !important;
-            }
-
-            .controls-hint {
-                padding: 12px 20px !important;
-                font-size: 12px !important;
-            }
-
-            .code-input {
-                width: 250px !important;
-                font-size: 16px !important;
-            }
-        }
-
-        @media only screen and (max-width: 400px) {
-            .title {
-                font-size: 36px !important;
-            }
-
-            .ball-item {
-                min-width: 80px !important;
-            }
+            .ball-item { min-width: 85px !important; padding: 10px 12px !important; }
+            .ball-preview { font-size: 32px !important; }
+            .box-item { min-width: 130px !important; padding: 18px 22px !important; }
+            .box-icon { font-size: 45px !important; }
+            .opening-box { font-size: 100px !important; }
+            .reveal-reward { font-size: 80px !important; }
+            .reveal-text { font-size: 22px !important; }
         }
     </style>
 </head>
@@ -829,6 +878,7 @@
             <div class="button-row-horizontal">
                 <button class="btn" onclick="startGame()">Start Game</button>
                 <button class="btn btn-secondary" onclick="openShop()">🛒 Shop</button>
+                <button class="btn btn-secondary" onclick="openBoxes()">📦 Boxes</button>
                 <button class="btn btn-secondary" onclick="openMilestones()">🏆 Milestones</button>
                 <button class="btn btn-secondary" onclick="openCodes()">🎁 Codes</button>
             </div>
@@ -860,13 +910,44 @@
                 <div style="font-size: 14px; font-weight: 700; color: #667eea; margin-bottom: 10px;">💡 SECRET CODES</div>
                 <div style="font-size: 12px; color: #6b7280; line-height: 1.8;">
                     Find secret codes to unlock exclusive legendary balls!<br>
-                    Codes are hidden... keep exploring! 🔍<br>
-                    Hint: They might be related to special things... 🤔
+                    Codes are hidden... keep exploring! 🔍
                 </div>
             </div>
             <button class="btn" onclick="closeCodes()">Back to Menu</button>
         </div>
 
+
+        <div id="boxesScreen" class="screen" style="display: none;">
+            <div class="title" style="font-size: 45px; margin-bottom: 15px;">📦 Mystery Boxes</div>
+            <div class="coins-display">💰 <span id="boxesCoins">0</span> Coins</div>
+            <div class="box-container">
+                <div class="box-item box-common" onclick="openBox('common')">
+                    <div class="box-icon">📦</div>
+                    <div class="box-name">Common Box</div>
+                    <div class="box-price">💰 100</div>
+                    <div class="box-desc">50-150 coins<br>or Common ball!</div>
+                </div>
+                <div class="box-item box-rare" onclick="openBox('rare')">
+                    <div class="box-icon">🎁</div>
+                    <div class="box-name">Rare Box</div>
+                    <div class="box-price">💰 300</div>
+                    <div class="box-desc">100-300 coins<br>or Rare/Epic ball!</div>
+                </div>
+                <div class="box-item box-legendary" onclick="openBox('legendary')">
+                    <div class="box-icon">🎉</div>
+                    <div class="box-name">Legendary Box</div>
+                    <div class="box-price">💰 600</div>
+                    <div class="box-desc">200-600 coins<br>or LEGENDARY ball!</div>
+                </div>
+                <div class="box-item box-admin" onclick="openBox('admin')">
+                    <div class="box-icon">👑</div>
+                    <div class="box-name">ADMIN BOX</div>
+                    <div class="box-price">💰 1000</div>
+                    <div class="box-desc">500-1500 coins<br>or GUARANTEED LEGENDARY!</div>
+                </div>
+            </div>
+            <button class="btn" onclick="closeBoxes()">Back to Menu</button>
+        </div>
         <div id="gameOverScreen" class="screen" style="display: none;">
             <div class="emoji">💥</div>
             <div class="title" style="font-size: 60px; margin-bottom: 15px;">Game Over!</div>
@@ -909,36 +990,210 @@
         let spawnRate = 95;
 
         const ballSkins = {
-            classic: { emoji: '🟢', name: 'Classic', price: 0, unlocked: true, rarity: 'common', 
+            classic: { emoji: '🟢', name: 'Classic', price: 0, unlocked: true, rarity: 'common',
                 colors: ['#d1fae5', '#6ee7b7', '#34d399', '#10b981', '#047857'] },
             fire: { emoji: '🔥', name: 'Fire', price: 50, unlocked: false, rarity: 'common',
-                colors: ['#fef3c7', '#fcd34d', '#f59e0b', '#dc2626', '#7f1d1d'] },
+                colors: ['#d1fae5', '#6ee7b7', '#34d399', '#10b981', '#047857'] },
             ice: { emoji: '❄️', name: 'Ice', price: 50, unlocked: false, rarity: 'common',
-                colors: ['#e0f2fe', '#7dd3fc', '#0ea5e9', '#0369a1', '#0c4a6e'] },
-            electric: { emoji: '⚡', name: 'Electric', price: 100, unlocked: false, rarity: 'uncommon',
-                colors: ['#fef9c3', '#fde047', '#eab308', '#a16207', '#713f12'] },
-            rainbow: { emoji: '🌈', name: 'Rainbow', price: 150, unlocked: false, rarity: 'rare',
-                colors: ['#fecaca', '#fde047', '#86efac', '#7dd3fc', '#c4b5fd'] },
-            galaxy: { emoji: '🌌', name: 'Galaxy', price: 200, unlocked: false, rarity: 'rare',
-                colors: ['#e9d5ff', '#c084fc', '#9333ea', '#6b21a8', '#4c1d95'] },
-            gold: { emoji: '💎', name: 'Diamond', price: 300, unlocked: false, rarity: 'epic',
-                colors: ['#fef9c3', '#fde047', '#facc15', '#eab308', '#ca8a04'] },
-            dark: { emoji: '🖤', name: 'Shadow', price: 250, unlocked: false, rarity: 'epic',
-                colors: ['#6b7280', '#4b5563', '#374151', '#1f2937', '#111827'] },
-            toxic: { emoji: '☢️', name: 'Toxic', price: 175, unlocked: false, rarity: 'rare',
-                colors: ['#d1fae5', '#86efac', '#22c55e', '#15803d', '#14532d'] },
-            ocean: { emoji: '🌊', name: 'Ocean', price: 125, unlocked: false, rarity: 'uncommon',
+                colors: ['#d1fae5', '#6ee7b7', '#34d399', '#10b981', '#047857'] },
+            water: { emoji: '💧', name: 'Water', price: 60, unlocked: false, rarity: 'common',
+                colors: ['#d1fae5', '#6ee7b7', '#34d399', '#10b981', '#047857'] },
+            leaf: { emoji: '🍃', name: 'Leaf', price: 60, unlocked: false, rarity: 'common',
+                colors: ['#d1fae5', '#6ee7b7', '#34d399', '#10b981', '#047857'] },
+            rock: { emoji: '🪨', name: 'Rock', price: 70, unlocked: false, rarity: 'common',
+                colors: ['#d1fae5', '#6ee7b7', '#34d399', '#10b981', '#047857'] },
+            orange: { emoji: '🟠', name: 'Orange', price: 70, unlocked: false, rarity: 'common',
+                colors: ['#d1fae5', '#6ee7b7', '#34d399', '#10b981', '#047857'] },
+            yellow: { emoji: '🟡', name: 'Yellow', price: 80, unlocked: false, rarity: 'common',
+                colors: ['#d1fae5', '#6ee7b7', '#34d399', '#10b981', '#047857'] },
+            red: { emoji: '🔴', name: 'Red', price: 80, unlocked: false, rarity: 'common',
+                colors: ['#d1fae5', '#6ee7b7', '#34d399', '#10b981', '#047857'] },
+            blue: { emoji: '🔵', name: 'Blue', price: 90, unlocked: false, rarity: 'common',
+                colors: ['#d1fae5', '#6ee7b7', '#34d399', '#10b981', '#047857'] },
+            purple: { emoji: '🟣', name: 'Purple', price: 90, unlocked: false, rarity: 'common',
+                colors: ['#d1fae5', '#6ee7b7', '#34d399', '#10b981', '#047857'] },
+            brown: { emoji: '🟤', name: 'Brown', price: 100, unlocked: false, rarity: 'common',
+                colors: ['#d1fae5', '#6ee7b7', '#34d399', '#10b981', '#047857'] },
+            white: { emoji: '⚪', name: 'White', price: 100, unlocked: false, rarity: 'common',
+                colors: ['#d1fae5', '#6ee7b7', '#34d399', '#10b981', '#047857'] },
+            black: { emoji: '⚫', name: 'Black', price: 110, unlocked: false, rarity: 'common',
+                colors: ['#d1fae5', '#6ee7b7', '#34d399', '#10b981', '#047857'] },
+            soccer: { emoji: '⚽', name: 'Soccer', price: 110, unlocked: false, rarity: 'common',
+                colors: ['#d1fae5', '#6ee7b7', '#34d399', '#10b981', '#047857'] },
+            basketball: { emoji: '🏀', name: 'Basketball', price: 120, unlocked: false, rarity: 'common',
+                colors: ['#d1fae5', '#6ee7b7', '#34d399', '#10b981', '#047857'] },
+            baseball: { emoji: '⚾', name: 'Baseball', price: 120, unlocked: false, rarity: 'common',
+                colors: ['#d1fae5', '#6ee7b7', '#34d399', '#10b981', '#047857'] },
+            tennis: { emoji: '🎾', name: 'Tennis', price: 130, unlocked: false, rarity: 'common',
+                colors: ['#d1fae5', '#6ee7b7', '#34d399', '#10b981', '#047857'] },
+            volleyball: { emoji: '🏐', name: 'Volleyball', price: 130, unlocked: false, rarity: 'common',
+                colors: ['#d1fae5', '#6ee7b7', '#34d399', '#10b981', '#047857'] },
+            bowling: { emoji: '🎳', name: 'Bowling', price: 140, unlocked: false, rarity: 'common',
+                colors: ['#d1fae5', '#6ee7b7', '#34d399', '#10b981', '#047857'] },
+            electric: { emoji: '⚡', name: 'Electric', price: 150, unlocked: false, rarity: 'uncommon',
                 colors: ['#cffafe', '#67e8f9', '#06b6d4', '#0e7490', '#164e63'] },
-            sunset: { emoji: '🌅', name: 'Sunset', price: 225, unlocked: false, rarity: 'epic',
-                colors: ['#fed7aa', '#fb923c', '#f97316', '#ea580c', '#9a3412'] },
-            mystic: { emoji: '🔮', name: 'Mystic', price: 350, unlocked: false, rarity: 'legendary',
-                colors: ['#fae8ff', '#f0abfc', '#d946ef', '#a21caf', '#701a75'] },
-            admin: { emoji: '👑', name: 'ADMIN', price: 0, unlocked: false, rarity: 'legendary', secret: true,
-                colors: ['#fef9c3', '#fde047', '#f59e0b', '#dc2626', '#9333ea'] },
-            mega: { emoji: '🚀', name: 'MEGA', price: 0, unlocked: false, rarity: 'legendary', secret: true,
+            ocean: { emoji: '🌊', name: 'Ocean', price: 160, unlocked: false, rarity: 'uncommon',
+                colors: ['#cffafe', '#67e8f9', '#06b6d4', '#0e7490', '#164e63'] },
+            sun: { emoji: '☀️', name: 'Sun', price: 170, unlocked: false, rarity: 'uncommon',
+                colors: ['#cffafe', '#67e8f9', '#06b6d4', '#0e7490', '#164e63'] },
+            moon: { emoji: '🌙', name: 'Moon', price: 180, unlocked: false, rarity: 'uncommon',
+                colors: ['#cffafe', '#67e8f9', '#06b6d4', '#0e7490', '#164e63'] },
+            star: { emoji: '⭐', name: 'Star', price: 190, unlocked: false, rarity: 'uncommon',
+                colors: ['#cffafe', '#67e8f9', '#06b6d4', '#0e7490', '#164e63'] },
+            sparkles: { emoji: '✨', name: 'Sparkles', price: 200, unlocked: false, rarity: 'uncommon',
+                colors: ['#cffafe', '#67e8f9', '#06b6d4', '#0e7490', '#164e63'] },
+            boom: { emoji: '💥', name: 'Boom', price: 210, unlocked: false, rarity: 'uncommon',
+                colors: ['#cffafe', '#67e8f9', '#06b6d4', '#0e7490', '#164e63'] },
+            dizzy: { emoji: '💫', name: 'Dizzy', price: 220, unlocked: false, rarity: 'uncommon',
+                colors: ['#cffafe', '#67e8f9', '#06b6d4', '#0e7490', '#164e63'] },
+            zap: { emoji: '⚡', name: 'Zap', price: 230, unlocked: false, rarity: 'uncommon',
+                colors: ['#cffafe', '#67e8f9', '#06b6d4', '#0e7490', '#164e63'] },
+            flower: { emoji: '🌸', name: 'Flower', price: 240, unlocked: false, rarity: 'uncommon',
+                colors: ['#cffafe', '#67e8f9', '#06b6d4', '#0e7490', '#164e63'] },
+            rose: { emoji: '🌹', name: 'Rose', price: 250, unlocked: false, rarity: 'uncommon',
+                colors: ['#cffafe', '#67e8f9', '#06b6d4', '#0e7490', '#164e63'] },
+            tulip: { emoji: '🌷', name: 'Tulip', price: 260, unlocked: false, rarity: 'uncommon',
+                colors: ['#cffafe', '#67e8f9', '#06b6d4', '#0e7490', '#164e63'] },
+            cherry: { emoji: '🍒', name: 'Cherry', price: 270, unlocked: false, rarity: 'uncommon',
+                colors: ['#cffafe', '#67e8f9', '#06b6d4', '#0e7490', '#164e63'] },
+            strawberry: { emoji: '🍓', name: 'Strawberry', price: 280, unlocked: false, rarity: 'uncommon',
+                colors: ['#cffafe', '#67e8f9', '#06b6d4', '#0e7490', '#164e63'] },
+            apple: { emoji: '🍎', name: 'Apple', price: 290, unlocked: false, rarity: 'uncommon',
+                colors: ['#cffafe', '#67e8f9', '#06b6d4', '#0e7490', '#164e63'] },
+            orange_fruit: { emoji: '🍊', name: 'Orange', price: 300, unlocked: false, rarity: 'uncommon',
+                colors: ['#cffafe', '#67e8f9', '#06b6d4', '#0e7490', '#164e63'] },
+            lemon: { emoji: '🍋', name: 'Lemon', price: 310, unlocked: false, rarity: 'uncommon',
+                colors: ['#cffafe', '#67e8f9', '#06b6d4', '#0e7490', '#164e63'] },
+            watermelon: { emoji: '🍉', name: 'Watermelon', price: 320, unlocked: false, rarity: 'uncommon',
+                colors: ['#cffafe', '#67e8f9', '#06b6d4', '#0e7490', '#164e63'] },
+            grapes: { emoji: '🍇', name: 'Grapes', price: 330, unlocked: false, rarity: 'uncommon',
+                colors: ['#cffafe', '#67e8f9', '#06b6d4', '#0e7490', '#164e63'] },
+            peach: { emoji: '🍑', name: 'Peach', price: 340, unlocked: false, rarity: 'uncommon',
+                colors: ['#cffafe', '#67e8f9', '#06b6d4', '#0e7490', '#164e63'] },
+            rainbow: { emoji: '🌈', name: 'Rainbow', price: 350, unlocked: false, rarity: 'rare',
                 colors: ['#dbeafe', '#60a5fa', '#3b82f6', '#1d4ed8', '#1e3a8a'] },
+            toxic: { emoji: '☢️', name: 'Toxic', price: 360, unlocked: false, rarity: 'rare',
+                colors: ['#dbeafe', '#60a5fa', '#3b82f6', '#1d4ed8', '#1e3a8a'] },
+            galaxy: { emoji: '🌌', name: 'Galaxy', price: 370, unlocked: false, rarity: 'rare',
+                colors: ['#dbeafe', '#60a5fa', '#3b82f6', '#1d4ed8', '#1e3a8a'] },
+            comet: { emoji: '☄️', name: 'Comet', price: 380, unlocked: false, rarity: 'rare',
+                colors: ['#dbeafe', '#60a5fa', '#3b82f6', '#1d4ed8', '#1e3a8a'] },
+            planet: { emoji: '🪐', name: 'Planet', price: 390, unlocked: false, rarity: 'rare',
+                colors: ['#dbeafe', '#60a5fa', '#3b82f6', '#1d4ed8', '#1e3a8a'] },
+            earth: { emoji: '🌍', name: 'Earth', price: 400, unlocked: false, rarity: 'rare',
+                colors: ['#dbeafe', '#60a5fa', '#3b82f6', '#1d4ed8', '#1e3a8a'] },
+            firework: { emoji: '🎆', name: 'Firework', price: 410, unlocked: false, rarity: 'rare',
+                colors: ['#dbeafe', '#60a5fa', '#3b82f6', '#1d4ed8', '#1e3a8a'] },
+            sparkler: { emoji: '🎇', name: 'Sparkler', price: 420, unlocked: false, rarity: 'rare',
+                colors: ['#dbeafe', '#60a5fa', '#3b82f6', '#1d4ed8', '#1e3a8a'] },
+            crystal: { emoji: '💎', name: 'Crystal', price: 430, unlocked: false, rarity: 'rare',
+                colors: ['#dbeafe', '#60a5fa', '#3b82f6', '#1d4ed8', '#1e3a8a'] },
+            gem: { emoji: '💠', name: 'Gem', price: 440, unlocked: false, rarity: 'rare',
+                colors: ['#dbeafe', '#60a5fa', '#3b82f6', '#1d4ed8', '#1e3a8a'] },
+            crown: { emoji: '👑', name: 'Crown', price: 450, unlocked: false, rarity: 'rare',
+                colors: ['#dbeafe', '#60a5fa', '#3b82f6', '#1d4ed8', '#1e3a8a'] },
+            trophy: { emoji: '🏆', name: 'Trophy', price: 460, unlocked: false, rarity: 'rare',
+                colors: ['#dbeafe', '#60a5fa', '#3b82f6', '#1d4ed8', '#1e3a8a'] },
+            medal: { emoji: '🥇', name: 'Medal', price: 470, unlocked: false, rarity: 'rare',
+                colors: ['#dbeafe', '#60a5fa', '#3b82f6', '#1d4ed8', '#1e3a8a'] },
+            gift: { emoji: '🎁', name: 'Gift', price: 480, unlocked: false, rarity: 'rare',
+                colors: ['#dbeafe', '#60a5fa', '#3b82f6', '#1d4ed8', '#1e3a8a'] },
+            balloon: { emoji: '🎈', name: 'Balloon', price: 490, unlocked: false, rarity: 'rare',
+                colors: ['#dbeafe', '#60a5fa', '#3b82f6', '#1d4ed8', '#1e3a8a'] },
+            confetti: { emoji: '🎊', name: 'Confetti', price: 500, unlocked: false, rarity: 'rare',
+                colors: ['#dbeafe', '#60a5fa', '#3b82f6', '#1d4ed8', '#1e3a8a'] },
+            party: { emoji: '🎉', name: 'Party', price: 510, unlocked: false, rarity: 'rare',
+                colors: ['#dbeafe', '#60a5fa', '#3b82f6', '#1d4ed8', '#1e3a8a'] },
+            rocket: { emoji: '🚀', name: 'Rocket', price: 520, unlocked: false, rarity: 'rare',
+                colors: ['#dbeafe', '#60a5fa', '#3b82f6', '#1d4ed8', '#1e3a8a'] },
+            ufo: { emoji: '🛸', name: 'UFO', price: 530, unlocked: false, rarity: 'rare',
+                colors: ['#dbeafe', '#60a5fa', '#3b82f6', '#1d4ed8', '#1e3a8a'] },
+            satellite: { emoji: '🛰️', name: 'Satellite', price: 540, unlocked: false, rarity: 'rare',
+                colors: ['#dbeafe', '#60a5fa', '#3b82f6', '#1d4ed8', '#1e3a8a'] },
+            alien: { emoji: '👽', name: 'Alien', price: 550, unlocked: false, rarity: 'rare',
+                colors: ['#dbeafe', '#60a5fa', '#3b82f6', '#1d4ed8', '#1e3a8a'] },
+            robot: { emoji: '🤖', name: 'Robot', price: 560, unlocked: false, rarity: 'rare',
+                colors: ['#dbeafe', '#60a5fa', '#3b82f6', '#1d4ed8', '#1e3a8a'] },
+            ghost: { emoji: '👻', name: 'Ghost', price: 570, unlocked: false, rarity: 'rare',
+                colors: ['#dbeafe', '#60a5fa', '#3b82f6', '#1d4ed8', '#1e3a8a'] },
+            skull: { emoji: '💀', name: 'Skull', price: 580, unlocked: false, rarity: 'rare',
+                colors: ['#dbeafe', '#60a5fa', '#3b82f6', '#1d4ed8', '#1e3a8a'] },
+            pumpkin: { emoji: '🎃', name: 'Pumpkin', price: 590, unlocked: false, rarity: 'rare',
+                colors: ['#dbeafe', '#60a5fa', '#3b82f6', '#1d4ed8', '#1e3a8a'] },
+            sunset: { emoji: '🌅', name: 'Sunset', price: 600, unlocked: false, rarity: 'epic',
+                colors: ['#e9d5ff', '#c084fc', '#9333ea', '#6b21a8', '#4c1d95'] },
+            dark: { emoji: '🖤', name: 'Shadow', price: 610, unlocked: false, rarity: 'epic',
+                colors: ['#e9d5ff', '#c084fc', '#9333ea', '#6b21a8', '#4c1d95'] },
+            gold: { emoji: '💛', name: 'Gold', price: 620, unlocked: false, rarity: 'epic',
+                colors: ['#e9d5ff', '#c084fc', '#9333ea', '#6b21a8', '#4c1d95'] },
+            silver: { emoji: '🩶', name: 'Silver', price: 630, unlocked: false, rarity: 'epic',
+                colors: ['#e9d5ff', '#c084fc', '#9333ea', '#6b21a8', '#4c1d95'] },
+            bronze: { emoji: '🤎', name: 'Bronze', price: 640, unlocked: false, rarity: 'epic',
+                colors: ['#e9d5ff', '#c084fc', '#9333ea', '#6b21a8', '#4c1d95'] },
+            neon: { emoji: '💚', name: 'Neon', price: 650, unlocked: false, rarity: 'epic',
+                colors: ['#e9d5ff', '#c084fc', '#9333ea', '#6b21a8', '#4c1d95'] },
+            cyber: { emoji: '💙', name: 'Cyber', price: 660, unlocked: false, rarity: 'epic',
+                colors: ['#e9d5ff', '#c084fc', '#9333ea', '#6b21a8', '#4c1d95'] },
+            plasma: { emoji: '💜', name: 'Plasma', price: 670, unlocked: false, rarity: 'epic',
+                colors: ['#e9d5ff', '#c084fc', '#9333ea', '#6b21a8', '#4c1d95'] },
+            void: { emoji: '🖤', name: 'Void', price: 680, unlocked: false, rarity: 'epic',
+                colors: ['#e9d5ff', '#c084fc', '#9333ea', '#6b21a8', '#4c1d95'] },
+            celestial: { emoji: '🌟', name: 'Celestial', price: 690, unlocked: false, rarity: 'epic',
+                colors: ['#e9d5ff', '#c084fc', '#9333ea', '#6b21a8', '#4c1d95'] },
+            cosmic: { emoji: '🌠', name: 'Cosmic', price: 700, unlocked: false, rarity: 'epic',
+                colors: ['#e9d5ff', '#c084fc', '#9333ea', '#6b21a8', '#4c1d95'] },
+            nebula: { emoji: '🌫️', name: 'Nebula', price: 710, unlocked: false, rarity: 'epic',
+                colors: ['#e9d5ff', '#c084fc', '#9333ea', '#6b21a8', '#4c1d95'] },
+            aurora: { emoji: '🌌', name: 'Aurora', price: 720, unlocked: false, rarity: 'epic',
+                colors: ['#e9d5ff', '#c084fc', '#9333ea', '#6b21a8', '#4c1d95'] },
+            phoenix: { emoji: '🔥', name: 'Phoenix', price: 730, unlocked: false, rarity: 'epic',
+                colors: ['#e9d5ff', '#c084fc', '#9333ea', '#6b21a8', '#4c1d95'] },
+            dragon: { emoji: '🐉', name: 'Dragon', price: 740, unlocked: false, rarity: 'epic',
+                colors: ['#e9d5ff', '#c084fc', '#9333ea', '#6b21a8', '#4c1d95'] },
+            unicorn: { emoji: '🦄', name: 'Unicorn', price: 750, unlocked: false, rarity: 'epic',
+                colors: ['#e9d5ff', '#c084fc', '#9333ea', '#6b21a8', '#4c1d95'] },
+            pegasus: { emoji: '🦄', name: 'Pegasus', price: 760, unlocked: false, rarity: 'epic',
+                colors: ['#e9d5ff', '#c084fc', '#9333ea', '#6b21a8', '#4c1d95'] },
+            mermaid: { emoji: '🧜', name: 'Mermaid', price: 770, unlocked: false, rarity: 'epic',
+                colors: ['#e9d5ff', '#c084fc', '#9333ea', '#6b21a8', '#4c1d95'] },
+            wizard: { emoji: '🧙', name: 'Wizard', price: 780, unlocked: false, rarity: 'epic',
+                colors: ['#e9d5ff', '#c084fc', '#9333ea', '#6b21a8', '#4c1d95'] },
+            ninja: { emoji: '🥷', name: 'Ninja', price: 790, unlocked: false, rarity: 'epic',
+                colors: ['#e9d5ff', '#c084fc', '#9333ea', '#6b21a8', '#4c1d95'] },
+            samurai: { emoji: '⚔️', name: 'Samurai', price: 800, unlocked: false, rarity: 'epic',
+                colors: ['#e9d5ff', '#c084fc', '#9333ea', '#6b21a8', '#4c1d95'] },
+            knight: { emoji: '🛡️', name: 'Knight', price: 810, unlocked: false, rarity: 'epic',
+                colors: ['#e9d5ff', '#c084fc', '#9333ea', '#6b21a8', '#4c1d95'] },
+            pirate: { emoji: '🏴‍☠️', name: 'Pirate', price: 820, unlocked: false, rarity: 'epic',
+                colors: ['#e9d5ff', '#c084fc', '#9333ea', '#6b21a8', '#4c1d95'] },
+            king: { emoji: '🤴', name: 'King', price: 830, unlocked: false, rarity: 'epic',
+                colors: ['#e9d5ff', '#c084fc', '#9333ea', '#6b21a8', '#4c1d95'] },
+            queen: { emoji: '👸', name: 'Queen', price: 840, unlocked: false, rarity: 'epic',
+                colors: ['#e9d5ff', '#c084fc', '#9333ea', '#6b21a8', '#4c1d95'] },
+            mystic: { emoji: '🔮', name: 'Mystic', price: 850, unlocked: false, rarity: 'legendary',
+                colors: ['#fef9c3', '#fde047', '#facc15', '#eab308', '#ca8a04'] },
+            divine: { emoji: '✝️', name: 'Divine', price: 900, unlocked: false, rarity: 'legendary',
+                colors: ['#fef9c3', '#fde047', '#facc15', '#eab308', '#ca8a04'] },
+            ancient: { emoji: '🗿', name: 'Ancient', price: 950, unlocked: false, rarity: 'legendary',
+                colors: ['#fef9c3', '#fde047', '#facc15', '#eab308', '#ca8a04'] },
+            eternal: { emoji: '♾️', name: 'Eternal', price: 1000, unlocked: false, rarity: 'legendary',
+                colors: ['#fef9c3', '#fde047', '#facc15', '#eab308', '#ca8a04'] },
+            supreme: { emoji: '👁️', name: 'Supreme', price: 1100, unlocked: false, rarity: 'legendary',
+                colors: ['#fef9c3', '#fde047', '#facc15', '#eab308', '#ca8a04'] },
+            omega: { emoji: '🔱', name: 'Omega', price: 1200, unlocked: false, rarity: 'legendary',
+                colors: ['#fef9c3', '#fde047', '#facc15', '#eab308', '#ca8a04'] },
+            infinity: { emoji: '∞', name: 'Infinity', price: 1300, unlocked: false, rarity: 'legendary',
+                colors: ['#fef9c3', '#fde047', '#facc15', '#eab308', '#ca8a04'] },
+            ultimate: { emoji: '🌟', name: 'Ultimate', price: 1500, unlocked: false, rarity: 'legendary',
+                colors: ['#fef9c3', '#fde047', '#facc15', '#eab308', '#ca8a04'] },
+            godly: { emoji: '⚡', name: 'Godly', price: 2000, unlocked: false, rarity: 'legendary',
+                colors: ['#fef9c3', '#fde047', '#facc15', '#eab308', '#ca8a04'] },
+            admin: { emoji: '👑', name: 'ADMIN', price: 0, unlocked: false, rarity: 'legendary', secret: true,
+                colors: ['#fef9c3', '#fde047', '#facc15', '#eab308', '#ca8a04'] },
+            mega: { emoji: '🚀', name: 'MEGA', price: 0, unlocked: false, rarity: 'legendary', secret: true,
+                colors: ['#fef9c3', '#fde047', '#facc15', '#eab308', '#ca8a04'] },
             epic: { emoji: '⭐', name: 'EPIC', price: 0, unlocked: false, rarity: 'legendary', secret: true,
-                colors: ['#fff7ed', '#fed7aa', '#fdba74', '#fb923c', '#ea580c'] }
+                colors: ['#fef9c3', '#fde047', '#facc15', '#eab308', '#ca8a04'] },
         };
 
         const milestones = [
@@ -1979,6 +2234,116 @@
 
         checkMilestones();
         draw();
+
+
+        // Box opening functions
+        function openBoxes() {
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('boxesScreen').style.display = 'flex';
+            document.getElementById('boxesCoins').textContent = coins;
+        }
+
+        function closeBoxes() {
+            document.getElementById('boxesScreen').style.display = 'none';
+            document.getElementById('startScreen').style.display = 'flex';
+        }
+
+        function openBox(type) {
+            let cost, minCoins, maxCoins, ballChance, rarityPool, boxEmoji;
+
+            if (type === 'common') {
+                cost = 100;
+                minCoins = 50;
+                maxCoins = 150;
+                ballChance = 0.15;
+                rarityPool = ['common'];
+                boxEmoji = '📦';
+            } else if (type === 'rare') {
+                cost = 300;
+                minCoins = 100;
+                maxCoins = 300;
+                ballChance = 0.25;
+                rarityPool = ['uncommon', 'rare', 'epic'];
+                boxEmoji = '🎁';
+            } else if (type === 'legendary') {
+                cost = 600;
+                minCoins = 200;
+                maxCoins = 600;
+                ballChance = 0.35;
+                rarityPool = ['rare', 'epic', 'legendary'];
+                boxEmoji = '🎉';
+            } else if (type === 'admin') {
+                cost = 1000;
+                minCoins = 500;
+                maxCoins = 1500;
+                ballChance = 0.60; // 60% chance for legendary!
+                rarityPool = ['epic', 'legendary'];
+                boxEmoji = '👑';
+            }
+
+            if (coins < cost) {
+                showNotification('Not enough coins!');
+                return;
+            }
+
+            coins -= cost;
+            localStorage.setItem('gravityFlipCoins', coins);
+            document.getElementById('boxesCoins').textContent = coins;
+
+            const isBall = Math.random() < ballChance;
+            let rewardEmoji, rewardText;
+
+            if (isBall) {
+                const availableBalls = Object.entries(ballSkins)
+                    .filter(([id, skin]) => !skin.unlocked && !skin.secret && rarityPool.includes(skin.rarity));
+
+                if (availableBalls.length > 0) {
+                    const [ballId, ballSkin] = availableBalls[Math.floor(Math.random() * availableBalls.length)];
+                    ballSkin.unlocked = true;
+
+                    const unlockedBalls = Object.entries(ballSkins)
+                        .filter(([id, skin]) => skin.unlocked)
+                        .map(([id]) => id);
+                    localStorage.setItem('gravityFlipSkins', JSON.stringify(unlockedBalls));
+
+                    rewardEmoji = ballSkin.emoji;
+                    rewardText = ballSkin.name + ' Ball!\n' + ballSkin.rarity.toUpperCase();
+
+                    checkMilestones();
+                } else {
+                    const rewardAmount = Math.floor(Math.random() * (maxCoins - minCoins + 1)) + minCoins;
+                    coins += rewardAmount;
+                    localStorage.setItem('gravityFlipCoins', coins);
+                    rewardEmoji = '💰';
+                    rewardText = rewardAmount + ' Coins!';
+                }
+            } else {
+                const rewardAmount = Math.floor(Math.random() * (maxCoins - minCoins + 1)) + minCoins;
+                coins += rewardAmount;
+                localStorage.setItem('gravityFlipCoins', coins);
+                rewardEmoji = '💰';
+                rewardText = rewardAmount + ' Coins!';
+            }
+
+            showBoxOpening(boxEmoji, rewardEmoji, rewardText);
+        }
+
+        function showBoxOpening(boxEmoji, rewardEmoji, rewardText) {
+            const overlay = document.createElement('div');
+            overlay.className = 'opening-animation';
+            overlay.innerHTML = '<div class="opening-box">' + boxEmoji + '</div>';
+            document.body.appendChild(overlay);
+
+            setTimeout(function() {
+                overlay.innerHTML = '<div class="reveal-reward">' + rewardEmoji + '</div><div class="reveal-text">' + rewardText + '</div>';
+
+                setTimeout(function() {
+                    document.body.removeChild(overlay);
+                    document.getElementById('boxesCoins').textContent = coins;
+                    document.getElementById('shopCoins').textContent = coins;
+                }, 3000);
+            }, 2000);
+        }
     </script>
 </body>
 </html>
