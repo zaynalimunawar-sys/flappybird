@@ -945,6 +945,7 @@
                 <button class="btn btn-secondary" onclick="openBoxes()">📦 Boxes</button>
                 <button class="btn btn-secondary" onclick="openMilestones()">🏆 Milestones</button>
                 <button class="btn btn-secondary" onclick="openCodes()">🎁 Codes</button>
+                <button class="btn btn-secondary" onclick="openDevPrompt()" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; border: 2px solid #dc2626;">🔐 DEV</button>
             </div>
             <div class="version">v6.0 Mega Edition</div>
         </div>
@@ -1076,6 +1077,28 @@
             </div>
             <button class="btn" onclick="closeBoxes()">Back to Menu</button>
         </div>
+        <!-- 🔐 DEV PANEL -->
+        <div id="devPanel" style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,42,0.95); z-index: 10000; justify-content: center; align-items: center;">
+            <div style="background: white; padding: 30px; border-radius: 25px; max-width: 450px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.7);">
+                <div style="font-size: 24px; font-weight: 900; color: #ef4444; margin-bottom: 6px; text-align: center;">🔐 DEV PANEL</div>
+                <div style="font-size: 12px; color: #6b7280; margin-bottom: 20px; text-align: center;">ZAYN2015 ACCESS GRANTED</div>
+                <div style="margin-bottom: 16px;">
+                    <div style="font-size: 13px; font-weight: 700; color: #1a1a2e; margin-bottom: 6px;">💰 Coins</div>
+                    <input id="devCoinsInput" type="number" placeholder="Enter amount" style="width: 100%; padding: 10px; border-radius: 10px; border: 2px solid #e5e7eb; font-size: 14px; margin-bottom: 8px;">
+                    <button style="width: 100%; font-size: 13px; padding: 12px; background: #667eea; color: white; border: none; border-radius: 12px; font-weight: 800; cursor: pointer;" onclick="devSetCoins()">Set Coins</button>
+                </div>
+                <div style="margin-bottom: 16px;">
+                    <div style="font-size: 13px; font-weight: 700; color: #1a1a2e; margin-bottom: 6px;">⚽ Balls</div>
+                    <button style="width: 100%; font-size: 13px; padding: 12px; background: #10b981; color: white; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; margin-bottom: 8px;" onclick="devUnlockAllBalls()">Unlock ALL Balls</button>
+                    <button style="width: 100%; font-size: 13px; padding: 12px; background: #f59e0b; color: white; border: none; border-radius: 12px; font-weight: 800; cursor: pointer;" onclick="devResetBalls()">Reset Balls</button>
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <button style="width: 100%; font-size: 13px; padding: 12px; background: #ef4444; color: white; border: none; border-radius: 12px; font-weight: 800; cursor: pointer;" onclick="devResetProgress()">🗑️ Reset ALL Progress</button>
+                </div>
+                <button style="width: 100%; font-size: 14px; padding: 14px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 15px; font-weight: 900; cursor: pointer;" onclick="closeDevPanel()">Close Panel</button>
+            </div>
+        </div>
+
         <div id="gameOverScreen" class="screen" style="display: none;">
             <div class="emoji">💥</div>
             <div class="title" style="font-size: 60px; margin-bottom: 15px;">Game Over!</div>
@@ -2584,6 +2607,63 @@
                     document.getElementById('shopCoins').textContent = coins;
                 }, 3000);
             }, 2000);
+        }
+
+
+        // 🔐 DEV PANEL
+        function openDevPrompt() {
+            const pw = prompt('🔐 Enter Dev Password:');
+            if (pw === 'ZAYN2015') {
+                document.getElementById('devPanel').style.display = 'flex';
+                document.getElementById('devCoinsInput').value = coins;
+            } else if (pw !== null) {
+                alert('❌ Wrong password!');
+            }
+        }
+
+        function closeDevPanel() {
+            document.getElementById('devPanel').style.display = 'none';
+        }
+
+        function devSetCoins() {
+            const v = parseInt(document.getElementById('devCoinsInput').value || '0', 10);
+            if (isNaN(v) || v < 0) { alert('Enter valid amount'); return; }
+            coins = v;
+            localStorage.setItem('gravityFlipCoins', coins);
+            ['coinsEarned', 'shopCoins', 'boxesCoins', 'coins', 'totalCoins'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = coins;
+            });
+            alert('✅ Coins set to ' + coins + '!');
+        }
+
+        function devUnlockAllBalls() {
+            Object.entries(ballSkins).forEach(([id, s]) => {
+                if (!s.secret) s.unlocked = true;
+            });
+            localStorage.setItem('gravityFlipUnlocked', JSON.stringify(Object.entries(ballSkins).filter(([i, s]) => s.unlocked).map(([i]) => i)));
+            alert('✅ All balls unlocked!');
+            if (typeof renderShop === 'function') renderShop();
+        }
+
+        function devResetBalls() {
+            if (!confirm('Reset all balls?')) return;
+            Object.entries(ballSkins).forEach(([id, s]) => { s.unlocked = (id === 'classic'); });
+            localStorage.setItem('gravityFlipUnlocked', JSON.stringify(['classic']));
+            alert('✅ Balls reset!');
+            if (typeof renderShop === 'function') renderShop();
+        }
+
+        function devResetProgress() {
+            if (!confirm('Reset ALL progress?')) return;
+            coins = 0;
+            localStorage.setItem('gravityFlipCoins', 0);
+            ['gravityFlipMilestones', 'gravityFlipBest', 'gravityFlipTotalCoins', 'gravityFlipRuns', 'gravityFlipBoxesOpened'].forEach(k => localStorage.removeItem(k));
+            ['coinsEarned', 'shopCoins', 'boxesCoins', 'coins', 'totalCoins'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = 0;
+            });
+            alert('✅ Progress reset!');
         }
 
     </script>
