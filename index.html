@@ -480,6 +480,8 @@
     <div id="coins">🪙 0</div>
     <div id="streak"></div>
     <div id="notification"></div>
+    <div id="devIndicator" style="position: absolute; top: 120px; left: 20px; background: linear-gradient(135deg, #ff0000 0%, #ff6b6b 100%); padding: 8px 15px; border-radius: 15px; font-size: 14px; font-weight: bold; color: white; z-index: 5; pointer-events: none; box-shadow: 0 0 20px rgba(255,0,0,0.6); display: none;">🔧 DEV MODE</div>
+    <button id="devHomeBtn" style="position: absolute; top: 160px; left: 20px; background: linear-gradient(135deg, #6c757d 0%, #495057 100%); border: none; padding: 8px 15px; font-size: 12px; font-weight: bold; color: white; cursor: pointer; border-radius: 15px; z-index: 5; box-shadow: 0 5px 15px rgba(0,0,0,0.4); display: none; transition: all 0.3s;" onclick="backToHomeFromDev()" onmouseover="this.style.transform='translateY(-3px) scale(1.05)'" onmouseout="this.style.transform='translateY(0) scale(1)'">🏠 BACK TO HOME</button>
 
     <div id="startScreen">
       <div class="title">🐦 Flappy Bird 🐦</div>
@@ -491,8 +493,8 @@
       </div>
       <button class="btn" onclick="startGame()">START GAME</button>
       <button class="btn" onclick="openShop()">🏪 SHOP</button>
-      <button class="btn" onclick="openCodes()">🔑 CODES</button>
       <button class="btn" onclick="openBadges()">🏆 BADGES</button>
+      <button class="btn" onclick="openSettings()">⚙️ SETTINGS</button>
     </div>
 
     <div id="gameOverScreen">
@@ -531,6 +533,82 @@
     </div>
   </div>
 
+
+    <div id="settingsScreen" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; flex-direction: column; justify-content: center; align-items: center; background: linear-gradient(135deg, rgba(102, 126, 234, 0.95) 0%, rgba(118, 75, 162, 0.95) 100%); backdrop-filter: blur(10px); z-index: 10;">
+      <div class="title">⚙️ Settings</div>
+      <button class="btn" onclick="openCodesFromSettings()">🔑 CODES</button>
+      <button class="btn" onclick="wipeData()">🗑️ WIPE ALL DATA</button>
+      <button class="btn" onclick="openDevOptions()">👨‍💻 DEVELOPER OPTIONS</button>
+      <button class="btn btn-secondary" onclick="closeSettings()" style="margin-top: 20px">BACK</button>
+    </div>
+
+    <div id="devOptionsScreen" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; flex-direction: column; justify-content: center; align-items: center; background: linear-gradient(135deg, rgba(102, 126, 234, 0.95) 0%, rgba(118, 75, 162, 0.95) 100%); backdrop-filter: blur(10px); z-index: 10;">
+      <div class="title">👨‍💻 Dev Options</div>
+      <div class="code-input-container">
+        <input type="password" id="devPasscode" class="code-input" placeholder="Enter Passcode" maxlength="20">
+      </div>
+      <button class="btn" onclick="unlockDevMode()">UNLOCK</button>
+      <div class="code-message" id="devMessage"></div>
+      <button class="btn btn-secondary" onclick="closeDevOptions()" style="margin-top: 20px">BACK</button>
+    </div>
+
+    <div id="devPanelScreen" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; flex-direction: column; justify-content: center; align-items: center; background: linear-gradient(135deg, rgba(102, 126, 234, 0.95) 0%, rgba(118, 75, 162, 0.95) 100%); backdrop-filter: blur(10px); z-index: 10;">
+      <div class="title">👨‍💻 Developer Panel</div>
+      <div class="shop-content" style="max-height: 400px;">
+        <div class="shop-item" style="margin: 15px auto;">
+          <div class="shop-item-info">
+            <div class="shop-item-icon">🚫</div>
+            <div class="shop-item-details">
+              <div class="shop-item-name">No Clip</div>
+              <div style="font-size: 14px; color: rgba(255,255,255,0.8);">Pass through pipes</div>
+            </div>
+          </div>
+          <button class="shop-btn" id="noClipBtn" onclick="toggleDevFeature('noClip')">OFF</button>
+        </div>
+        <div class="shop-item" style="margin: 15px auto;">
+          <div class="shop-item-info">
+            <div class="shop-item-icon">💀</div>
+            <div class="shop-item-details">
+              <div class="shop-item-name">Never Die</div>
+              <div style="font-size: 14px; color: rgba(255,255,255,0.8);">Invincibility mode</div>
+            </div>
+          </div>
+          <button class="shop-btn" id="neverDieBtn" onclick="toggleDevFeature('neverDie')">OFF</button>
+        </div>
+        <div class="shop-item" style="margin: 15px auto;">
+          <div class="shop-item-info">
+            <div class="shop-item-icon">⚡</div>
+            <div class="shop-item-details">
+              <div class="shop-item-name">Super Speed</div>
+              <div style="font-size: 14px; color: rgba(255,255,255,0.8);">3x game speed</div>
+            </div>
+          </div>
+          <button class="shop-btn" id="superSpeedBtn" onclick="toggleDevFeature('superSpeed')">OFF</button>
+        </div>
+        <div class="shop-item" style="margin: 15px auto;">
+          <div class="shop-item-info">
+            <div class="shop-item-icon">🪙</div>
+            <div class="shop-item-details">
+              <div class="shop-item-name">Coin Magnet</div>
+              <div style="font-size: 14px; color: rgba(255,255,255,0.8);">Auto collect all coins</div>
+            </div>
+          </div>
+          <button class="shop-btn" id="coinMagnetBtn" onclick="toggleDevFeature('coinMagnet')">OFF</button>
+        </div>
+        <div class="shop-item" style="margin: 15px auto;">
+          <div class="shop-item-info">
+            <div class="shop-item-icon">🎯</div>
+            <div class="shop-item-details">
+              <div class="shop-item-name">Auto Score</div>
+              <div style="font-size: 14px; color: rgba(255,255,255,0.8);">+10 score per second</div>
+            </div>
+          </div>
+          <button class="shop-btn" id="autoScoreBtn" onclick="toggleDevFeature('autoScore')">OFF</button>
+        </div>
+      </div>
+      <button class="btn btn-secondary" onclick="closeDevPanel()" style="margin-top: 20px">BACK</button>
+    </div>
+
   <script>
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
@@ -539,6 +617,10 @@
     let gameOver = false;
     let score = 0;
     let sessionCoins = 0;
+
+    let devModeUnlocked = localStorage.getItem('devModeUnlocked') === 'true';
+    let devFeatures = JSON.parse(localStorage.getItem('devFeatures') || '{"noClip":false,"neverDie":false,"superSpeed":false,"coinMagnet":false,"autoScore":false}');
+    let autoScoreInterval = null;
     let totalCoins = parseInt(localStorage.getItem('totalCoins')) || 0;
     let bestScore = parseInt(localStorage.getItem('flappyBestScore')) || 0;
     let streak = 0;
@@ -800,7 +882,7 @@
 
     function closeCodes() {
       document.getElementById('codesScreen').style.display = 'none';
-      document.getElementById('startScreen').style.display = 'flex';
+      document.getElementById('settingsScreen').style.display = 'flex';
     }
 
     function redeemCode() {
@@ -854,9 +936,9 @@
         localStorage.setItem('flappyBestScore', bestScore);
         redeemedCodes.push(code.toLowerCase());
         localStorage.setItem('redeemedCodes', JSON.stringify(redeemedCodes));
-        messageEl.textContent = '🔥 GOD MODE ACTIVATED! ALL UNLOCKED + 99999 COINS + 99999 SCORE! 🔥';
+        messageEl.textContent = '🔥 GOD MODE ACTIVATED!';
         messageEl.className = 'code-message code-success';
-        showNotification('⚡ ADMIN ONLY! ⚡');
+        showNotification('ADMIN ONLY!');
         checkBadges();
         input.value = '';
       } else {
@@ -962,6 +1044,15 @@
 
     function startGame() {
       document.getElementById('startScreen').style.display = 'none';
+
+      const anyActive = Object.values(devFeatures).some(v => v);
+      document.getElementById('devIndicator').style.display = anyActive ? 'block' : 'none';
+      document.getElementById('devHomeBtn').style.display = anyActive ? 'block' : 'none';
+
+      if (devFeatures.autoScore) {
+        startAutoScore();
+      }
+
       gameStarted = true;
       gameOver = false;
       score = 0;
@@ -1090,6 +1181,10 @@
     function update() {
       if (gameOver) return;
 
+      const loops = devFeatures.superSpeed ? 3 : 1;
+      for (let loop = 0; loop < loops; loop++) {
+        if (gameOver) break;
+
       frameCount++;
 
       if (frameCount % 120 === 0) {
@@ -1144,7 +1239,8 @@
       coins.forEach((coin, index) => {
         coin.update();
 
-        if (!coin.collected && coin.checkCollision(bird)) {
+        const hit = devFeatures.coinMagnet || coin.checkCollision(bird);
+        if (!coin.collected && hit) {
           coin.collected = true;
           sessionCoins++;
           totalCoins++;
@@ -1180,12 +1276,19 @@
       if (groundX <= -30) groundX = 0;
 
       checkCollisions();
+      }
     }
 
     function checkCollisions() {
-      if (bird.y + bird.height >= canvas.height - groundHeight || bird.y <= 0) {
-        endGame();
+      if (devFeatures.neverDie) return;
+
+      if (!devFeatures.noClip) {
+        if (bird.y + bird.height >= canvas.height - groundHeight || bird.y <= 0) {
+          endGame();
+        }
       }
+
+      if (devFeatures.noClip) return;
 
       const hitboxReduction = 4;
       pipes.forEach(pipe => {
@@ -1202,6 +1305,9 @@
     function endGame() {
       if (gameOver) return;
       gameOver = true;
+      stopAutoScore();
+      document.getElementById('devIndicator').style.display = 'none';
+      document.getElementById('devHomeBtn').style.display = 'none';
       streak = 0;
       document.getElementById('streak').style.opacity = '0';
 
@@ -1238,6 +1344,154 @@
     function shouldFaceForward() {
       const skin = getCurrentSkin();
       return skin ? skin.faceForward : true;
+    }
+
+    function backToHomeFromDev() {
+      if (confirm('Exit to main menu?\nYour game progress will be lost.')) {
+        gameOver = true;
+        gameStarted = false;
+        stopAutoScore();
+        document.getElementById('devIndicator').style.display = 'none';
+        document.getElementById('devHomeBtn').style.display = 'none';
+        document.getElementById('startScreen').style.display = 'flex';
+
+        score = 0;
+        sessionCoins = 0;
+        streak = 0;
+        bird.y = 250;
+        bird.velocity = 0;
+        bird.rotation = 0;
+        pipes = [];
+        coins = [];
+        particles = [];
+        achievements = [];
+        frameCount = 0;
+        document.getElementById('score').textContent = 0;
+        document.getElementById('coins').textContent = 0;
+        document.getElementById('streak').style.opacity = 0;
+      }
+    }
+
+    function openSettings() {
+      document.getElementById('startScreen').style.display = 'none';
+      document.getElementById('settingsScreen').style.display = 'flex';
+    }
+
+    function closeSettings() {
+      document.getElementById('settingsScreen').style.display = 'none';
+      document.getElementById('startScreen').style.display = 'flex';
+    }
+
+    function openCodesFromSettings() {
+      document.getElementById('settingsScreen').style.display = 'none';
+      document.getElementById('codesScreen').style.display = 'flex';
+      document.getElementById('codeInput').value = '';
+      document.getElementById('codeMessage').textContent = '';
+      document.getElementById('codeMessage').className = 'code-message';
+    }
+
+    function wipeData() {
+      if (confirm('⚠️ WARNING: This will delete ALL your progress!\n\nAre you absolutely sure?')) {
+        if (confirm('🚨 FINAL WARNING: Your coins, skins, scores, and badges will be PERMANENTLY DELETED!\n\nContinue?')) {
+          localStorage.clear();
+          location.reload();
+        }
+      }
+    }
+
+    function openDevOptions() {
+      document.getElementById('settingsScreen').style.display = 'none';
+      if (devModeUnlocked) {
+        document.getElementById('devPanelScreen').style.display = 'flex';
+        updateDevButtons();
+      } else {
+        document.getElementById('devOptionsScreen').style.display = 'flex';
+        document.getElementById('devPasscode').value = '';
+        document.getElementById('devMessage').textContent = '';
+      }
+    }
+
+    function closeDevOptions() {
+      document.getElementById('devOptionsScreen').style.display = 'none';
+      document.getElementById('settingsScreen').style.display = 'flex';
+    }
+
+    function unlockDevMode() {
+      const input = document.getElementById('devPasscode');
+      const message = document.getElementById('devMessage');
+      const passcode = input.value.trim();
+
+      if (passcode === 'ZAYN123') {
+        devModeUnlocked = true;
+        localStorage.setItem('devModeUnlocked', 'true');
+        message.textContent = '✅ DEVELOPER MODE UNLOCKED!';
+        message.className = 'code-message code-success';
+        setTimeout(() => {
+          document.getElementById('devOptionsScreen').style.display = 'none';
+          document.getElementById('devPanelScreen').style.display = 'flex';
+          updateDevButtons();
+        }, 1000);
+      } else {
+        message.textContent = '❌ Invalid passcode!';
+        message.className = 'code-message code-error';
+      }
+    }
+
+    function closeDevPanel() {
+      document.getElementById('devPanelScreen').style.display = 'none';
+      document.getElementById('settingsScreen').style.display = 'flex';
+    }
+
+    function toggleDevFeature(feature) {
+      devFeatures[feature] = !devFeatures[feature];
+      localStorage.setItem('devFeatures', JSON.stringify(devFeatures));
+      updateDevButtons();
+
+      const anyActive = Object.values(devFeatures).some(v => v);
+      if (gameStarted) {
+        document.getElementById('devIndicator').style.display = anyActive ? 'block' : 'none';
+        document.getElementById('devHomeBtn').style.display = anyActive ? 'block' : 'none';
+      }
+
+      if (feature === 'autoScore') {
+        if (devFeatures.autoScore && gameStarted && !gameOver) {
+          startAutoScore();
+        } else {
+          stopAutoScore();
+        }
+      }
+    }
+
+    function updateDevButtons() {
+      Object.keys(devFeatures).forEach(feature => {
+        const btn = document.getElementById(feature + 'Btn');
+        if (btn) {
+          if (devFeatures[feature]) {
+            btn.textContent = 'ON';
+            btn.style.background = 'linear-gradient(135deg, #ff6b6b 0%, #ff0000 100%)';
+          } else {
+            btn.textContent = 'OFF';
+            btn.style.background = 'linear-gradient(135deg, #4ade80 0%, #22c55e 100%)';
+          }
+        }
+      });
+    }
+
+    function startAutoScore() {
+      stopAutoScore();
+      autoScoreInterval = setInterval(() => {
+        if (gameStarted && !gameOver && devFeatures.autoScore) {
+          score += 10;
+          document.getElementById('score').textContent = score;
+        }
+      }, 1000);
+    }
+
+    function stopAutoScore() {
+      if (autoScoreInterval) {
+        clearInterval(autoScoreInterval);
+        autoScoreInterval = null;
+      }
     }
 
     function draw() {
