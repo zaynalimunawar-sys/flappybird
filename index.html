@@ -53,12 +53,12 @@
             height: 100%;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: flex-start;
             align-items: center;
             background: linear-gradient(135deg, rgba(102, 126, 234, 0.98) 0%, rgba(118, 75, 162, 0.98) 50%, rgba(240, 147, 251, 0.98) 100%);
             z-index: 10;
             backdrop-filter: blur(20px);
-            padding: 40px;
+            padding: 60px 20px 40px 20px;
             overflow-y: auto;
         }
 
@@ -829,6 +829,70 @@
             .reveal-reward { font-size: 80px !important; }
             .reveal-text { font-size: 22px !important; }
         }
+    
+        .box-uncommon {
+            border: 3px solid #10b981;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.4), 0 15px 40px rgba(0,0,0,0.2);
+        }
+
+        .box-mythic {
+            border: 3px solid #8b5cf6;
+            background: linear-gradient(135deg, rgba(139,92,246,0.15) 0%, rgba(255,255,255,0.95) 100%);
+            box-shadow: 0 0 40px rgba(139, 92, 246, 0.7), 0 15px 40px rgba(0,0,0,0.2);
+            animation: box-mythic-glow 2s ease-in-out infinite;
+        }
+
+        .box-cosmic {
+            border: 3px solid #06b6d4;
+            background: linear-gradient(135deg, rgba(6,182,212,0.2) 0%, rgba(255,255,255,0.95) 100%);
+            box-shadow: 0 0 45px rgba(6, 182, 212, 0.8), 0 15px 40px rgba(0,0,0,0.2);
+            animation: box-cosmic-glow 2s ease-in-out infinite;
+        }
+
+        .box-ultimate {
+            border: 3px solid #f97316;
+            background: linear-gradient(135deg, rgba(249,115,22,0.2) 0%, rgba(255,255,255,0.95) 100%);
+            box-shadow: 0 0 50px rgba(249, 115, 22, 0.9), 0 15px 40px rgba(0,0,0,0.2);
+            animation: box-ultimate-glow 1.5s ease-in-out infinite;
+        }
+
+        .box-god {
+            border: 3px solid #fbbf24;
+            background: linear-gradient(135deg, rgba(251,191,36,0.3) 0%, rgba(255,255,255,0.95) 100%);
+            box-shadow: 0 0 60px rgba(251, 191, 36, 1), 0 15px 40px rgba(0,0,0,0.2);
+            animation: box-god-glow 1s ease-in-out infinite;
+        }
+
+        @keyframes box-mythic-glow {
+            0%, 100% { box-shadow: 0 0 40px rgba(139, 92, 246, 0.7), 0 15px 40px rgba(0,0,0,0.2); }
+            50% { box-shadow: 0 0 60px rgba(139, 92, 246, 1), 0 15px 40px rgba(0,0,0,0.2); }
+        }
+
+        @keyframes box-cosmic-glow {
+            0%, 100% { box-shadow: 0 0 45px rgba(6, 182, 212, 0.8), 0 15px 40px rgba(0,0,0,0.2); }
+            50% { box-shadow: 0 0 65px rgba(6, 182, 212, 1.2), 0 15px 40px rgba(0,0,0,0.2); }
+        }
+
+        @keyframes box-ultimate-glow {
+            0%, 100% { box-shadow: 0 0 50px rgba(249, 115, 22, 0.9), 0 15px 40px rgba(0,0,0,0.2); }
+            50% { box-shadow: 0 0 70px rgba(249, 115, 22, 1.3), 0 15px 40px rgba(0,0,0,0.2); }
+        }
+
+        @keyframes box-god-glow {
+            0%, 100% { box-shadow: 0 0 60px rgba(251, 191, 36, 1), 0 15px 40px rgba(0,0,0,0.2); transform: scale(1); }
+            50% { box-shadow: 0 0 80px rgba(251, 191, 36, 1.5), 0 15px 40px rgba(0,0,0,0.2); transform: scale(1.03); }
+        }
+
+        @media only screen and (max-width: 850px) {
+            .screen {
+                padding: 70px 15px 30px 15px !important;
+            }
+            .title { font-size: 28px !important; margin-bottom: 8px !important; }
+            .coins-display { padding: 6px 16px !important; font-size: 16px !important; }
+            .box-container { margin: 10px 0 !important; gap: 10px !important; max-height: 55vh !important; }
+            .box-item { min-width: 110px !important; padding: 16px 20px !important; }
+        }
+
     </style>
 </head>
 <body>
@@ -839,6 +903,10 @@
             <div class="hud-box">
                 <div class="hud-label">Distance</div>
                 <div class="hud-value" id="distance">0m</div>
+            </div>
+            <div class="controls-hint">
+                <div class="hint-item">⬆️ Ceiling</div>
+                <div class="hint-item">⬇️ Floor</div>
             </div>
             <div class="hud-box">
                 <div class="hud-label">Coins</div>
@@ -861,13 +929,13 @@
         <div class="milestone-notification" id="milestoneNotification"></div>
 
         <div class="music-toggle" id="musicToggle" onclick="toggleMusic()">🔇</div>
-
+        <div class="d3-badge">3D MODE</div>
 
         <div id="startScreen" class="screen">
             <div class="ultra-badge">MEGA EDITION</div>
             <div class="emoji">🟢</div>
             <div class="title">Gravity Flip 3D</div>
-            <div class="tagline">Mega Edition - 15 Balls + 20 Milestones!</div>
+            <div class="tagline">ULTIMATE EDITION - 103 Balls + 14 Boxes + 110 Milestones!</div>
             <div class="subtitle">
                 The ultimate collection with tons of content!
             </div>
@@ -914,9 +982,11 @@
 
 
         <div id="boxesScreen" class="screen" style="display: none;">
-            <div class="title" style="font-size: 45px; margin-bottom: 15px;">📦 Mystery Boxes</div>
-            <div class="coins-display">💰 <span id="boxesCoins">0</span> Coins</div>
-            <div class="box-container">
+            <div class="title" style="font-size: 32px; margin-bottom: 10px;">📦 Mystery Boxes</div>
+            <div class="coins-display" style="padding: 8px 20px; font-size: 18px; margin-bottom: 10px;">💰 <span id="boxesCoins">0</span> Coins</div>
+            <div class="tagline" style="font-size: 11px; margin-bottom: 12px; color: rgba(255,255,255,0.85);">14 BOXES AVAILABLE!</div>
+            <div class="box-container" style="max-height: 58vh; overflow-y: auto;">
+                <!-- ORIGINAL 4 -->
                 <div class="box-item box-common" onclick="openBox('common')">
                     <div class="box-icon">📦</div>
                     <div class="box-name">Common Box</div>
@@ -939,58 +1009,73 @@
                     <div class="box-icon">👑</div>
                     <div class="box-name">ADMIN BOX</div>
                     <div class="box-price">💰 1000</div>
-                    <div class="box-desc">500-1500 coins<br>or GUARANTEED LEGENDARY!</div>
+                    <div class="box-desc">500-1500 coins<br>GUARANTEED LEGENDARY!</div>
+                </div>
+
+                <!-- NEW 10 BOXES -->
+                <div class="box-item box-common" onclick="openBox('mini')">
+                    <div class="box-icon">📁</div>
+                    <div class="box-name">Mini Box</div>
+                    <div class="box-price">💰 50</div>
+                    <div class="box-desc">25-75 coins<br>or Common ball!</div>
+                </div>
+                <div class="box-item box-uncommon" onclick="openBox('bronze')">
+                    <div class="box-icon">🥉</div>
+                    <div class="box-name">Bronze Box</div>
+                    <div class="box-price">💰 200</div>
+                    <div class="box-desc">100-250 coins<br>or Uncommon ball!</div>
+                </div>
+                <div class="box-item box-uncommon" onclick="openBox('silver')">
+                    <div class="box-icon">🥈</div>
+                    <div class="box-name">Silver Box</div>
+                    <div class="box-price">💰 350</div>
+                    <div class="box-desc">150-400 coins<br>or Rare ball!</div>
+                </div>
+                <div class="box-item box-rare" onclick="openBox('gold')">
+                    <div class="box-icon">🥇</div>
+                    <div class="box-name">Gold Box</div>
+                    <div class="box-price">💰 500</div>
+                    <div class="box-desc">250-600 coins<br>or Epic ball!</div>
+                </div>
+                <div class="box-item box-rare" onclick="openBox('diamond')">
+                    <div class="box-icon">💎</div>
+                    <div class="box-name">Diamond Box</div>
+                    <div class="box-price">💰 750</div>
+                    <div class="box-desc">400-1000 coins<br>or Legendary ball!</div>
+                </div>
+                <div class="box-item box-legendary" onclick="openBox('platinum')">
+                    <div class="box-icon">⭐</div>
+                    <div class="box-name">Platinum Box</div>
+                    <div class="box-price">💰 900</div>
+                    <div class="box-desc">500-1200 coins<br>GUARANTEED Legendary!</div>
+                </div>
+                <div class="box-item box-mythic" onclick="openBox('mythic')">
+                    <div class="box-icon">🌟</div>
+                    <div class="box-name">Mythic Box</div>
+                    <div class="box-price">💰 1500</div>
+                    <div class="box-desc">1000-2500 coins<br>DOUBLE Legendary!</div>
+                </div>
+                <div class="box-item box-cosmic" onclick="openBox('cosmic')">
+                    <div class="box-icon">🌌</div>
+                    <div class="box-name">Cosmic Box</div>
+                    <div class="box-price">💰 2500</div>
+                    <div class="box-desc">2000-5000 coins<br>TRIPLE Legendary!</div>
+                </div>
+                <div class="box-item box-ultimate" onclick="openBox('ultimate')">
+                    <div class="box-icon">🔥</div>
+                    <div class="box-name">Ultimate Box</div>
+                    <div class="box-price">💰 5000</div>
+                    <div class="box-desc">5000-10000 coins<br>5x Legendary!</div>
+                </div>
+                <div class="box-item box-god" onclick="openBox('god')">
+                    <div class="box-icon">⚡</div>
+                    <div class="box-name">GOD BOX</div>
+                    <div class="box-price">💰 9999</div>
+                    <div class="box-desc">10000-25000 coins<br>10x LEGENDARY!</div>
                 </div>
             </div>
             <button class="btn" onclick="closeBoxes()">Back to Menu</button>
         </div>
-        <!-- 🔐 DEV PANEL -->
-        <div id="devPanel" class="screen" style="display:none; position: fixed; inset: 0; background: rgba(15,23,42,0.95); z-index: 999;">
-            <div style="background: white; padding: 25px 30px; border-radius: 25px; max-width: 480px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.6); text-align: left;">
-                <div style="font-size: 22px; font-weight: 900; color: #ef4444; margin-bottom: 4px;">
-                    👑 DEV PANEL
-                </div>
-                <div style="font-size: 11px; color: #6b7280; margin-bottom: 16px;">
-                    ZAYN2015 ACCESS • Change coins, unlock balls, reset everything, and view all secret codes.
-                </div>
-
-                <div style="margin-bottom: 16px;">
-                    <div style="font-size: 12px; font-weight: 700; color: #1a1a2e; margin-bottom: 4px;">Coins</div>
-                    <input id="devCoinsInput" type="number" placeholder="Enter coins" 
-                           style="width: 100%; padding: 8px 10px; border-radius: 10px; border: 1px solid #e5e7eb; font-size: 13px; margin-bottom: 6px; color: #1a1a2e;">
-                    <button style="width: 100%; font-size: 12px; padding: 12px; background: white; color: #667eea; border: 2px solid #667eea; border-radius: 15px; font-weight: 800; cursor: pointer; margin-bottom: 6px;" onclick="devSetCoins()">Set Coins</button>
-                </div>
-
-                <div style="margin-bottom: 16px;">
-                    <div style="font-size: 12px; font-weight: 700; color: #1a1a2e; margin-bottom: 6px;">Balls</div>
-                    <button style="width: 100%; font-size: 12px; padding: 12px; background: white; color: #667eea; border: 2px solid #667eea; border-radius: 15px; font-weight: 800; cursor: pointer; margin-bottom: 6px;" onclick="devUnlockAllBalls()">Unlock ALL Non-Secret Balls</button>
-                    <button style="width: 100%; font-size: 12px; padding: 12px; background: white; color: #667eea; border: 2px solid #667eea; border-radius: 15px; font-weight: 800; cursor: pointer; margin-bottom: 6px;" onclick="devLockAllBalls()">Lock All (Keep Classic)</button>
-                    <button style="width: 100%; font-size: 12px; padding: 12px; background: white; color: #ef4444; border: 2px solid #ef4444; border-radius: 15px; font-weight: 800; cursor: pointer;" onclick="devResetBalls()">Reset Balls to Fresh Start</button>
-                </div>
-
-                <div style="margin-bottom: 16px;">
-                    <div style="font-size: 12px; font-weight: 700; color: #1a1a2e; margin-bottom: 6px;">Progress</div>
-                    <button style="width: 100%; font-size: 12px; padding: 12px; background: white; color: #ef4444; border: 2px solid #ef4444; border-radius: 15px; font-weight: 800; cursor: pointer;" onclick="devResetProgress()">Reset ALL Progress (Coins + Milestones)</button>
-                </div>
-
-                <div style="margin-bottom: 16px; max-height: 160px; overflow-y: auto; padding-right: 4px;">
-                    <div style="font-size: 12px; font-weight: 700; color: #1a1a2e; margin-bottom: 6px;">Secret Codes In This Game</div>
-                    <div id="devCodesList" style="font-size: 11px; color: #4b5563; line-height: 1.5;"></div>
-                </div>
-
-                <button style="width: 100%; font-size: 12px; padding: 14px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 15px; font-weight: 900; cursor: pointer;" onclick="closeDevPanel()">Close Dev Panel</button>
-            </div>
-        </div>
-
-        <!-- VISIBLE DEV BUTTON -->
-        <div onclick="openDevPrompt()"
-             style="position: fixed; bottom: 12px; right: 12px; padding: 6px 12px; border-radius: 999px; 
-                    background: rgba(239,68,68,0.95); color: white; font-size: 11px; font-weight: 800;
-                    letter-spacing: 1px; text-transform: uppercase; cursor: pointer; z-index: 20;
-                    box-shadow: 0 8px 20px rgba(0,0,0,0.35); font-family: 'Inter', sans-serif;">
-            DEV
-        </div>
-
         <div id="gameOverScreen" class="screen" style="display: none;">
             <div class="emoji">💥</div>
             <div class="title" style="font-size: 60px; margin-bottom: 15px;">Game Over!</div>
@@ -1236,8 +1321,6 @@
             mega: { emoji: '🚀', name: 'MEGA', price: 0, unlocked: false, rarity: 'legendary', secret: true,
                 colors: ['#fef9c3', '#fde047', '#facc15', '#eab308', '#ca8a04'] },
             epic: { emoji: '⭐', name: 'EPIC', price: 0, unlocked: false, rarity: 'legendary', secret: true,
-                colors: ['#fef9c3', '#fde047', '#facc15', '#eab308', '#ca8a04'] },
-            ultimate_god: { emoji: '💎', name: 'Ultimate God', price: 9999, unlocked: false, rarity: 'legendary',
                 colors: ['#fef9c3', '#fde047', '#facc15', '#eab308', '#ca8a04'] },
         };
 
@@ -2390,117 +2473,117 @@
             }, 2000);
         }
 
-        // 🔐 DEV SYSTEM
-        const DEV_PASSWORD = 'ZAYN2015';
 
-        const devCodesInfo = [
-            { code: 'ADMINBALL', effect: 'Unlocks ADMIN legendary ball 👑' },
-            { code: 'MEGABALL',  effect: 'Unlocks MEGA legendary ball 🚀' },
-            { code: 'EPICBALL',  effect: 'Unlocks EPIC legendary ball ⭐' },
-        ];
+        function openBoxes() {
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('boxesScreen').style.display = 'flex';
+            document.getElementById('boxesCoins').textContent = coins;
+        }
 
-        function openDevPrompt() {
-            const input = prompt('Enter Dev Password');
-            if (input === null) return;
-            if (input === DEV_PASSWORD) {
-                openDevPanel();
-            } else {
-                showNotification('Wrong dev password!');
+        function closeBoxes() {
+            document.getElementById('boxesScreen').style.display = 'none';
+            document.getElementById('startScreen').style.display = 'flex';
+        }
+
+        function openBox(type) {
+            let cost, minCoins, maxCoins, ballChance, rarityPool, boxEmoji, multiReward = 1;
+
+            if (type === 'mini') {
+                cost = 50; minCoins = 25; maxCoins = 75; ballChance = 0.10; rarityPool = ['common']; boxEmoji = '📁';
+            } else if (type === 'common') {
+                cost = 100; minCoins = 50; maxCoins = 150; ballChance = 0.15; rarityPool = ['common']; boxEmoji = '📦';
+            } else if (type === 'bronze') {
+                cost = 200; minCoins = 100; maxCoins = 250; ballChance = 0.20; rarityPool = ['common', 'uncommon']; boxEmoji = '🥉';
+            } else if (type === 'silver') {
+                cost = 350; minCoins = 150; maxCoins = 400; ballChance = 0.25; rarityPool = ['uncommon', 'rare']; boxEmoji = '🥈';
+            } else if (type === 'gold') {
+                cost = 500; minCoins = 250; maxCoins = 600; ballChance = 0.30; rarityPool = ['rare', 'epic']; boxEmoji = '🥇';
+            } else if (type === 'rare') {
+                cost = 300; minCoins = 100; maxCoins = 300; ballChance = 0.25; rarityPool = ['uncommon', 'rare', 'epic']; boxEmoji = '🎁';
+            } else if (type === 'diamond') {
+                cost = 750; minCoins = 400; maxCoins = 1000; ballChance = 0.35; rarityPool = ['epic', 'legendary']; boxEmoji = '💎';
+            } else if (type === 'legendary') {
+                cost = 600; minCoins = 200; maxCoins = 600; ballChance = 0.35; rarityPool = ['rare', 'epic', 'legendary']; boxEmoji = '🎉';
+            } else if (type === 'platinum') {
+                cost = 900; minCoins = 500; maxCoins = 1200; ballChance = 0.50; rarityPool = ['epic', 'legendary']; boxEmoji = '⭐';
+            } else if (type === 'admin') {
+                cost = 1000; minCoins = 500; maxCoins = 1500; ballChance = 0.60; rarityPool = ['epic', 'legendary']; boxEmoji = '👑';
+            } else if (type === 'mythic') {
+                cost = 1500; minCoins = 1000; maxCoins = 2500; ballChance = 0.70; rarityPool = ['legendary']; boxEmoji = '🌟'; multiReward = 2;
+            } else if (type === 'cosmic') {
+                cost = 2500; minCoins = 2000; maxCoins = 5000; ballChance = 0.80; rarityPool = ['epic', 'legendary']; boxEmoji = '🌌'; multiReward = 3;
+            } else if (type === 'ultimate') {
+                cost = 5000; minCoins = 5000; maxCoins = 10000; ballChance = 0.90; rarityPool = ['legendary']; boxEmoji = '🔥'; multiReward = 5;
+            } else if (type === 'god') {
+                cost = 9999; minCoins = 10000; maxCoins = 25000; ballChance = 1.00; rarityPool = ['legendary']; boxEmoji = '⚡'; multiReward = 10;
             }
-        }
 
-        function openDevPanel() {
-            const panel = document.getElementById('devPanel');
-            if (!panel) return;
-            panel.style.display = 'flex';
-
-            const coinsInput = document.getElementById('devCoinsInput');
-            if (coinsInput) coinsInput.value = coins;
-
-            const list = document.getElementById('devCodesList');
-            if (list) {
-                list.innerHTML = devCodesInfo.map(c => `<div><b>${c.code}</b> – ${c.effect}</div>`).join('');
-            }
-        }
-
-        function closeDevPanel() {
-            const panel = document.getElementById('devPanel');
-            if (!panel) return;
-            panel.style.display = 'none';
-        }
-
-        function devSetCoins() {
-            const input = document.getElementById('devCoinsInput');
-            if (!input) return;
-            const value = parseInt(input.value || '0', 10);
-            if (isNaN(value) || value < 0) {
-                showNotification('Enter a valid coin amount');
+            if (coins < cost) {
+                showNotification('Not enough coins!');
                 return;
             }
-            coins = value;
+
+            coins -= cost;
             localStorage.setItem('gravityFlipCoins', coins);
+            document.getElementById('boxesCoins').textContent = coins;
 
-            ['coinsEarned', 'shopCoins', 'boxesCoins', 'coins', 'totalCoins'].forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.textContent = coins;
-            });
+            const boxesOpened = (parseInt(localStorage.getItem('gravityFlipBoxesOpened')) || 0) + 1;
+            localStorage.setItem('gravityFlipBoxesOpened', boxesOpened);
 
-            showNotification('Coins set to ' + coins);
+            let rewards = [];
+
+            for (let i = 0; i < multiReward; i++) {
+                const isBall = Math.random() < ballChance;
+
+                if (isBall) {
+                    const availableBalls = Object.entries(ballSkins)
+                        .filter(([id, skin]) => !skin.unlocked && !skin.secret && rarityPool.includes(skin.rarity));
+
+                    if (availableBalls.length > 0) {
+                        const [ballId, ballSkin] = availableBalls[Math.floor(Math.random() * availableBalls.length)];
+                        ballSkin.unlocked = true;
+                        rewards.push({ type: 'ball', emoji: ballSkin.emoji, text: ballSkin.name + ' Ball!\n' + ballSkin.rarity.toUpperCase() });
+
+                        const unlockedBalls = Object.entries(ballSkins)
+                            .filter(([id, skin]) => skin.unlocked)
+                            .map(([id]) => id);
+                        localStorage.setItem('gravityFlipUnlocked', JSON.stringify(unlockedBalls));
+                        checkMilestones();
+                    } else {
+                        const coinReward = Math.floor(Math.random() * (maxCoins - minCoins + 1)) + minCoins;
+                        coins += coinReward;
+                        rewards.push({ type: 'coins', emoji: '💰', text: coinReward + ' Coins!' });
+                    }
+                } else {
+                    const coinReward = Math.floor(Math.random() * (maxCoins - minCoins + 1)) + minCoins;
+                    coins += coinReward;
+                    rewards.push({ type: 'coins', emoji: '💰', text: coinReward + ' Coins!' });
+                }
+            }
+
+            localStorage.setItem('gravityFlipCoins', coins);
+            showBoxOpening(boxEmoji, rewards);
         }
 
-        function devUnlockAllBalls() {
-            Object.entries(ballSkins).forEach(([id, skin]) => {
-                if (!skin.secret) skin.unlocked = true;
-            });
+        function showBoxOpening(boxEmoji, rewards) {
+            const overlay = document.createElement('div');
+            overlay.className = 'opening-animation';
+            overlay.innerHTML = '<div class="opening-box">' + boxEmoji + '</div>';
+            document.body.appendChild(overlay);
 
-            const unlockedBalls = Object.entries(ballSkins)
-                .filter(([id, skin]) => skin.unlocked)
-                .map(([id]) => id);
-            localStorage.setItem('gravityFlipUnlocked', JSON.stringify(unlockedBalls));
+            setTimeout(function() {
+                const rewardsHTML = rewards.map(r => 
+                    '<div class="reveal-reward">' + r.emoji + '</div><div class="reveal-text">' + r.text + '</div>'
+                ).join('');
 
-            showNotification('All non-secret balls unlocked!');
-            if (typeof renderShop === 'function') renderShop();
+                overlay.innerHTML = rewardsHTML;
+
+                setTimeout(function() {
+                    document.body.removeChild(overlay);
+                    document.getElementById('boxesCoins').textContent = coins;
+                    document.getElementById('shopCoins').textContent = coins;
+                }, 3000);
+            }, 2000);
         }
 
-        function devLockAllBalls() {
-            Object.entries(ballSkins).forEach(([id, skin]) => {
-                skin.unlocked = (id === 'classic');
-            });
-            localStorage.setItem('gravityFlipUnlocked', JSON.stringify(['classic']));
-            showNotification('All balls locked except Classic');
-            if (typeof renderShop === 'function') renderShop();
-        }
-
-        function devResetBalls() {
-            if (!confirm('Reset all balls to default state? (Only Classic unlocked)')) return;
-
-            Object.entries(ballSkins).forEach(([id, skin]) => {
-                skin.unlocked = (id === 'classic');
-            });
-            localStorage.setItem('gravityFlipUnlocked', JSON.stringify(['classic']));
-
-            showNotification('Balls reset! Only Classic is unlocked.');
-            if (typeof renderShop === 'function') renderShop();
-        }
-
-        function devResetProgress() {
-            if (!confirm('Reset ALL coins, milestones, and best distance?')) return;
-
-            coins = 0;
-            localStorage.setItem('gravityFlipCoins', 0);
-            try {
-                localStorage.removeItem('gravityFlipMilestones');
-                localStorage.removeItem('gravityFlipBest');
-                localStorage.removeItem('gravityFlipTotalCoins');
-            } catch (e) {}
-
-            ['coinsEarned', 'shopCoins', 'boxesCoins', 'coins', 'totalCoins'].forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.textContent = coins;
-            });
-
-            showNotification('Progress reset!');
-        }
     </script>
-</body>
-</html>
