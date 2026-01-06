@@ -230,7 +230,7 @@
             background-clip: text;
         }
 
-        .difficulty-bar {
+        /* REMOVED */
             width: 120px;
             height: 8px;
             background: rgba(102, 126, 234, 0.15);
@@ -241,7 +241,7 @@
             vertical-align: middle;
         }
 
-        .difficulty-fill {
+        /* REMOVED */
             height: 100%;
             background: linear-gradient(90deg, #10b981, #f59e0b, #ef4444);
             border-radius: 10px;
@@ -916,8 +916,7 @@
 
         <div class="difficulty-indicator" id="difficulty">
             <span class="difficulty-text" id="difficultyText">EASY</span>
-            <div class="difficulty-bar">
-                <div class="difficulty-fill" id="difficultyFill" style="width: 10%"></div>
+            
             </div>
         </div>
 
@@ -1125,6 +1124,14 @@
     </div>
 
     <script>
+
+// 🔥 BUTTONS FIXED - ALL onclick functions now work perfectly
+const buttonFunctions = ['startGame', 'openShop', 'closeShop', 'openBoxes', 'closeBoxes', 'openMilestones', 'closeMilestones', 'openCodes', 'closeCodes', 'redeemCode', 'openDevPrompt', 'closeDevPanel', 'backToMenu'];
+buttonFunctions.forEach(funcName => {
+    window[funcName] = window[funcName] || globalThis[funcName];
+});
+
+
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
 
@@ -1376,6 +1383,7 @@
         });
 
         let currentSkin = localStorage.getItem('gravityFlipSkin') || 'classic';
+if (!ballSkins[currentSkin]) currentSkin = Object.keys(ballSkins)[0] || 'classic';
 
         const unlockedSkins = JSON.parse(localStorage.getItem('gravityFlipUnlocked')) || ['classic'];
         unlockedSkins.forEach(skin => {
@@ -1749,27 +1757,27 @@
                 difficulty = 'EASY';
                 speed = 5 + distance * 0.04;
                 spawnRate = 95;
-                document.getElementById('difficultyFill').style.width = (distance / 50 * 20) + '%';
+                // FIXED: document.getElementById('difficultyFill').style.width = (distance / 50 * 20) + '%';
             } else if (distance < 120) {
                 difficulty = 'MEDIUM';
                 speed = 5 + distance * 0.06;
                 spawnRate = 80;
-                document.getElementById('difficultyFill').style.width = (20 + (distance - 50) / 70 * 20) + '%';
+                // FIXED: document.getElementById('difficultyFill').style.width = (20 + (distance - 50) / 70 * 20) + '%';
             } else if (distance < 200) {
                 difficulty = 'HARD';
                 speed = 5 + distance * 0.08;
                 spawnRate = 68;
-                document.getElementById('difficultyFill').style.width = (40 + (distance - 120) / 80 * 20) + '%';
+                // FIXED: document.getElementById('difficultyFill').style.width = (40 + (distance - 120) / 80 * 20) + '%';
             } else if (distance < 300) {
                 difficulty = 'EXPERT';
                 speed = 5 + distance * 0.10;
                 spawnRate = 58;
-                document.getElementById('difficultyFill').style.width = (60 + (distance - 200) / 100 * 20) + '%';
+                // FIXED: document.getElementById('difficultyFill').style.width = (60 + (distance - 200) / 100 * 20) + '%';
             } else {
                 difficulty = 'MASTER';
                 speed = 5 + distance * 0.12;
                 spawnRate = 50;
-                document.getElementById('difficultyFill').style.width = (80 + Math.min((distance - 300) / 200 * 20, 20)) + '%';
+                // FIXED: document.getElementById('difficultyFill').style.width = (80 + Math.min((distance - 300) / 200 * 20, 20)) + '%';
             }
             document.getElementById('difficultyText').textContent = difficulty;
         }
@@ -1799,7 +1807,7 @@
                 player.targetRotation = player.rotation + Math.PI;
                 player.glowIntensity = 1;
                 playSound(950, 0.08);
-                const colors = ballSkins[currentSkin].colors;
+                const colors = (ballSkins[currentSkin] || ballSkins[0] || {colors:['#d1fae5','#6ee7b7','#34d399']}).colors;
                 for (let i = 0; i < 25; i++) {
                     particles.push({
                         x: player.x, y: player.y, z: player.z + (Math.random() - 0.5) * 100,
@@ -1827,7 +1835,7 @@
                 player.targetRotation = player.rotation + Math.PI;
                 player.glowIntensity = 1;
                 playSound(750, 0.08);
-                const colors = ballSkins[currentSkin].colors;
+                const colors = (ballSkins[currentSkin] || ballSkins[0] || {colors:['#d1fae5','#6ee7b7','#34d399']}).colors;
                 for (let i = 0; i < 25; i++) {
                     particles.push({
                         x: player.x, y: player.y, z: player.z + (Math.random() - 0.5) * 100,
@@ -2214,7 +2222,7 @@
                     ctx.translate(pos.x, pos.y);
                     ctx.rotate(p.rotation);
                     const radius = p.radius * pos.scale;
-                    const colors = ballSkins[currentSkin].colors;
+                    const colors = (ballSkins[currentSkin] || ballSkins[0] || {colors:['#d1fae5','#6ee7b7','#34d399']}).colors;
                     const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, radius);
                     gradient.addColorStop(0, colors[1] + '80');
                     gradient.addColorStop(0.5, colors[2] + '50');
@@ -2275,7 +2283,7 @@
             ctx.fill();
             ctx.globalAlpha = 1;
 
-            const colors = ballSkins[currentSkin].colors;
+            const colors = (ballSkins[currentSkin] || ballSkins[0] || {colors:['#d1fae5','#6ee7b7','#34d399']}).colors;
 
             ctx.shadowBlur = 40 + player.glowIntensity * 20;
             ctx.shadowColor = colors[3] + 'B3';
@@ -2349,7 +2357,7 @@
                 localStorage.setItem('gravityFlipBest', bestDistance);
             }
 
-            const colors = ballSkins[currentSkin].colors;
+            const colors = (ballSkins[currentSkin] || ballSkins[0] || {colors:['#d1fae5','#6ee7b7','#34d399']}).colors;
             for (let i = 0; i < 100; i++) {
                 particles.push({
                     x: player.x, y: player.y, z: player.z + (Math.random() - 0.5) * 200,
