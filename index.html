@@ -948,6 +948,53 @@
             </div>
             <button class="btn" onclick="closeBoxes()">Back to Menu</button>
         </div>
+        <!-- 🔐 DEV PANEL -->
+        <div id="devPanel" class="screen" style="display:none; position: fixed; inset: 0; background: rgba(15,23,42,0.95); z-index: 999;">
+            <div style="background: white; padding: 25px 30px; border-radius: 25px; max-width: 480px; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,0.6); text-align: left;">
+                <div style="font-size: 22px; font-weight: 900; color: #ef4444; margin-bottom: 4px;">
+                    👑 DEV PANEL
+                </div>
+                <div style="font-size: 11px; color: #6b7280; margin-bottom: 16px;">
+                    ZAYN2015 ACCESS • Change coins, unlock balls, reset everything, and view all secret codes.
+                </div>
+
+                <div style="margin-bottom: 16px;">
+                    <div style="font-size: 12px; font-weight: 700; color: #1a1a2e; margin-bottom: 4px;">Coins</div>
+                    <input id="devCoinsInput" type="number" placeholder="Enter coins" 
+                           style="width: 100%; padding: 8px 10px; border-radius: 10px; border: 1px solid #e5e7eb; font-size: 13px; margin-bottom: 6px; color: #1a1a2e;">
+                    <button style="width: 100%; font-size: 12px; padding: 12px; background: white; color: #667eea; border: 2px solid #667eea; border-radius: 15px; font-weight: 800; cursor: pointer; margin-bottom: 6px;" onclick="devSetCoins()">Set Coins</button>
+                </div>
+
+                <div style="margin-bottom: 16px;">
+                    <div style="font-size: 12px; font-weight: 700; color: #1a1a2e; margin-bottom: 6px;">Balls</div>
+                    <button style="width: 100%; font-size: 12px; padding: 12px; background: white; color: #667eea; border: 2px solid #667eea; border-radius: 15px; font-weight: 800; cursor: pointer; margin-bottom: 6px;" onclick="devUnlockAllBalls()">Unlock ALL Non-Secret Balls</button>
+                    <button style="width: 100%; font-size: 12px; padding: 12px; background: white; color: #667eea; border: 2px solid #667eea; border-radius: 15px; font-weight: 800; cursor: pointer; margin-bottom: 6px;" onclick="devLockAllBalls()">Lock All (Keep Classic)</button>
+                    <button style="width: 100%; font-size: 12px; padding: 12px; background: white; color: #ef4444; border: 2px solid #ef4444; border-radius: 15px; font-weight: 800; cursor: pointer;" onclick="devResetBalls()">Reset Balls to Fresh Start</button>
+                </div>
+
+                <div style="margin-bottom: 16px;">
+                    <div style="font-size: 12px; font-weight: 700; color: #1a1a2e; margin-bottom: 6px;">Progress</div>
+                    <button style="width: 100%; font-size: 12px; padding: 12px; background: white; color: #ef4444; border: 2px solid #ef4444; border-radius: 15px; font-weight: 800; cursor: pointer;" onclick="devResetProgress()">Reset ALL Progress (Coins + Milestones)</button>
+                </div>
+
+                <div style="margin-bottom: 16px; max-height: 160px; overflow-y: auto; padding-right: 4px;">
+                    <div style="font-size: 12px; font-weight: 700; color: #1a1a2e; margin-bottom: 6px;">Secret Codes In This Game</div>
+                    <div id="devCodesList" style="font-size: 11px; color: #4b5563; line-height: 1.5;"></div>
+                </div>
+
+                <button style="width: 100%; font-size: 12px; padding: 14px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 15px; font-weight: 900; cursor: pointer;" onclick="closeDevPanel()">Close Dev Panel</button>
+            </div>
+        </div>
+
+        <!-- VISIBLE DEV BUTTON -->
+        <div onclick="openDevPrompt()"
+             style="position: fixed; bottom: 12px; right: 12px; padding: 6px 12px; border-radius: 999px; 
+                    background: rgba(239,68,68,0.95); color: white; font-size: 11px; font-weight: 800;
+                    letter-spacing: 1px; text-transform: uppercase; cursor: pointer; z-index: 20;
+                    box-shadow: 0 8px 20px rgba(0,0,0,0.35); font-family: 'Inter', sans-serif;">
+            DEV
+        </div>
+
         <div id="gameOverScreen" class="screen" style="display: none;">
             <div class="emoji">💥</div>
             <div class="title" style="font-size: 60px; margin-bottom: 15px;">Game Over!</div>
@@ -1193,6 +1240,8 @@
             mega: { emoji: '🚀', name: 'MEGA', price: 0, unlocked: false, rarity: 'legendary', secret: true,
                 colors: ['#fef9c3', '#fde047', '#facc15', '#eab308', '#ca8a04'] },
             epic: { emoji: '⭐', name: 'EPIC', price: 0, unlocked: false, rarity: 'legendary', secret: true,
+                colors: ['#fef9c3', '#fde047', '#facc15', '#eab308', '#ca8a04'] },
+            ultimate_god: { emoji: '💎', name: 'Ultimate God', price: 9999, unlocked: false, rarity: 'legendary',
                 colors: ['#fef9c3', '#fde047', '#facc15', '#eab308', '#ca8a04'] },
         };
 
@@ -2343,6 +2392,118 @@
                     document.getElementById('shopCoins').textContent = coins;
                 }, 3000);
             }, 2000);
+        }
+
+        // 🔐 DEV SYSTEM
+        const DEV_PASSWORD = 'ZAYN2015';
+
+        const devCodesInfo = [
+            { code: 'ADMINBALL', effect: 'Unlocks ADMIN legendary ball 👑' },
+            { code: 'MEGABALL',  effect: 'Unlocks MEGA legendary ball 🚀' },
+            { code: 'EPICBALL',  effect: 'Unlocks EPIC legendary ball ⭐' },
+        ];
+
+        function openDevPrompt() {
+            const input = prompt('Enter Dev Password');
+            if (input === null) return;
+            if (input === DEV_PASSWORD) {
+                openDevPanel();
+            } else {
+                showNotification('Wrong dev password!');
+            }
+        }
+
+        function openDevPanel() {
+            const panel = document.getElementById('devPanel');
+            if (!panel) return;
+            panel.style.display = 'flex';
+
+            const coinsInput = document.getElementById('devCoinsInput');
+            if (coinsInput) coinsInput.value = coins;
+
+            const list = document.getElementById('devCodesList');
+            if (list) {
+                list.innerHTML = devCodesInfo.map(c => `<div><b>${c.code}</b> – ${c.effect}</div>`).join('');
+            }
+        }
+
+        function closeDevPanel() {
+            const panel = document.getElementById('devPanel');
+            if (!panel) return;
+            panel.style.display = 'none';
+        }
+
+        function devSetCoins() {
+            const input = document.getElementById('devCoinsInput');
+            if (!input) return;
+            const value = parseInt(input.value || '0', 10);
+            if (isNaN(value) || value < 0) {
+                showNotification('Enter a valid coin amount');
+                return;
+            }
+            coins = value;
+            localStorage.setItem('gravityFlipCoins', coins);
+
+            ['coinsEarned', 'shopCoins', 'boxesCoins', 'coins', 'totalCoins'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = coins;
+            });
+
+            showNotification('Coins set to ' + coins);
+        }
+
+        function devUnlockAllBalls() {
+            Object.entries(ballSkins).forEach(([id, skin]) => {
+                if (!skin.secret) skin.unlocked = true;
+            });
+
+            const unlockedBalls = Object.entries(ballSkins)
+                .filter(([id, skin]) => skin.unlocked)
+                .map(([id]) => id);
+            localStorage.setItem('gravityFlipUnlocked', JSON.stringify(unlockedBalls));
+
+            showNotification('All non-secret balls unlocked!');
+            if (typeof renderShop === 'function') renderShop();
+        }
+
+        function devLockAllBalls() {
+            Object.entries(ballSkins).forEach(([id, skin]) => {
+                skin.unlocked = (id === 'classic');
+            });
+            localStorage.setItem('gravityFlipUnlocked', JSON.stringify(['classic']));
+            showNotification('All balls locked except Classic');
+            if (typeof renderShop === 'function') renderShop();
+        }
+
+        function devResetBalls() {
+            if (!confirm('Reset all balls to default state? (Only Classic unlocked)')) return;
+
+            Object.entries(ballSkins).forEach(([id, skin]) => {
+                skin.unlocked = (id === 'classic');
+            });
+            localStorage.setItem('gravityFlipUnlocked', JSON.stringify(['classic']));
+
+            showNotification('Balls reset! Only Classic is unlocked.');
+            if (typeof renderShop === 'function') renderShop();
+        }
+
+        function devResetProgress() {
+            if (!confirm('Reset ALL coins, milestones, and best distance?')) return;
+
+            coins = 0;
+            localStorage.setItem('gravityFlipCoins', 0);
+            try {
+                localStorage.removeItem('gravityFlipMilestones');
+                localStorage.removeItem('gravityFlipBest');
+                localStorage.removeItem('gravityFlipTotalCoins');
+            } catch (e) {}
+
+            ['coinsEarned', 'shopCoins', 'boxesCoins', 'coins', 'totalCoins'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = coins;
+            });
+
+            showNotification('Progress reset!');
         }
     </script>
 </body>
