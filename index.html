@@ -2,7 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Gravity Flip 3D - Mega Edition</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
@@ -663,6 +665,120 @@
         @keyframes legendary-glow {
             0%, 100% { box-shadow: 0 0 25px rgba(245, 158, 11, 0.5), 0 10px 30px rgba(0,0,0,0.15); }
             50% { box-shadow: 0 0 35px rgba(245, 158, 11, 0.7), 0 10px 30px rgba(0,0,0,0.15); }
+        }
+
+        /* MOBILE RESPONSIVE */
+        @media only screen and (max-width: 850px) {
+            body {
+                padding: 0;
+            }
+
+            #gameContainer {
+                width: 100vw;
+                height: 100vh;
+                max-width: 100%;
+                max-height: 100%;
+                border-radius: 0;
+            }
+
+            .title {
+                font-size: 48px !important;
+                letter-spacing: -2px;
+            }
+
+            .tagline {
+                font-size: 12px !important;
+                margin-bottom: 30px !important;
+            }
+
+            .subtitle {
+                font-size: 14px !important;
+                margin-bottom: 30px !important;
+            }
+
+            .btn {
+                padding: 15px 30px !important;
+                font-size: 14px !important;
+                margin: 5px !important;
+            }
+
+            .btn-small {
+                padding: 12px 25px !important;
+                font-size: 12px !important;
+            }
+
+            .emoji {
+                font-size: 50px !important;
+            }
+
+            .shop-container, .milestone-container {
+                max-height: 60vh !important;
+                gap: 10px !important;
+            }
+
+            .ball-item {
+                min-width: 90px !important;
+                padding: 12px 15px !important;
+            }
+
+            .ball-preview {
+                font-size: 35px !important;
+            }
+
+            .ball-name {
+                font-size: 11px !important;
+            }
+
+            .ball-price {
+                font-size: 12px !important;
+            }
+
+            .ball-rarity {
+                font-size: 8px !important;
+            }
+
+            .milestone-item {
+                min-width: 140px !important;
+                padding: 15px 18px !important;
+            }
+
+            .coins-display {
+                font-size: 20px !important;
+                padding: 10px 25px !important;
+            }
+
+            .stats-container {
+                min-width: 300px !important;
+                padding: 25px 30px !important;
+            }
+
+            .hud-box {
+                padding: 12px 20px !important;
+            }
+
+            .hud-value {
+                font-size: 32px !important;
+            }
+
+            .controls-hint {
+                padding: 12px 20px !important;
+                font-size: 12px !important;
+            }
+
+            .code-input {
+                width: 250px !important;
+                font-size: 16px !important;
+            }
+        }
+
+        @media only screen and (max-width: 400px) {
+            .title {
+                font-size: 36px !important;
+            }
+
+            .ball-item {
+                min-width: 80px !important;
+            }
         }
     </style>
 </head>
