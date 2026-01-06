@@ -807,28 +807,45 @@
         }
 
         /* MOBILE RESPONSIVE */
-        @media only screen and (max-width: 850px) {
-            body { padding: 0; }
-            #gameContainer {
-                width: 100vw;
-                height: 100vh;
-                border-radius: 0;
-            }
-            .title { font-size: 42px !important; }
-            .tagline { font-size: 11px !important; }
-            .btn { padding: 14px 28px !important; font-size: 13px !important; }
-            .shop-container, .milestone-container, .box-container { 
-                max-height: 55vh !important; 
-                gap: 8px !important; 
-            }
-            .ball-item { min-width: 85px !important; padding: 10px 12px !important; }
-            .ball-preview { font-size: 32px !important; }
-            .box-item { min-width: 130px !important; padding: 18px 22px !important; }
-            .box-icon { font-size: 45px !important; }
-            .opening-box { font-size: 100px !important; }
-            .reveal-reward { font-size: 80px !important; }
-            .reveal-text { font-size: 22px !important; }
-        }
+        
+@media only screen and (max-width: 850px) {
+    body { padding: 0 !important; }
+    .gameContainer { 
+        width: 100vw !important; 
+        height: 100vh !important; 
+        border-radius: 0 !important;
+        box-shadow: none !important;
+    }
+    .screen { padding: 50px 20px 30px !important; gap: 12px !important; }
+    .title { font-size: 36px !important; margin-bottom: 12px !important; letter-spacing: -2px !important; }
+    .tagline { font-size: 12px !important; margin-bottom: 25px !important; }
+    .btn { padding: 16px 28px !important; font-size: 14px !important; min-width: 130px !important; }
+    .box-container { 
+        max-height: 60vh !important; 
+        gap: 12px !important; 
+        padding: 12px !important;
+        justify-content: center !important;
+    }
+    .box-item { 
+        min-width: 120px !important; 
+        padding: 18px 14px !important; 
+        font-size: 12px !important;
+    }
+    .box-icon { font-size: 40px !important; margin-bottom: 8px !important; }
+    .box-name { font-size: 12px !important; font-weight: 800 !important; }
+    .box-price { font-size: 15px !important; }
+    .coins-display { font-size: 18px !important; padding: 12px 20px !important; }
+    .shop-container, .milestone-container { 
+        max-height: 60vh !important; 
+        gap: 10px !important; 
+        padding: 12px !important;
+    }
+    .ball-item { min-width: 85px !important; padding: 12px 10px !important; }
+    .hud { top: 12px !important; left: 12px !important; right: 12px !important; }
+    .hud-box { padding: 12px 20px !important; }
+    .hud-value { font-size: 32px !important; }
+}
+
     
         .box-uncommon {
             border: 3px solid #10b981;
@@ -984,7 +1001,7 @@
         <div id="boxesScreen" class="screen" style="display: none;">
             <div class="title" style="font-size: 32px; margin-bottom: 10px;">📦 Mystery Boxes</div>
             <div class="coins-display" style="padding: 8px 20px; font-size: 18px; margin-bottom: 10px;">💰 <span id="boxesCoins">0</span> Coins</div>
-            <div class="tagline" style="font-size: 11px; margin-bottom: 12px; color: rgba(255,255,255,0.85);">14 BOXES AVAILABLE!</div>
+            <div class="tagline" style="font-size: 11px; margin-bottom: 12px; color: rgba(255,255,255,0.85);">24 BOXES AVAILABLE!</div>
             <div class="box-container" style="max-height: 58vh; overflow-y: auto;">
                 <!-- ORIGINAL 4 -->
                 <div class="box-item box-common" onclick="openBox('common')">
