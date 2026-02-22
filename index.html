@@ -26,27 +26,39 @@
   @keyframes shakePop { 0%{transform:scale(0.5) rotate(-10deg);}50%{transform:scale(1.2) rotate(5deg);}100%{transform:scale(1) rotate(0);} }
   @keyframes bounce { 0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);} }
 
+  /* ===== HOME SCREEN ===== */
   #home-screen {
-    display: flex; flex-direction: row;
+    display: flex; flex-direction: column;
     align-items: center; justify-content: center;
-    gap: 30px; animation: fadeIn 0.5s ease;
-    width: 100%; padding: 10px 20px;
+    gap: 14px; animation: fadeIn 0.5s ease;
+    width: 100%; padding: 16px 20px;
   }
-  #home-left { display: flex; flex-direction: column; align-items: center; gap: 8px; }
-  #home-right { display: flex; flex-direction: column; align-items: center; gap: 8px; }
-  #home-logo { font-size: 56px; animation: float 3s ease-in-out infinite; }
-  #home-title { font-family: 'Fredoka One', cursive; font-size: 34px; color: #00ff88; animation: glow 2.5s ease-in-out infinite; letter-spacing: 3px; }
-  #home-subtitle { font-size: 10px; color: rgba(255,255,255,0.4); letter-spacing: 2px; text-transform: uppercase; }
-  #home-cards { display: flex; gap: 8px; }
-  .home-stat { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; padding: 6px 14px; text-align: center; }
-  .home-stat-label { font-size: 8px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.4); }
-  .home-stat-value { font-family: 'Fredoka One', cursive; font-size: 20px; color: #00ff88; }
-  #play-btn { padding: 12px 44px; font-size: 20px; font-family: 'Fredoka One', cursive; background: linear-gradient(135deg,#00ff88,#00cc66); color: #0f2027; border: none; border-radius: 50px; cursor: pointer; box-shadow: 0 8px 24px rgba(0,255,136,0.4); transition: all 0.15s; }
-  #play-btn:active { transform: scale(0.95); }
-  #how-to-btn { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); border-radius: 50px; padding: 8px 24px; font-size: 13px; font-family: 'Fredoka One', cursive; color: rgba(255,255,255,0.7); cursor: pointer; }
-  #home-features { display: flex; gap: 5px; flex-wrap: wrap; justify-content: center; max-width: 280px; }
-  .feat-pill { background: rgba(0,255,136,0.08); border: 1px solid rgba(0,255,136,0.2); border-radius: 50px; padding: 3px 10px; font-size: 10px; color: rgba(255,255,255,0.6); }
 
+  /* TOP: logo + title + subtitle */
+  #home-top {
+    display: flex; flex-direction: column;
+    align-items: center; gap: 4px;
+  }
+  #home-logo { font-size: 52px; animation: float 3s ease-in-out infinite; line-height: 1; }
+  #home-title { font-family: 'Fredoka One', cursive; font-size: 42px; color: #00ff88; animation: glow 2.5s ease-in-out infinite; letter-spacing: 4px; }
+  #home-subtitle { font-size: 11px; color: rgba(255,255,255,0.4); letter-spacing: 2px; text-transform: uppercase; }
+
+  /* MIDDLE: stats row */
+  #home-cards { display: flex; gap: 10px; }
+  .home-stat { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12); border-radius: 14px; padding: 8px 20px; text-align: center; }
+  .home-stat-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.4); margin-bottom: 2px; }
+  .home-stat-value { font-family: 'Fredoka One', cursive; font-size: 22px; color: #00ff88; }
+
+  /* BOTTOM: buttons + pills */
+  #home-bottom { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  #play-btn { padding: 14px 60px; font-size: 22px; font-family: 'Fredoka One', cursive; background: linear-gradient(135deg,#00ff88,#00cc66); color: #0f2027; border: none; border-radius: 50px; cursor: pointer; box-shadow: 0 8px 24px rgba(0,255,136,0.4); transition: all 0.15s; letter-spacing: 2px; }
+  #play-btn:active { transform: scale(0.95); }
+  #how-to-btn { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); border-radius: 50px; padding: 9px 28px; font-size: 13px; font-family: 'Fredoka One', cursive; color: rgba(255,255,255,0.7); cursor: pointer; transition: all 0.15s; }
+  #how-to-btn:active { background: rgba(255,255,255,0.14); }
+  #home-features { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; max-width: 360px; }
+  .feat-pill { background: rgba(0,255,136,0.08); border: 1px solid rgba(0,255,136,0.2); border-radius: 50px; padding: 4px 12px; font-size: 11px; color: rgba(255,255,255,0.55); }
+
+  /* ===== HOW TO PLAY ===== */
   #howto-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); z-index: 200; align-items: center; justify-content: center; }
   #howto-modal.show { display: flex; }
   #howto-box { background: linear-gradient(135deg,#1a2a3a,#0f2027); border: 2px solid rgba(0,255,136,0.3); border-radius: 18px; padding: 20px 28px; text-align: center; max-width: 400px; width: 92%; }
@@ -56,6 +68,7 @@
   .step-text { font-size: 12px; color: rgba(255,255,255,0.75); line-height: 1.4; }
   #close-howto { margin-top: 12px; padding: 9px 28px; font-family: 'Fredoka One', cursive; font-size: 14px; background: linear-gradient(135deg,#00ff88,#00cc66); color: #0f2027; border: none; border-radius: 50px; cursor: pointer; }
 
+  /* ===== GAME SCREEN ===== */
   #game-screen {
     display: none; flex-direction: row;
     align-items: center; justify-content: center;
@@ -100,6 +113,7 @@
   #canvas-wrapper { border-radius: 14px; overflow: hidden; box-shadow: 0 12px 40px rgba(0,0,0,0.5), 0 0 0 2px rgba(0,255,136,0.25); flex-shrink: 0; }
   canvas { display: block; cursor: crosshair; touch-action: none; }
 
+  /* ===== OVERLAYS ===== */
   .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.82); backdrop-filter: blur(8px); z-index: 100; align-items: center; justify-content: center; }
   .overlay.show { display: flex; }
   .overlay-box { background: linear-gradient(135deg,#1a2a3a,#0f2027); border-radius: 20px; padding: 18px 24px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.6); max-height: 96vh; overflow-y: auto; }
@@ -110,7 +124,7 @@
   #hc-title { font-family: 'Fredoka One', cursive; font-size: 26px; color: #00ff88; margin-bottom: 2px; }
   #hc-hole-name { font-size: 10px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px; }
   #hc-score-badge { display: inline-block; font-family: 'Fredoka One', cursive; font-size: 28px; padding: 7px 22px; border-radius: 14px; margin-bottom: 6px; animation: popIn 0.4s 0.15s cubic-bezier(0.175,0.885,0.32,1.275) both; }
-  #hc-score-badge.ace    { background: linear-gradient(135deg,#ffd700,#ffaa00); color: #1a0a00; box-shadow: 0 6px 20px rgba(255,215,0,0.5); }
+  #hc-score-badge.ace    { background: linear-gradient(135deg,#ffd700,#ffaa00); color: #1a0a00; }
   #hc-score-badge.eagle  { background: linear-gradient(135deg,#ffd700,#e6b800); color: #1a0a00; }
   #hc-score-badge.birdie { background: linear-gradient(135deg,#00ff88,#00cc66); color: #0a1a10; }
   #hc-score-badge.par    { background: linear-gradient(135deg,#4488ff,#2255cc); color: #fff; }
@@ -134,7 +148,6 @@
   #shots-overlay-penalty { font-family: 'Fredoka One', cursive; font-size: 15px; color: #ff6644; background: rgba(255,68,68,0.1); border: 1px solid rgba(255,68,68,0.25); border-radius: 10px; padding: 7px 18px; margin: 8px auto; display: inline-block; }
   #shots-overlay-tip { font-size: 11px; color: rgba(255,255,255,0.35); margin-bottom: 14px; font-style: italic; }
   #shots-continue-btn { padding: 10px 30px; font-size: 15px; font-family: 'Fredoka One', cursive; background: linear-gradient(135deg,#ff6644,#cc3322); color: #fff; border: none; border-radius: 50px; cursor: pointer; margin-right: 8px; }
-  #shots-continue-btn:active { transform: scale(0.96); }
   #shots-quit-btn { padding: 10px 18px; font-size: 13px; font-family: 'Fredoka One', cursive; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15); color: rgba(255,255,255,0.6); border-radius: 50px; cursor: pointer; }
 
   #overlay .overlay-box { border: 2px solid rgba(0,255,136,0.35); max-width: 340px; width: 92%; }
@@ -154,19 +167,25 @@
 </head>
 <body>
 
-<!-- HOME -->
+<!-- HOME SCREEN -->
 <div id="home-screen">
-  <div id="home-left">
+
+  <!-- TITLE AT TOP -->
+  <div id="home-top">
     <div id="home-logo">⛳</div>
     <div id="home-title">Mini Golf Pro</div>
-    <div id="home-subtitle">12 Holes · Bumpers · Sand</div>
-    <div id="home-cards">
-      <div class="home-stat"><div class="home-stat-label">Best</div><div class="home-stat-value" id="home-best">—</div></div>
-      <div class="home-stat"><div class="home-stat-label">Holes</div><div class="home-stat-value">12</div></div>
-      <div class="home-stat"><div class="home-stat-label">Par</div><div class="home-stat-value">48</div></div>
-    </div>
+    <div id="home-subtitle">12 Holes · Bumpers · Sand Traps</div>
   </div>
-  <div id="home-right">
+
+  <!-- STATS ROW -->
+  <div id="home-cards">
+    <div class="home-stat"><div class="home-stat-label">Best</div><div class="home-stat-value" id="home-best">—</div></div>
+    <div class="home-stat"><div class="home-stat-label">Holes</div><div class="home-stat-value">12</div></div>
+    <div class="home-stat"><div class="home-stat-label">Par</div><div class="home-stat-value">48</div></div>
+  </div>
+
+  <!-- BUTTONS + PILLS -->
+  <div id="home-bottom">
     <button id="play-btn" onclick="startGame()">▶ PLAY</button>
     <button id="how-to-btn" onclick="showHowTo()">📖 How to Play</button>
     <div id="home-features">
@@ -177,6 +196,7 @@
       <span class="feat-pill">🏆 12 Holes</span>
     </div>
   </div>
+
 </div>
 
 <!-- HOW TO PLAY -->
@@ -192,7 +212,7 @@
   </div>
 </div>
 
-<!-- GAME -->
+<!-- GAME SCREEN -->
 <div id="game-screen">
   <div id="left-panel">
     <div id="title" onclick="goHome()">⛳ Mini Golf</div>
@@ -306,230 +326,153 @@ const TIPS = [
   '"Sand traps are the real enemy 🏖️"',
   '"Bumpers are your friends... sometimes 🤷"',
   '"Aim for the hole, not the walls!"',
-  '"The green giveth and the green taketh away 😅"',
-  '"Take a deep breath and aim carefully!"',
   '"Try banking off the wall!"',
+  '"Take a deep breath and aim carefully!"',
+  '"The green giveth and the green taketh away 😅"',
 ];
 
-// All 12 holes using fractions so they scale to any screen
 const holesRaw = [
-
-  // 1 — Straight Shot
   { name:"Straight Shot", par:2, maxShots:5,
     ball:{fx:0.13,fy:0.5}, hole:{fx:0.87,fy:0.5},
     walls:[
-      {fx:0.08,fy:0.08,fw:0.84,fh:0.04},
-      {fx:0.08,fy:0.88,fw:0.84,fh:0.04},
-      {fx:0.08,fy:0.08,fw:0.04,fh:0.84},
-      {fx:0.88,fy:0.08,fw:0.04,fh:0.84},
+      {fx:0.08,fy:0.08,fw:0.84,fh:0.04},{fx:0.08,fy:0.88,fw:0.84,fh:0.04},
+      {fx:0.08,fy:0.08,fw:0.04,fh:0.84},{fx:0.88,fy:0.08,fw:0.04,fh:0.84},
     ], bumpers:[], sand:[] },
 
-  // 2 — The Dogleg
   { name:"The Dogleg", par:3, maxShots:6,
     ball:{fx:0.13,fy:0.75}, hole:{fx:0.85,fy:0.22},
     walls:[
-      {fx:0.08,fy:0.08,fw:0.84,fh:0.04},
-      {fx:0.08,fy:0.88,fw:0.84,fh:0.04},
-      {fx:0.08,fy:0.08,fw:0.04,fh:0.84},
-      {fx:0.88,fy:0.08,fw:0.04,fh:0.84},
+      {fx:0.08,fy:0.08,fw:0.84,fh:0.04},{fx:0.08,fy:0.88,fw:0.84,fh:0.04},
+      {fx:0.08,fy:0.08,fw:0.04,fh:0.84},{fx:0.88,fy:0.08,fw:0.04,fh:0.84},
       {fx:0.08,fy:0.50,fw:0.60,fh:0.04},
     ],
     bumpers:[{fx:0.75,fy:0.70,fr:0.04}],
     sand:[{fx:0.15,fy:0.57,fw:0.22,fh:0.14}] },
 
-  // 3 — Bumper Alley
   { name:"Bumper Alley", par:3, maxShots:6,
     ball:{fx:0.13,fy:0.5}, hole:{fx:0.87,fy:0.5},
     walls:[
-      {fx:0.08,fy:0.15,fw:0.84,fh:0.04},
-      {fx:0.08,fy:0.81,fw:0.84,fh:0.04},
-      {fx:0.08,fy:0.15,fw:0.04,fh:0.70},
-      {fx:0.88,fy:0.15,fw:0.04,fh:0.70},
+      {fx:0.08,fy:0.15,fw:0.84,fh:0.04},{fx:0.08,fy:0.81,fw:0.84,fh:0.04},
+      {fx:0.08,fy:0.15,fw:0.04,fh:0.70},{fx:0.88,fy:0.15,fw:0.04,fh:0.70},
     ],
     bumpers:[
-      {fx:0.35,fy:0.30,fr:0.045},
-      {fx:0.55,fy:0.70,fr:0.045},
-      {fx:0.70,fy:0.30,fr:0.045},
+      {fx:0.35,fy:0.30,fr:0.045},{fx:0.55,fy:0.70,fr:0.045},{fx:0.70,fy:0.30,fr:0.045},
     ], sand:[] },
 
-  // 4 — Sand Pit
   { name:"Sand Pit", par:4, maxShots:7,
     ball:{fx:0.13,fy:0.20}, hole:{fx:0.85,fy:0.78},
     walls:[
-      {fx:0.08,fy:0.08,fw:0.84,fh:0.04},
-      {fx:0.08,fy:0.88,fw:0.84,fh:0.04},
-      {fx:0.08,fy:0.08,fw:0.04,fh:0.84},
-      {fx:0.88,fy:0.08,fw:0.04,fh:0.84},
+      {fx:0.08,fy:0.08,fw:0.84,fh:0.04},{fx:0.08,fy:0.88,fw:0.84,fh:0.04},
+      {fx:0.08,fy:0.08,fw:0.04,fh:0.84},{fx:0.88,fy:0.08,fw:0.04,fh:0.84},
       {fx:0.08,fy:0.50,fw:0.42,fh:0.04},
     ],
     bumpers:[{fx:0.72,fy:0.32,fr:0.04}],
-    sand:[
-      {fx:0.26,fy:0.56,fw:0.32,fh:0.18},
-      {fx:0.62,fy:0.56,fw:0.20,fh:0.18},
-    ] },
+    sand:[{fx:0.26,fy:0.56,fw:0.32,fh:0.18},{fx:0.62,fy:0.56,fw:0.20,fh:0.18}] },
 
-  // 5 — The Z
   { name:"The Z", par:4, maxShots:7,
     ball:{fx:0.13,fy:0.20}, hole:{fx:0.85,fy:0.78},
     walls:[
-      {fx:0.08,fy:0.08,fw:0.84,fh:0.04},
-      {fx:0.08,fy:0.88,fw:0.84,fh:0.04},
-      {fx:0.08,fy:0.08,fw:0.04,fh:0.84},
-      {fx:0.88,fy:0.08,fw:0.04,fh:0.84},
-      {fx:0.08,fy:0.42,fw:0.52,fh:0.04},
-      {fx:0.40,fy:0.56,fw:0.52,fh:0.04},
+      {fx:0.08,fy:0.08,fw:0.84,fh:0.04},{fx:0.08,fy:0.88,fw:0.84,fh:0.04},
+      {fx:0.08,fy:0.08,fw:0.04,fh:0.84},{fx:0.88,fy:0.08,fw:0.04,fh:0.84},
+      {fx:0.08,fy:0.42,fw:0.52,fh:0.04},{fx:0.40,fy:0.56,fw:0.52,fh:0.04},
     ],
     bumpers:[{fx:0.74,fy:0.49,fr:0.04},{fx:0.24,fy:0.49,fr:0.04}],
     sand:[{fx:0.40,fy:0.44,fw:0.18,fh:0.14}] },
 
-  // 6 — The Gauntlet
   { name:"The Gauntlet", par:5, maxShots:8,
     ball:{fx:0.13,fy:0.5}, hole:{fx:0.87,fy:0.5},
     walls:[
-      {fx:0.08,fy:0.08,fw:0.84,fh:0.04},
-      {fx:0.08,fy:0.88,fw:0.84,fh:0.04},
-      {fx:0.08,fy:0.08,fw:0.04,fh:0.84},
-      {fx:0.88,fy:0.08,fw:0.04,fh:0.84},
-      {fx:0.12,fy:0.32,fw:0.22,fh:0.03},
-      {fx:0.42,fy:0.32,fw:0.22,fh:0.03},
-      {fx:0.72,fy:0.32,fw:0.16,fh:0.03},
-      {fx:0.12,fy:0.65,fw:0.22,fh:0.03},
-      {fx:0.42,fy:0.65,fw:0.22,fh:0.03},
-      {fx:0.72,fy:0.65,fw:0.16,fh:0.03},
+      {fx:0.08,fy:0.08,fw:0.84,fh:0.04},{fx:0.08,fy:0.88,fw:0.84,fh:0.04},
+      {fx:0.08,fy:0.08,fw:0.04,fh:0.84},{fx:0.88,fy:0.08,fw:0.04,fh:0.84},
+      {fx:0.12,fy:0.32,fw:0.22,fh:0.03},{fx:0.42,fy:0.32,fw:0.22,fh:0.03},{fx:0.72,fy:0.32,fw:0.16,fh:0.03},
+      {fx:0.12,fy:0.65,fw:0.22,fh:0.03},{fx:0.42,fy:0.65,fw:0.22,fh:0.03},{fx:0.72,fy:0.65,fw:0.16,fh:0.03},
     ],
     bumpers:[{fx:0.36,fy:0.50,fr:0.04},{fx:0.65,fy:0.50,fr:0.04}],
     sand:[{fx:0.44,fy:0.35,fw:0.14,fh:0.30}] },
 
-  // 7 — Pinball Machine
   { name:"Pinball Machine", par:4, maxShots:7,
     ball:{fx:0.13,fy:0.50}, hole:{fx:0.87,fy:0.50},
     walls:[
-      {fx:0.08,fy:0.08,fw:0.84,fh:0.04},
-      {fx:0.08,fy:0.88,fw:0.84,fh:0.04},
-      {fx:0.08,fy:0.08,fw:0.04,fh:0.84},
-      {fx:0.88,fy:0.08,fw:0.04,fh:0.84},
+      {fx:0.08,fy:0.08,fw:0.84,fh:0.04},{fx:0.08,fy:0.88,fw:0.84,fh:0.04},
+      {fx:0.08,fy:0.08,fw:0.04,fh:0.84},{fx:0.88,fy:0.08,fw:0.04,fh:0.84},
     ],
     bumpers:[
-      {fx:0.30,fy:0.25,fr:0.045},
-      {fx:0.50,fy:0.20,fr:0.040},
-      {fx:0.70,fy:0.25,fr:0.045},
-      {fx:0.30,fy:0.75,fr:0.045},
-      {fx:0.50,fy:0.80,fr:0.040},
-      {fx:0.70,fy:0.75,fr:0.045},
+      {fx:0.30,fy:0.25,fr:0.045},{fx:0.50,fy:0.20,fr:0.040},{fx:0.70,fy:0.25,fr:0.045},
+      {fx:0.30,fy:0.75,fr:0.045},{fx:0.50,fy:0.80,fr:0.040},{fx:0.70,fy:0.75,fr:0.045},
       {fx:0.50,fy:0.50,fr:0.050},
-    ],
-    sand:[] },
+    ], sand:[] },
 
-  // 8 — The Island
   { name:"The Island", par:4, maxShots:7,
     ball:{fx:0.13,fy:0.50}, hole:{fx:0.87,fy:0.50},
     walls:[
-      {fx:0.08,fy:0.08,fw:0.84,fh:0.04},
-      {fx:0.08,fy:0.88,fw:0.84,fh:0.04},
-      {fx:0.08,fy:0.08,fw:0.04,fh:0.84},
-      {fx:0.88,fy:0.08,fw:0.04,fh:0.84},
-      // top-left block
-      {fx:0.22,fy:0.12,fw:0.25,fh:0.30},
-      // bottom-left block
-      {fx:0.22,fy:0.58,fw:0.25,fh:0.30},
-      // top-right block
-      {fx:0.53,fy:0.12,fw:0.25,fh:0.30},
-      // bottom-right block
-      {fx:0.53,fy:0.58,fw:0.25,fh:0.30},
+      {fx:0.08,fy:0.08,fw:0.84,fh:0.04},{fx:0.08,fy:0.88,fw:0.84,fh:0.04},
+      {fx:0.08,fy:0.08,fw:0.04,fh:0.84},{fx:0.88,fy:0.08,fw:0.04,fh:0.84},
+      {fx:0.22,fy:0.12,fw:0.25,fh:0.30},{fx:0.22,fy:0.58,fw:0.25,fh:0.30},
+      {fx:0.53,fy:0.12,fw:0.25,fh:0.30},{fx:0.53,fy:0.58,fw:0.25,fh:0.30},
     ],
     bumpers:[],
     sand:[{fx:0.32,fy:0.38,fw:0.36,fh:0.24}] },
 
-  // 9 — Snake Run
   { name:"Snake Run", par:4, maxShots:7,
     ball:{fx:0.13,fy:0.22}, hole:{fx:0.85,fy:0.78},
     walls:[
-      {fx:0.08,fy:0.08,fw:0.84,fh:0.04},
-      {fx:0.08,fy:0.88,fw:0.84,fh:0.04},
-      {fx:0.08,fy:0.08,fw:0.04,fh:0.84},
-      {fx:0.88,fy:0.08,fw:0.04,fh:0.84},
-      // snake walls — gaps alternate sides
-      {fx:0.08,fy:0.34,fw:0.65,fh:0.04},
-      {fx:0.27,fy:0.54,fw:0.65,fh:0.04},
+      {fx:0.08,fy:0.08,fw:0.84,fh:0.04},{fx:0.08,fy:0.88,fw:0.84,fh:0.04},
+      {fx:0.08,fy:0.08,fw:0.04,fh:0.84},{fx:0.88,fy:0.08,fw:0.04,fh:0.84},
+      {fx:0.08,fy:0.34,fw:0.65,fh:0.04},{fx:0.27,fy:0.54,fw:0.65,fh:0.04},
       {fx:0.08,fy:0.72,fw:0.65,fh:0.04},
     ],
     bumpers:[{fx:0.80,fy:0.44,fr:0.04},{fx:0.16,fy:0.63,fr:0.04}],
     sand:[{fx:0.55,fy:0.57,fw:0.24,fh:0.12}] },
 
-  // 10 — Crossfire
   { name:"Crossfire", par:5, maxShots:8,
     ball:{fx:0.13,fy:0.50}, hole:{fx:0.87,fy:0.50},
     walls:[
-      {fx:0.08,fy:0.08,fw:0.84,fh:0.04},
-      {fx:0.08,fy:0.88,fw:0.84,fh:0.04},
-      {fx:0.08,fy:0.08,fw:0.04,fh:0.84},
-      {fx:0.88,fy:0.08,fw:0.04,fh:0.84},
-      // cross dividers — gaps in middle
-      {fx:0.08,fy:0.44,fw:0.36,fh:0.04},
-      {fx:0.56,fy:0.44,fw:0.36,fh:0.04},
-      {fx:0.44,fy:0.12,fw:0.04,fh:0.32},
-      {fx:0.44,fy:0.56,fw:0.04,fh:0.32},
+      {fx:0.08,fy:0.08,fw:0.84,fh:0.04},{fx:0.08,fy:0.88,fw:0.84,fh:0.04},
+      {fx:0.08,fy:0.08,fw:0.04,fh:0.84},{fx:0.88,fy:0.08,fw:0.04,fh:0.84},
+      {fx:0.08,fy:0.44,fw:0.36,fh:0.04},{fx:0.56,fy:0.44,fw:0.36,fh:0.04},
+      {fx:0.44,fy:0.12,fw:0.04,fh:0.32},{fx:0.44,fy:0.56,fw:0.04,fh:0.32},
     ],
     bumpers:[
-      {fx:0.28,fy:0.28,fr:0.04},
-      {fx:0.72,fy:0.28,fr:0.04},
-      {fx:0.28,fy:0.72,fr:0.04},
-      {fx:0.72,fy:0.72,fr:0.04},
+      {fx:0.28,fy:0.28,fr:0.04},{fx:0.72,fy:0.28,fr:0.04},
+      {fx:0.28,fy:0.72,fr:0.04},{fx:0.72,fy:0.72,fr:0.04},
     ],
     sand:[{fx:0.36,fy:0.36,fw:0.28,fh:0.28}] },
 
-  // 11 — The Maze
   { name:"The Maze", par:5, maxShots:9,
     ball:{fx:0.13,fy:0.22}, hole:{fx:0.85,fy:0.78},
     walls:[
-      {fx:0.08,fy:0.08,fw:0.84,fh:0.04},
-      {fx:0.08,fy:0.88,fw:0.84,fh:0.04},
-      {fx:0.08,fy:0.08,fw:0.04,fh:0.84},
-      {fx:0.88,fy:0.08,fw:0.04,fh:0.84},
-      {fx:0.22,fy:0.12,fw:0.04,fh:0.44},
-      {fx:0.22,fy:0.65,fw:0.04,fh:0.23},
-      {fx:0.38,fy:0.34,fw:0.04,fh:0.54},
-      {fx:0.54,fy:0.12,fw:0.04,fh:0.54},
+      {fx:0.08,fy:0.08,fw:0.84,fh:0.04},{fx:0.08,fy:0.88,fw:0.84,fh:0.04},
+      {fx:0.08,fy:0.08,fw:0.04,fh:0.84},{fx:0.88,fy:0.08,fw:0.04,fh:0.84},
+      {fx:0.22,fy:0.12,fw:0.04,fh:0.44},{fx:0.22,fy:0.65,fw:0.04,fh:0.23},
+      {fx:0.38,fy:0.34,fw:0.04,fh:0.54},{fx:0.54,fy:0.12,fw:0.04,fh:0.54},
       {fx:0.70,fy:0.34,fw:0.04,fh:0.54},
     ],
     bumpers:[{fx:0.46,fy:0.22,fr:0.035},{fx:0.62,fy:0.78,fr:0.035}],
     sand:[{fx:0.24,fy:0.70,fw:0.12,fh:0.14},{fx:0.56,fy:0.14,fw:0.12,fh:0.14}] },
 
-  // 12 — Grand Finale
   { name:"Grand Finale", par:6, maxShots:10,
     ball:{fx:0.13,fy:0.50}, hole:{fx:0.87,fy:0.50},
     walls:[
-      {fx:0.08,fy:0.08,fw:0.84,fh:0.04},
-      {fx:0.08,fy:0.88,fw:0.84,fh:0.04},
-      {fx:0.08,fy:0.08,fw:0.04,fh:0.84},
-      {fx:0.88,fy:0.08,fw:0.04,fh:0.84},
-      {fx:0.22,fy:0.12,fw:0.04,fh:0.30},
-      {fx:0.22,fy:0.58,fw:0.04,fh:0.30},
-      {fx:0.40,fy:0.30,fw:0.04,fh:0.30},
-      {fx:0.40,fy:0.70,fw:0.04,fh:0.18},
-      {fx:0.58,fy:0.12,fw:0.04,fh:0.30},
-      {fx:0.58,fy:0.58,fw:0.04,fh:0.30},
-      {fx:0.74,fy:0.30,fw:0.04,fh:0.30},
-      {fx:0.74,fy:0.70,fw:0.04,fh:0.18},
+      {fx:0.08,fy:0.08,fw:0.84,fh:0.04},{fx:0.08,fy:0.88,fw:0.84,fh:0.04},
+      {fx:0.08,fy:0.08,fw:0.04,fh:0.84},{fx:0.88,fy:0.08,fw:0.04,fh:0.84},
+      {fx:0.22,fy:0.12,fw:0.04,fh:0.30},{fx:0.22,fy:0.58,fw:0.04,fh:0.30},
+      {fx:0.40,fy:0.30,fw:0.04,fh:0.30},{fx:0.40,fy:0.70,fw:0.04,fh:0.18},
+      {fx:0.58,fy:0.12,fw:0.04,fh:0.30},{fx:0.58,fy:0.58,fw:0.04,fh:0.30},
+      {fx:0.74,fy:0.30,fw:0.04,fh:0.30},{fx:0.74,fy:0.70,fw:0.04,fh:0.18},
     ],
     bumpers:[
-      {fx:0.31,fy:0.25,fr:0.038},
-      {fx:0.31,fy:0.75,fr:0.038},
+      {fx:0.31,fy:0.25,fr:0.038},{fx:0.31,fy:0.75,fr:0.038},
       {fx:0.49,fy:0.50,fr:0.045},
-      {fx:0.67,fy:0.25,fr:0.038},
-      {fx:0.67,fy:0.75,fr:0.038},
+      {fx:0.67,fy:0.25,fr:0.038},{fx:0.67,fy:0.75,fr:0.038},
     ],
-    sand:[
-      {fx:0.24,fy:0.44,fw:0.14,fh:0.12},
-      {fx:0.60,fy:0.44,fw:0.14,fh:0.12},
-    ] },
+    sand:[{fx:0.24,fy:0.44,fw:0.14,fh:0.12},{fx:0.60,fy:0.44,fw:0.14,fh:0.12}] },
 ];
 
 function scaleHole(raw) {
   return {
-    name:raw.name, par:raw.par, maxShots:raw.maxShots,
-    ball:{x:raw.ball.fx*W, y:raw.ball.fy*H},
-    hole:{x:raw.hole.fx*W, y:raw.hole.fy*H},
+    name:raw.name,par:raw.par,maxShots:raw.maxShots,
+    ball:{x:raw.ball.fx*W,y:raw.ball.fy*H},
+    hole:{x:raw.hole.fx*W,y:raw.hole.fy*H},
     walls:raw.walls.map(w=>({x:w.fx*W,y:w.fy*H,w:w.fw*W,h:w.fh*H})),
     bumpers:raw.bumpers.map(b=>({x:b.fx*W,y:b.fy*H,r:b.fr*Math.min(W,H)})),
     sand:raw.sand.map(s=>({x:s.fx*W,y:s.fy*H,w:s.fw*W,h:s.fh*H})),
@@ -554,9 +497,7 @@ function restartGame(){
   ['overlay','shots-overlay','hole-complete-overlay'].forEach(id=>document.getElementById(id).classList.remove('show'));
   initGame();
 }
-
 function initGame(){holeIndex=0;totalScore=0;scorecardData=[];buildHoleDots();loadHole();}
-
 function buildHoleDots(){
   const c=document.getElementById('hole-dots');c.innerHTML='';
   holesRaw.forEach((_,i)=>{const d=document.createElement('div');d.className='dot';d.id='dot'+i;c.appendChild(d);});
@@ -598,16 +539,15 @@ function loadHole(){
   document.getElementById('shotsCard').classList.remove('warning');
   updateDots();buildPips(maxShots);draw();
 }
-
 function showHoleComplete(diff){
   const h=holesRaw[holeIndex];
   let icon,badgeClass,badgeText;
-  if(shots===1)     {icon='🏆';badgeClass='ace';   badgeText='🏆 HOLE IN ONE!';}
-  else if(diff<=-2) {icon='🦅';badgeClass='eagle'; badgeText='🦅 EAGLE';}
+  if(shots===1){icon='🏆';badgeClass='ace';badgeText='🏆 HOLE IN ONE!';}
+  else if(diff<=-2){icon='🦅';badgeClass='eagle';badgeText='🦅 EAGLE';}
   else if(diff===-1){icon='🐦';badgeClass='birdie';badgeText='🐦 BIRDIE';}
-  else if(diff===0) {icon='✅';badgeClass='par';   badgeText='✅ PAR';}
-  else if(diff===1) {icon='😬';badgeClass='bogey'; badgeText='😬 BOGEY';}
-  else              {icon='😅';badgeClass='double';badgeText='😅 DOUBLE+';}
+  else if(diff===0){icon='✅';badgeClass='par';badgeText='✅ PAR';}
+  else if(diff===1){icon='😬';badgeClass='bogey';badgeText='😬 BOGEY';}
+  else{icon='😅';badgeClass='double';badgeText='😅 DOUBLE+';}
   document.getElementById('hc-icon').textContent=icon;
   document.getElementById('hc-title').textContent=diff<=0?'Hole Complete! 🎉':'Hole Done!';
   document.getElementById('hc-hole-name').textContent=`Hole ${holeIndex+1} — ${h.name}`;
@@ -629,7 +569,6 @@ function continueFromHoleComplete(){
   if(isLastHole){showGameOver();return;}
   holeIndex++;loadHole();
 }
-
 function showOutOfShots(){
   document.getElementById('shots-hole-num').textContent=holeIndex+1;
   document.getElementById('shots-par-num').textContent=par;
@@ -641,7 +580,6 @@ function continueAfterOutOfShots(){
   document.getElementById('shots-overlay').classList.remove('show');
   loadHole();
 }
-
 function showGameOver(){
   const best=parseInt(localStorage.getItem('mgBest')||'999');
   if(totalScore<best)localStorage.setItem('mgBest',totalScore);
@@ -649,9 +587,7 @@ function showGameOver(){
   while(table.rows.length>1)table.deleteRow(1);
   scorecardData.forEach(s=>{
     const row=table.insertRow();
-    row.insertCell().textContent=s.hole;
-    row.insertCell().textContent=s.par;
-    row.insertCell().textContent=s.shots;
+    row.insertCell().textContent=s.hole;row.insertCell().textContent=s.par;row.insertCell().textContent=s.shots;
     const dc=row.insertCell();
     dc.textContent=s.diff===0?'E':s.diff>0?'+'+s.diff:s.diff;
     dc.className=s.diff<0?'sc-under':s.diff>0?'sc-over':'sc-par';
@@ -666,18 +602,15 @@ function showGameOver(){
   document.getElementById('overlay-grade').textContent=grades.find(g=>totalScore<=g.max).text;
   document.getElementById('overlay').classList.add('show');
 }
-
 function updatePowerBar(){
   const f=document.getElementById('power-fill');
   f.style.width=power+'%';
   f.style.background=power<40?'linear-gradient(90deg,#00ff88,#00cc66)':power<70?'linear-gradient(90deg,#ffcc00,#ff9900)':'linear-gradient(90deg,#ff6644,#ff2222)';
 }
-
 function spawnBounce(x,y){for(let i=0;i<6;i++){const a=Math.random()*Math.PI*2,s=1.5+Math.random()*2.5;particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:18,maxLife:18,size:2+Math.random()*2.5,color:'#aaddff',g:0});}}
 function spawnHole(x,y){const cols=['#00ff88','#ffcc00','#ff6644','#ff44aa','#44aaff','#fff'];for(let i=0;i<45;i++){const a=Math.random()*Math.PI*2,s=2.5+Math.random()*5;particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-2,life:55,maxLife:55,size:2.5+Math.random()*4,color:cols[Math.floor(Math.random()*cols.length)],g:0.13});}waveRings.push({x,y,r:4,maxR:50,life:35,maxLife:35});}
 function spawnBumperHit(x,y){for(let i=0;i<10;i++){const a=Math.random()*Math.PI*2,s=2+Math.random()*3.5;particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:20,maxLife:20,size:2+Math.random()*3.5,color:'#ff88cc',g:0.04});}}
 function triggerShake(i,f){shakeIntensity=i;shakeFrames=f;}
-
 function draw(){
   if(!W||!H)return;
   ctx.save();
@@ -745,14 +678,13 @@ function draw(){
   ctx.beginPath();ctx.arc(ball.x-ball.r*.3,ball.y-ball.r*.3,ball.r*0.32,0,Math.PI*2);ctx.fillStyle='rgba(255,255,255,0.7)';ctx.fill();
   ctx.restore();
 }
-
 function update(){
   if(!animating)return;
   trailPoints.push({x:ball.x,y:ball.y,life:20});
-  trailPoints=trailPoints.filter(t=>t.life-- >0);
-  particles=particles.filter(p=>p.life-- >0);
+  trailPoints=trailPoints.filter(t=>t.life-->0);
+  particles=particles.filter(p=>p.life-->0);
   particles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=p.g;p.vx*=0.96;});
-  waveRings=waveRings.filter(w=>w.life-- >0);
+  waveRings=waveRings.filter(w=>w.life-->0);
   waveRings.forEach(w=>{w.r+=(w.maxR-w.r)*0.12;});
   ball.vx*=0.987;ball.vy*=0.987;
   sandTraps.forEach(s=>{if(ball.x>s.x&&ball.x<s.x+s.w&&ball.y>s.y&&ball.y<s.y+s.h){ball.vx*=0.93;ball.vy*=0.93;}});
@@ -789,13 +721,12 @@ function update(){
     spawnHole(hole.x,hole.y);triggerShake(4,10);
     let cf=52;
     function celebLoop(){
-      particles=particles.filter(p=>p.life-- >0);particles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=p.g;p.vx*=0.96;});
-      waveRings=waveRings.filter(w=>w.life-- >0);waveRings.forEach(w=>{w.r+=(w.maxR-w.r)*0.12;});
-      draw();if(cf-- >0)requestAnimationFrame(celebLoop);
+      particles=particles.filter(p=>p.life-->0);particles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=p.g;p.vx*=0.96;});
+      waveRings=waveRings.filter(w=>w.life-->0);waveRings.forEach(w=>{w.r+=(w.maxR-w.r)*0.12;});
+      draw();if(cf-->0)requestAnimationFrame(celebLoop);
     }
     celebLoop();
-    const diff=shots-par;
-    totalScore+=diff;
+    const diff=shots-par;totalScore+=diff;
     scorecardData.push({hole:holeIndex+1,par,shots,diff});
     const scoreEl=document.getElementById('scoreNum');
     scoreEl.textContent=totalScore>0?'+'+totalScore:totalScore;
@@ -810,7 +741,6 @@ function update(){
   }
   draw();requestAnimationFrame(update);
 }
-
 function shoot(){
   if(power>2&&shotsLeft>0){
     shots++;shotsLeft--;
@@ -822,7 +752,6 @@ function shoot(){
     requestAnimationFrame(update);
   }
 }
-
 canvas.addEventListener('mousedown',(e)=>{if(animating||shotsLeft<=0)return;const r=canvas.getBoundingClientRect();aimAngle=Math.atan2(e.clientY-r.top-ball.y,e.clientX-r.left-ball.x);aiming=true;charging=true;power=0;draw();});
 canvas.addEventListener('mousemove',(e)=>{if(!aiming||animating)return;const r=canvas.getBoundingClientRect();aimAngle=Math.atan2(e.clientY-r.top-ball.y,e.clientX-r.left-ball.x);draw();});
 canvas.addEventListener('mouseup',()=>{if(!aiming||animating)return;aiming=false;charging=false;shoot();draw();});
@@ -831,7 +760,6 @@ canvas.addEventListener('touchmove',(e)=>{e.preventDefault();if(!aiming)return;c
 canvas.addEventListener('touchend',(e)=>{e.preventDefault();if(!aiming)return;aiming=false;charging=false;shoot();draw();},{passive:false});
 setInterval(()=>{if(charging&&aiming){power=Math.min(power+1.5,100);updatePowerBar();draw();}},16);
 window.addEventListener('resize',()=>{if(document.getElementById('game-screen').classList.contains('show')){resizeCanvas();loadHole();}});
-
 const saved=localStorage.getItem('mgBest');
 document.getElementById('home-best').textContent=saved!==null?(parseInt(saved)>0?'+'+saved:saved):'—';
 </script>
