@@ -92,12 +92,12 @@
   .overlay-box { background: linear-gradient(135deg, #1a2a3a, #0f2027); border-radius: 24px; padding: 40px 56px; text-align: center; box-shadow: 0 30px 80px rgba(0,0,0,0.6); }
 
   /* Hole Complete */
-  #hole-complete-overlay .overlay-box { border: 2px solid rgba(0,255,136,0.5); box-shadow: 0 30px 80px rgba(0,0,0,0.7), 0 0 50px rgba(0,255,136,0.12); max-width: 400px; }
+  #hole-complete-overlay .overlay-box { border: 2px solid rgba(0,255,136,0.5); max-width: 400px; }
   #hc-confetti-row { font-size: 28px; letter-spacing: 6px; margin-bottom: 10px; animation: bounce 1s ease-in-out infinite; }
   #hc-icon { font-size: 72px; animation: popIn 0.5s cubic-bezier(0.175,0.885,0.32,1.275); display: block; margin-bottom: 6px; }
   #hc-title { font-family: 'Fredoka One', cursive; font-size: 38px; color: #00ff88; text-shadow: 0 0 20px rgba(0,255,136,0.5); margin-bottom: 4px; }
   #hc-hole-name { font-size: 13px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 18px; }
-  #hc-score-badge { display: inline-block; font-family: 'Fredoka One', cursive; font-size: 52px; padding: 12px 36px; border-radius: 20px; margin-bottom: 10px; animation: popIn 0.4s 0.15s cubic-bezier(0.175,0.885,0.32,1.275) both; }
+  #hc-score-badge { display: inline-block; font-family: 'Fredoka One', cursive; font-size: 46px; padding: 12px 36px; border-radius: 20px; margin-bottom: 10px; animation: popIn 0.4s 0.15s cubic-bezier(0.175,0.885,0.32,1.275) both; }
   #hc-score-badge.ace    { background: linear-gradient(135deg,#ffd700,#ffaa00); color: #1a0a00; box-shadow: 0 8px 30px rgba(255,215,0,0.5); }
   #hc-score-badge.eagle  { background: linear-gradient(135deg,#ffd700,#e6b800); color: #1a0a00; box-shadow: 0 8px 30px rgba(255,215,0,0.4); }
   #hc-score-badge.birdie { background: linear-gradient(135deg,#00ff88,#00cc66); color: #0a1a10; box-shadow: 0 8px 30px rgba(0,255,136,0.4); }
@@ -112,7 +112,7 @@
   #hc-total-bar { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 10px 20px; margin-bottom: 22px; font-size: 14px; color: rgba(255,255,255,0.5); }
   #hc-total-bar span { font-family: 'Fredoka One', cursive; font-size: 20px; color: #fff; margin-left: 8px; }
   #hc-next-btn { padding: 14px 52px; font-size: 20px; font-family: 'Fredoka One', cursive; background: linear-gradient(135deg,#00ff88,#00cc66); color: #0f2027; border: none; border-radius: 50px; cursor: pointer; box-shadow: 0 8px 24px rgba(0,255,136,0.35); transition: all 0.2s; display: block; width: 100%; margin-bottom: 10px; }
-  #hc-next-btn:hover { transform: translateY(-3px); box-shadow: 0 14px 32px rgba(0,255,136,0.5); }
+  #hc-next-btn:hover { transform: translateY(-3px); }
   #hc-quit-btn { padding: 11px 30px; font-size: 14px; font-family: 'Fredoka One', cursive; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15); color: rgba(255,255,255,0.5); border-radius: 50px; cursor: pointer; transition: all 0.2s; }
   #hc-quit-btn:hover { background: rgba(255,255,255,0.12); color: #fff; }
 
@@ -155,7 +155,7 @@
   <div id="home-cards">
     <div class="home-stat"><div class="home-stat-label">Best Score</div><div class="home-stat-value" id="home-best">—</div></div>
     <div class="home-stat"><div class="home-stat-label">Holes</div><div class="home-stat-value">6</div></div>
-    <div class="home-stat"><div class="home-stat-label">Total Par</div><div class="home-stat-value">26</div></div>
+    <div class="home-stat"><div class="home-stat-label">Total Par</div><div class="home-stat-value">24</div></div>
   </div>
   <button id="play-btn" onclick="startGame()">▶ PLAY</button>
   <button id="how-to-btn" onclick="showHowTo()">📖 How to Play</button>
@@ -215,7 +215,7 @@
     <div id="hc-confetti-row">🎊 🎉 🎊</div>
     <span id="hc-icon">⛳</span>
     <div id="hc-title">Hole Complete!</div>
-    <div id="hc-hole-name">Hole 1 — Straight Shot</div>
+    <div id="hc-hole-name">Hole 1</div>
     <div id="hc-score-badge" class="birdie">🐦 BIRDIE</div>
     <div id="hc-label">2 shots · Par 3</div>
     <div id="hc-shots-detail">1 under par</div>
@@ -287,24 +287,109 @@ const TIPS = [
   '"The green giveth and the green taketh away 😅"',
 ];
 
+// ============================================================
+//  ALL 6 HOLES — fully reworked, every goal is reachable!
+//  Border walls: top y=50, bottom y=390, left x=50, right x=570
+//  Ball & hole never inside or behind any inner wall
+// ============================================================
 const holes = [
-  { name:"Straight Shot", par:2, maxShots:5, ball:{x:80,y:220}, hole:{x:540,y:220},
-    walls:[{x:50,y:150,w:540,h:18},{x:50,y:272,w:540,h:18},{x:50,y:150,w:18,h:140},{x:572,y:150,w:18,h:140}], bumpers:[], sand:[] },
-  { name:"The Bend", par:3, maxShots:6, ball:{x:80,y:360}, hole:{x:540,y:80},
-    walls:[{x:50,y:50,w:540,h:18},{x:50,y:400,w:540,h:18},{x:50,y:50,w:18,h:368},{x:572,y:50,w:18,h:368},{x:50,y:200,w:280,h:18},{x:330,y:232,w:18,h:168}],
-    bumpers:[{x:430,y:290,r:18}], sand:[{x:160,y:260,w:120,h:60}] },
-  { name:"Bumper Madness", par:4, maxShots:7, ball:{x:80,y:220}, hole:{x:540,y:220},
-    walls:[{x:50,y:80,w:540,h:18},{x:50,y:342,w:540,h:18},{x:50,y:80,w:18,h:280},{x:572,y:80,w:18,h:280},{x:200,y:80,w:18,h:120},{x:400,y:242,w:18,h:100}],
-    bumpers:[{x:300,y:160,r:22},{x:200,y:290,r:18},{x:420,y:160,r:20},{x:160,y:220,r:16}], sand:[] },
-  { name:"Sand Trap", par:4, maxShots:7, ball:{x:80,y:100}, hole:{x:540,y:340},
-    walls:[{x:50,y:50,w:540,h:18},{x:50,y:382,w:540,h:18},{x:50,y:50,w:18,h:350},{x:572,y:50,w:18,h:350},{x:200,y:50,w:18,h:160},{x:380,y:222,w:18,h:160}],
-    bumpers:[{x:450,y:130,r:20}], sand:[{x:220,y:250,w:150,h:80},{x:80,y:180,w:100,h:60}] },
-  { name:"The Labyrinth", par:5, maxShots:8, ball:{x:80,y:80}, hole:{x:540,y:360},
-    walls:[{x:50,y:50,w:540,h:18},{x:50,y:390,w:540,h:18},{x:50,y:50,w:18,h:358},{x:572,y:50,w:18,h:358},{x:140,y:50,w:18,h:200},{x:140,y:310,w:18,h:80},{x:260,y:138,w:18,h:80},{x:260,y:250,w:18,h:140},{x:380,y:50,w:18,h:150},{x:380,y:250,w:18,h:140},{x:490,y:138,w:18,h:200}],
-    bumpers:[{x:210,y:330,r:16},{x:450,y:90,r:18}], sand:[{x:290,y:60,w:80,h:70},{x:420,y:310,w:100,h:60}] },
-  { name:"Boomerang", par:5, maxShots:8, ball:{x:80,y:220}, hole:{x:300,y:220},
-    walls:[{x:50,y:50,w:540,h:18},{x:50,y:390,w:540,h:18},{x:50,y:50,w:18,h:358},{x:572,y:50,w:18,h:358},{x:180,y:138,w:18,h:240},{x:420,y:138,w:18,h:240},{x:180,y:138,w:240,h:18},{x:180,y:360,w:240,h:18}],
-    bumpers:[{x:490,y:120,r:20},{x:490,y:320,r:20},{x:100,y:120,r:16},{x:100,y:320,r:16}], sand:[{x:210,y:170,w:180,h:120}] }
+
+  // HOLE 1 — Straight Shot (easy warm-up, no obstacles)
+  { name:"Straight Shot", par:2, maxShots:5,
+    ball:{x:90,y:220}, hole:{x:530,y:220},
+    walls:[
+      {x:50,y:50,w:520,h:16},   // top
+      {x:50,y:374,w:520,h:16},  // bottom
+      {x:50,y:50,w:16,h:340},   // left
+      {x:554,y:50,w:16,h:340},  // right
+    ],
+    bumpers:[], sand:[] },
+
+  // HOLE 2 — The Dogleg (one wall divider, open gap to reach hole)
+  { name:"The Dogleg", par:3, maxShots:6,
+    ball:{x:90,y:310}, hole:{x:510,y:110},
+    walls:[
+      {x:50,y:50,w:520,h:16},
+      {x:50,y:374,w:520,h:16},
+      {x:50,y:50,w:16,h:340},
+      {x:554,y:50,w:16,h:340},
+      // divider wall — leaves a 90px gap on the right so hole is reachable
+      {x:50,y:210,w:370,h:16},
+    ],
+    bumpers:[{x:460,y:290,r:18}],
+    sand:[{x:100,y:240,w:120,h:60}] },
+
+  // HOLE 3 — Bumper Alley (bumpers in the middle, open fairway)
+  { name:"Bumper Alley", par:3, maxShots:6,
+    ball:{x:90,y:220}, hole:{x:530,y:220},
+    walls:[
+      {x:50,y:80,w:520,h:16},
+      {x:50,y:344,w:520,h:16},
+      {x:50,y:80,w:16,h:280},
+      {x:554,y:80,w:16,h:280},
+    ],
+    bumpers:[
+      {x:220,y:155,r:20},
+      {x:310,y:290,r:20},
+      {x:400,y:155,r:20},
+    ],
+    sand:[] },
+
+  // HOLE 4 — Sand Pit (big sand trap in the middle, must navigate around)
+  { name:"Sand Pit", par:4, maxShots:7,
+    ball:{x:90,y:110}, hole:{x:510,y:330},
+    walls:[
+      {x:50,y:50,w:520,h:16},
+      {x:50,y:374,w:520,h:16},
+      {x:50,y:50,w:16,h:340},
+      {x:554,y:50,w:16,h:340},
+      // short shelf — leaves wide gap on right for ball to pass
+      {x:50,y:215,w:260,h:16},
+    ],
+    bumpers:[{x:440,y:165,r:18}],
+    sand:[
+      {x:170,y:240,w:200,h:80},
+      {x:390,y:240,w:120,h:80},
+    ] },
+
+  // HOLE 5 — The Z (Z-shaped path, gaps always big enough for ball)
+  { name:"The Z", par:4, maxShots:7,
+    ball:{x:90,y:100}, hole:{x:510,y:330},
+    walls:[
+      {x:50,y:50,w:520,h:16},
+      {x:50,y:374,w:520,h:16},
+      {x:50,y:50,w:16,h:340},
+      {x:554,y:50,w:16,h:340},
+      // top divider — gap on RIGHT (x=370 to x=554, width=184)
+      {x:50,y:180,w:320,h:16},
+      // bottom divider — gap on LEFT (x=50 to x=50+180=230)
+      {x:234,y:270,w:320,h:16},
+    ],
+    bumpers:[{x:460,y:225,r:18},{x:150,y:225,r:18}],
+    sand:[{x:260,y:195,w:100,h:60}] },
+
+  // HOLE 6 — Gauntlet (narrow corridor with bumpers, open ends)
+  { name:"The Gauntlet", par:5, maxShots:8,
+    ball:{x:90,y:220}, hole:{x:510,y:220},
+    walls:[
+      {x:50,y:50,w:520,h:16},
+      {x:50,y:374,w:520,h:16},
+      {x:50,y:50,w:16,h:340},
+      {x:554,y:50,w:16,h:340},
+      // top ledges — gaps in middle for ball to pass
+      {x:66,y:155,w:140,h:14},
+      {x:270,y:155,w:140,h:14},
+      {x:474,y:155,w:80,h:14},
+      // bottom ledges
+      {x:66,y:271,w:140,h:14},
+      {x:270,y:271,w:140,h:14},
+      {x:474,y:271,w:80,h:14},
+    ],
+    bumpers:[
+      {x:220,y:220,r:18},
+      {x:400,y:220,r:18},
+    ],
+    sand:[{x:290,y:165,w:80,h:100}] },
 ];
 
 // ---- Navigation ----
@@ -377,13 +462,13 @@ function loadHole() {
 // ---- Hole Complete Popup ----
 function showHoleComplete(diff) {
   const h = holes[holeIndex];
-  let icon, badgeClass, badgeText, label;
-  if(shots===1)      { icon='🏆'; badgeClass='ace';    badgeText='🏆 HOLE IN ONE!'; label='Incredible!!!'; }
-  else if(diff<=-2)  { icon='🦅'; badgeClass='eagle';  badgeText='🦅 EAGLE';        label='Incredible!'; }
-  else if(diff===-1) { icon='🐦'; badgeClass='birdie'; badgeText='🐦 BIRDIE';        label='Amazing!'; }
-  else if(diff===0)  { icon='✅'; badgeClass='par';    badgeText='✅ PAR';           label='Solid!'; }
-  else if(diff===1)  { icon='😬'; badgeClass='bogey';  badgeText='😬 BOGEY';         label='So close...'; }
-  else               { icon='😅'; badgeClass='double'; badgeText='😅 DOUBLE+';       label='Yikes!'; }
+  let icon, badgeClass, badgeText;
+  if(shots===1)      { icon='🏆'; badgeClass='ace';    badgeText='🏆 HOLE IN ONE!'; }
+  else if(diff<=-2)  { icon='🦅'; badgeClass='eagle';  badgeText='🦅 EAGLE'; }
+  else if(diff===-1) { icon='🐦'; badgeClass='birdie'; badgeText='🐦 BIRDIE'; }
+  else if(diff===0)  { icon='✅'; badgeClass='par';    badgeText='✅ PAR'; }
+  else if(diff===1)  { icon='😬'; badgeClass='bogey';  badgeText='😬 BOGEY'; }
+  else               { icon='😅'; badgeClass='double'; badgeText='😅 DOUBLE+'; }
 
   document.getElementById('hc-icon').textContent = icon;
   document.getElementById('hc-title').textContent = diff<=0 ? 'Hole Complete! 🎉' : 'Hole Done!';
@@ -393,45 +478,42 @@ function showHoleComplete(diff) {
   badge.textContent = badgeText;
   document.getElementById('hc-label').textContent = `${shots} shot${shots!==1?'s':''} · Par ${par}`;
   const absDiff = Math.abs(diff);
-  document.getElementById('hc-shots-detail').textContent = diff===0 ? 'Exactly on par' : diff<0 ? `${absDiff} under par` : `${absDiff} over par`;
-  const starCount = shots===1 ? 3 : diff<=-2 ? 3 : diff===-1 ? 3 : diff===0 ? 2 : diff===1 ? 1 : 0;
-  for(let i=0;i<3;i++) { const s=document.getElementById('star'+i); s.className='hc-star'+(i<starCount?' lit':''); }
-  const totEl = document.getElementById('hc-total-val');
-  totEl.textContent = totalScore>0 ? '+'+totalScore : totalScore===0 ? 'E' : totalScore;
-  totEl.style.color = totalScore<0 ? '#00ff88' : totalScore>0 ? '#ff6644' : '#fff';
-  document.getElementById('hc-next-btn').textContent = isLastHole ? '🏆 See Final Score' : 'Next Hole ➡️';
+  document.getElementById('hc-shots-detail').textContent = diff===0?'Exactly on par':diff<0?`${absDiff} under par`:`${absDiff} over par`;
+  const starCount = shots===1?3:diff<=-2?3:diff===-1?3:diff===0?2:diff===1?1:0;
+  for(let i=0;i<3;i++){const s=document.getElementById('star'+i);s.className='hc-star'+(i<starCount?' lit':'');}
+  const totEl=document.getElementById('hc-total-val');
+  totEl.textContent=totalScore>0?'+'+totalScore:totalScore===0?'E':totalScore;
+  totEl.style.color=totalScore<0?'#00ff88':totalScore>0?'#ff6644':'#fff';
+  document.getElementById('hc-next-btn').textContent=isLastHole?'🏆 See Final Score':'Next Hole ➡️';
   document.getElementById('hole-complete-overlay').classList.add('show');
 }
 
 function continueFromHoleComplete() {
   document.getElementById('hole-complete-overlay').classList.remove('show');
-  if(isLastHole) { showGameOver(); return; }
-  holeIndex++;
-  loadHole();
+  if(isLastHole){showGameOver();return;}
+  holeIndex++; loadHole();
 }
 
-// ---- Out of Shots — RESTART SAME HOLE ----
+// ---- Out of Shots — Restart Same Hole ----
 function showOutOfShots() {
   document.getElementById('shots-hole-num').textContent = holeIndex+1;
   document.getElementById('shots-par-num').textContent = par;
   document.getElementById('shots-overlay-tip').textContent = TIPS[Math.floor(Math.random()*TIPS.length)];
-  triggerShake(6, 20);
+  triggerShake(6,20);
   document.getElementById('shots-overlay').classList.add('show');
 }
-
 function continueAfterOutOfShots() {
   document.getElementById('shots-overlay').classList.remove('show');
-  // ✅ Restart the SAME hole — no penalty, no advancing
-  loadHole();
+  loadHole(); // restart SAME hole
 }
 
 // ---- Round Complete ----
 function showGameOver() {
-  const best = parseInt(localStorage.getItem('mgBest')||'999');
-  if(totalScore<best) localStorage.setItem('mgBest', totalScore);
-  const table = document.getElementById('scorecard');
+  const best=parseInt(localStorage.getItem('mgBest')||'999');
+  if(totalScore<best) localStorage.setItem('mgBest',totalScore);
+  const table=document.getElementById('scorecard');
   while(table.rows.length>1) table.deleteRow(1);
-  scorecardData.forEach(s => {
+  scorecardData.forEach(s=>{
     const row=table.insertRow();
     row.insertCell().textContent=s.hole;
     row.insertCell().textContent=s.par;
@@ -451,12 +533,7 @@ function showGameOver() {
   document.getElementById('overlay').classList.add('show');
 }
 
-function showMessage(text, color) {
-  const msg=document.getElementById('message');
-  msg.classList.remove('show'); msg.textContent=text; msg.style.color=color||'#00ff88';
-  setTimeout(()=>msg.classList.add('show'),40);
-}
-function updatePowerBar() {
+function updatePowerBar(){
   const f=document.getElementById('power-fill');
   f.style.width=power+'%';
   f.style.background=power<40?'linear-gradient(90deg,#00ff88,#00cc66)':power<70?'linear-gradient(90deg,#ffcc00,#ff9900)':'linear-gradient(90deg,#ff6644,#ff2222)';
@@ -479,7 +556,8 @@ function draw(){
   for(let i=0;i<W;i+=30){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i,H);ctx.stroke();}
   for(let j=0;j<H;j+=30){ctx.beginPath();ctx.moveTo(0,j);ctx.lineTo(W,j);ctx.stroke();}
   sandTraps.forEach(s=>{
-    ctx.save();const sg=ctx.createLinearGradient(s.x,s.y,s.x+s.w,s.y+s.h);
+    ctx.save();
+    const sg=ctx.createLinearGradient(s.x,s.y,s.x+s.w,s.y+s.h);
     sg.addColorStop(0,'#d4a843');sg.addColorStop(1,'#b8902e');
     ctx.fillStyle=sg;ctx.beginPath();ctx.roundRect(s.x,s.y,s.w,s.h,14);ctx.fill();
     ctx.fillStyle='rgba(255,255,200,0.2)';
@@ -503,6 +581,7 @@ function draw(){
     const a=wr.life/wr.maxLife;ctx.save();ctx.globalAlpha=a*0.6;ctx.strokeStyle='#00ff88';ctx.lineWidth=2;
     ctx.beginPath();ctx.arc(wr.x,wr.y,wr.r,0,Math.PI*2);ctx.stroke();ctx.restore();
   });
+  // Hole shadow + glow
   ctx.beginPath();ctx.arc(hole.x+3,hole.y+3,hole.r,0,Math.PI*2);ctx.fillStyle='rgba(0,0,0,0.4)';ctx.fill();
   ctx.save();ctx.shadowBlur=20;ctx.shadowColor='#00ff88';ctx.strokeStyle='rgba(0,255,136,0.35)';ctx.lineWidth=3;
   ctx.beginPath();ctx.arc(hole.x,hole.y,hole.r+4,0,Math.PI*2);ctx.stroke();ctx.restore();
@@ -510,11 +589,14 @@ function draw(){
   const hg=ctx.createRadialGradient(hole.x,hole.y,2,hole.x,hole.y,hole.r);
   hg.addColorStop(0,'#000');hg.addColorStop(1,'#1a1a1a');
   ctx.fillStyle=hg;ctx.fill();ctx.strokeStyle='rgba(255,255,255,0.5)';ctx.lineWidth=2;ctx.stroke();
+  // Flag
   ctx.strokeStyle='#ddd';ctx.lineWidth=2;
   ctx.beginPath();ctx.moveTo(hole.x,hole.y-4);ctx.lineTo(hole.x,hole.y-36);ctx.stroke();
   ctx.fillStyle='#ff4455';ctx.beginPath();ctx.moveTo(hole.x,hole.y-36);ctx.lineTo(hole.x+18,hole.y-28);ctx.lineTo(hole.x,hole.y-20);ctx.closePath();ctx.fill();
+  // Trail + particles
   trailPoints.forEach(t=>{ctx.save();ctx.globalAlpha=(t.life/20)*0.35;ctx.beginPath();ctx.arc(t.x,t.y,ball.r*(t.life/20)*0.8,0,Math.PI*2);ctx.fillStyle='#aaddff';ctx.fill();ctx.restore();});
   particles.forEach(p=>{const a=p.life/p.maxLife;ctx.save();ctx.globalAlpha=a;ctx.beginPath();ctx.arc(p.x,p.y,p.size*a,0,Math.PI*2);ctx.fillStyle=p.color;ctx.fill();ctx.restore();});
+  // Aim line
   if(aiming&&!animating){
     ctx.save();ctx.strokeStyle='rgba(255,255,255,0.3)';ctx.lineWidth=1.5;ctx.setLineDash([6,6]);
     const tx=ball.x+Math.cos(aimAngle)*100,ty=ball.y+Math.sin(aimAngle)*100;
@@ -522,6 +604,7 @@ function draw(){
     ctx.setLineDash([]);ctx.strokeStyle='rgba(255,255,255,0.55)';ctx.lineWidth=2;
     ctx.beginPath();ctx.moveTo(tx,ty);ctx.lineTo(tx-Math.cos(aimAngle-0.4)*14,ty-Math.sin(aimAngle-0.4)*14);ctx.moveTo(tx,ty);ctx.lineTo(tx-Math.cos(aimAngle+0.4)*14,ty-Math.sin(aimAngle+0.4)*14);ctx.stroke();ctx.restore();
   }
+  // Ball
   ctx.beginPath();ctx.arc(ball.x+3,ball.y+3,ball.r,0,Math.PI*2);ctx.fillStyle='rgba(0,0,0,0.3)';ctx.fill();
   const ballG=ctx.createRadialGradient(ball.x-3,ball.y-3,1,ball.x,ball.y,ball.r);
   ballG.addColorStop(0,'#fff');ballG.addColorStop(0.5,'#e8e8e8');ballG.addColorStop(1,'#bbb');
@@ -570,6 +653,7 @@ function update(){
   if(ball.y-ball.r<0){ball.y=ball.r;ball.vy*=-0.65;spawnBounce(ball.x,ball.y);}
   if(ball.y+ball.r>H){ball.y=H-ball.r;ball.vy*=-0.65;spawnBounce(ball.x,ball.y);}
 
+  // Hole check
   const dx=ball.x-hole.x,dy=ball.y-hole.y;
   if(Math.sqrt(dx*dx+dy*dy)<hole.r){
     animating=false;ball.x=hole.x;ball.y=hole.y;
@@ -593,7 +677,7 @@ function update(){
 
   if(Math.abs(ball.vx)<0.05&&Math.abs(ball.vy)<0.05){
     ball.vx=0;ball.vy=0;animating=false;
-    if(shotsLeft<=0){ setTimeout(showOutOfShots,400); }
+    if(shotsLeft<=0){setTimeout(showOutOfShots,400);}
     return;
   }
   draw();requestAnimationFrame(update);
