@@ -17,13 +17,14 @@
     font-family: 'Nunito', sans-serif;
     color: white;
     overflow: hidden;
+    user-select: none;
   }
   #game-container { display: flex; flex-direction: column; align-items: center; gap: 12px; }
   #title {
     font-family: 'Fredoka One', cursive;
-    font-size: 40px;
+    font-size: 38px;
     color: #00ffcc;
-    text-shadow: 0 0 20px rgba(0,255,200,0.6), 0 0 40px rgba(0,255,200,0.3);
+    text-shadow: 0 0 24px rgba(0,255,200,0.6);
     letter-spacing: 3px;
   }
   #hud { display: flex; gap: 12px; align-items: center; }
@@ -37,19 +38,23 @@
     min-width: 95px;
   }
   .hud-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(255,255,255,0.4); margin-bottom: 2px; }
-  .hud-value { font-family: 'Fredoka One', cursive; font-size: 28px; color: #00ffcc; line-height: 1; }
+  .hud-value { font-family: 'Fredoka One', cursive; font-size: 28px; color: #00ffcc; line-height: 1; transition: color 0.3s; }
   .hud-divider { width: 2px; height: 50px; background: rgba(255,255,255,0.07); border-radius: 2px; }
+
+  #lives-bar { display: flex; gap: 8px; align-items: center; }
+  #lives-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.4); }
+  .heart { font-size: 22px; transition: all 0.3s; }
+  .heart.lost { opacity: 0.2; filter: grayscale(1); transform: scale(0.8); }
+
   #canvas-wrapper {
     position: relative;
     border-radius: 20px;
     overflow: hidden;
     box-shadow: 0 20px 60px rgba(0,0,0,0.7), 0 0 0 3px rgba(0,255,200,0.2);
+    cursor: crosshair;
   }
   canvas { display: block; }
-  #lives-bar { display: flex; gap: 8px; align-items: center; }
-  #lives-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.4); }
-  .heart { font-size: 22px; transition: all 0.3s; }
-  .heart.lost { opacity: 0.2; filter: grayscale(1); transform: scale(0.8); }
+
   #message-box { height: 42px; display: flex; align-items: center; justify-content: center; }
   #message {
     font-family: 'Fredoka One', cursive;
@@ -62,7 +67,6 @@
   #message.show { opacity: 1; transform: translateY(0) scale(1); }
   #hint { font-size: 13px; color: rgba(255,255,255,0.3); letter-spacing: 0.5px; }
 
-  /* Overlay */
   #overlay {
     display: none; position: fixed; inset: 0;
     background: rgba(0,0,0,0.85);
@@ -76,7 +80,7 @@
     border-radius: 24px;
     padding: 44px 64px;
     text-align: center;
-    box-shadow: 0 30px 80px rgba(0,0,0,0.7), 0 0 40px rgba(0,255,200,0.1);
+    box-shadow: 0 30px 80px rgba(0,0,0,0.7);
   }
   #overlay-title { font-family: 'Fredoka One', cursive; font-size: 44px; color: #00ffcc; margin-bottom: 6px; }
   #overlay-sub { font-size: 15px; color: rgba(255,255,255,0.45); margin-bottom: 18px; }
@@ -102,25 +106,27 @@
     <div class="hud-card"><div class="hud-label">Best</div><div class="hud-value" id="bestNum">0</div></div>
   </div>
   <div id="lives-bar">
-    <span id="lives-label">Lives:</span>
+    <span id="lives-label">Base:</span>
     <span class="heart" id="h0">❤️</span>
     <span class="heart" id="h1">❤️</span>
     <span class="heart" id="h2">❤️</span>
+    <span class="heart" id="h3">❤️</span>
+    <span class="heart" id="h4">❤️</span>
   </div>
   <div id="canvas-wrapper">
-    <canvas id="canvas" width="480" height="500"></canvas>
+    <canvas id="canvas" width="620" height="420"></canvas>
   </div>
   <div id="message-box"><div id="message"></div></div>
-  <div id="hint">🖱️ Move mouse or touch to aim · Click or tap to shoot!</div>
+  <div id="hint">🖱️ Click or tap aliens to zap them before they reach your base!</div>
 </div>
 
 <div id="overlay">
   <div id="overlay-box">
-    <div id="overlay-title">Game Over! 👾</div>
+    <div id="overlay-title">Base Destroyed! 💥</div>
     <div id="overlay-sub">Final Score</div>
     <div id="overlay-score">0</div>
     <div id="overlay-best"></div>
-    <button id="restartBtn" onclick="restartGame()">Play Again 🚀</button>
+    <button id="restartBtn" onclick="restartGame()">Try Again 🚀</button>
   </div>
 </div>
 
@@ -129,25 +135,31 @@ const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 
 let score, wave, lives, best, gameOver;
-let ship, bullets, aliens, alienBullets, particles, stars;
-let alienDir, alienDropping, alienMoveTimer, alienMoveInterval;
-let shootCooldown, mouseX;
+let aliens, particles, stars, bullets;
+let spawnTimer, spawnInterval, waveKills, waveTarget;
 let shakeFrames = 0, shakeIntensity = 0;
-let waveClearing = false;
+let waveTransition = false;
+let clickFlashes = [];
 
-const SHIP_SPEED = 5;
-const BULLET_SPEED = 9;
-const ALIEN_BULLET_SPEED = 3.5;
+// Lane Y positions (3 lanes)
+const LANES = [120, 210, 300];
+const BASE_X = 48;
+const ALIEN_TYPES = [
+  { emoji: '👾', hp: 1, speed: 0.6, size: 36, points: 10, color: '#00ffcc' },
+  { emoji: '👽', hp: 2, speed: 0.8, size: 38, points: 20, color: '#ff44ff' },
+  { emoji: '🛸', hp: 3, speed: 0.5, size: 44, points: 35, color: '#ffcc00' },
+  { emoji: '🤖', hp: 4, speed: 0.4, size: 40, points: 50, color: '#ff6644' },
+];
 
 function init() {
-  score = 0; wave = 1; lives = 3; gameOver = false; waveClearing = false;
-  best = parseInt(localStorage.getItem('aiBest') || '0');
-  ship = { x: canvas.width / 2, y: canvas.height - 55, w: 44, h: 36 };
-  bullets = []; alienBullets = []; particles = [];
-  mouseX = canvas.width / 2;
-  shootCooldown = 0;
+  score = 0; wave = 1; lives = 5; gameOver = false; waveTransition = false;
+  best = parseInt(localStorage.getItem('aiBest2') || '0');
+  aliens = []; particles = []; bullets = []; clickFlashes = [];
+  spawnTimer = 0;
+  spawnInterval = 90;
+  waveKills = 0;
+  waveTarget = 10;
   buildStars();
-  buildAliens();
   updateHUD();
   updateLives();
   document.getElementById('overlay').classList.remove('show');
@@ -158,40 +170,14 @@ function restartGame() { init(); }
 
 function buildStars() {
   stars = [];
-  for (let i = 0; i < 80; i++) {
+  for (let i = 0; i < 70; i++) {
     stars.push({
       x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      r: Math.random() * 1.5,
+      y: Math.random() * canvas.height * 0.55,
+      r: 0.5 + Math.random() * 1.5,
       twinkle: Math.random() * Math.PI * 2,
-      speed: 0.01 + Math.random() * 0.02
+      speed: 0.015 + Math.random() * 0.025
     });
-  }
-}
-
-function buildAliens() {
-  aliens = [];
-  alienDir = 1;
-  alienDropping = false;
-  alienMoveTimer = 0;
-  alienMoveInterval = Math.max(18 - wave * 2, 5);
-
-  const rows = Math.min(3 + Math.floor(wave / 2), 5);
-  const cols = 8;
-  const types = ['👾', '👽', '🛸'];
-
-  for (let r = 0; r < rows; r++) {
-    for (let c = 0; c < cols; c++) {
-      aliens.push({
-        x: 50 + c * 50,
-        y: 40 + r * 44,
-        w: 36, h: 36,
-        type: types[Math.min(r, 2)],
-        alive: true,
-        points: (rows - r) * 10,
-        frame: Math.random() * Math.PI * 2
-      });
-    }
   }
 }
 
@@ -202,7 +188,7 @@ function updateHUD() {
 }
 
 function updateLives() {
-  for (let i = 0; i < 3; i++) {
+  for (let i = 0; i < 5; i++) {
     const h = document.getElementById('h' + i);
     h.className = 'heart' + (i >= lives ? ' lost' : '');
   }
@@ -210,35 +196,70 @@ function updateLives() {
 
 function triggerShake(i, f) { shakeIntensity = i; shakeFrames = f; }
 
-function spawnExplosion(x, y, color, count) {
-  for (let i = 0; i < count; i++) {
-    const a = Math.random() * Math.PI * 2;
-    const s = 1.5 + Math.random() * 4;
-    particles.push({
-      x, y,
-      vx: Math.cos(a) * s, vy: Math.sin(a) * s,
-      life: 30 + Math.random() * 20,
-      maxLife: 50,
-      size: 3 + Math.random() * 4,
-      color,
-      gravity: 0.08
-    });
-  }
-}
-
-function spawnShipExplosion(x, y) {
-  spawnExplosion(x, y, '#ff6644', 30);
-  spawnExplosion(x, y, '#ffcc00', 20);
-  spawnExplosion(x, y, '#ffffff', 10);
-}
-
 function showMessage(text, color) {
   const msg = document.getElementById('message');
   msg.classList.remove('show');
   msg.textContent = text;
   msg.style.color = color || '#00ffcc';
-  setTimeout(() => msg.classList.add('show'), 40);
+  setTimeout(() => msg.classList.add('show'), 30);
   setTimeout(() => msg.classList.remove('show'), 1600);
+}
+
+// ---- Spawn Alien ----
+function spawnAlien() {
+  const lane = LANES[Math.floor(Math.random() * LANES.length)];
+  // Pick type based on wave
+  const maxType = Math.min(Math.floor(wave / 2), ALIEN_TYPES.length - 1);
+  const typeIdx = Math.floor(Math.random() * (maxType + 1));
+  const type = ALIEN_TYPES[typeIdx];
+  aliens.push({
+    x: canvas.width + 30,
+    y: lane,
+    lane,
+    hp: type.hp,
+    maxHp: type.hp,
+    speed: type.speed + wave * 0.04,
+    size: type.size,
+    emoji: type.emoji,
+    points: type.points,
+    color: type.color,
+    frame: Math.random() * Math.PI * 2,
+    hitFlash: 0,
+    wobble: Math.random() * Math.PI * 2
+  });
+}
+
+// ---- Particles ----
+function spawnExplosion(x, y, color, count) {
+  for (let i = 0; i < count; i++) {
+    const a = Math.random() * Math.PI * 2;
+    const s = 2 + Math.random() * 5;
+    particles.push({
+      x, y,
+      vx: Math.cos(a) * s, vy: Math.sin(a) * s - 1,
+      life: 28 + Math.random() * 20,
+      maxLife: 48,
+      size: 3 + Math.random() * 5,
+      color,
+      gravity: 0.1
+    });
+  }
+}
+
+function spawnZap(x, y) {
+  for (let i = 0; i < 8; i++) {
+    const a = Math.random() * Math.PI * 2;
+    particles.push({
+      x, y,
+      vx: Math.cos(a) * (1 + Math.random() * 3),
+      vy: Math.sin(a) * (1 + Math.random() * 3),
+      life: 14 + Math.random() * 10,
+      maxLife: 24,
+      size: 2 + Math.random() * 3,
+      color: '#ffffff',
+      gravity: 0
+    });
+  }
 }
 
 // ---- Draw ----
@@ -249,23 +270,50 @@ function drawScene() {
     shakeFrames--;
   }
 
-  // Background
-  ctx.fillStyle = '#050510';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  // Sky gradient
+  const sky = ctx.createLinearGradient(0, 0, 0, canvas.height * 0.65);
+  sky.addColorStop(0, '#050515');
+  sky.addColorStop(1, '#0d1530');
+  ctx.fillStyle = sky;
+  ctx.fillRect(0, 0, canvas.width, canvas.height * 0.65);
+
+  // Ground
+  const gnd = ctx.createLinearGradient(0, canvas.height * 0.65, 0, canvas.height);
+  gnd.addColorStop(0, '#1a3a1a');
+  gnd.addColorStop(1, '#0d220d');
+  ctx.fillStyle = gnd;
+  ctx.fillRect(0, canvas.height * 0.65, canvas.width, canvas.height * 0.35);
+
+  // Ground line
+  ctx.fillStyle = '#2a5a2a';
+  ctx.fillRect(0, canvas.height * 0.65, canvas.width, 3);
 
   // Stars
   stars.forEach(s => {
     s.twinkle += s.speed;
-    const alpha = 0.4 + Math.sin(s.twinkle) * 0.4;
+    const alpha = 0.3 + Math.sin(s.twinkle) * 0.4;
     ctx.beginPath();
     ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
     ctx.fillStyle = `rgba(255,255,255,${alpha})`;
     ctx.fill();
   });
 
-  // Ground line
-  ctx.fillStyle = 'rgba(0,255,200,0.08)';
-  ctx.fillRect(0, canvas.height - 28, canvas.width, 2);
+  // Lane paths (subtle)
+  LANES.forEach(ly => {
+    ctx.save();
+    ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+    ctx.lineWidth = 28;
+    ctx.setLineDash([30, 20]);
+    ctx.beginPath();
+    ctx.moveTo(BASE_X + 60, ly);
+    ctx.lineTo(canvas.width, ly);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.restore();
+  });
+
+  // Base (left side)
+  drawBase();
 
   // Particles
   particles.forEach(p => {
@@ -279,195 +327,237 @@ function drawScene() {
     ctx.restore();
   });
 
-  // Aliens
-  aliens.filter(a => a.alive).forEach(a => {
-    a.frame += 0.05;
+  // Click flashes
+  clickFlashes.forEach(f => {
+    const alpha = f.life / f.maxLife;
     ctx.save();
-    ctx.font = `${28 + Math.sin(a.frame) * 2}px serif`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    // Glow
-    ctx.shadowBlur = 10;
-    ctx.shadowColor = a.type === '🛸' ? '#ff44ff' : '#00ffcc';
-    ctx.fillText(a.type, a.x + a.w/2, a.y + a.h/2);
-    ctx.restore();
-  });
-
-  // Alien bullets
-  alienBullets.forEach(b => {
-    ctx.save();
-    ctx.shadowBlur = 8;
-    ctx.shadowColor = '#ff4444';
-    const g = ctx.createRadialGradient(b.x, b.y, 1, b.x, b.y, 6);
-    g.addColorStop(0, '#ff8888');
-    g.addColorStop(1, 'rgba(255,0,0,0)');
+    ctx.globalAlpha = alpha * 0.7;
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.arc(b.x, b.y, 6, 0, Math.PI*2);
-    ctx.fillStyle = g;
-    ctx.fill();
-    ctx.restore();
-  });
-
-  // Player bullets
-  bullets.forEach(b => {
-    ctx.save();
-    ctx.shadowBlur = 12;
-    ctx.shadowColor = '#00ffcc';
-    const g = ctx.createLinearGradient(b.x, b.y, b.x, b.y + 14);
-    g.addColorStop(0, '#00ffcc');
-    g.addColorStop(1, 'rgba(0,255,200,0)');
-    ctx.fillStyle = g;
-    ctx.beginPath();
-    ctx.roundRect(b.x - 3, b.y, 6, 14, 3);
-    ctx.fill();
-    ctx.restore();
-  });
-
-  // Ship
-  if (!gameOver) {
-    ctx.save();
-    ctx.translate(ship.x, ship.y);
-    // Engine glow
-    ctx.shadowBlur = 18;
-    ctx.shadowColor = '#00ffcc';
-    // Body
-    ctx.font = '40px serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('🚀', 0, 0);
-    ctx.restore();
-
-    // Aim line
-    ctx.save();
-    ctx.strokeStyle = 'rgba(0,255,200,0.12)';
-    ctx.lineWidth = 1;
-    ctx.setLineDash([4, 8]);
-    ctx.beginPath();
-    ctx.moveTo(ship.x, ship.y - 20);
-    ctx.lineTo(ship.x, 0);
+    ctx.arc(f.x, f.y, (1 - alpha) * 30 + 5, 0, Math.PI*2);
     ctx.stroke();
     ctx.restore();
+  });
+
+  // Bullets (laser beams from base)
+  bullets.forEach(b => {
+    ctx.save();
+    ctx.shadowBlur = 10;
+    ctx.shadowColor = '#00ffcc';
+    ctx.strokeStyle = '#00ffcc';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(b.x, b.y);
+    ctx.lineTo(b.x + 18, b.y);
+    ctx.stroke();
+    ctx.restore();
+  });
+
+  // Aliens
+  aliens.forEach(a => {
+    a.frame += 0.04;
+    a.wobble += 0.06;
+
+    ctx.save();
+    ctx.translate(a.x, a.y + Math.sin(a.wobble) * 3);
+
+    // HP bar
+    const barW = a.size + 10;
+    ctx.fillStyle = 'rgba(0,0,0,0.5)';
+    ctx.fillRect(-barW/2, -a.size/2 - 12, barW, 7);
+    ctx.fillStyle = a.hp === a.maxHp ? '#00ff88' : a.hp > 1 ? '#ffcc00' : '#ff4444';
+    ctx.fillRect(-barW/2, -a.size/2 - 12, barW * (a.hp / a.maxHp), 7);
+
+    // Hit flash
+    if (a.hitFlash > 0) {
+      ctx.globalAlpha = 0.6;
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.arc(0, 0, a.size / 2 + 4, 0, Math.PI*2);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+      a.hitFlash--;
+    }
+
+    // Glow
+    ctx.shadowBlur = 14;
+    ctx.shadowColor = a.color;
+
+    // Emoji
+    ctx.font = `${a.size}px serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(a.emoji, 0, 0);
+
+    ctx.restore();
+  });
+
+  ctx.restore();
+}
+
+function drawBase() {
+  // Base building
+  ctx.save();
+
+  // Base glow warning if lives low
+  if (lives <= 2) {
+    ctx.shadowBlur = 20 + Math.sin(Date.now() / 200) * 10;
+    ctx.shadowColor = '#ff4444';
   }
+
+  // Main tower
+  ctx.fillStyle = '#2255aa';
+  ctx.beginPath();
+  ctx.roundRect(8, 80, 52, canvas.height - 160, 8);
+  ctx.fill();
+
+  // Tower highlight
+  ctx.fillStyle = 'rgba(255,255,255,0.08)';
+  ctx.beginPath();
+  ctx.roundRect(10, 82, 18, canvas.height - 164, 6);
+  ctx.fill();
+
+  // Windows
+  const winCols = ['#00ffcc', '#ffcc00', '#ff6644'];
+  for (let i = 0; i < 5; i++) {
+    const wy = 100 + i * 44;
+    ctx.fillStyle = winCols[i % 3];
+    ctx.globalAlpha = 0.7 + Math.sin(Date.now() / 500 + i) * 0.3;
+    ctx.beginPath();
+    ctx.roundRect(18, wy, 14, 10, 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.roundRect(38, wy, 14, 10, 2);
+    ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+
+  // Antenna
+  ctx.strokeStyle = '#4488ff';
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(34, 80);
+  ctx.lineTo(34, 50);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(34, 46, 7, 0, Math.PI*2);
+  ctx.fillStyle = '#ff4444';
+  ctx.globalAlpha = 0.6 + Math.sin(Date.now() / 300) * 0.4;
+  ctx.fill();
+  ctx.globalAlpha = 1;
+
+  // BASE label
+  ctx.font = 'bold 10px Nunito';
+  ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  ctx.textAlign = 'center';
+  ctx.fillText('BASE', 34, canvas.height - 70);
 
   ctx.restore();
 }
 
 // ---- Update ----
 function updateGame() {
-  if (gameOver) return;
+  if (gameOver || waveTransition) return;
 
-  // Move ship toward mouse
-  const diff = mouseX - ship.x;
-  if (Math.abs(diff) > 2) ship.x += diff * 0.12;
-  ship.x = Math.max(22, Math.min(canvas.width - 22, ship.x));
-
-  // Auto shoot
-  shootCooldown--;
-  if (shootCooldown <= 0) {
-    bullets.push({ x: ship.x, y: ship.y - 20 });
-    shootCooldown = Math.max(12 - wave, 5);
+  // Spawn
+  spawnTimer++;
+  if (spawnTimer >= spawnInterval) {
+    spawnTimer = 0;
+    spawnAlien();
   }
 
   // Move bullets
-  bullets.forEach(b => b.y -= BULLET_SPEED);
-  bullets = bullets.filter(b => b.y > -10);
+  bullets.forEach(b => b.x += 12);
+  bullets = bullets.filter(b => b.x < canvas.width + 20);
 
-  // Move alien bullets
-  alienBullets.forEach(b => { b.y += ALIEN_BULLET_SPEED + wave * 0.3; });
-  alienBullets = alienBullets.filter(b => b.y < canvas.height + 10);
-
-  // Alien shooting
-  const alive = aliens.filter(a => a.alive);
-  if (alive.length > 0 && Math.random() < 0.012 + wave * 0.003) {
-    const shooter = alive[Math.floor(Math.random() * alive.length)];
-    alienBullets.push({ x: shooter.x + shooter.w/2, y: shooter.y + shooter.h });
-  }
+  // Update click flashes
+  clickFlashes.forEach(f => f.life--);
+  clickFlashes = clickFlashes.filter(f => f.life > 0);
 
   // Move aliens
-  alienMoveTimer++;
-  if (alienMoveTimer >= alienMoveInterval) {
-    alienMoveTimer = 0;
-    let hitEdge = false;
-    alive.forEach(a => {
-      a.x += alienDir * (12 + wave * 1.5);
-      if (a.x <= 10 || a.x + a.w >= canvas.width - 10) hitEdge = true;
-    });
-    if (hitEdge) {
-      alienDir *= -1;
-      alive.forEach(a => { a.y += 18; });
-    }
-  }
+  aliens.forEach(a => {
+    a.x -= a.speed;
+  });
 
-  // Check alien bullet hits player
-  alienBullets.forEach((b, bi) => {
-    if (Math.abs(b.x - ship.x) < 20 && Math.abs(b.y - ship.y) < 20) {
-      alienBullets.splice(bi, 1);
+  // Check bullet-alien collisions
+  bullets.forEach((b, bi) => {
+    aliens.forEach(a => {
+      const dx = b.x - a.x, dy = b.y - a.y;
+      if (Math.sqrt(dx*dx + dy*dy) < a.size / 2 + 6) {
+        a.hp--;
+        a.hitFlash = 5;
+        spawnZap(b.x, b.y);
+        bullets.splice(bi, 1);
+        if (a.hp <= 0) {
+          killAlien(a);
+        }
+      }
+    });
+  });
+
+  // Check aliens reaching base
+  aliens.forEach((a, ai) => {
+    if (a.x < BASE_X + 60) {
+      aliens.splice(ai, 1);
       lives--;
       updateLives();
-      triggerShake(6, 16);
-      spawnShipExplosion(ship.x, ship.y);
+      triggerShake(7, 18);
+      spawnExplosion(BASE_X + 40, a.y, '#ff4444', 20);
       if (lives <= 0) {
         endGame();
       } else {
-        showMessage('💥 Ouch!', '#ff6644');
+        showMessage(['💥 They got through!', '😱 Base hit!', '🚨 Alert!'][Math.floor(Math.random()*3)], '#ff6644');
       }
     }
   });
 
-  // Check player bullet hits alien
-  bullets.forEach((b, bi) => {
-    aliens.forEach(a => {
-      if (!a.alive) return;
-      if (b.x > a.x && b.x < a.x + a.w && b.y > a.y && b.y < a.y + a.h) {
-        a.alive = false;
-        bullets.splice(bi, 1);
-        score += a.points;
-        if (score > best) { best = score; localStorage.setItem('aiBest', best); }
-        updateHUD();
-        spawnExplosion(a.x + a.w/2, a.y + a.h/2, '#00ffcc', 14);
-        triggerShake(2, 6);
-        const msgs = ['💥 Got one!', '⚡ Zap!', '🎯 Direct Hit!', '✨ Boom!'];
-        if (Math.random() < 0.3) showMessage(msgs[Math.floor(Math.random()*msgs.length)], '#00ffcc');
-      }
-    });
-  });
-
-  // Check aliens reached bottom
-  alive.forEach(a => {
-    if (a.y + a.h >= canvas.height - 30) {
-      endGame();
-    }
-  });
-
-  // Wave clear
-  if (alive.length === 0 && !waveClearing) {
-    waveClearing = true;
-    showMessage('🎉 Wave ' + wave + ' Clear!', '#ffd700');
-    triggerShake(4, 14);
-    setTimeout(() => {
-      wave++;
-      waveClearing = false;
-      buildAliens();
-      updateHUD();
-    }, 1800);
-  }
-
-  // Update particles
+  // Particles
   particles = particles.filter(p => p.life > 0);
   particles.forEach(p => {
     p.x += p.vx; p.y += p.vy;
     p.vy += p.gravity;
-    p.vx *= 0.96;
+    p.vx *= 0.95;
     p.life--;
   });
+
+  // Wave check
+  if (waveKills >= waveTarget) {
+    waveTransition = true;
+    showMessage('🎉 Wave ' + wave + ' Clear!', '#ffd700');
+    triggerShake(4, 12);
+    setTimeout(() => {
+      wave++;
+      waveKills = 0;
+      waveTarget = 10 + wave * 3;
+      spawnInterval = Math.max(40 - wave * 4, 18);
+      aliens = [];
+      bullets = [];
+      waveTransition = false;
+      updateHUD();
+      showMessage('👾 Wave ' + wave + ' Incoming!', '#ff44ff');
+    }, 2000);
+  }
+}
+
+function killAlien(a) {
+  aliens = aliens.filter(al => al !== a);
+  score += a.points;
+  waveKills++;
+  if (score > best) { best = score; localStorage.setItem('aiBest2', best); }
+  updateHUD();
+  spawnExplosion(a.x, a.y, a.color, 16);
+  triggerShake(2, 5);
+  const msgs = ['💥 Zapped!', '⚡ Got one!', '🎯 Hit!', '✨ Boom!'];
+  if (Math.random() < 0.25) showMessage(msgs[Math.floor(Math.random()*msgs.length)], a.color);
 }
 
 function endGame() {
   gameOver = true;
-  triggerShake(8, 25);
+  triggerShake(10, 30);
   document.getElementById('overlay-score').textContent = score;
   document.getElementById('overlay-best').textContent = best > 0 ? '🏆 Best: ' + best : '';
-  setTimeout(() => document.getElementById('overlay').classList.add('show'), 800);
+  setTimeout(() => document.getElementById('overlay').classList.add('show'), 900);
 }
 
 // ---- Game Loop ----
@@ -477,20 +567,49 @@ function loop() {
   requestAnimationFrame(loop);
 }
 
-// ---- Controls ----
-canvas.addEventListener('mousemove', (e) => {
+// ---- Click to Shoot ----
+function handleShoot(cx, cy) {
   const r = canvas.getBoundingClientRect();
-  mouseX = e.clientX - r.left;
+  const mx = cx - r.left;
+  const my = cy - r.top;
+
+  // Click flash
+  clickFlashes.push({ x: mx, y: my, life: 12, maxLife: 12 });
+
+  // Check if clicked an alien
+  let hit = false;
+  aliens.forEach(a => {
+    const dx = mx - a.x, dy = my - a.y;
+    if (Math.sqrt(dx*dx + dy*dy) < a.size / 2 + 10) {
+      a.hp--;
+      a.hitFlash = 6;
+      spawnZap(a.x, a.y);
+      if (a.hp <= 0) killAlien(a);
+      hit = true;
+    }
+  });
+
+  // Fire laser toward click
+  LANES.forEach(ly => {
+    if (Math.abs(my - ly) < 40) {
+      bullets.push({ x: BASE_X + 60, y: ly });
+    }
+  });
+
+  if (!hit) {
+    bullets.push({ x: BASE_X + 60, y: my });
+  }
+}
+
+canvas.addEventListener('click', (e) => {
+  if (gameOver) return;
+  handleShoot(e.clientX, e.clientY);
 });
-canvas.addEventListener('touchmove', (e) => {
-  e.preventDefault();
-  const r = canvas.getBoundingClientRect();
-  mouseX = e.touches[0].clientX - r.left;
-}, { passive: false });
+
 canvas.addEventListener('touchstart', (e) => {
   e.preventDefault();
-  const r = canvas.getBoundingClientRect();
-  mouseX = e.touches[0].clientX - r.left;
+  if (gameOver) return;
+  Array.from(e.touches).forEach(t => handleShoot(t.clientX, t.clientY));
 }, { passive: false });
 
 init();
