@@ -1,2716 +1,344 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Gravity Flip 3D - Mega Edition</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            user-select: none;
-        }
-
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-            font-family: 'Inter', sans-serif;
-            overflow: hidden;
-            perspective: 1000px;
-        }
-
-        #gameContainer {
-            position: relative;
-            width: 800px;
-            height: 600px;
-            background: linear-gradient(180deg, #ffffff 0%, #f8f9fa 100%);
-            border-radius: 40px;
-            box-shadow: 
-                0 50px 100px rgba(0,0,0,0.4),
-                0 0 0 1px rgba(255,255,255,0.5),
-                inset 0 1px 0 rgba(255,255,255,0.9);
-            overflow: hidden;
-            transform-style: preserve-3d;
-        }
-
-        canvas {
-            display: block;
-        }
-
-        .screen {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-            align-items: center;
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.98) 0%, rgba(118, 75, 162, 0.98) 50%, rgba(240, 147, 251, 0.98) 100%);
-            z-index: 10;
-            backdrop-filter: blur(20px);
-            padding: 60px 20px 40px 20px;
-            overflow-y: auto;
-        }
-
-        .title {
-            font-size: 95px;
-            font-weight: 900;
-            background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 8px;
-            text-shadow: 0 15px 50px rgba(0,0,0,0.5);
-            letter-spacing: -4px;
-            filter: drop-shadow(0 10px 30px rgba(0,0,0,0.3));
-        }
-
-        .tagline {
-            font-size: 16px;
-            font-weight: 600;
-            color: rgba(255,255,255,0.85);
-            margin-bottom: 50px;
-            text-align: center;
-            line-height: 1.6;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
-
-        .subtitle {
-            font-size: 18px;
-            font-weight: 500;
-            color: rgba(255,255,255,0.9);
-            margin-bottom: 50px;
-            text-align: center;
-            line-height: 1.8;
-            max-width: 500px;
-        }
-
-        .btn {
-            padding: 20px 50px;
-            font-size: 16px;
-            font-weight: 800;
-            color: #667eea;
-            background: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%);
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-            box-shadow: 
-                0 20px 50px rgba(0,0,0,0.3),
-                0 0 0 1px rgba(255,255,255,0.5),
-                inset 0 1px 0 rgba(255,255,255,1);
-            margin: 6px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            white-space: nowrap;
-        }
-
-        .btn:hover {
-            transform: translateY(-8px) scale(1.02);
-            box-shadow: 
-                0 30px 60px rgba(0,0,0,0.4),
-                0 0 0 1px rgba(255,255,255,0.6),
-                inset 0 1px 0 rgba(255,255,255,1);
-        }
-
-        .btn:active {
-            transform: translateY(-4px) scale(1.01);
-        }
-
-        .btn-secondary {
-            background: rgba(255,255,255,0.15);
-            color: white;
-            backdrop-filter: blur(20px);
-            border: 2px solid rgba(255,255,255,0.5);
-        }
-
-        .btn-small {
-            padding: 15px 35px;
-            font-size: 14px;
-        }
-
-        #hud {
-            position: absolute;
-            top: 25px;
-            left: 25px;
-            right: 25px;
-            display: none;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 5;
-        }
-
-        .hud-box {
-            background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.95) 100%);
-            padding: 18px 32px;
-            border-radius: 20px;
-            box-shadow: 
-                0 10px 30px rgba(0,0,0,0.15),
-                0 0 0 1px rgba(255,255,255,0.8),
-                inset 0 1px 0 rgba(255,255,255,1);
-            backdrop-filter: blur(20px);
-        }
-
-        .hud-label {
-            font-size: 10px;
-            font-weight: 800;
-            color: #667eea;
-            margin-bottom: 6px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .hud-value {
-            font-size: 42px;
-            font-weight: 900;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            letter-spacing: -2px;
-        }
-
-        .controls-hint {
-            background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.95) 100%);
-            padding: 16px 32px;
-            border-radius: 20px;
-            box-shadow: 
-                0 10px 30px rgba(0,0,0,0.15),
-                0 0 0 1px rgba(255,255,255,0.8),
-                inset 0 1px 0 rgba(255,255,255,1);
-            font-size: 15px;
-            font-weight: 700;
-            color: #667eea;
-            display: flex;
-            gap: 28px;
-            backdrop-filter: blur(20px);
-        }
-
-        .hint-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .difficulty-indicator { display: none !important; }
-
-        .difficulty-text {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        /* REMOVED */
-            width: 120px;
-            height: 8px;
-            background: rgba(102, 126, 234, 0.15);
-            border-radius: 10px;
-            overflow: hidden;
-            display: inline-block;
-            margin-left: 12px;
-            vertical-align: middle;
-        }
-
-        /* REMOVED */
-            height: 100%;
-            background: linear-gradient(90deg, #10b981, #f59e0b, #ef4444);
-            border-radius: 10px;
-            transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
-            box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
-        }
-
-        .instruction {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.95) 100%);
-            padding: 40px 60px;
-            border-radius: 30px;
-            font-size: 22px;
-            font-weight: 700;
-            color: #667eea;
-            box-shadow: 
-                0 20px 60px rgba(0,0,0,0.3),
-                0 0 0 1px rgba(255,255,255,0.8),
-                inset 0 1px 0 rgba(255,255,255,1);
-            display: none;
-            animation: pulse 2s ease-in-out infinite;
-            z-index: 15;
-            pointer-events: none;
-            text-align: center;
-            line-height: 1.8;
-            backdrop-filter: blur(20px);
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: translate(-50%, -50%) scale(1); }
-            50% { transform: translate(-50%, -50%) scale(1.05); }
-        }
-
-        .stats-container {
-            background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.95) 100%);
-            padding: 35px 45px;
-            border-radius: 30px;
-            margin: 20px 0;
-            box-shadow: 
-                0 20px 60px rgba(0,0,0,0.3),
-                0 0 0 1px rgba(255,255,255,0.8),
-                inset 0 1px 0 rgba(255,255,255,1);
-            min-width: 400px;
-            backdrop-filter: blur(20px);
-        }
-
-        .stat-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 16px 0;
-            font-size: 18px;
-            font-weight: 600;
-            color: #1a1a2e;
-            border-bottom: 2px solid rgba(102, 126, 234, 0.08);
-        }
-
-        .stat-row:last-child {
-            border-bottom: none;
-        }
-
-        .stat-label {
-            font-weight: 700;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .stat-value {
-            font-weight: 900;
-            color: #1a1a2e;
-        }
-
-        .emoji {
-            font-size: 70px;
-            margin-bottom: 20px;
-            animation: bounce 1s ease-in-out infinite;
-            filter: drop-shadow(0 15px 40px rgba(0,0,0,0.4));
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0) scale(1); }
-            50% { transform: translateY(-25px) scale(1.05); }
-        }
-
-        .version {
-            position: absolute;
-            bottom: 25px;
-            right: 35px;
-            font-size: 11px;
-            font-weight: 700;
-            color: rgba(255,255,255,0.5);
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
-
-        .ultra-badge {
-            position: absolute;
-            top: 25px;
-            right: 25px;
-            background: linear-gradient(135deg, rgba(255,215,0,0.95) 0%, rgba(255,193,7,0.95) 100%);
-            padding: 8px 20px;
-            border-radius: 50px;
-            font-size: 11px;
-            font-weight: 900;
-            color: #1a1a2e;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            box-shadow: 0 10px 30px rgba(255,193,7,0.4);
-            animation: shimmer 3s ease-in-out infinite;
-        }
-
-        @keyframes shimmer {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.9; transform: scale(1.05); }
-        }
-
-        .music-toggle {
-            position: absolute;
-            bottom: 25px;
-            left: 25px;
-            background: rgba(255,255,255,0.2);
-            padding: 12px 20px;
-            border-radius: 50px;
-            font-size: 24px;
-            cursor: pointer;
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(255,255,255,0.3);
-            transition: all 0.3s;
-            z-index: 20;
-        }
-
-        .music-toggle:hover {
-            transform: scale(1.1);
-            background: rgba(255,255,255,0.3);
-        }
-
-        .d3-badge {
-            position: absolute;
-            top: 95px;
-            left: 25px;
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.95) 0%, rgba(5, 150, 105, 0.95) 100%);
-            padding: 8px 20px;
-            border-radius: 50px;
-            font-size: 11px;
-            font-weight: 900;
-            color: #ffffff;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
-            z-index: 20;
-        }
-
-        .shop-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            justify-content: center;
-            max-width: 720px;
-            margin: 20px 0;
-            max-height: 350px;
-            overflow-y: auto;
-            padding: 10px;
-        }
-
-        .ball-item {
-            background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.95) 100%);
-            padding: 15px 20px;
-            border-radius: 20px;
-            box-shadow: 
-                0 10px 30px rgba(0,0,0,0.15),
-                0 0 0 1px rgba(255,255,255,0.8),
-                inset 0 1px 0 rgba(255,255,255,1);
-            cursor: pointer;
-            transition: all 0.3s;
-            text-align: center;
-            min-width: 110px;
-            position: relative;
-        }
-
-        .ball-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.25);
-        }
-
-        .ball-item.selected {
-            box-shadow: 0 0 0 3px #667eea, 0 15px 40px rgba(102, 126, 234, 0.4);
-        }
-
-        .ball-item.locked {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        .ball-preview {
-            font-size: 45px;
-            margin-bottom: 8px;
-            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.2));
-        }
-
-        .ball-name {
-            font-weight: 800;
-            font-size: 12px;
-            color: #667eea;
-            margin-bottom: 5px;
-        }
-
-        .ball-price {
-            font-weight: 700;
-            font-size: 14px;
-            color: #f59e0b;
-        }
-
-        .unlocked-tag {
-            font-weight: 700;
-            font-size: 10px;
-            color: #10b981;
-        }
-
-        .coins-display {
-            background: linear-gradient(135deg, rgba(255,215,0,0.95) 0%, rgba(255,193,7,0.95) 100%);
-            padding: 12px 30px;
-            border-radius: 50px;
-            font-size: 24px;
-            font-weight: 900;
-            color: #1a1a2e;
-            margin-bottom: 15px;
-            box-shadow: 0 10px 30px rgba(255,193,7,0.4);
-        }
-
-        .button-row {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            align-items: center;
-            width: 100%;
-            max-width: 400px;
-        }
-
-        .button-row-horizontal {
-            display: flex;
-            flex-direction: row;
-            gap: 10px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .milestone-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            justify-content: center;
-            max-width: 720px;
-            margin: 20px 0;
-            max-height: 350px;
-            overflow-y: auto;
-            padding: 10px;
-        }
-
-        .milestone-item {
-            background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.95) 100%);
-            padding: 18px 22px;
-            border-radius: 20px;
-            box-shadow: 
-                0 10px 30px rgba(0,0,0,0.15),
-                0 0 0 1px rgba(255,255,255,0.8),
-                inset 0 1px 0 rgba(255,255,255,1);
-            min-width: 170px;
-            text-align: center;
-        }
-
-        .milestone-item.completed {
-            box-shadow: 0 0 0 3px #10b981, 0 15px 40px rgba(16, 185, 129, 0.4);
-        }
-
-        .milestone-icon {
-            font-size: 35px;
-            margin-bottom: 8px;
-            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.2));
-        }
-
-        .milestone-title {
-            font-weight: 800;
-            font-size: 13px;
-            color: #667eea;
-            margin-bottom: 5px;
-        }
-
-        .milestone-desc {
-            font-weight: 600;
-            font-size: 11px;
-            color: #6b7280;
-            margin-bottom: 6px;
-        }
-
-        .milestone-reward {
-            font-weight: 700;
-            font-size: 12px;
-            color: #f59e0b;
-        }
-
-        .milestone-status {
-            font-weight: 700;
-            font-size: 10px;
-            color: #10b981;
-            margin-top: 5px;
-        }
-
-        .code-input-container {
-            background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.95) 100%);
-            padding: 30px 40px;
-            border-radius: 30px;
-            margin: 20px 0;
-            box-shadow: 
-                0 20px 60px rgba(0,0,0,0.3),
-                0 0 0 1px rgba(255,255,255,0.8),
-                inset 0 1px 0 rgba(255,255,255,1);
-            text-align: center;
-        }
-
-        .code-input {
-            padding: 15px 25px;
-            font-size: 18px;
-            font-weight: 700;
-            border: 3px solid #667eea;
-            border-radius: 15px;
-            text-align: center;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 15px;
-            width: 300px;
-            font-family: 'Inter', sans-serif;
-        }
-
-        .code-input:focus {
-            outline: none;
-            border-color: #764ba2;
-            box-shadow: 0 0 0 3px rgba(118, 75, 162, 0.2);
-        }
-
-        .code-message {
-            font-size: 14px;
-            font-weight: 700;
-            margin-top: 10px;
-            min-height: 20px;
-        }
-
-        .code-message.success {
-            color: #10b981;
-        }
-
-        .code-message.error {
-            color: #ef4444;
-        }
-
-        .milestone-notification {
-            position: fixed;
-            top: 100px;
-            left: 50%;
-            transform: translateX(-50%) translateY(-100px);
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: white;
-            padding: 20px 40px;
-            border-radius: 20px;
-            font-weight: 800;
-            font-size: 16px;
-            box-shadow: 0 20px 60px rgba(16, 185, 129, 0.6);
-            z-index: 1000;
-            opacity: 0;
-            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-
-        .milestone-notification.show {
-            transform: translateX(-50%) translateY(0);
-            opacity: 1;
-        }
-    
-
-        .ball-rarity {
-            font-weight: 800;
-            font-size: 9px;
-            margin-top: 5px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-
-        .rarity-common { color: #6b7280; }
-        .rarity-uncommon { color: #10b981; }
-        .rarity-rare { color: #3b82f6; }
-        .rarity-epic { color: #a855f7; }
-        .rarity-legendary { color: #f59e0b; }
-
-        .ball-item.rarity-common {
-            border: 2px solid #9ca3af;
-        }
-
-        .ball-item.rarity-uncommon {
-            border: 2px solid #10b981;
-            box-shadow: 0 0 15px rgba(16, 185, 129, 0.3), 0 10px 30px rgba(0,0,0,0.15);
-        }
-
-        .ball-item.rarity-rare {
-            border: 2px solid #3b82f6;
-            box-shadow: 0 0 15px rgba(59, 130, 246, 0.3), 0 10px 30px rgba(0,0,0,0.15);
-        }
-
-        .ball-item.rarity-epic {
-            border: 2px solid #a855f7;
-            box-shadow: 0 0 20px rgba(168, 85, 247, 0.4), 0 10px 30px rgba(0,0,0,0.15);
-        }
-
-        .ball-item.rarity-legendary {
-            border: 2px solid #f59e0b;
-            box-shadow: 0 0 25px rgba(245, 158, 11, 0.5), 0 10px 30px rgba(0,0,0,0.15);
-            animation: legendary-glow 2s ease-in-out infinite;
-        }
-
-        @keyframes legendary-glow {
-            0%, 100% { box-shadow: 0 0 25px rgba(245, 158, 11, 0.5), 0 10px 30px rgba(0,0,0,0.15); }
-            50% { box-shadow: 0 0 35px rgba(245, 158, 11, 0.7), 0 10px 30px rgba(0,0,0,0.15); }
-        }
-
-        /* LOOT BOXES */
-        .box-container {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            margin: 20px 0;
-            flex-wrap: wrap;
-        }
-
-        .box-item {
-            background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.95) 100%);
-            padding: 20px 25px;
-            border-radius: 25px;
-            cursor: pointer;
-            transition: all 0.4s;
-            text-align: center;
-            min-width: 140px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
-        }
-
-        .box-item:hover {
-            transform: translateY(-10px) scale(1.05);
-        }
-
-        .box-icon {
-            font-size: 50px;
-            margin-bottom: 10px;
-            animation: float 3s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-
-        .box-name {
-            font-weight: 900;
-            font-size: 14px;
-            color: #667eea;
-            margin-bottom: 6px;
-        }
-
-        .box-price {
-            font-weight: 800;
-            font-size: 18px;
-            color: #f59e0b;
-            margin-bottom: 6px;
-        }
-
-        .box-desc {
-            font-weight: 600;
-            font-size: 10px;
-            color: #6b7280;
-            line-height: 1.4;
-        }
-
-        .box-common {
-            border: 3px solid #9ca3af;
-        }
-
-        .box-rare {
-            border: 3px solid #3b82f6;
-            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3), 0 15px 40px rgba(0,0,0,0.2);
-        }
-
-        .box-legendary {
-            border: 3px solid #f59e0b;
-            box-shadow: 0 0 30px rgba(245, 158, 11, 0.5), 0 15px 40px rgba(0,0,0,0.2);
-            animation: box-legendary-glow 2s ease-in-out infinite;
-        }
-
-        .box-admin {
-            border: 3px solid #dc2626;
-            background: linear-gradient(135deg, rgba(255,0,0,0.1) 0%, rgba(255,255,255,0.95) 100%);
-            box-shadow: 0 0 35px rgba(220, 38, 38, 0.6), 0 15px 40px rgba(0,0,0,0.2);
-            animation: box-admin-glow 2s ease-in-out infinite;
-        }
-
-        @keyframes box-legendary-glow {
-            0%, 100% { box-shadow: 0 0 30px rgba(245, 158, 11, 0.5), 0 15px 40px rgba(0,0,0,0.2); }
-            50% { box-shadow: 0 0 45px rgba(245, 158, 11, 0.8), 0 15px 40px rgba(0,0,0,0.2); }
-        }
-
-        @keyframes box-admin-glow {
-            0%, 100% { box-shadow: 0 0 35px rgba(220, 38, 38, 0.6), 0 15px 40px rgba(0,0,0,0.2); }
-            50% { box-shadow: 0 0 50px rgba(220, 38, 38, 0.9), 0 15px 40px rgba(0,0,0,0.2); }
-        }
-
-        .opening-animation {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.95);
-            z-index: 999;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .opening-box {
-            font-size: 150px;
-            animation: shake 0.5s ease-in-out infinite;
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: rotate(-5deg); }
-            50% { transform: rotate(5deg); }
-        }
-
-        .reveal-reward {
-            font-size: 120px;
-            animation: reveal 1s ease-out forwards;
-            opacity: 0;
-        }
-
-        @keyframes reveal {
-            0% { opacity: 0; transform: scale(0); }
-            50% { opacity: 1; transform: scale(1.3); }
-            100% { opacity: 1; transform: scale(1); }
-        }
-
-        .reveal-text {
-            font-size: 32px;
-            font-weight: 900;
-            color: white;
-            margin-top: 20px;
-            animation: fadeIn 1s ease-out forwards;
-            opacity: 0;
-            text-align: center;
-            padding: 0 20px;
-        }
-
-        @keyframes fadeIn {
-            to { opacity: 1; }
-        }
-
-        /* MOBILE RESPONSIVE */
-        
-@media only screen and (max-width: 850px) {
-    body { padding: 0 !important; }
-    .gameContainer { 
-        width: 100vw !important; 
-        height: 100vh !important; 
-        border-radius: 0 !important;
-        box-shadow: none !important;
-    }
-    .screen { padding: 50px 20px 30px !important; gap: 12px !important; }
-    .title { font-size: 36px !important; margin-bottom: 12px !important; letter-spacing: -2px !important; }
-    .tagline { font-size: 12px !important; margin-bottom: 25px !important; }
-    .btn { padding: 16px 28px !important; font-size: 14px !important; min-width: 130px !important; }
-    .box-container { 
-        max-height: 60vh !important; 
-        gap: 12px !important; 
-        padding: 12px !important;
-        justify-content: center !important;
-    }
-    .box-item { 
-        min-width: 120px !important; 
-        padding: 18px 14px !important; 
-        font-size: 12px !important;
-    }
-    .box-icon { font-size: 40px !important; margin-bottom: 8px !important; }
-    .box-name { font-size: 12px !important; font-weight: 800 !important; }
-    .box-price { font-size: 15px !important; }
-    .coins-display { font-size: 18px !important; padding: 12px 20px !important; }
-    .shop-container, .milestone-container { 
-        max-height: 60vh !important; 
-        gap: 10px !important; 
-        padding: 12px !important;
-    }
-    .ball-item { min-width: 85px !important; padding: 12px 10px !important; }
-    .hud { top: 12px !important; left: 12px !important; right: 12px !important; }
-    .hud-box { padding: 12px 20px !important; }
-    .hud-value { font-size: 32px !important; }
-}
-
-    
-        .box-uncommon {
-            border: 3px solid #10b981;
-            box-shadow: 0 0 20px rgba(16, 185, 129, 0.4), 0 15px 40px rgba(0,0,0,0.2);
-        }
-
-        .box-mythic {
-            border: 3px solid #8b5cf6;
-            background: linear-gradient(135deg, rgba(139,92,246,0.15) 0%, rgba(255,255,255,0.95) 100%);
-            box-shadow: 0 0 40px rgba(139, 92, 246, 0.7), 0 15px 40px rgba(0,0,0,0.2);
-            animation: box-mythic-glow 2s ease-in-out infinite;
-        }
-
-        .box-cosmic {
-            border: 3px solid #06b6d4;
-            background: linear-gradient(135deg, rgba(6,182,212,0.2) 0%, rgba(255,255,255,0.95) 100%);
-            box-shadow: 0 0 45px rgba(6, 182, 212, 0.8), 0 15px 40px rgba(0,0,0,0.2);
-            animation: box-cosmic-glow 2s ease-in-out infinite;
-        }
-
-        .box-ultimate {
-            border: 3px solid #f97316;
-            background: linear-gradient(135deg, rgba(249,115,22,0.2) 0%, rgba(255,255,255,0.95) 100%);
-            box-shadow: 0 0 50px rgba(249, 115, 22, 0.9), 0 15px 40px rgba(0,0,0,0.2);
-            animation: box-ultimate-glow 1.5s ease-in-out infinite;
-        }
-
-        .box-god {
-            border: 3px solid #fbbf24;
-            background: linear-gradient(135deg, rgba(251,191,36,0.3) 0%, rgba(255,255,255,0.95) 100%);
-            box-shadow: 0 0 60px rgba(251, 191, 36, 1), 0 15px 40px rgba(0,0,0,0.2);
-            animation: box-god-glow 1s ease-in-out infinite;
-        }
-
-        @keyframes box-mythic-glow {
-            0%, 100% { box-shadow: 0 0 40px rgba(139, 92, 246, 0.7), 0 15px 40px rgba(0,0,0,0.2); }
-            50% { box-shadow: 0 0 60px rgba(139, 92, 246, 1), 0 15px 40px rgba(0,0,0,0.2); }
-        }
-
-        @keyframes box-cosmic-glow {
-            0%, 100% { box-shadow: 0 0 45px rgba(6, 182, 212, 0.8), 0 15px 40px rgba(0,0,0,0.2); }
-            50% { box-shadow: 0 0 65px rgba(6, 182, 212, 1.2), 0 15px 40px rgba(0,0,0,0.2); }
-        }
-
-        @keyframes box-ultimate-glow {
-            0%, 100% { box-shadow: 0 0 50px rgba(249, 115, 22, 0.9), 0 15px 40px rgba(0,0,0,0.2); }
-            50% { box-shadow: 0 0 70px rgba(249, 115, 22, 1.3), 0 15px 40px rgba(0,0,0,0.2); }
-        }
-
-        @keyframes box-god-glow {
-            0%, 100% { box-shadow: 0 0 60px rgba(251, 191, 36, 1), 0 15px 40px rgba(0,0,0,0.2); transform: scale(1); }
-            50% { box-shadow: 0 0 80px rgba(251, 191, 36, 1.5), 0 15px 40px rgba(0,0,0,0.2); transform: scale(1.03); }
-        }
-
-        @media only screen and (max-width: 850px) {
-            .screen {
-                padding: 70px 15px 30px 15px !important;
-            }
-            .title { font-size: 28px !important; margin-bottom: 8px !important; }
-            .coins-display { padding: 6px 16px !important; font-size: 16px !important; }
-            .box-container { margin: 10px 0 !important; gap: 10px !important; max-height: 55vh !important; }
-            .box-item { min-width: 110px !important; padding: 16px 20px !important; }
-        }
-
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mini Golf</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #1a1a2e; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; font-family: Arial, sans-serif; color: white; }
+  canvas { border: 3px solid #00ff88; border-radius: 10px; cursor: crosshair; }
+  #ui { display: flex; gap: 30px; margin-bottom: 15px; font-size: 18px; }
+  #ui span { background: #16213e; padding: 8px 20px; border-radius: 20px; border: 1px solid #00ff88; }
+  #message { margin-top: 15px; font-size: 22px; color: #00ff88; height: 30px; }
+  #nextBtn { display: none; margin-top: 10px; padding: 10px 30px; font-size: 16px; background: #00ff88; color: #1a1a2e; border: none; border-radius: 20px; cursor: pointer; font-weight: bold; }
+  #nextBtn:hover { background: #00cc66; }
+</style>
 </head>
 <body>
-    <div id="gameContainer">
-        <canvas id="gameCanvas" width="800" height="600"></canvas>
 
-        <div id="hud">
-            <div class="hud-box">
-                <div class="hud-label">Distance</div>
-                <div class="hud-value" id="distance">0m</div>
-            </div>
-            
-            <div class="hud-box">
-                <div class="hud-label">Coins</div>
-                <div class="hud-value" id="coins">0</div>
-            </div>
-        </div>
+<div id="ui">
+  <span>Hole: <b id="holeNum">1</b></span>
+  <span>Par: <b id="parNum">3</b></span>
+  <span>Shots: <b id="shotNum">0</b></span>
+  <span>Score: <b id="scoreNum">0</b></span>
+</div>
 
-        <div class="difficulty-indicator" id="difficulty">
-            <span class="difficulty-text" id="difficultyText">EASY</span>
-            
-            </div>
-        </div>
+<canvas id="canvas" width="600" height="450"></canvas>
+<div id="message"></div>
+<button id="nextBtn" onclick="nextHole()">Next Hole ➡️</button>
 
-        <div class="instruction" id="instruction">
-            <div style="font-size: 50px; margin-bottom: 15px;">⬆️ ⬇️</div>
-            <div>Tap arrows to flip gravity!</div>
-        </div>
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
 
-        <div class="milestone-notification" id="milestoneNotification"></div>
+let ball, hole, walls, shots, par, holeIndex, totalScore, aiming, aimAngle, power, charging, animating;
 
-        <div class="music-toggle" id="musicToggle" onclick="toggleMusic()">🔇</div>
-        <div class="d3-badge">3D MODE</div>
+const holes = [
+  {
+    par: 3,
+    ball: {x: 80, y: 225},
+    hole: {x: 520, y: 225},
+    walls: [
+      {x:50, y:150, w:500, h:20},
+      {x:50, y:280, w:500, h:20},
+      {x:50, y:150, w:20, h:150},
+      {x:530, y:150, w:20, h:150},
+      {x:250, y:170, w:20, h:80},
+    ]
+  },
+  {
+    par: 4,
+    ball: {x: 80, y: 380},
+    hole: {x: 520, y: 80},
+    walls: [
+      {x:50, y:50, w:520, h:20},
+      {x:50, y:400, w:520, h:20},
+      {x:50, y:50, w:20, h:370},
+      {x:550, y:50, w:20, h:370},
+      {x:200, y:200, w:20, h:200},
+      {x:380, y:50, w:20, h:200},
+    ]
+  },
+  {
+    par: 5,
+    ball: {x: 80, y: 80},
+    hole: {x: 520, y: 370},
+    walls: [
+      {x:50, y:50, w:520, h:20},
+      {x:50, y:400, w:520, h:20},
+      {x:50, y:50, w:20, h:370},
+      {x:550, y:50, w:20, h:370},
+      {x:150, y:50, w:20, h:200},
+      {x:300, y:200, w:20, h:200},
+      {x:430, y:50, w:20, h:250},
+    ]
+  }
+];
 
-        <div id="startScreen" class="screen">
-            <div class="ultra-badge">MEGA EDITION</div>
-            <div class="emoji">🟢</div>
-            <div class="title">Gravity Flip 3D</div>
-            <div class="tagline">ENJOY THIS GAME MADE BY ZAYNISOFT!</div>
-            <div class="subtitle">
-                ENJOY THIS GAME MADE BY ZAYNISOFT!
-            </div>
-            <div class="button-row-horizontal">
-                <button class="btn" onclick="startGame()">Start Game</button>
-                <button class="btn btn-secondary" onclick="openShop()">🛒 Shop</button>
-                <button class="btn btn-secondary" onclick="openBoxes()">📦 Boxes</button>
-                <button class="btn btn-secondary" onclick="openTutorial()">🏆 Tutorial</button>
-                <button class="btn btn-secondary" onclick="openCodes()">🎁 Codes</button>
-                <button class="btn btn-secondary" onclick="openDevPrompt()" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; border: 2px solid #dc2626;">🔐 DEV</button>
-            </div>
-            <div class="version">v6.0 Mega Edition</div>
-        </div>
+function init() {
+  holeIndex = 0;
+  totalScore = 0;
+  loadHole();
+}
 
-        <div id="shopScreen" class="screen" style="display: none;">
-            <div class="title" style="font-size: 50px; margin-bottom: 15px;">🛒 Ball Shop</div>
-            <div class="coins-display">💰 <span id="shopCoins">0</span> Coins</div>
-            <div class="shop-container" id="shopContainer"></div>
-            <button class="btn" onclick="closeShop()">Back to Menu</button>
-        </div>
+function loadHole() {
+  const h = holes[holeIndex];
+  ball = { x: h.ball.x, y: h.ball.y, vx: 0, vy: 0, radius: 10 };
+  hole = { x: h.hole.x, y: h.hole.y, radius: 14 };
+  walls = h.walls;
+  par = h.par;
+  shots = 0;
+  aiming = false;
+  charging = false;
+  animating = false;
+  power = 0;
+  document.getElementById('holeNum').textContent = holeIndex + 1;
+  document.getElementById('parNum').textContent = par;
+  document.getElementById('shotNum').textContent = shots;
+  document.getElementById('message').textContent = '';
+  document.getElementById('nextBtn').style.display = 'none';
+  draw();
+}
 
-        <div id="milestonesScreen" class="screen" style="display: none;">
-            <div class="title" style="font-size: 50px; margin-bottom: 15px;">🏆 Milestones</div>
-            
-    <div style="max-width: 650px; margin: 30px 0;">
-        <div style="background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.95) 100%); padding: 40px; border-radius: 30px; margin-bottom: 25px; box-shadow: 0 25px 70px rgba(0,0,0,0.3); text-align: center;">
-            <div style="font-size: 60px; margin-bottom: 25px;">🎮</div>
-            <div style="font-size: 32px; font-weight: 900; color: #1a1a2e; margin-bottom: 20px;">Gravity Flip 3D</div>
-            <div style="font-size: 20px; font-weight: 700; color: #667eea; line-height: 1.6;">
-                Swipe or tap to flip gravity!<br>
-                <span style="color: #10b981; font-size: 22px;">Collect coins 👆 Dodge obstacles 🟢</span>
-            </div>
-        </div>
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        <div style="display: flex; gap: 30px; justify-content: center; flex-wrap: wrap;">
-            <div style="background: rgba(255,255,255,0.95); padding: 35px 30px; border-radius: 25px; box-shadow: 0 20px 60px rgba(0,0,0,0.25); text-align: center; min-width: 200px; border-left: 6px solid #10b981;">
-                <div style="font-size: 65px; margin-bottom: 20px;">⬆️</div>
-                <div style="font-size: 24px; font-weight: 900; color: #1a1a2e;">UP</div>
-                <div style="font-size: 18px; font-weight: 700; color: #667eea;">Ceiling</div>
-            </div>
-            <div style="background: rgba(255,255,255,0.95); padding: 35px 30px; border-radius: 25px; box-shadow: 0 20px 60px rgba(0,0,0,0.25); text-align: center; min-width: 200px; border-left: 6px solid #ef4444;">
-                <div style="font-size: 65px; margin-bottom: 20px;">⬇️</div>
-                <div style="font-size: 24px; font-weight: 900; color: #1a1a2e;">DOWN</div>
-                <div style="font-size: 18px; font-weight: 700; color: #667eea;">Floor</div>
-            </div>
-        </div>
+  // Background green
+  ctx.fillStyle = '#2d5a27';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        <div style="background: rgba(16,185,129,0.15); padding: 35px 45px; border-radius: 25px; border-left: 6px solid #10b981; margin: 35px 0; max-width: 600px;">
-            <div style="font-size: 26px; font-weight: 900; color: #1a1a2e; margin-bottom: 18px;">⚡ PRO TIPS</div>
-            <div style="font-size: 20px; color: #1a1a2e; line-height: 1.7;">
-                • <strong>Faster flips</strong> = bonus XP ⭐<br>
-                • Never stop flipping gravity!<br>
-                • Beat your high score 👊
-            </div>
-        </div>
-    </div>
-    
-            <button class="btn" onclick="closeMilestones()">Back to Menu</button>
-        </div>
+  // Draw grass texture lines
+  ctx.strokeStyle = '#336b2d';
+  ctx.lineWidth = 1;
+  for(let i = 0; i < canvas.width; i += 30) {
+    ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height); ctx.stroke();
+  }
 
-        <div id="codesScreen" class="screen" style="display: none;">
-            <div class="title" style="font-size: 50px; margin-bottom: 15px;">🎁 Redeem Code</div>
-            <div class="code-input-container">
-                <input type="text" class="code-input" id="codeInput" placeholder="ENTER CODE" maxlength="20">
-                <br>
-                <button class="btn btn-small" onclick="redeemCode()">Redeem</button>
-                <div class="code-message" id="codeMessage"></div>
-            </div>
-            <div style="background: rgba(255,255,255,0.98); padding: 20px; border-radius: 20px; max-width: 500px; margin: 20px 0;">
-                <div style="font-size: 14px; font-weight: 700; color: #667eea; margin-bottom: 10px;">💡 SECRET CODES</div>
-                <div style="font-size: 12px; color: #6b7280; line-height: 1.8;">
-                    Find secret codes to unlock exclusive legendary balls!<br>
-                    Codes are hidden... keep exploring! 🔍
-                </div>
-            </div>
-            <button class="btn" onclick="closeCodes()">Back to Menu</button>
-        </div>
+  // Draw walls
+  walls.forEach(w => {
+    ctx.fillStyle = '#8B4513';
+    ctx.fillRect(w.x, w.y, w.w, w.h);
+    ctx.fillStyle = '#A0522D';
+    ctx.fillRect(w.x+2, w.y+2, w.w-4, 6);
+  });
 
+  // Draw hole
+  ctx.beginPath();
+  ctx.arc(hole.x, hole.y, hole.radius, 0, Math.PI * 2);
+  ctx.fillStyle = '#111';
+  ctx.fill();
+  ctx.strokeStyle = '#fff';
+  ctx.lineWidth = 2;
+  ctx.stroke();
 
-        <div id="boxesScreen" class="screen" style="display: none;">
-            <div class="title" style="font-size: 32px; margin-bottom: 10px;">📦 Mystery Boxes</div>
-            <div class="coins-display" style="padding: 8px 20px; font-size: 18px; margin-bottom: 10px;">💰 <span id="boxesCoins">0</span> Coins</div>
-            <div class="tagline" style="font-size: 11px; margin-bottom: 12px; color: rgba(255,255,255,0.85);">24 BOXES AVAILABLE!</div>
-            <div class="box-container" style="max-height: 58vh; overflow-y: auto;">
-                <!-- ORIGINAL 4 -->
-                <div class="box-item box-common" onclick="openBox('common')">
-                    <div class="box-icon">📦</div>
-                    <div class="box-name">Common Box</div>
-                    <div class="box-price">💰 100</div>
-                    <div class="box-desc">50-150 coins<br>or Common ball!</div>
-                </div>
-                <div class="box-item box-rare" onclick="openBox('rare')">
-                    <div class="box-icon">🎁</div>
-                    <div class="box-name">Rare Box</div>
-                    <div class="box-price">💰 300</div>
-                    <div class="box-desc">100-300 coins<br>or Rare/Epic ball!</div>
-                </div>
-                <div class="box-item box-legendary" onclick="openBox('legendary')">
-                    <div class="box-icon">🎉</div>
-                    <div class="box-name">Legendary Box</div>
-                    <div class="box-price">💰 600</div>
-                    <div class="box-desc">200-600 coins<br>or LEGENDARY ball!</div>
-                </div>
-                <div class="box-item box-admin" onclick="openBox('admin')">
-                    <div class="box-icon">👑</div>
-                    <div class="box-name">ADMIN BOX</div>
-                    <div class="box-price">💰 1000</div>
-                    <div class="box-desc">500-1500 coins<br>GUARANTEED LEGENDARY!</div>
-                </div>
+  // Flag
+  ctx.strokeStyle = '#fff';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(hole.x, hole.y - 5);
+  ctx.lineTo(hole.x, hole.y - 30);
+  ctx.stroke();
+  ctx.fillStyle = '#ff4444';
+  ctx.beginPath();
+  ctx.moveTo(hole.x, hole.y - 30);
+  ctx.lineTo(hole.x + 15, hole.y - 23);
+  ctx.lineTo(hole.x, hole.y - 16);
+  ctx.fill();
 
-                <!-- NEW 10 BOXES -->
-                <div class="box-item box-common" onclick="openBox('mini')">
-                    <div class="box-icon">📁</div>
-                    <div class="box-name">Mini Box</div>
-                    <div class="box-price">💰 50</div>
-                    <div class="box-desc">25-75 coins<br>or Common ball!</div>
-                </div>
-                <div class="box-item box-uncommon" onclick="openBox('bronze')">
-                    <div class="box-icon">🥉</div>
-                    <div class="box-name">Bronze Box</div>
-                    <div class="box-price">💰 200</div>
-                    <div class="box-desc">100-250 coins<br>or Uncommon ball!</div>
-                </div>
-                <div class="box-item box-uncommon" onclick="openBox('silver')">
-                    <div class="box-icon">🥈</div>
-                    <div class="box-name">Silver Box</div>
-                    <div class="box-price">💰 350</div>
-                    <div class="box-desc">150-400 coins<br>or Rare ball!</div>
-                </div>
-                <div class="box-item box-rare" onclick="openBox('gold')">
-                    <div class="box-icon">🥇</div>
-                    <div class="box-name">Gold Box</div>
-                    <div class="box-price">💰 500</div>
-                    <div class="box-desc">250-600 coins<br>or Epic ball!</div>
-                </div>
-                <div class="box-item box-rare" onclick="openBox('diamond')">
-                    <div class="box-icon">💎</div>
-                    <div class="box-name">Diamond Box</div>
-                    <div class="box-price">💰 750</div>
-                    <div class="box-desc">400-1000 coins<br>or Legendary ball!</div>
-                </div>
-                <div class="box-item box-legendary" onclick="openBox('platinum')">
-                    <div class="box-icon">⭐</div>
-                    <div class="box-name">Platinum Box</div>
-                    <div class="box-price">💰 900</div>
-                    <div class="box-desc">500-1200 coins<br>GUARANTEED Legendary!</div>
-                </div>
-                <div class="box-item box-mythic" onclick="openBox('mythic')">
-                    <div class="box-icon">🌟</div>
-                    <div class="box-name">Mythic Box</div>
-                    <div class="box-price">💰 1500</div>
-                    <div class="box-desc">1000-2500 coins<br>DOUBLE Legendary!</div>
-                </div>
-                <div class="box-item box-cosmic" onclick="openBox('cosmic')">
-                    <div class="box-icon">🌌</div>
-                    <div class="box-name">Cosmic Box</div>
-                    <div class="box-price">💰 2500</div>
-                    <div class="box-desc">2000-5000 coins<br>TRIPLE Legendary!</div>
-                </div>
-                <div class="box-item box-ultimate" onclick="openBox('ultimate')">
-                    <div class="box-icon">🔥</div>
-                    <div class="box-name">Ultimate Box</div>
-                    <div class="box-price">💰 5000</div>
-                    <div class="box-desc">5000-10000 coins<br>5x Legendary!</div>
-                </div>
-                <div class="box-item box-god" onclick="openBox('god')">
-                    <div class="box-icon">⚡</div>
-                    <div class="box-name">GOD BOX</div>
-                    <div class="box-price">💰 9999</div>
-                    <div class="box-desc">10000-25000 coins<br>10x LEGENDARY!</div>
-                </div>
-            </div>
-            <button class="btn" onclick="closeBoxes()">Back to Menu</button>
-        </div>
-        <!-- 🔐 DEV PANEL -->
-        <div id="devPanel" style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15,23,42,0.95); z-index: 10000; justify-content: center; align-items: center;">
-            <div style="background: white; padding: 30px; border-radius: 25px; max-width: 450px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.7);">
-                <div style="font-size: 24px; font-weight: 900; color: #ef4444; margin-bottom: 6px; text-align: center;">🔐 DEV PANEL</div>
-                <div style="font-size: 12px; color: #6b7280; margin-bottom: 20px; text-align: center;">ZAYN2015 ACCESS GRANTED</div>
-                <div style="margin-bottom: 16px;">
-                    <div style="font-size: 13px; font-weight: 700; color: #1a1a2e; margin-bottom: 6px;">💰 Coins</div>
-                    <input id="devCoinsInput" type="number" placeholder="Enter amount" style="width: 100%; padding: 10px; border-radius: 10px; border: 2px solid #e5e7eb; font-size: 14px; margin-bottom: 8px;">
-                    <button style="width: 100%; font-size: 13px; padding: 12px; background: #667eea; color: white; border: none; border-radius: 12px; font-weight: 800; cursor: pointer;" onclick="devSetCoins()">Set Coins</button>
-                </div>
-                <div style="margin-bottom: 16px;">
-                    <div style="font-size: 13px; font-weight: 700; color: #1a1a2e; margin-bottom: 6px;">⚽ Balls</div>
-                    <button style="width: 100%; font-size: 13px; padding: 12px; background: #10b981; color: white; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; margin-bottom: 8px;" onclick="devUnlockAllBalls()">Unlock ALL Balls</button>
-                    <button style="width: 100%; font-size: 13px; padding: 12px; background: #f59e0b; color: white; border: none; border-radius: 12px; font-weight: 800; cursor: pointer;" onclick="devResetBalls()">Reset Balls</button>
-                </div>
-                <div style="margin-bottom: 20px;">
-                    <button style="width: 100%; font-size: 13px; padding: 12px; background: #ef4444; color: white; border: none; border-radius: 12px; font-weight: 800; cursor: pointer;" onclick="devResetProgress()">🗑️ Reset ALL Progress</button>
-                </div>
-                <button style="width: 100%; font-size: 14px; padding: 14px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 15px; font-weight: 900; cursor: pointer;" onclick="closeDevPanel()">Close Panel</button>
-            </div>
-        </div>
+  // Aim line
+  if (aiming && !animating) {
+    ctx.save();
+    ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([5, 5]);
+    ctx.beginPath();
+    ctx.moveTo(ball.x, ball.y);
+    ctx.lineTo(ball.x + Math.cos(aimAngle) * 80, ball.y + Math.sin(aimAngle) * 80);
+    ctx.stroke();
+    ctx.restore();
 
-        <div id="gameOverScreen" class="screen" style="display: none;">
-            <div class="emoji">💥</div>
-            <div class="title" style="font-size: 60px; margin-bottom: 15px;">Game Over!</div>
-            <div class="stats-container">
-                <div class="stat-row">
-                    <span class="stat-label">Distance</span>
-                    <span class="stat-value" id="finalDistance">0m</span>
-                </div>
-                <div class="stat-row">
-                    <span class="stat-label">Coins Earned</span>
-                    <span class="stat-value" id="coinsEarned">+0</span>
-                </div>
-                <div class="stat-row">
-                    <span class="stat-label">Total Coins</span>
-                    <span class="stat-value" id="totalCoins">0</span>
-                </div>
-            </div>
-            <div id="milestoneUnlockMessage" style="display: none; margin: 15px 0;"></div>
-            <div class="button-row">
-                <button class="btn" onclick="startGame()">Play Again</button>
-                <button class="btn btn-secondary" onclick="backToMenu()">Main Menu</button>
-            </div>
-        </div>
-    </div>
+    // Power bar
+    ctx.fillStyle = '#333';
+    ctx.fillRect(canvas.width/2 - 75, canvas.height - 30, 150, 15);
+    const col = power < 40 ? '#00ff88' : power < 70 ? '#ffaa00' : '#ff4444';
+    ctx.fillStyle = col;
+    ctx.fillRect(canvas.width/2 - 75, canvas.height - 30, power * 1.5, 15);
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(canvas.width/2 - 75, canvas.height - 30, 150, 15);
+  }
 
-    <script>
+  // Draw ball
+  const grad = ctx.createRadialGradient(ball.x - 3, ball.y - 3, 2, ball.x, ball.y, ball.radius);
+  grad.addColorStop(0, '#ffffff');
+  grad.addColorStop(1, '#cccccc');
+  ctx.beginPath();
+  ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+  ctx.fillStyle = grad;
+  ctx.fill();
+  ctx.strokeStyle = '#999';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+}
 
-// 🔥 BUTTONS FIXED - ALL onclick functions now work perfectly
-const buttonFunctions = ['startGame', 'openShop', 'closeShop', 'openBoxes', 'closeBoxes', 'openMilestones', 'closeMilestones', 'openCodes', 'closeCodes', 'redeemCode', 'openDevPrompt', 'closeDevPanel', 'backToMenu'];
-buttonFunctions.forEach(funcName => {
-    window[funcName] = window[funcName] || globalThis[funcName];
+function update() {
+  if (!animating) return;
+
+  ball.vx *= 0.985;
+  ball.vy *= 0.985;
+  ball.x += ball.vx;
+  ball.y += ball.vy;
+
+  // Wall collisions
+  walls.forEach(w => {
+    if (ball.x + ball.radius > w.x && ball.x - ball.radius < w.x + w.w &&
+        ball.y + ball.radius > w.y && ball.y - ball.radius < w.y + w.h) {
+      const overlapLeft = (ball.x + ball.radius) - w.x;
+      const overlapRight = (w.x + w.w) - (ball.x - ball.radius);
+      const overlapTop = (ball.y + ball.radius) - w.y;
+      const overlapBottom = (w.y + w.h) - (ball.y - ball.radius);
+      const minOverlap = Math.min(overlapLeft, overlapRight, overlapTop, overlapBottom);
+      if (minOverlap === overlapLeft) { ball.x = w.x - ball.radius; ball.vx *= -0.7; }
+      else if (minOverlap === overlapRight) { ball.x = w.x + w.w + ball.radius; ball.vx *= -0.7; }
+      else if (minOverlap === overlapTop) { ball.y = w.y - ball.radius; ball.vy *= -0.7; }
+      else { ball.y = w.y + w.h + ball.radius; ball.vy *= -0.7; }
+    }
+  });
+
+  // Canvas edge bounce
+  if (ball.x - ball.radius < 0) { ball.x = ball.radius; ball.vx *= -0.7; }
+  if (ball.x + ball.radius > canvas.width) { ball.x = canvas.width - ball.radius; ball.vx *= -0.7; }
+  if (ball.y - ball.radius < 0) { ball.y = ball.radius; ball.vy *= -0.7; }
+  if (ball.y + ball.radius > canvas.height) { ball.y = canvas.height - ball.radius; ball.vy *= -0.7; }
+
+  // Check hole
+  const dx = ball.x - hole.x;
+  const dy = ball.y - hole.y;
+  const dist = Math.sqrt(dx*dx + dy*dy);
+  if (dist < hole.radius) {
+    animating = false;
+    ball.x = hole.x; ball.y = hole.y;
+    draw();
+    const diff = shots - par;
+    let msg = '';
+    if (shots === 1) msg = '🏆 Hole in One!';
+    else if (diff <= -2) msg = '🦅 Eagle! Amazing!';
+    else if (diff === -1) msg = '🐦 Birdie! Great shot!';
+    else if (diff === 0) msg = '✅ Par! Nice!';
+    else if (diff === 1) msg = '😬 Bogey';
+    else msg = '😅 Double Bogey+';
+    totalScore += diff;
+    document.getElementById('message').textContent = msg;
+    document.getElementById('scoreNum').textContent = totalScore > 0 ? '+' + totalScore : totalScore;
+    if (holeIndex < holes.length - 1) {
+      document.getElementById('nextBtn').style.display = 'inline-block';
+    } else {
+      setTimeout(() => {
+        document.getElementById('message').textContent = `🎉 Game Over! Final Score: ${totalScore > 0 ? '+' + totalScore : totalScore}`;
+      }, 500);
+    }
+    return;
+  }
+
+  // Stop if very slow
+  if (Math.abs(ball.vx) < 0.05 && Math.abs(ball.vy) < 0.05) {
+    ball.vx = 0; ball.vy = 0;
+    animating = false;
+  }
+
+  draw();
+  if (animating) requestAnimationFrame(update);
+}
+
+function nextHole() {
+  holeIndex++;
+  loadHole();
+}
+
+// Mouse controls
+canvas.addEventListener('mousedown', (e) => {
+  if (animating) return;
+  const rect = canvas.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
+  aimAngle = Math.atan2(my - ball.y, mx - ball.x);
+  aiming = true;
+  charging = true;
+  power = 0;
+  draw();
 });
 
-
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-
-        let gameStarted = false;
-        let gameOver = false;
-        let gameReady = false;
-        let distance = 0;
-        let bestDistance = parseInt(localStorage.getItem('gravityFlipBest')) || 0;
-        let coins = parseInt(localStorage.getItem('gravityFlipCoins')) || 0;
-        let earnedCoins = 0;
-        let speed = 5;
-        let frameCount = 0;
-        let difficulty = 'EASY';
-        let spawnRate = 95;
-
-        const ballSkins = {
-            classic: { emoji: '🟢', name: 'Classic', price: 0, unlocked: true, rarity: 'common',
-                colors: ['#d1fae5', '#6ee7b7', '#34d399', '#10b981', '#047857'] },
-            fire: { emoji: '🔥', name: 'Fire', price: 50, unlocked: false, rarity: 'common',
-                colors: ['#d1fae5', '#6ee7b7', '#34d399', '#10b981', '#047857'] },
-            ice: { emoji: '❄️', name: 'Ice', price: 50, unlocked: false, rarity: 'common',
-                colors: ['#d1fae5', '#6ee7b7', '#34d399', '#10b981', '#047857'] },
-            water: { emoji: '💧', name: 'Water', price: 60, unlocked: false, rarity: 'common',
-                colors: ['#d1fae5', '#6ee7b7', '#34d399', '#10b981', '#047857'] },
-            leaf: { emoji: '🍃', name: 'Leaf', price: 60, unlocked: false, rarity: 'common',
-                colors: ['#d1fae5', '#6ee7b7', '#34d399', '#10b981', '#047857'] },
-            rock: { emoji: '🪨', name: 'Rock', price: 70, unlocked: false, rarity: 'common',
-                colors: ['#d1fae5', '#6ee7b7', '#34d399', '#10b981', '#047857'] },
-            orange: { emoji: '🟠', name: 'Orange', price: 70, unlocked: false, rarity: 'common',
-                colors: ['#d1fae5', '#6ee7b7', '#34d399', '#10b981', '#047857'] },
-            yellow: { emoji: '🟡', name: 'Yellow', price: 80, unlocked: false, rarity: 'common',
-                colors: ['#d1fae5', '#6ee7b7', '#34d399', '#10b981', '#047857'] },
-            red: { emoji: '🔴', name: 'Red', price: 80, unlocked: false, rarity: 'common',
-                colors: ['#d1fae5', '#6ee7b7', '#34d399', '#10b981', '#047857'] },
-            blue: { emoji: '🔵', name: 'Blue', price: 90, unlocked: false, rarity: 'common',
-                colors: ['#d1fae5', '#6ee7b7', '#34d399', '#10b981', '#047857'] },
-            purple: { emoji: '🟣', name: 'Purple', price: 90, unlocked: false, rarity: 'common',
-                colors: ['#d1fae5', '#6ee7b7', '#34d399', '#10b981', '#047857'] },
-            brown: { emoji: '🟤', name: 'Brown', price: 100, unlocked: false, rarity: 'common',
-                colors: ['#d1fae5', '#6ee7b7', '#34d399', '#10b981', '#047857'] },
-            white: { emoji: '⚪', name: 'White', price: 100, unlocked: false, rarity: 'common',
-                colors: ['#d1fae5', '#6ee7b7', '#34d399', '#10b981', '#047857'] },
-            black: { emoji: '⚫', name: 'Black', price: 110, unlocked: false, rarity: 'common',
-                colors: ['#d1fae5', '#6ee7b7', '#34d399', '#10b981', '#047857'] },
-            soccer: { emoji: '⚽', name: 'Soccer', price: 110, unlocked: false, rarity: 'common',
-                colors: ['#d1fae5', '#6ee7b7', '#34d399', '#10b981', '#047857'] },
-            basketball: { emoji: '🏀', name: 'Basketball', price: 120, unlocked: false, rarity: 'common',
-                colors: ['#d1fae5', '#6ee7b7', '#34d399', '#10b981', '#047857'] },
-            baseball: { emoji: '⚾', name: 'Baseball', price: 120, unlocked: false, rarity: 'common',
-                colors: ['#d1fae5', '#6ee7b7', '#34d399', '#10b981', '#047857'] },
-            tennis: { emoji: '🎾', name: 'Tennis', price: 130, unlocked: false, rarity: 'common',
-                colors: ['#d1fae5', '#6ee7b7', '#34d399', '#10b981', '#047857'] },
-            volleyball: { emoji: '🏐', name: 'Volleyball', price: 130, unlocked: false, rarity: 'common',
-                colors: ['#d1fae5', '#6ee7b7', '#34d399', '#10b981', '#047857'] },
-            bowling: { emoji: '🎳', name: 'Bowling', price: 140, unlocked: false, rarity: 'common',
-                colors: ['#d1fae5', '#6ee7b7', '#34d399', '#10b981', '#047857'] },
-            electric: { emoji: '⚡', name: 'Electric', price: 150, unlocked: false, rarity: 'uncommon',
-                colors: ['#cffafe', '#67e8f9', '#06b6d4', '#0e7490', '#164e63'] },
-            ocean: { emoji: '🌊', name: 'Ocean', price: 160, unlocked: false, rarity: 'uncommon',
-                colors: ['#cffafe', '#67e8f9', '#06b6d4', '#0e7490', '#164e63'] },
-            sun: { emoji: '☀️', name: 'Sun', price: 170, unlocked: false, rarity: 'uncommon',
-                colors: ['#cffafe', '#67e8f9', '#06b6d4', '#0e7490', '#164e63'] },
-            moon: { emoji: '🌙', name: 'Moon', price: 180, unlocked: false, rarity: 'uncommon',
-                colors: ['#cffafe', '#67e8f9', '#06b6d4', '#0e7490', '#164e63'] },
-            star: { emoji: '⭐', name: 'Star', price: 190, unlocked: false, rarity: 'uncommon',
-                colors: ['#cffafe', '#67e8f9', '#06b6d4', '#0e7490', '#164e63'] },
-            sparkles: { emoji: '✨', name: 'Sparkles', price: 200, unlocked: false, rarity: 'uncommon',
-                colors: ['#cffafe', '#67e8f9', '#06b6d4', '#0e7490', '#164e63'] },
-            boom: { emoji: '💥', name: 'Boom', price: 210, unlocked: false, rarity: 'uncommon',
-                colors: ['#cffafe', '#67e8f9', '#06b6d4', '#0e7490', '#164e63'] },
-            dizzy: { emoji: '💫', name: 'Dizzy', price: 220, unlocked: false, rarity: 'uncommon',
-                colors: ['#cffafe', '#67e8f9', '#06b6d4', '#0e7490', '#164e63'] },
-            zap: { emoji: '⚡', name: 'Zap', price: 230, unlocked: false, rarity: 'uncommon',
-                colors: ['#cffafe', '#67e8f9', '#06b6d4', '#0e7490', '#164e63'] },
-            flower: { emoji: '🌸', name: 'Flower', price: 240, unlocked: false, rarity: 'uncommon',
-                colors: ['#cffafe', '#67e8f9', '#06b6d4', '#0e7490', '#164e63'] },
-            rose: { emoji: '🌹', name: 'Rose', price: 250, unlocked: false, rarity: 'uncommon',
-                colors: ['#cffafe', '#67e8f9', '#06b6d4', '#0e7490', '#164e63'] },
-            tulip: { emoji: '🌷', name: 'Tulip', price: 260, unlocked: false, rarity: 'uncommon',
-                colors: ['#cffafe', '#67e8f9', '#06b6d4', '#0e7490', '#164e63'] },
-            cherry: { emoji: '🍒', name: 'Cherry', price: 270, unlocked: false, rarity: 'uncommon',
-                colors: ['#cffafe', '#67e8f9', '#06b6d4', '#0e7490', '#164e63'] },
-            strawberry: { emoji: '🍓', name: 'Strawberry', price: 280, unlocked: false, rarity: 'uncommon',
-                colors: ['#cffafe', '#67e8f9', '#06b6d4', '#0e7490', '#164e63'] },
-            apple: { emoji: '🍎', name: 'Apple', price: 290, unlocked: false, rarity: 'uncommon',
-                colors: ['#cffafe', '#67e8f9', '#06b6d4', '#0e7490', '#164e63'] },
-            orange_fruit: { emoji: '🍊', name: 'Orange', price: 300, unlocked: false, rarity: 'uncommon',
-                colors: ['#cffafe', '#67e8f9', '#06b6d4', '#0e7490', '#164e63'] },
-            lemon: { emoji: '🍋', name: 'Lemon', price: 310, unlocked: false, rarity: 'uncommon',
-                colors: ['#cffafe', '#67e8f9', '#06b6d4', '#0e7490', '#164e63'] },
-            watermelon: { emoji: '🍉', name: 'Watermelon', price: 320, unlocked: false, rarity: 'uncommon',
-                colors: ['#cffafe', '#67e8f9', '#06b6d4', '#0e7490', '#164e63'] },
-            grapes: { emoji: '🍇', name: 'Grapes', price: 330, unlocked: false, rarity: 'uncommon',
-                colors: ['#cffafe', '#67e8f9', '#06b6d4', '#0e7490', '#164e63'] },
-            peach: { emoji: '🍑', name: 'Peach', price: 340, unlocked: false, rarity: 'uncommon',
-                colors: ['#cffafe', '#67e8f9', '#06b6d4', '#0e7490', '#164e63'] },
-            rainbow: { emoji: '🌈', name: 'Rainbow', price: 350, unlocked: false, rarity: 'rare',
-                colors: ['#dbeafe', '#60a5fa', '#3b82f6', '#1d4ed8', '#1e3a8a'] },
-            toxic: { emoji: '☢️', name: 'Toxic', price: 360, unlocked: false, rarity: 'rare',
-                colors: ['#dbeafe', '#60a5fa', '#3b82f6', '#1d4ed8', '#1e3a8a'] },
-            galaxy: { emoji: '🌌', name: 'Galaxy', price: 370, unlocked: false, rarity: 'rare',
-                colors: ['#dbeafe', '#60a5fa', '#3b82f6', '#1d4ed8', '#1e3a8a'] },
-            comet: { emoji: '☄️', name: 'Comet', price: 380, unlocked: false, rarity: 'rare',
-                colors: ['#dbeafe', '#60a5fa', '#3b82f6', '#1d4ed8', '#1e3a8a'] },
-            planet: { emoji: '🪐', name: 'Planet', price: 390, unlocked: false, rarity: 'rare',
-                colors: ['#dbeafe', '#60a5fa', '#3b82f6', '#1d4ed8', '#1e3a8a'] },
-            earth: { emoji: '🌍', name: 'Earth', price: 400, unlocked: false, rarity: 'rare',
-                colors: ['#dbeafe', '#60a5fa', '#3b82f6', '#1d4ed8', '#1e3a8a'] },
-            firework: { emoji: '🎆', name: 'Firework', price: 410, unlocked: false, rarity: 'rare',
-                colors: ['#dbeafe', '#60a5fa', '#3b82f6', '#1d4ed8', '#1e3a8a'] },
-            sparkler: { emoji: '🎇', name: 'Sparkler', price: 420, unlocked: false, rarity: 'rare',
-                colors: ['#dbeafe', '#60a5fa', '#3b82f6', '#1d4ed8', '#1e3a8a'] },
-            crystal: { emoji: '💎', name: 'Crystal', price: 430, unlocked: false, rarity: 'rare',
-                colors: ['#dbeafe', '#60a5fa', '#3b82f6', '#1d4ed8', '#1e3a8a'] },
-            gem: { emoji: '💠', name: 'Gem', price: 440, unlocked: false, rarity: 'rare',
-                colors: ['#dbeafe', '#60a5fa', '#3b82f6', '#1d4ed8', '#1e3a8a'] },
-            crown: { emoji: '👑', name: 'Crown', price: 450, unlocked: false, rarity: 'rare',
-                colors: ['#dbeafe', '#60a5fa', '#3b82f6', '#1d4ed8', '#1e3a8a'] },
-            trophy: { emoji: '🏆', name: 'Trophy', price: 460, unlocked: false, rarity: 'rare',
-                colors: ['#dbeafe', '#60a5fa', '#3b82f6', '#1d4ed8', '#1e3a8a'] },
-            medal: { emoji: '🥇', name: 'Medal', price: 470, unlocked: false, rarity: 'rare',
-                colors: ['#dbeafe', '#60a5fa', '#3b82f6', '#1d4ed8', '#1e3a8a'] },
-            gift: { emoji: '🎁', name: 'Gift', price: 480, unlocked: false, rarity: 'rare',
-                colors: ['#dbeafe', '#60a5fa', '#3b82f6', '#1d4ed8', '#1e3a8a'] },
-            balloon: { emoji: '🎈', name: 'Balloon', price: 490, unlocked: false, rarity: 'rare',
-                colors: ['#dbeafe', '#60a5fa', '#3b82f6', '#1d4ed8', '#1e3a8a'] },
-            confetti: { emoji: '🎊', name: 'Confetti', price: 500, unlocked: false, rarity: 'rare',
-                colors: ['#dbeafe', '#60a5fa', '#3b82f6', '#1d4ed8', '#1e3a8a'] },
-            party: { emoji: '🎉', name: 'Party', price: 510, unlocked: false, rarity: 'rare',
-                colors: ['#dbeafe', '#60a5fa', '#3b82f6', '#1d4ed8', '#1e3a8a'] },
-            rocket: { emoji: '🚀', name: 'Rocket', price: 520, unlocked: false, rarity: 'rare',
-                colors: ['#dbeafe', '#60a5fa', '#3b82f6', '#1d4ed8', '#1e3a8a'] },
-            ufo: { emoji: '🛸', name: 'UFO', price: 530, unlocked: false, rarity: 'rare',
-                colors: ['#dbeafe', '#60a5fa', '#3b82f6', '#1d4ed8', '#1e3a8a'] },
-            satellite: { emoji: '🛰️', name: 'Satellite', price: 540, unlocked: false, rarity: 'rare',
-                colors: ['#dbeafe', '#60a5fa', '#3b82f6', '#1d4ed8', '#1e3a8a'] },
-            alien: { emoji: '👽', name: 'Alien', price: 550, unlocked: false, rarity: 'rare',
-                colors: ['#dbeafe', '#60a5fa', '#3b82f6', '#1d4ed8', '#1e3a8a'] },
-            robot: { emoji: '🤖', name: 'Robot', price: 560, unlocked: false, rarity: 'rare',
-                colors: ['#dbeafe', '#60a5fa', '#3b82f6', '#1d4ed8', '#1e3a8a'] },
-            ghost: { emoji: '👻', name: 'Ghost', price: 570, unlocked: false, rarity: 'rare',
-                colors: ['#dbeafe', '#60a5fa', '#3b82f6', '#1d4ed8', '#1e3a8a'] },
-            skull: { emoji: '💀', name: 'Skull', price: 580, unlocked: false, rarity: 'rare',
-                colors: ['#dbeafe', '#60a5fa', '#3b82f6', '#1d4ed8', '#1e3a8a'] },
-            pumpkin: { emoji: '🎃', name: 'Pumpkin', price: 590, unlocked: false, rarity: 'rare',
-                colors: ['#dbeafe', '#60a5fa', '#3b82f6', '#1d4ed8', '#1e3a8a'] },
-            sunset: { emoji: '🌅', name: 'Sunset', price: 600, unlocked: false, rarity: 'epic',
-                colors: ['#e9d5ff', '#c084fc', '#9333ea', '#6b21a8', '#4c1d95'] },
-            dark: { emoji: '🖤', name: 'Shadow', price: 610, unlocked: false, rarity: 'epic',
-                colors: ['#e9d5ff', '#c084fc', '#9333ea', '#6b21a8', '#4c1d95'] },
-            gold: { emoji: '💛', name: 'Gold', price: 620, unlocked: false, rarity: 'epic',
-                colors: ['#e9d5ff', '#c084fc', '#9333ea', '#6b21a8', '#4c1d95'] },
-            silver: { emoji: '🩶', name: 'Silver', price: 630, unlocked: false, rarity: 'epic',
-                colors: ['#e9d5ff', '#c084fc', '#9333ea', '#6b21a8', '#4c1d95'] },
-            bronze: { emoji: '🤎', name: 'Bronze', price: 640, unlocked: false, rarity: 'epic',
-                colors: ['#e9d5ff', '#c084fc', '#9333ea', '#6b21a8', '#4c1d95'] },
-            neon: { emoji: '💚', name: 'Neon', price: 650, unlocked: false, rarity: 'epic',
-                colors: ['#e9d5ff', '#c084fc', '#9333ea', '#6b21a8', '#4c1d95'] },
-            cyber: { emoji: '💙', name: 'Cyber', price: 660, unlocked: false, rarity: 'epic',
-                colors: ['#e9d5ff', '#c084fc', '#9333ea', '#6b21a8', '#4c1d95'] },
-            plasma: { emoji: '💜', name: 'Plasma', price: 670, unlocked: false, rarity: 'epic',
-                colors: ['#e9d5ff', '#c084fc', '#9333ea', '#6b21a8', '#4c1d95'] },
-            void: { emoji: '🖤', name: 'Void', price: 680, unlocked: false, rarity: 'epic',
-                colors: ['#e9d5ff', '#c084fc', '#9333ea', '#6b21a8', '#4c1d95'] },
-            celestial: { emoji: '🌟', name: 'Celestial', price: 690, unlocked: false, rarity: 'epic',
-                colors: ['#e9d5ff', '#c084fc', '#9333ea', '#6b21a8', '#4c1d95'] },
-            cosmic: { emoji: '🌠', name: 'Cosmic', price: 700, unlocked: false, rarity: 'epic',
-                colors: ['#e9d5ff', '#c084fc', '#9333ea', '#6b21a8', '#4c1d95'] },
-            nebula: { emoji: '🌫️', name: 'Nebula', price: 710, unlocked: false, rarity: 'epic',
-                colors: ['#e9d5ff', '#c084fc', '#9333ea', '#6b21a8', '#4c1d95'] },
-            aurora: { emoji: '🌌', name: 'Aurora', price: 720, unlocked: false, rarity: 'epic',
-                colors: ['#e9d5ff', '#c084fc', '#9333ea', '#6b21a8', '#4c1d95'] },
-            phoenix: { emoji: '🔥', name: 'Phoenix', price: 730, unlocked: false, rarity: 'epic',
-                colors: ['#e9d5ff', '#c084fc', '#9333ea', '#6b21a8', '#4c1d95'] },
-            dragon: { emoji: '🐉', name: 'Dragon', price: 740, unlocked: false, rarity: 'epic',
-                colors: ['#e9d5ff', '#c084fc', '#9333ea', '#6b21a8', '#4c1d95'] },
-            unicorn: { emoji: '🦄', name: 'Unicorn', price: 750, unlocked: false, rarity: 'epic',
-                colors: ['#e9d5ff', '#c084fc', '#9333ea', '#6b21a8', '#4c1d95'] },
-            pegasus: { emoji: '🦄', name: 'Pegasus', price: 760, unlocked: false, rarity: 'epic',
-                colors: ['#e9d5ff', '#c084fc', '#9333ea', '#6b21a8', '#4c1d95'] },
-            mermaid: { emoji: '🧜', name: 'Mermaid', price: 770, unlocked: false, rarity: 'epic',
-                colors: ['#e9d5ff', '#c084fc', '#9333ea', '#6b21a8', '#4c1d95'] },
-            wizard: { emoji: '🧙', name: 'Wizard', price: 780, unlocked: false, rarity: 'epic',
-                colors: ['#e9d5ff', '#c084fc', '#9333ea', '#6b21a8', '#4c1d95'] },
-            ninja: { emoji: '🥷', name: 'Ninja', price: 790, unlocked: false, rarity: 'epic',
-                colors: ['#e9d5ff', '#c084fc', '#9333ea', '#6b21a8', '#4c1d95'] },
-            samurai: { emoji: '⚔️', name: 'Samurai', price: 800, unlocked: false, rarity: 'epic',
-                colors: ['#e9d5ff', '#c084fc', '#9333ea', '#6b21a8', '#4c1d95'] },
-            knight: { emoji: '🛡️', name: 'Knight', price: 810, unlocked: false, rarity: 'epic',
-                colors: ['#e9d5ff', '#c084fc', '#9333ea', '#6b21a8', '#4c1d95'] },
-            pirate: { emoji: '🏴‍☠️', name: 'Pirate', price: 820, unlocked: false, rarity: 'epic',
-                colors: ['#e9d5ff', '#c084fc', '#9333ea', '#6b21a8', '#4c1d95'] },
-            king: { emoji: '🤴', name: 'King', price: 830, unlocked: false, rarity: 'epic',
-                colors: ['#e9d5ff', '#c084fc', '#9333ea', '#6b21a8', '#4c1d95'] },
-            queen: { emoji: '👸', name: 'Queen', price: 840, unlocked: false, rarity: 'epic',
-                colors: ['#e9d5ff', '#c084fc', '#9333ea', '#6b21a8', '#4c1d95'] },
-            mystic: { emoji: '🔮', name: 'Mystic', price: 850, unlocked: false, rarity: 'legendary',
-                colors: ['#fef9c3', '#fde047', '#facc15', '#eab308', '#ca8a04'] },
-            divine: { emoji: '✝️', name: 'Divine', price: 900, unlocked: false, rarity: 'legendary',
-                colors: ['#fef9c3', '#fde047', '#facc15', '#eab308', '#ca8a04'] },
-            ancient: { emoji: '🗿', name: 'Ancient', price: 950, unlocked: false, rarity: 'legendary',
-                colors: ['#fef9c3', '#fde047', '#facc15', '#eab308', '#ca8a04'] },
-            eternal: { emoji: '♾️', name: 'Eternal', price: 1000, unlocked: false, rarity: 'legendary',
-                colors: ['#fef9c3', '#fde047', '#facc15', '#eab308', '#ca8a04'] },
-            supreme: { emoji: '👁️', name: 'Supreme', price: 1100, unlocked: false, rarity: 'legendary',
-                colors: ['#fef9c3', '#fde047', '#facc15', '#eab308', '#ca8a04'] },
-            omega: { emoji: '🔱', name: 'Omega', price: 1200, unlocked: false, rarity: 'legendary',
-                colors: ['#fef9c3', '#fde047', '#facc15', '#eab308', '#ca8a04'] },
-            infinity: { emoji: '∞', name: 'Infinity', price: 1300, unlocked: false, rarity: 'legendary',
-                colors: ['#fef9c3', '#fde047', '#facc15', '#eab308', '#ca8a04'] },
-            ultimate: { emoji: '🌟', name: 'Ultimate', price: 1500, unlocked: false, rarity: 'legendary',
-                colors: ['#fef9c3', '#fde047', '#facc15', '#eab308', '#ca8a04'] },
-            godly: { emoji: '⚡', name: 'Godly', price: 2000, unlocked: false, rarity: 'legendary',
-                colors: ['#fef9c3', '#fde047', '#facc15', '#eab308', '#ca8a04'] },
-            admin: { emoji: '👑', name: 'ADMIN', price: 0, unlocked: false, rarity: 'legendary', secret: true,
-                colors: ['#fef9c3', '#fde047', '#facc15', '#eab308', '#ca8a04'] },
-            mega: { emoji: '🚀', name: 'MEGA', price: 0, unlocked: false, rarity: 'legendary', secret: true,
-                colors: ['#fef9c3', '#fde047', '#facc15', '#eab308', '#ca8a04'] },
-            epic: { emoji: '⭐', name: 'EPIC', price: 0, unlocked: false, rarity: 'legendary', secret: true,
-                colors: ['#fef9c3', '#fde047', '#facc15', '#eab308', '#ca8a04'] },
-        };
-
-        const milestones = [
-            { id: 'first_run', icon: '🎮', title: 'First Steps', desc: 'Reach 10m', target: 10, reward: 10, completed: false },
-            { id: 'beginner', icon: '🌟', title: 'Beginner', desc: 'Reach 25m', target: 25, reward: 25, completed: false },
-            { id: 'skilled', icon: '💫', title: 'Getting Good', desc: 'Reach 50m', target: 50, reward: 50, completed: false },
-            { id: 'adept', icon: '✨', title: 'Adept', desc: 'Reach 75m', target: 75, reward: 60, completed: false },
-            { id: 'expert', icon: '🔥', title: 'Expert', desc: 'Reach 100m', target: 100, reward: 100, completed: false },
-            { id: 'pro', icon: '🎯', title: 'Pro Player', desc: 'Reach 150m', target: 150, reward: 125, completed: false },
-            { id: 'master', icon: '👑', title: 'Master', desc: 'Reach 200m', target: 200, reward: 200, completed: false },
-            { id: 'elite', icon: '💪', title: 'Elite', desc: 'Reach 300m', target: 300, reward: 250, completed: false },
-            { id: 'champion', icon: '🏅', title: 'Champion', desc: 'Reach 400m', target: 400, reward: 300, completed: false },
-            { id: 'legend', icon: '💎', title: 'Legend', desc: 'Reach 500m', target: 500, reward: 500, completed: false },
-            { id: 'immortal', icon: '🌟', title: 'Immortal', desc: 'Reach 750m', target: 750, reward: 750, completed: false },
-            { id: 'godlike', icon: '⚡', title: 'Godlike', desc: 'Reach 1000m', target: 1000, reward: 1000, completed: false },
-            { id: 'coin_starter', icon: '💰', title: 'Coin Starter', desc: 'Earn 50 coins', target: 50, type: 'coins', reward: 25, completed: false },
-            { id: 'coin_collector', icon: '💸', title: 'Coin Collector', desc: 'Earn 100 coins', target: 100, type: 'coins', reward: 50, completed: false },
-            { id: 'wealthy', icon: '💵', title: 'Wealthy', desc: 'Earn 250 coins', target: 250, type: 'coins', reward: 75, completed: false },
-            { id: 'rich', icon: '🤑', title: 'Rich!', desc: 'Earn 500 coins', target: 500, type: 'coins', reward: 100, completed: false },
-            { id: 'millionaire', icon: '💎', title: 'Millionaire', desc: 'Earn 1000 coins', target: 1000, type: 'coins', reward: 250, completed: false },
-            { id: 'ball_starter', icon: '🎨', title: 'Ball Starter', desc: 'Unlock 3 balls', target: 3, type: 'balls', reward: 50, completed: false },
-            { id: 'ball_collector', icon: '🎯', title: 'Ball Collector', desc: 'Unlock 7 balls', target: 7, type: 'balls', reward: 100, completed: false },
-            { id: 'completionist', icon: '🏆', title: 'Completionist', desc: 'Unlock all balls', target: 15, type: 'balls', reward: 500, completed: false }
-        ];
-
-        const savedMilestones = JSON.parse(localStorage.getItem('gravityFlipMilestones')) || {};
-        milestones.forEach(m => {
-            if (savedMilestones[m.id]) m.completed = savedMilestones[m.id];
-        });
-
-        let currentSkin = localStorage.getItem('gravityFlipSkin') || 'classic';
-if (!ballSkins[currentSkin]) currentSkin = Object.keys(ballSkins)[0] || 'classic';
-
-        const unlockedSkins = JSON.parse(localStorage.getItem('gravityFlipUnlocked')) || ['classic'];
-        unlockedSkins.forEach(skin => {
-            if (ballSkins[skin]) ballSkins[skin].unlocked = true;
-        });
-
-        const totalCoinsEarned = parseInt(localStorage.getItem('gravityFlipTotalCoins')) || 0;
-
-        const player = {
-            x: 150,
-            y: canvas.height - 50,
-            z: 0,
-            radius: 35,
-            onCeiling: false,
-            transitioning: false,
-            transitionProgress: 0,
-            transitionSpeed: 0.12,
-            rotation: 0,
-            targetRotation: 0,
-            pulsePhase: 0,
-            glowIntensity: 0
-        };
-
-        let spikes = [];
-        let particles = [];
-        let trailParticles = [];
-        let ambientParticles = [];
-        let shineParticles = [];
-        let gridLines = [];
-
-        for (let i = 0; i < 20; i++) {
-            gridLines.push({ z: i * 100, opacity: 0.1 });
-        }
-
-        for (let i = 0; i < 80; i++) {
-            ambientParticles.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                z: Math.random() * 500,
-                radius: Math.random() * 3 + 1,
-                speed: Math.random() * 0.15 + 0.03,
-                opacity: Math.random() * 0.2 + 0.05,
-                twinkleSpeed: Math.random() * 0.01 + 0.005,
-                twinklePhase: Math.random() * Math.PI * 2
-            });
-        }
-
-        let audioContext;
-        let musicGain, bassGain, melodyGain, padGain;
-        let musicPlaying = false;
-        let musicInterval;
-
-        function initAudio() {
-            if (!audioContext) {
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                musicGain = audioContext.createGain();
-                musicGain.connect(audioContext.destination);
-                musicGain.gain.value = 0.2;
-                bassGain = audioContext.createGain();
-                bassGain.gain.value = 0.25;
-                bassGain.connect(musicGain);
-                melodyGain = audioContext.createGain();
-                melodyGain.gain.value = 0.2;
-                melodyGain.connect(musicGain);
-                padGain = audioContext.createGain();
-                padGain.gain.value = 0.15;
-                padGain.connect(musicGain);
-            }
-        }
-
-        function playSound(freq, duration = 0.1, type = 'sine', volume = 0.06) {
-            initAudio();
-            const osc = audioContext.createOscillator();
-            const gain = audioContext.createGain();
-            osc.connect(gain);
-            gain.connect(audioContext.destination);
-            osc.frequency.value = freq;
-            osc.type = type;
-            gain.gain.setValueAtTime(volume, audioContext.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
-            osc.start(audioContext.currentTime);
-            osc.stop(audioContext.currentTime + duration);
-        }
-
-        function playDeathSound() {
-            initAudio();
-            playSound(800, 0.15, 'sawtooth', 0.15);
-            setTimeout(() => playSound(600, 0.15, 'sawtooth', 0.15), 50);
-            setTimeout(() => playSound(400, 0.2, 'sawtooth', 0.15), 100);
-            setTimeout(() => playSound(200, 0.3, 'sawtooth', 0.15), 150);
-            setTimeout(() => playSound(100, 0.4, 'triangle', 0.12), 200);
-        }
-
-        function playNote(freq, startTime, duration, gainNode, type = 'sine') {
-            const osc = audioContext.createOscillator();
-            const noteGain = audioContext.createGain();
-            osc.connect(noteGain);
-            noteGain.connect(gainNode);
-            osc.frequency.value = freq;
-            osc.type = type;
-            noteGain.gain.setValueAtTime(0, startTime);
-            noteGain.gain.linearRampToValueAtTime(1, startTime + 0.05);
-            noteGain.gain.setValueAtTime(1, startTime + duration - 0.05);
-            noteGain.gain.linearRampToValueAtTime(0, startTime + duration);
-            osc.start(startTime);
-            osc.stop(startTime + duration);
-            return osc;
-        }
-
-        function startBackgroundMusic() {
-            if (musicPlaying) return;
-            initAudio();
-            musicPlaying = true;
-
-            const scale = {
-                C4: 261.63, D4: 293.66, E4: 329.63, G4: 392.00, A4: 440.00,
-                C5: 523.25, D5: 587.33, E5: 659.25, G5: 783.99
-            };
-
-            function playMusicLoop() {
-                if (!musicPlaying) return;
-                const now = audioContext.currentTime;
-                const beatLength = 0.5;
-                playNote(scale.C4, now, beatLength * 2, bassGain, 'triangle');
-                playNote(scale.G4, now + beatLength * 2, beatLength * 2, bassGain, 'triangle');
-                playNote(scale.A4, now + beatLength * 4, beatLength * 2, bassGain, 'triangle');
-                playNote(scale.G4, now + beatLength * 6, beatLength * 2, bassGain, 'triangle');
-                playNote(scale.C5, now + beatLength * 0, beatLength * 0.8, melodyGain, 'sine');
-                playNote(scale.E5, now + beatLength * 1, beatLength * 0.8, melodyGain, 'sine');
-                playNote(scale.G5, now + beatLength * 2, beatLength * 0.8, melodyGain, 'sine');
-                playNote(scale.E5, now + beatLength * 3, beatLength * 0.8, melodyGain, 'sine');
-                playNote(scale.D5, now + beatLength * 4, beatLength * 1.5, melodyGain, 'sine');
-                playNote(scale.C5, now + beatLength * 6, beatLength * 1.5, melodyGain, 'sine');
-                playNote(scale.C4, now, beatLength * 4, padGain, 'sine');
-                playNote(scale.E4, now, beatLength * 4, padGain, 'sine');
-                playNote(scale.G4, now, beatLength * 4, padGain, 'sine');
-                playNote(scale.D4, now + beatLength * 4, beatLength * 4, padGain, 'sine');
-                playNote(scale.A4, now + beatLength * 4, beatLength * 4, padGain, 'sine');
-                musicInterval = setTimeout(playMusicLoop, beatLength * 8 * 1000);
-            }
-            playMusicLoop();
-        }
-
-        function stopBackgroundMusic() {
-            musicPlaying = false;
-            if (musicInterval) {
-                clearTimeout(musicInterval);
-                musicInterval = null;
-            }
-        }
-
-        function toggleMusic() {
-            if (musicPlaying) {
-                stopBackgroundMusic();
-                document.getElementById('musicToggle').textContent = '🔇';
-            } else {
-                startBackgroundMusic();
-                document.getElementById('musicToggle').textContent = '🔊';
-            }
-        }
-
-        function showMilestoneNotification(milestone) {
-            const notif = document.getElementById('milestoneNotification');
-            notif.textContent = `🏆 ${milestone.title} Complete! +${milestone.reward} coins`;
-            notif.classList.add('show');
-            playSound(1200, 0.3);
-            setTimeout(() => playSound(1500, 0.3), 100);
-            setTimeout(() => {
-                notif.classList.remove('show');
-            }, 3000);
-        }
-
-        function checkMilestones() {
-            let newUnlocks = [];
-            const unlockedCount = Object.keys(ballSkins).filter(k => ballSkins[k].unlocked).length;
-            const totalCoins = parseInt(localStorage.getItem('gravityFlipTotalCoins')) || 0;
-
-            milestones.forEach(m => {
-                if (!m.completed) {
-                    let achieved = false;
-                    if (m.type === 'coins') {
-                        achieved = totalCoins >= m.target;
-                    } else if (m.type === 'balls') {
-                        achieved = unlockedCount >= m.target;
-                    } else {
-                        achieved = bestDistance >= m.target;
-                    }
-
-                    if (achieved) {
-                        m.completed = true;
-                        coins += m.reward;
-                        newUnlocks.push(m);
-                        showMilestoneNotification(m);
-                    }
-                }
-            });
-
-            if (newUnlocks.length > 0) {
-                const saved = {};
-                milestones.forEach(m => { saved[m.id] = m.completed; });
-                localStorage.setItem('gravityFlipMilestones', JSON.stringify(saved));
-                localStorage.setItem('gravityFlipCoins', coins);
-            }
-
-            return newUnlocks;
-        }
-
-        function openShop() {
-            document.getElementById('startScreen').style.display = 'none';
-            document.getElementById('shopScreen').style.display = 'flex';
-            document.getElementById('shopCoins').textContent = coins;
-            renderShop();
-        }
-
-        function closeShop() {
-            document.getElementById('shopScreen').style.display = 'none';
-            document.getElementById('startScreen').style.display = 'flex';
-        }
-
-        
-window.openTutorial = function() {
-    document.getElementById("startScreen").style.display = "none";
-    document.getElementById("milestonesScreen").style.display = "flex";
-};
-window.closeTutorial = function() {
-    document.getElementById("milestonesScreen").style.display = "none";
-    document.getElementById("startScreen").style.display = "flex";
-};
-function openMilestones() { openTutorial(); 
-
-            document.getElementById('startScreen').style.display = 'none';
-            document.getElementById('milestonesScreen').style.display = 'flex';
-            renderMilestones();
-        }
-
-        function closeMilestones() { closeTutorial(); 
-            document.getElementById('milestonesScreen').style.display = 'none';
-            document.getElementById('startScreen').style.display = 'flex';
-        }
-
-        function openCodes() {
-            document.getElementById('startScreen').style.display = 'none';
-            document.getElementById('codesScreen').style.display = 'flex';
-            document.getElementById('codeInput').value = '';
-            document.getElementById('codeMessage').textContent = '';
-        }
-
-        function closeCodes() {
-            document.getElementById('codesScreen').style.display = 'none';
-            document.getElementById('startScreen').style.display = 'flex';
-        }
-
-        function redeemCode() {
-            const input = document.getElementById('codeInput');
-            const message = document.getElementById('codeMessage');
-            const code = input.value.toUpperCase().replace(/\s/g, '');
-
-            if (!code) {
-                message.textContent = '❌ Please enter a code';
-                message.className = 'code-message error';
-                return;
-            }
-
-            const codes = {
-                'ADMINBALL': 'admin',
-                'MEGABALL': 'mega',
-                'EPICBALL': 'epic'
-            };
-
-            if (codes[code]) {
-                const skinKey = codes[code];
-                if (ballSkins[skinKey].unlocked) {
-                    message.textContent = '⚠️ Already redeemed!';
-                    message.className = 'code-message error';
-                    playSound(200, 0.1);
-                } else {
-                    ballSkins[skinKey].unlocked = true;
-                    currentSkin = skinKey;
-                    localStorage.setItem('gravityFlipSkin', skinKey);
-                    const unlocked = Object.keys(ballSkins).filter(k => ballSkins[k].unlocked);
-                    localStorage.setItem('gravityFlipUnlocked', JSON.stringify(unlocked));
-                    message.textContent = `🎉 ${ballSkins[skinKey].name} BALL UNLOCKED!`;
-                    message.className = 'code-message success';
-                    playSound(1500, 0.5);
-                    setTimeout(() => playSound(1800, 0.5), 150);
-                    checkMilestones();
-                }
-            } else {
-                message.textContent = '❌ Invalid code';
-                message.className = 'code-message error';
-                playSound(200, 0.1);
-            }
-
-            input.value = '';
-        }
-
-        function renderMilestones() {
-            const container = document.getElementById('milestoneContainer');
-            container.innerHTML = '';
-
-            const unlockedCount = Object.keys(ballSkins).filter(k => ballSkins[k].unlocked).length;
-            const totalCoins = parseInt(localStorage.getItem('gravityFlipTotalCoins')) || 0;
-
-            milestones.forEach(m => {
-                const item = document.createElement('div');
-                item.className = 'milestone-item' + (m.completed ? ' completed' : '');
-
-                let progress = 0;
-                if (m.type === 'coins') {
-                    progress = Math.min(totalCoins, m.target);
-                } else if (m.type === 'balls') {
-                    progress = Math.min(unlockedCount, m.target);
-                } else {
-                    progress = Math.min(bestDistance, m.target);
-                }
-
-                item.innerHTML = `
-                    <div class="milestone-icon">${m.icon}</div>
-                    <div class="milestone-title">${m.title}</div>
-                    <div class="milestone-desc">${m.desc}</div>
-                    <div class="milestone-reward">🎁 ${m.reward} coins</div>
-                    ${m.completed ? 
-                        '<div class="milestone-status">✓ COMPLETED</div>' : 
-                        `<div class="milestone-desc">${progress}/${m.target}</div>`}
-                `;
-
-                container.appendChild(item);
-            });
-        }
-
-        function renderShop() {
-            const container = document.getElementById('shopContainer');
-            container.innerHTML = '';
-
-            Object.entries(ballSkins).forEach(([key, skin]) => {
-                if (skin.secret && !skin.unlocked) return;
-
-                const item = document.createElement('div');
-                item.className = 'ball-item' + (key === currentSkin ? ' selected' : '') + 
-                                 (!skin.unlocked ? ' locked' : '');
-
-                item.innerHTML = `
-                    <div class="ball-preview">${skin.emoji}</div>
-                    <div class="ball-name">${skin.name}</div>
-                    ${skin.unlocked ? 
-                        (key === currentSkin ? '<div class="unlocked-tag">✓ EQUIPPED</div>' : '<div class="unlocked-tag">OWNED</div>') : 
-                        `<div class="ball-price">💰 ${skin.price}</div>`}
-                `;
-
-                item.onclick = () => {
-                    if (skin.unlocked) {
-                        currentSkin = key;
-                        localStorage.setItem('gravityFlipSkin', key);
-                        renderShop();
-                        playSound(600, 0.08);
-                    } else if (coins >= skin.price) {
-                        coins -= skin.price;
-                        skin.unlocked = true;
-                        currentSkin = key;
-                        localStorage.setItem('gravityFlipCoins', coins);
-                        localStorage.setItem('gravityFlipSkin', key);
-                        const unlocked = Object.keys(ballSkins).filter(k => ballSkins[k].unlocked);
-                        localStorage.setItem('gravityFlipUnlocked', JSON.stringify(unlocked));
-                        document.getElementById('shopCoins').textContent = coins;
-                        renderShop();
-                        playSound(800, 0.2);
-                        checkMilestones();
-                    } else {
-                        playSound(200, 0.1);
-                    }
-                };
-
-                container.appendChild(item);
-            });
-        }
-
-        let touchStartY = 0, touchStartX = 0;
-
-        function updateDifficulty() {
-            if (distance < 50) {
-                difficulty = 'EASY';
-                speed = 5 + distance * 0.04;
-                spawnRate = 95;
-                // FIXED: document.getElementById('difficultyFill').style.width = (distance / 50 * 20) + '%';
-            } else if (distance < 120) {
-                difficulty = 'MEDIUM';
-                speed = 5 + distance * 0.06;
-                spawnRate = 80;
-                // FIXED: document.getElementById('difficultyFill').style.width = (20 + (distance - 50) / 70 * 20) + '%';
-            } else if (distance < 200) {
-                difficulty = 'HARD';
-                speed = 5 + distance * 0.08;
-                spawnRate = 68;
-                // FIXED: document.getElementById('difficultyFill').style.width = (40 + (distance - 120) / 80 * 20) + '%';
-            } else if (distance < 300) {
-                difficulty = 'EXPERT';
-                speed = 5 + distance * 0.10;
-                spawnRate = 58;
-                // FIXED: document.getElementById('difficultyFill').style.width = (60 + (distance - 200) / 100 * 20) + '%';
-            } else {
-                difficulty = 'MASTER';
-                speed = 5 + distance * 0.12;
-                spawnRate = 50;
-                // FIXED: document.getElementById('difficultyFill').style.width = (80 + Math.min((distance - 300) / 200 * 20, 20)) + '%';
-            }
-            document.getElementById('difficultyText').textContent = difficulty;
-        }
-
-        function get3DScale(z) {
-            const perspective = 400;
-            const scale = perspective / (perspective + z);
-            return Math.max(0.1, Math.min(scale, 3));
-        }
-
-        function get3DPosition(x, y, z) {
-            const scale = get3DScale(z);
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
-            return {
-                x: centerX + (x - centerX) * scale,
-                y: centerY + (y - centerY) * scale,
-                scale: scale
-            };
-        }
-
-        function flipToCeiling() {
-            if (!player.transitioning && !player.onCeiling) {
-                player.transitioning = true;
-                player.onCeiling = true;
-                player.transitionProgress = 0;
-                player.targetRotation = player.rotation + Math.PI;
-                player.glowIntensity = 1;
-                playSound(950, 0.08);
-                const colors = (ballSkins[currentSkin] || ballSkins[0] || {colors:['#d1fae5','#6ee7b7','#34d399']}).colors;
-                for (let i = 0; i < 25; i++) {
-                    particles.push({
-                        x: player.x, y: player.y, z: player.z + (Math.random() - 0.5) * 100,
-                        vx: (Math.random() - 0.5) * 10, vy: Math.random() * 6 + 3, vz: (Math.random() - 0.5) * 5,
-                        life: 35, size: Math.random() * 5 + 2,
-                        color: colors[Math.floor(Math.random() * colors.length)],
-                        rotation: Math.random() * Math.PI * 2, rotationSpeed: (Math.random() - 0.5) * 0.2
-                    });
-                }
-                for (let i = 0; i < 10; i++) {
-                    shineParticles.push({
-                        x: player.x, y: player.y, z: player.z,
-                        angle: Math.random() * Math.PI * 2, speed: Math.random() * 3 + 2,
-                        life: 20, size: Math.random() * 3 + 1
-                    });
-                }
-            }
-        }
-
-        function flipToFloor() {
-            if (!player.transitioning && player.onCeiling) {
-                player.transitioning = true;
-                player.onCeiling = false;
-                player.transitionProgress = 0;
-                player.targetRotation = player.rotation + Math.PI;
-                player.glowIntensity = 1;
-                playSound(750, 0.08);
-                const colors = (ballSkins[currentSkin] || ballSkins[0] || {colors:['#d1fae5','#6ee7b7','#34d399']}).colors;
-                for (let i = 0; i < 25; i++) {
-                    particles.push({
-                        x: player.x, y: player.y, z: player.z + (Math.random() - 0.5) * 100,
-                        vx: (Math.random() - 0.5) * 10, vy: Math.random() * -6 - 3, vz: (Math.random() - 0.5) * 5,
-                        life: 35, size: Math.random() * 5 + 2,
-                        color: colors[Math.floor(Math.random() * colors.length)],
-                        rotation: Math.random() * Math.PI * 2, rotationSpeed: (Math.random() - 0.5) * 0.2
-                    });
-                }
-                for (let i = 0; i < 10; i++) {
-                    shineParticles.push({
-                        x: player.x, y: player.y, z: player.z,
-                        angle: Math.random() * Math.PI * 2, speed: Math.random() * 3 + 2,
-                        life: 20, size: Math.random() * 3 + 1
-                    });
-                }
-            }
-        }
-
-        document.addEventListener('keydown', (e) => {
-            if ((e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W')) {
-                e.preventDefault();
-                if (gameReady && !gameStarted) {
-                    document.getElementById('instruction').style.display = 'none';
-                    gameReady = false;
-                    gameStarted = true;
-                    document.getElementById('difficulty').style.display = 'block';
-                    gameLoop();
-                }
-                if (gameStarted && !gameOver) flipToCeiling();
-            }
-            if ((e.key === 'ArrowDown' || e.key === 's' || e.key === 'S')) {
-                e.preventDefault();
-                if (gameReady && !gameStarted) {
-                    document.getElementById('instruction').style.display = 'none';
-                    gameReady = false;
-                    gameStarted = true;
-                    document.getElementById('difficulty').style.display = 'block';
-                    gameLoop();
-                }
-                if (gameStarted && !gameOver) flipToFloor();
-            }
-            if (e.key === 'Enter' && document.getElementById('codesScreen').style.display === 'flex') {
-                redeemCode();
-            }
-        });
-
-        canvas.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            touchStartY = e.touches[0].clientY;
-            touchStartX = e.touches[0].clientX;
-        });
-
-        canvas.addEventListener('touchend', (e) => {
-            e.preventDefault();
-            const touchEndY = e.changedTouches[0].clientY;
-            const deltaY = touchStartY - touchEndY;
-            const deltaX = Math.abs(touchStartX - e.changedTouches[0].clientX);
-            if (Math.abs(deltaY) > 30 && Math.abs(deltaY) > deltaX) {
-                if (gameReady && !gameStarted) {
-                    document.getElementById('instruction').style.display = 'none';
-                    gameReady = false;
-                    gameStarted = true;
-                    document.getElementById('difficulty').style.display = 'block';
-                    gameLoop();
-                }
-                if (gameStarted && !gameOver) {
-                    if (deltaY > 0) flipToCeiling();
-                    else flipToFloor();
-                }
-            }
-        });
-
-        canvas.addEventListener('click', (e) => {
-            const rect = canvas.getBoundingClientRect();
-            const clickY = e.clientY - rect.top;
-            if (gameReady && !gameStarted) {
-                document.getElementById('instruction').style.display = 'none';
-                gameReady = false;
-                gameStarted = true;
-                document.getElementById('difficulty').style.display = 'block';
-                gameLoop();
-                return;
-            }
-            if (gameStarted && !gameOver) {
-                if (clickY < canvas.height / 2) flipToCeiling();
-                else flipToFloor();
-            }
-        });
-
-        function startGame() {
-            document.getElementById('startScreen').style.display = 'none';
-            document.getElementById('gameOverScreen').style.display = 'none';
-            document.getElementById('shopScreen').style.display = 'none';
-            document.getElementById('milestonesScreen').style.display = 'none';
-            document.getElementById('codesScreen').style.display = 'none';
-            document.getElementById('hud').style.display = 'flex';
-            document.getElementById('instruction').style.display = 'block';
-            document.getElementById('coins').textContent = coins;
-            gameReady = true;
-            gameStarted = false;
-            gameOver = false;
-            distance = 0;
-            earnedCoins = 0;
-            speed = 5;
-            frameCount = 0;
-            difficulty = 'EASY';
-            spawnRate = 95;
-            player.y = canvas.height - 50;
-            player.z = 0;
-            player.onCeiling = false;
-            player.transitioning = false;
-            player.transitionProgress = 0;
-            player.rotation = 0;
-            player.targetRotation = 0;
-            player.pulsePhase = 0;
-            player.glowIntensity = 0;
-            spikes = [];
-            particles = [];
-            trailParticles = [];
-            shineParticles = [];
-            document.getElementById('distance').textContent = distance + 'm';
-            updateDifficulty();
-            draw();
-        }
-
-        function backToMenu() {
-            document.getElementById('gameOverScreen').style.display = 'none';
-            document.getElementById('startScreen').style.display = 'flex';
-            stopBackgroundMusic();
-            document.getElementById('musicToggle').textContent = '🔇';
-        }
-
-        function spawnSpike() {
-            const fromCeiling = Math.random() > 0.5;
-            const width = 50 + Math.random() * 35;
-            const height = 100 + Math.random() * 90;
-            spikes.push({
-                x: canvas.width - 50,
-                y: fromCeiling ? 0 : canvas.height - height,
-                z: 0,
-                width: width,
-                height: height,
-                fromCeiling: fromCeiling,
-                pulsePhase: Math.random() * Math.PI * 2,
-                glowPhase: Math.random() * Math.PI * 2
-            });
-        }
-
-        function update() {
-            if (!gameStarted || gameOver || gameReady) return;
-            frameCount++;
-            distance = Math.floor(frameCount / 10);
-            earnedCoins = Math.floor(distance / 5);
-            document.getElementById('distance').textContent = distance + 'm';
-            document.getElementById('coins').textContent = (coins + earnedCoins);
-            updateDifficulty();
-            player.pulsePhase += 0.06;
-            player.glowIntensity *= 0.92;
-
-            gridLines.forEach(line => {
-                line.z -= speed * 2;
-                if (line.z < -100) line.z += 2000;
-            });
-
-            ambientParticles.forEach(p => {
-                p.z -= speed * 0.5;
-                if (p.z < -100) {
-                    p.z = 500;
-                    p.x = Math.random() * canvas.width;
-                    p.y = Math.random() * canvas.height;
-                }
-                p.twinklePhase += p.twinkleSpeed;
-                p.currentOpacity = p.opacity * (0.5 + Math.sin(p.twinklePhase) * 0.5);
-            });
-
-            if (frameCount % 2 === 0) {
-                trailParticles.push({
-                    x: player.x, y: player.y, z: player.z,
-                    life: 22, radius: player.radius * 0.75, rotation: player.rotation
-                });
-            }
-
-            if (player.transitioning) {
-                player.transitionProgress += player.transitionSpeed;
-                if (player.transitionProgress >= 1) {
-                    player.transitionProgress = 1;
-                    player.transitioning = false;
-                    player.rotation = player.targetRotation;
-                }
-                const startY = player.onCeiling ? canvas.height - 50 : 50;
-                const endY = player.onCeiling ? 50 : canvas.height - 50;
-                player.y = startY + (endY - startY) * easeInOutCubic(player.transitionProgress);
-                player.rotation = player.rotation + (player.targetRotation - player.rotation) * 0.18;
-            }
-
-            if (frameCount % spawnRate === 0) spawnSpike();
-
-            spikes.forEach((spike, index) => {
-                spike.x -= speed;
-                spike.pulsePhase += 0.04;
-                spike.glowPhase += 0.06;
-
-                const playerLeft = player.x - player.radius * 0.65;
-                const playerRight = player.x + player.radius * 0.65;
-                const playerTop = player.y - player.radius * 0.65;
-                const playerBottom = player.y + player.radius * 0.65;
-
-                const spikeLeft = spike.x;
-                const spikeRight = spike.x + spike.width;
-                const spikeTop = spike.y;
-                const spikeBottom = spike.y + spike.height;
-
-                if (playerRight > spikeLeft + 15 && 
-                    playerLeft < spikeRight - 15 &&
-                    playerBottom > spikeTop + 15 && 
-                    playerTop < spikeBottom - 15) {
-                    endGame();
-                }
-
-                if (spike.x + spike.width < -50) spikes.splice(index, 1);
-            });
-
-            particles.forEach((p, index) => {
-                p.x += p.vx;
-                p.y += p.vy;
-                p.z += p.vz;
-                p.vy += 0.15;
-                p.rotation += p.rotationSpeed;
-                p.life--;
-                if (p.life <= 0) particles.splice(index, 1);
-            });
-
-            shineParticles.forEach((p, index) => {
-                p.x += Math.cos(p.angle) * p.speed;
-                p.y += Math.sin(p.angle) * p.speed;
-                p.life--;
-                if (p.life <= 0) shineParticles.splice(index, 1);
-            });
-
-            trailParticles.forEach((p, index) => {
-                p.z -= speed;
-                p.life--;
-                if (p.life <= 0 || p.z < -300) trailParticles.splice(index, 1);
-            });
-        }
-
-        function easeInOutCubic(t) {
-            return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-        }
-
-        function draw() {
-            const bgGradient = ctx.createRadialGradient(canvas.width/2, canvas.height/2, 0, canvas.width/2, canvas.height/2, canvas.width);
-            bgGradient.addColorStop(0, '#f5f7ff');
-            bgGradient.addColorStop(0.5, '#e8eef9');
-            bgGradient.addColorStop(1, '#d8def5');
-            ctx.fillStyle = bgGradient;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            ctx.strokeStyle = 'rgba(102, 126, 234, 0.15)';
-            ctx.lineWidth = 1;
-            gridLines.forEach(line => {
-                const scale = get3DScale(line.z);
-                if (scale > 0.1) {
-                    ctx.globalAlpha = scale * 0.3;
-                    const y = canvas.height / 2;
-                    const height = 200 * scale;
-                    ctx.beginPath();
-                    ctx.moveTo(0, y - height);
-                    ctx.lineTo(canvas.width, y - height);
-                    ctx.moveTo(0, y + height);
-                    ctx.lineTo(canvas.width, y + height);
-                    ctx.stroke();
-                }
-            });
-            ctx.globalAlpha = 1;
-
-            ambientParticles.sort((a, b) => b.z - a.z).forEach(p => {
-                const pos = get3DPosition(p.x, p.y, p.z);
-                if (pos.scale > 0.1) {
-                    ctx.globalAlpha = p.currentOpacity * pos.scale;
-                    const size = p.radius * pos.scale * 2;
-                    const gradient = ctx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, size);
-                    gradient.addColorStop(0, 'rgba(102, 126, 234, 0.6)');
-                    gradient.addColorStop(1, 'rgba(102, 126, 234, 0)');
-                    ctx.fillStyle = gradient;
-                    ctx.beginPath();
-                    ctx.arc(pos.x, pos.y, size, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-            });
-            ctx.globalAlpha = 1;
-
-            const borderGradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
-            borderGradient.addColorStop(0, '#c8cfe8');
-            borderGradient.addColorStop(0.5, '#b4bfed');
-            borderGradient.addColorStop(1, '#c8cfe8');
-            ctx.fillStyle = borderGradient;
-            ctx.shadowBlur = 15;
-            ctx.shadowColor = 'rgba(102, 126, 234, 0.3)';
-            ctx.fillRect(0, 0, canvas.width, 35);
-            ctx.fillRect(0, canvas.height - 35, canvas.width, 35);
-            ctx.shadowBlur = 0;
-
-            spikes.forEach(spike => {
-                const pulse = Math.sin(spike.pulsePhase) * 2;
-                const glow = Math.sin(spike.glowPhase) * 0.3 + 0.7;
-
-                ctx.save();
-                ctx.shadowBlur = 30 + pulse * 5;
-                ctx.shadowColor = `rgba(220, 38, 38, ${0.6 * glow})`;
-
-                const gradient = ctx.createLinearGradient(spike.x, spike.y, spike.x + spike.width/2, spike.y + spike.height);
-                gradient.addColorStop(0, '#fecaca');
-                gradient.addColorStop(0.2, '#fca5a5');
-                gradient.addColorStop(0.5, '#f87171');
-                gradient.addColorStop(0.8, '#ef4444');
-                gradient.addColorStop(1, '#b91c1c');
-                ctx.fillStyle = gradient;
-
-                ctx.beginPath();
-                if (spike.fromCeiling) {
-                    ctx.moveTo(spike.x, spike.y);
-                    ctx.lineTo(spike.x + spike.width / 2, spike.y + spike.height);
-                    ctx.lineTo(spike.x + spike.width, spike.y);
-                } else {
-                    ctx.moveTo(spike.x, spike.y + spike.height);
-                    ctx.lineTo(spike.x + spike.width / 2, spike.y);
-                    ctx.lineTo(spike.x + spike.width, spike.y + spike.height);
-                }
-                ctx.closePath();
-                ctx.fill();
-                ctx.shadowBlur = 0;
-
-                ctx.globalAlpha = 0.6 * glow;
-                const highlightGradient = ctx.createLinearGradient(
-                    spike.x + spike.width * 0.3,
-                    spike.fromCeiling ? spike.y : spike.y + spike.height,
-                    spike.x + spike.width * 0.4,
-                    spike.fromCeiling ? spike.y + spike.height * 0.4 : spike.y + spike.height * 0.6
-                );
-                highlightGradient.addColorStop(0, '#ffffff');
-                highlightGradient.addColorStop(1, 'rgba(255,255,255,0)');
-                ctx.fillStyle = highlightGradient;
-                ctx.beginPath();
-                if (spike.fromCeiling) {
-                    ctx.moveTo(spike.x + spike.width * 0.3, spike.y);
-                    ctx.lineTo(spike.x + spike.width * 0.4, spike.y + spike.height * 0.4);
-                    ctx.lineTo(spike.x + spike.width * 0.5, spike.y + spike.height * 0.3);
-                    ctx.lineTo(spike.x + spike.width * 0.4, spike.y);
-                } else {
-                    ctx.moveTo(spike.x + spike.width * 0.3, spike.y + spike.height);
-                    ctx.lineTo(spike.x + spike.width * 0.4, spike.y + spike.height * 0.6);
-                    ctx.lineTo(spike.x + spike.width * 0.5, spike.y + spike.height * 0.7);
-                    ctx.lineTo(spike.x + spike.width * 0.4, spike.y + spike.height);
-                }
-                ctx.closePath();
-                ctx.fill();
-                ctx.globalAlpha = 1;
-
-                ctx.strokeStyle = '#7f1d1d';
-                ctx.lineWidth = 2.5;
-                ctx.lineJoin = 'miter';
-                ctx.beginPath();
-                if (spike.fromCeiling) {
-                    ctx.moveTo(spike.x, spike.y);
-                    ctx.lineTo(spike.x + spike.width / 2, spike.y + spike.height);
-                    ctx.lineTo(spike.x + spike.width, spike.y);
-                } else {
-                    ctx.moveTo(spike.x, spike.y + spike.height);
-                    ctx.lineTo(spike.x + spike.width / 2, spike.y);
-                    ctx.lineTo(spike.x + spike.width, spike.y + spike.height);
-                }
-                ctx.closePath();
-                ctx.stroke();
-                ctx.restore();
-            });
-
-            trailParticles.sort((a, b) => b.z - a.z).forEach(p => {
-                const pos = get3DPosition(p.x, p.y, p.z);
-                if (pos.scale > 0.1) {
-                    ctx.globalAlpha = (p.life / 22) * pos.scale * 0.4;
-                    ctx.save();
-                    ctx.translate(pos.x, pos.y);
-                    ctx.rotate(p.rotation);
-                    const radius = p.radius * pos.scale;
-                    const colors = (ballSkins[currentSkin] || ballSkins[0] || {colors:['#d1fae5','#6ee7b7','#34d399']}).colors;
-                    const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, radius);
-                    gradient.addColorStop(0, colors[1] + '80');
-                    gradient.addColorStop(0.5, colors[2] + '50');
-                    gradient.addColorStop(1, colors[2] + '00');
-                    ctx.fillStyle = gradient;
-                    ctx.beginPath();
-                    ctx.arc(0, 0, radius, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.restore();
-                }
-            });
-            ctx.globalAlpha = 1;
-
-            particles.sort((a, b) => b.z - a.z).forEach(p => {
-                const pos = get3DPosition(p.x, p.y, p.z);
-                if (pos.scale > 0.2) {
-                    ctx.globalAlpha = (p.life / 35) * pos.scale;
-                    ctx.save();
-                    ctx.translate(pos.x, pos.y);
-                    ctx.rotate(p.rotation);
-                    const size = p.size * pos.scale;
-                    ctx.shadowBlur = 12 * pos.scale;
-                    ctx.shadowColor = p.color;
-                    ctx.fillStyle = p.color;
-                    ctx.fillRect(-size/2, -size/2, size, size);
-                    ctx.shadowBlur = 0;
-                    ctx.restore();
-                }
-            });
-            ctx.globalAlpha = 1;
-
-            shineParticles.forEach(p => {
-                const pos = get3DPosition(p.x, p.y, p.z);
-                if (pos.scale > 0.2) {
-                    ctx.globalAlpha = (p.life / 20) * pos.scale;
-                    const size = p.size * pos.scale;
-                    ctx.fillStyle = '#ffffff';
-                    ctx.shadowBlur = 15 * pos.scale;
-                    ctx.shadowColor = 'rgba(255,255,255,0.8)';
-                    ctx.beginPath();
-                    ctx.arc(pos.x, pos.y, size, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.shadowBlur = 0;
-                }
-            });
-            ctx.globalAlpha = 1;
-
-            ctx.save();
-            ctx.translate(player.x, player.y);
-            ctx.rotate(player.rotation);
-            const pulse = Math.sin(player.pulsePhase) * 4;
-            const currentRadius = player.radius + pulse;
-
-            ctx.globalAlpha = 0.25;
-            ctx.fillStyle = 'rgba(0,0,0,0.25)';
-            ctx.beginPath();
-            ctx.ellipse(5, currentRadius + 15, currentRadius * 0.8, currentRadius * 0.3, 0, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.globalAlpha = 1;
-
-            const colors = (ballSkins[currentSkin] || ballSkins[0] || {colors:['#d1fae5','#6ee7b7','#34d399']}).colors;
-
-            ctx.shadowBlur = 40 + player.glowIntensity * 20;
-            ctx.shadowColor = colors[3] + 'B3';
-
-            const outerGlow = ctx.createRadialGradient(0, 0, 0, 0, 0, currentRadius + 15);
-            outerGlow.addColorStop(0, colors[1] + '66');
-            outerGlow.addColorStop(1, colors[1] + '00');
-            ctx.fillStyle = outerGlow;
-            ctx.beginPath();
-            ctx.arc(0, 0, currentRadius + 15, 0, Math.PI * 2);
-            ctx.fill();
-
-            const gradient = ctx.createRadialGradient(-currentRadius * 0.3, -currentRadius * 0.3, 0, 0, 0, currentRadius);
-            gradient.addColorStop(0, colors[0]);
-            gradient.addColorStop(0.3, colors[1]);
-            gradient.addColorStop(0.6, colors[2]);
-            gradient.addColorStop(0.8, colors[3]);
-            gradient.addColorStop(1, colors[4]);
-            ctx.fillStyle = gradient;
-            ctx.beginPath();
-            ctx.arc(0, 0, currentRadius, 0, Math.PI * 2);
-            ctx.fill();
-
-            ctx.shadowBlur = 0;
-            ctx.strokeStyle = '#ffffff';
-            ctx.lineWidth = 6;
-            ctx.beginPath();
-            ctx.arc(0, 0, currentRadius - 9, 0, Math.PI * 2);
-            ctx.stroke();
-
-            ctx.fillStyle = '#ffffff';
-            ctx.shadowBlur = 15;
-            ctx.shadowColor = 'rgba(255,255,255,0.9)';
-            ctx.beginPath();
-            ctx.arc(currentRadius * 0.2, -currentRadius * 0.2, currentRadius / 3.5, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.shadowBlur = 0;
-
-            for (let i = 0; i < 3; i++) {
-                const angle = (player.pulsePhase * 2 + i * Math.PI * 2 / 3);
-                const dist = currentRadius * 0.6;
-                ctx.globalAlpha = 0.4;
-                ctx.fillStyle = colors[0];
-                ctx.beginPath();
-                ctx.arc(Math.cos(angle) * dist, Math.sin(angle) * dist, 5, 0, Math.PI * 2);
-                ctx.fill();
-            }
-            ctx.globalAlpha = 1;
-            ctx.restore();
-        }
-
-        function gameLoop() {
-            if (!gameStarted || gameReady) return;
-            update();
-            draw();
-            if (!gameOver) requestAnimationFrame(gameLoop);
-        }
-
-        function endGame() {
-            gameOver = true;
-            gameStarted = false;
-            playDeathSound();
-
-            coins += earnedCoins;
-            const newTotal = (parseInt(localStorage.getItem('gravityFlipTotalCoins')) || 0) + earnedCoins;
-            localStorage.setItem('gravityFlipTotalCoins', newTotal);
-            localStorage.setItem('gravityFlipCoins', coins);
-
-            if (distance > bestDistance) {
-                bestDistance = distance;
-                localStorage.setItem('gravityFlipBest', bestDistance);
-            }
-
-            const colors = (ballSkins[currentSkin] || ballSkins[0] || {colors:['#d1fae5','#6ee7b7','#34d399']}).colors;
-            for (let i = 0; i < 100; i++) {
-                particles.push({
-                    x: player.x, y: player.y, z: player.z + (Math.random() - 0.5) * 200,
-                    vx: (Math.random() - 0.5) * 20, vy: (Math.random() - 0.5) * 20, vz: (Math.random() - 0.5) * 10,
-                    life: 60, size: Math.random() * 7 + 2,
-                    color: colors[Math.floor(Math.random() * colors.length)],
-                    rotation: Math.random() * Math.PI * 2, rotationSpeed: (Math.random() - 0.5) * 0.3
-                });
-            }
-
-            for (let i = 0; i < 20; i++) {
-                shineParticles.push({
-                    x: player.x, y: player.y, z: player.z,
-                    angle: Math.random() * Math.PI * 2, speed: Math.random() * 5 + 3,
-                    life: 30, size: Math.random() * 4 + 2
-                });
-            }
-
-            draw();
-
-            const newMilestones = checkMilestones();
-
-            setTimeout(() => {
-                document.getElementById('hud').style.display = 'none';
-                document.getElementById('difficulty').style.display = 'none';
-                document.getElementById('instruction').style.display = 'none';
-                document.getElementById('gameOverScreen').style.display = 'flex';
-                document.getElementById('finalDistance').textContent = distance + 'm';
-                document.getElementById('coinsEarned').textContent = '+' + earnedCoins;
-                document.getElementById('totalCoins').textContent = coins;
-            }, 400);
-        }
-
-        checkMilestones();
-        draw();
-
-
-        // Box opening functions
-        function openBoxes() {
-            document.getElementById('startScreen').style.display = 'none';
-            document.getElementById('boxesScreen').style.display = 'flex';
-            document.getElementById('boxesCoins').textContent = coins;
-        }
-
-        function closeBoxes() {
-            document.getElementById('boxesScreen').style.display = 'none';
-            document.getElementById('startScreen').style.display = 'flex';
-        }
-
-        function openBox(type) {
-            let cost, minCoins, maxCoins, ballChance, rarityPool, boxEmoji;
-
-            if (type === 'common') {
-                cost = 100;
-                minCoins = 50;
-                maxCoins = 150;
-                ballChance = 0.15;
-                rarityPool = ['common'];
-                boxEmoji = '📦';
-            } else if (type === 'rare') {
-                cost = 300;
-                minCoins = 100;
-                maxCoins = 300;
-                ballChance = 0.25;
-                rarityPool = ['uncommon', 'rare', 'epic'];
-                boxEmoji = '🎁';
-            } else if (type === 'legendary') {
-                cost = 600;
-                minCoins = 200;
-                maxCoins = 600;
-                ballChance = 0.35;
-                rarityPool = ['rare', 'epic', 'legendary'];
-                boxEmoji = '🎉';
-            } else if (type === 'admin') {
-                cost = 1000;
-                minCoins = 500;
-                maxCoins = 1500;
-                ballChance = 0.60; // 60% chance for legendary!
-                rarityPool = ['epic', 'legendary'];
-                boxEmoji = '👑';
-            }
-
-            if (coins < cost) {
-                showNotification('Not enough coins!');
-                return;
-            }
-
-            coins -= cost;
-            localStorage.setItem('gravityFlipCoins', coins);
-            document.getElementById('boxesCoins').textContent = coins;
-
-            const isBall = Math.random() < ballChance;
-            let rewardEmoji, rewardText;
-
-            if (isBall) {
-                const availableBalls = Object.entries(ballSkins)
-                    .filter(([id, skin]) => !skin.unlocked && !skin.secret && rarityPool.includes(skin.rarity));
-
-                if (availableBalls.length > 0) {
-                    const [ballId, ballSkin] = availableBalls[Math.floor(Math.random() * availableBalls.length)];
-                    ballSkin.unlocked = true;
-
-                    const unlockedBalls = Object.entries(ballSkins)
-                        .filter(([id, skin]) => skin.unlocked)
-                        .map(([id]) => id);
-                    localStorage.setItem('gravityFlipSkins', JSON.stringify(unlockedBalls));
-
-                    rewardEmoji = ballSkin.emoji;
-                    rewardText = ballSkin.name + ' Ball!\n' + ballSkin.rarity.toUpperCase();
-
-                    checkMilestones();
-                } else {
-                    const rewardAmount = Math.floor(Math.random() * (maxCoins - minCoins + 1)) + minCoins;
-                    coins += rewardAmount;
-                    localStorage.setItem('gravityFlipCoins', coins);
-                    rewardEmoji = '💰';
-                    rewardText = rewardAmount + ' Coins!';
-                }
-            } else {
-                const rewardAmount = Math.floor(Math.random() * (maxCoins - minCoins + 1)) + minCoins;
-                coins += rewardAmount;
-                localStorage.setItem('gravityFlipCoins', coins);
-                rewardEmoji = '💰';
-                rewardText = rewardAmount + ' Coins!';
-            }
-
-            showBoxOpening(boxEmoji, rewardEmoji, rewardText);
-        }
-
-        function showBoxOpening(boxEmoji, rewardEmoji, rewardText) {
-            const overlay = document.createElement('div');
-            overlay.className = 'opening-animation';
-            overlay.innerHTML = '<div class="opening-box">' + boxEmoji + '</div>';
-            document.body.appendChild(overlay);
-
-            setTimeout(function() {
-                overlay.innerHTML = '<div class="reveal-reward">' + rewardEmoji + '</div><div class="reveal-text">' + rewardText + '</div>';
-
-                setTimeout(function() {
-                    document.body.removeChild(overlay);
-                    document.getElementById('boxesCoins').textContent = coins;
-                    document.getElementById('shopCoins').textContent = coins;
-                }, 3000);
-            }, 2000);
-        }
-
-
-        function openBoxes() {
-            document.getElementById('startScreen').style.display = 'none';
-            document.getElementById('boxesScreen').style.display = 'flex';
-            document.getElementById('boxesCoins').textContent = coins;
-        }
-
-        function closeBoxes() {
-            document.getElementById('boxesScreen').style.display = 'none';
-            document.getElementById('startScreen').style.display = 'flex';
-        }
-
-        function openBox(type) {
-            let cost, minCoins, maxCoins, ballChance, rarityPool, boxEmoji, multiReward = 1;
-
-            if (type === 'mini') {
-                cost = 50; minCoins = 25; maxCoins = 75; ballChance = 0.10; rarityPool = ['common']; boxEmoji = '📁';
-            } else if (type === 'common') {
-                cost = 100; minCoins = 50; maxCoins = 150; ballChance = 0.15; rarityPool = ['common']; boxEmoji = '📦';
-            } else if (type === 'bronze') {
-                cost = 200; minCoins = 100; maxCoins = 250; ballChance = 0.20; rarityPool = ['common', 'uncommon']; boxEmoji = '🥉';
-            } else if (type === 'silver') {
-                cost = 350; minCoins = 150; maxCoins = 400; ballChance = 0.25; rarityPool = ['uncommon', 'rare']; boxEmoji = '🥈';
-            } else if (type === 'gold') {
-                cost = 500; minCoins = 250; maxCoins = 600; ballChance = 0.30; rarityPool = ['rare', 'epic']; boxEmoji = '🥇';
-            } else if (type === 'rare') {
-                cost = 300; minCoins = 100; maxCoins = 300; ballChance = 0.25; rarityPool = ['uncommon', 'rare', 'epic']; boxEmoji = '🎁';
-            } else if (type === 'diamond') {
-                cost = 750; minCoins = 400; maxCoins = 1000; ballChance = 0.35; rarityPool = ['epic', 'legendary']; boxEmoji = '💎';
-            } else if (type === 'legendary') {
-                cost = 600; minCoins = 200; maxCoins = 600; ballChance = 0.35; rarityPool = ['rare', 'epic', 'legendary']; boxEmoji = '🎉';
-            } else if (type === 'platinum') {
-                cost = 900; minCoins = 500; maxCoins = 1200; ballChance = 0.50; rarityPool = ['epic', 'legendary']; boxEmoji = '⭐';
-            } else if (type === 'admin') {
-                cost = 1000; minCoins = 500; maxCoins = 1500; ballChance = 0.60; rarityPool = ['epic', 'legendary']; boxEmoji = '👑';
-            } else if (type === 'mythic') {
-                cost = 1500; minCoins = 1000; maxCoins = 2500; ballChance = 0.70; rarityPool = ['legendary']; boxEmoji = '🌟'; multiReward = 2;
-            } else if (type === 'cosmic') {
-                cost = 2500; minCoins = 2000; maxCoins = 5000; ballChance = 0.80; rarityPool = ['epic', 'legendary']; boxEmoji = '🌌'; multiReward = 3;
-            } else if (type === 'ultimate') {
-                cost = 5000; minCoins = 5000; maxCoins = 10000; ballChance = 0.90; rarityPool = ['legendary']; boxEmoji = '🔥'; multiReward = 5;
-            } else if (type === 'god') {
-                cost = 9999; minCoins = 10000; maxCoins = 25000; ballChance = 1.00; rarityPool = ['legendary']; boxEmoji = '⚡'; multiReward = 10;
-            }
-
-            if (coins < cost) {
-                showNotification('Not enough coins!');
-                return;
-            }
-
-            coins -= cost;
-            localStorage.setItem('gravityFlipCoins', coins);
-            document.getElementById('boxesCoins').textContent = coins;
-
-            const boxesOpened = (parseInt(localStorage.getItem('gravityFlipBoxesOpened')) || 0) + 1;
-            localStorage.setItem('gravityFlipBoxesOpened', boxesOpened);
-
-            let rewards = [];
-
-            for (let i = 0; i < multiReward; i++) {
-                const isBall = Math.random() < ballChance;
-
-                if (isBall) {
-                    const availableBalls = Object.entries(ballSkins)
-                        .filter(([id, skin]) => !skin.unlocked && !skin.secret && rarityPool.includes(skin.rarity));
-
-                    if (availableBalls.length > 0) {
-                        const [ballId, ballSkin] = availableBalls[Math.floor(Math.random() * availableBalls.length)];
-                        ballSkin.unlocked = true;
-                        rewards.push({ type: 'ball', emoji: ballSkin.emoji, text: ballSkin.name + ' Ball!\n' + ballSkin.rarity.toUpperCase() });
-
-                        const unlockedBalls = Object.entries(ballSkins)
-                            .filter(([id, skin]) => skin.unlocked)
-                            .map(([id]) => id);
-                        localStorage.setItem('gravityFlipUnlocked', JSON.stringify(unlockedBalls));
-                        checkMilestones();
-                    } else {
-                        const coinReward = Math.floor(Math.random() * (maxCoins - minCoins + 1)) + minCoins;
-                        coins += coinReward;
-                        rewards.push({ type: 'coins', emoji: '💰', text: coinReward + ' Coins!' });
-                    }
-                } else {
-                    const coinReward = Math.floor(Math.random() * (maxCoins - minCoins + 1)) + minCoins;
-                    coins += coinReward;
-                    rewards.push({ type: 'coins', emoji: '💰', text: coinReward + ' Coins!' });
-                }
-            }
-
-            localStorage.setItem('gravityFlipCoins', coins);
-            showBoxOpening(boxEmoji, rewards);
-        }
-
-        function showBoxOpening(boxEmoji, rewards) {
-            const overlay = document.createElement('div');
-            overlay.className = 'opening-animation';
-            overlay.innerHTML = '<div class="opening-box">' + boxEmoji + '</div>';
-            document.body.appendChild(overlay);
-
-            setTimeout(function() {
-                const rewardsHTML = rewards.map(r => 
-                    '<div class="reveal-reward">' + r.emoji + '</div><div class="reveal-text">' + r.text + '</div>'
-                ).join('');
-
-                overlay.innerHTML = rewardsHTML;
-
-                setTimeout(function() {
-                    document.body.removeChild(overlay);
-                    document.getElementById('boxesCoins').textContent = coins;
-                    document.getElementById('shopCoins').textContent = coins;
-                }, 3000);
-            }, 2000);
-        }
-
-
-        // 🔐 DEV PANEL
-        function openDevPrompt() {
-            const pw = prompt('🔐 Enter Dev Password:');
-            if (pw === 'ZAYN2015') {
-                document.getElementById('devPanel').style.display = 'flex';
-                document.getElementById('devCoinsInput').value = coins;
-            } else if (pw !== null) {
-                alert('❌ Wrong password!');
-            }
-        }
-
-        function closeDevPanel() {
-            document.getElementById('devPanel').style.display = 'none';
-        }
-
-        function devSetCoins() {
-            const v = parseInt(document.getElementById('devCoinsInput').value || '0', 10);
-            if (isNaN(v) || v < 0) { alert('Enter valid amount'); return; }
-            coins = v;
-            localStorage.setItem('gravityFlipCoins', coins);
-            ['coinsEarned', 'shopCoins', 'boxesCoins', 'coins', 'totalCoins'].forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.textContent = coins;
-            });
-            alert('✅ Coins set to ' + coins + '!');
-        }
-
-        function devUnlockAllBalls() {
-            Object.entries(ballSkins).forEach(([id, s]) => {
-                if (!s.secret) s.unlocked = true;
-            });
-            localStorage.setItem('gravityFlipUnlocked', JSON.stringify(Object.entries(ballSkins).filter(([i, s]) => s.unlocked).map(([i]) => i)));
-            alert('✅ All balls unlocked!');
-            if (typeof renderShop === 'function') renderShop();
-        }
-
-        function devResetBalls() {
-            if (!confirm('Reset all balls?')) return;
-            Object.entries(ballSkins).forEach(([id, s]) => { s.unlocked = (id === 'classic'); });
-            localStorage.setItem('gravityFlipUnlocked', JSON.stringify(['classic']));
-            alert('✅ Balls reset!');
-            if (typeof renderShop === 'function') renderShop();
-        }
-
-        function devResetProgress() {
-            if (!confirm('Reset ALL progress?')) return;
-            coins = 0;
-            localStorage.setItem('gravityFlipCoins', 0);
-            ['gravityFlipMilestones', 'gravityFlipBest', 'gravityFlipTotalCoins', 'gravityFlipRuns', 'gravityFlipBoxesOpened'].forEach(k => localStorage.removeItem(k));
-            ['coinsEarned', 'shopCoins', 'boxesCoins', 'coins', 'totalCoins'].forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.textContent = 0;
-            });
-            alert('✅ Progress reset!');
-        }
-
-    </script>
+canvas.addEventListener('mousemove', (e) => {
+  if (!aiming || animating) return;
+  const rect = canvas.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
+  aimAngle = Math.atan2(my - ball.y, mx - ball.x);
+  draw();
+});
+
+canvas.addEventListener('mouseup', () => {
+  if (!aiming || animating) return;
+  aiming = false;
+  charging = false;
+  if (power > 2) {
+    shots++;
+    document.getElementById('shotNum').textContent = shots;
+    const speed = power * 0.18;
+    ball.vx = Math.cos(aimAngle) * speed;
+    ball.vy = Math.sin(aimAngle) * speed;
+    animating = true;
+    requestAnimationFrame(update);
+  }
+  draw();
+});
+
+// Power charging
+setInterval(() => {
+  if (charging && aiming) {
+    power = Math.min(power + 1.5, 100);
+    draw();
+  }
+}, 16);
+
+// Touch support
+canvas.addEventListener('touchstart', (e) => {
+  e.preventDefault();
+  const rect = canvas.getBoundingClientRect();
+  const t = e.touches[0];
+  const mx = t.clientX - rect.left;
+  const my = t.clientY - rect.top;
+  aimAngle = Math.atan2(my - ball.y, mx - ball.x);
+  aiming = true; charging = true; power = 0;
+  draw();
+});
+
+canvas.addEventListener('touchmove', (e) => {
+  e.preventDefault();
+  if (!aiming) return;
+  const rect = canvas.getBoundingClientRect();
+  const t = e.touches[0];
+  aimAngle = Math.atan2(t.clientY - rect.top - ball.y, t.clientX - rect.left - ball.x);
+  draw();
+});
+
+canvas.addEventListener('touchend', (e) => {
+  e.preventDefault();
+  if (!aiming) return;
+  aiming = false; charging = false;
+  if (power > 2) {
+    shots++;
+    document.getElementById('shotNum').textContent = shots;
+    ball.vx = Math.cos(aimAngle) * power * 0.18;
+    ball.vy = Math.sin(aimAngle) * power * 0.18;
+    animating = true;
+    requestAnimationFrame(update);
+  }
+  draw();
+});
+
+init();
+</script>
+</body>
+</html>
