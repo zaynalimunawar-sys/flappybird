@@ -3,197 +3,161 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mini Golf</title>
+<title>Paper Toss</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700&display=swap');
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
-    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    background: linear-gradient(160deg, #1a1a2e, #16213e, #0f3460);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    font-family: 'Nunito', Arial, sans-serif;
+    font-family: 'Nunito', sans-serif;
     color: white;
+    overflow: hidden;
   }
-  #game-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 14px;
-  }
-  #title {
-    font-family: 'Fredoka One', cursive;
-    font-size: 38px;
-    color: #00ff88;
-    text-shadow: 0 0 20px rgba(0,255,136,0.5), 0 4px 8px rgba(0,0,0,0.4);
-    letter-spacing: 2px;
-  }
-  #hud {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-  }
+  #game-container { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  #title { font-family: 'Fredoka One', cursive; font-size: 36px; color: #ffd700; text-shadow: 0 0 20px rgba(255,215,0,0.4); letter-spacing: 2px; }
+
+  #hud { display: flex; gap: 12px; align-items: center; }
   .hud-card {
-    background: rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.07);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.12);
     border-radius: 16px;
-    padding: 10px 22px;
+    padding: 10px 24px;
     text-align: center;
-    min-width: 90px;
-    transition: all 0.3s;
+    min-width: 100px;
   }
-  .hud-card.warning { border-color: rgba(255,100,68,0.6); background: rgba(255,100,68,0.1); }
-  .hud-label {
-    font-size: 10px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    color: rgba(255,255,255,0.5);
-    margin-bottom: 2px;
-  }
-  .hud-value {
-    font-family: 'Fredoka One', cursive;
-    font-size: 26px;
-    color: #00ff88;
-    line-height: 1;
-    transition: color 0.3s;
-  }
-  .hud-divider { width: 2px; height: 50px; background: rgba(255,255,255,0.1); border-radius: 2px; }
-  #hole-dots { display: flex; gap: 10px; justify-content: center; }
-  .dot {
-    width: 12px; height: 12px; border-radius: 50%;
-    background: rgba(255,255,255,0.2);
-    border: 2px solid rgba(255,255,255,0.3);
-    transition: all 0.3s ease;
-  }
-  .dot.active { background: #00ff88; border-color: #00ff88; box-shadow: 0 0 10px rgba(0,255,136,0.6); transform: scale(1.2); }
-  .dot.done { background: rgba(0,255,136,0.4); border-color: rgba(0,255,136,0.6); }
+  .hud-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(255,255,255,0.45); margin-bottom: 2px; }
+  .hud-value { font-family: 'Fredoka One', cursive; font-size: 28px; color: #ffd700; line-height: 1; }
+  .hud-divider { width: 2px; height: 50px; background: rgba(255,255,255,0.08); border-radius: 2px; }
+
   #canvas-wrapper {
     position: relative;
     border-radius: 20px;
     overflow: hidden;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 3px rgba(0,255,136,0.3);
-    transition: transform 0.05s;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 0 3px rgba(255,215,0,0.2);
   }
   canvas { display: block; cursor: crosshair; }
-  #power-container { width: 300px; display: flex; align-items: center; gap: 10px; }
-  #power-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.5); white-space: nowrap; }
-  #power-track { flex: 1; height: 10px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; border: 1px solid rgba(255,255,255,0.15); }
-  #power-fill { height: 100%; width: 0%; border-radius: 10px; transition: background 0.1s; background: #00ff88; }
+
+  #wind-bar-container {
+    width: 320px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  #wind-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(255,255,255,0.45); }
+  #wind-track {
+    width: 100%;
+    height: 10px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 10px;
+    position: relative;
+    border: 1px solid rgba(255,255,255,0.12);
+    overflow: hidden;
+  }
+  #wind-fill {
+    position: absolute;
+    height: 100%;
+    top: 0;
+    border-radius: 10px;
+    transition: all 0.5s ease;
+  }
+  #wind-center { position: absolute; left: 50%; top: 0; width: 2px; height: 100%; background: rgba(255,255,255,0.3); }
+
   #message-box { height: 44px; display: flex; align-items: center; justify-content: center; }
-  #message { font-family: 'Fredoka One', cursive; font-size: 24px; color: #00ff88; text-shadow: 0 0 15px rgba(0,255,136,0.5); opacity: 0; transform: translateY(10px) scale(0.9); transition: all 0.4s ease; }
+  #message {
+    font-family: 'Fredoka One', cursive;
+    font-size: 26px;
+    color: #ffd700;
+    opacity: 0;
+    transform: translateY(10px) scale(0.9);
+    transition: all 0.35s ease;
+  }
   #message.show { opacity: 1; transform: translateY(0) scale(1); }
-  #nextBtn {
-    display: none; padding: 12px 40px; font-size: 16px;
-    font-family: 'Fredoka One', cursive; letter-spacing: 1px;
-    background: linear-gradient(135deg, #00ff88, #00cc66);
-    color: #0f2027; border: none; border-radius: 50px; cursor: pointer;
-    box-shadow: 0 8px 20px rgba(0,255,136,0.3); transition: all 0.2s ease; margin-top: -8px;
-  }
-  #nextBtn:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(0,255,136,0.45); }
-  #hint { font-size: 13px; color: rgba(255,255,255,0.35); text-align: center; letter-spacing: 0.5px; }
 
-  /* Shot pips */
-  #shot-pips { display: flex; gap: 7px; justify-content: center; align-items: center; }
-  .pip {
-    width: 18px; height: 18px; border-radius: 50%;
-    background: rgba(255,255,255,0.2);
-    border: 2px solid rgba(255,255,255,0.35);
-    transition: all 0.25s ease;
-  }
-  .pip.used { background: #ff6644; border-color: #ff6644; box-shadow: 0 0 8px rgba(255,100,68,0.6); }
-  .pip.last { background: #ffcc00; border-color: #ffcc00; box-shadow: 0 0 10px rgba(255,200,0,0.7); animation: pulse 0.7s infinite alternate; }
-  @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.25); } }
+  #hint { font-size: 13px; color: rgba(255,255,255,0.3); letter-spacing: 0.5px; }
 
-  /* Game over overlay */
+  /* Overlay */
   #overlay {
     display: none;
     position: fixed; inset: 0;
-    background: rgba(0,0,0,0.75);
-    backdrop-filter: blur(6px);
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(8px);
     z-index: 100;
     align-items: center;
     justify-content: center;
-    flex-direction: column;
-    gap: 20px;
   }
   #overlay.show { display: flex; }
   #overlay-box {
-    background: linear-gradient(135deg, #1a2a3a, #0f2027);
-    border: 2px solid rgba(0,255,136,0.4);
+    background: linear-gradient(135deg, #1a2a3a, #0f1e2e);
+    border: 2px solid rgba(255,215,0,0.35);
     border-radius: 24px;
-    padding: 40px 60px;
+    padding: 44px 64px;
     text-align: center;
-    box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+    box-shadow: 0 30px 80px rgba(0,0,0,0.7);
   }
-  #overlay-title { font-family: 'Fredoka One', cursive; font-size: 40px; color: #00ff88; margin-bottom: 8px; }
-  #overlay-sub { font-size: 16px; color: rgba(255,255,255,0.6); margin-bottom: 24px; }
-  #overlay-score { font-family: 'Fredoka One', cursive; font-size: 56px; margin-bottom: 24px; }
+  #overlay-title { font-family: 'Fredoka One', cursive; font-size: 42px; color: #ffd700; margin-bottom: 6px; }
+  #overlay-sub { font-size: 15px; color: rgba(255,255,255,0.5); margin-bottom: 20px; }
+  #overlay-score { font-family: 'Fredoka One', cursive; font-size: 64px; color: #fff; margin-bottom: 28px; }
+  #overlay-streak { font-family: 'Fredoka One', cursive; font-size: 22px; color: #ffd700; margin-bottom: 28px; margin-top: -16px; }
   #restartBtn {
-    padding: 14px 50px; font-size: 18px; font-family: 'Fredoka One', cursive;
-    background: linear-gradient(135deg, #00ff88, #00cc66);
-    color: #0f2027; border: none; border-radius: 50px; cursor: pointer;
-    box-shadow: 0 8px 24px rgba(0,255,136,0.35); transition: all 0.2s;
+    padding: 14px 52px; font-size: 18px; font-family: 'Fredoka One', cursive;
+    background: linear-gradient(135deg, #ffd700, #ffaa00);
+    color: #1a1a2e; border: none; border-radius: 50px; cursor: pointer;
+    box-shadow: 0 8px 24px rgba(255,215,0,0.3); transition: all 0.2s;
   }
-  #restartBtn:hover { transform: translateY(-3px); box-shadow: 0 14px 32px rgba(0,255,136,0.5); }
+  #restartBtn:hover { transform: translateY(-3px); box-shadow: 0 14px 32px rgba(255,215,0,0.5); }
 </style>
 </head>
 <body>
 
 <div id="game-container">
-  <div id="title">⛳ Mini Golf</div>
+  <div id="title">🗑️ Paper Toss</div>
+
   <div id="hud">
-    <div class="hud-card">
-      <div class="hud-label">Hole</div>
-      <div class="hud-value" id="holeNum">1</div>
-    </div>
-    <div class="hud-divider"></div>
-    <div class="hud-card">
-      <div class="hud-label">Par</div>
-      <div class="hud-value" id="parNum">3</div>
-    </div>
-    <div class="hud-divider"></div>
-    <div class="hud-card" id="shotsCard">
-      <div class="hud-label">Shots Left</div>
-      <div class="hud-value" id="shotNum">5</div>
-    </div>
-    <div class="hud-divider"></div>
     <div class="hud-card">
       <div class="hud-label">Score</div>
       <div class="hud-value" id="scoreNum">0</div>
     </div>
+    <div class="hud-divider"></div>
+    <div class="hud-card">
+      <div class="hud-label">Streak 🔥</div>
+      <div class="hud-value" id="streakNum">0</div>
+    </div>
+    <div class="hud-divider"></div>
+    <div class="hud-card">
+      <div class="hud-label">Best</div>
+      <div class="hud-value" id="bestNum">0</div>
+    </div>
   </div>
 
-  <div id="shot-pips"></div>
-  <div id="hole-dots">
-    <div class="dot active" id="dot0"></div>
-    <div class="dot" id="dot1"></div>
-    <div class="dot" id="dot2"></div>
+  <div id="wind-bar-container">
+    <div id="wind-label">🌬️ Wind: <span id="windText">None</span></div>
+    <div id="wind-track">
+      <div id="wind-center"></div>
+      <div id="wind-fill"></div>
+    </div>
   </div>
 
   <div id="canvas-wrapper">
-    <canvas id="canvas" width="600" height="420"></canvas>
-  </div>
-
-  <div id="power-container">
-    <span id="power-label">Power</span>
-    <div id="power-track"><div id="power-fill"></div></div>
+    <canvas id="canvas" width="400" height="520"></canvas>
   </div>
 
   <div id="message-box"><div id="message"></div></div>
-  <button id="nextBtn" onclick="nextHole()">Next Hole ➡️</button>
-  <div id="hint">Hold & release to shoot · Aim with mouse</div>
+  <div id="hint">Swipe or drag the paper to throw!</div>
 </div>
 
-<!-- Game Over Overlay -->
 <div id="overlay">
   <div id="overlay-box">
-    <div id="overlay-title">🏌️ Game Over!</div>
+    <div id="overlay-title">Game Over! 🗑️</div>
     <div id="overlay-sub">Final Score</div>
-    <div id="overlay-score">0</div>
+    <div id="overlay-score" id="finalScore">0</div>
+    <div id="overlay-streak"></div>
     <button id="restartBtn" onclick="restartGame()">Play Again 🔄</button>
   </div>
 </div>
@@ -201,56 +165,141 @@
 <script>
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
-const wrapper = document.getElementById('canvas-wrapper');
 
-let ball, hole, walls, shots, shotsLeft, maxShots, par, holeIndex, totalScore;
-let aiming, aimAngle, power, charging, animating;
-let particles = [];
-let trailPoints = [];
+let score, streak, best, wind, windStr;
+let ball, isDragging, dragStart, dragEnd, thrown, particles;
+let ballX, ballY, ballVX, ballVY, ballScale, ballRotation, ballRotSpeed;
+let gameOver, lives, binX, binY, binW, binH;
 let shakeFrames = 0, shakeIntensity = 0;
+let missParticleTimer = 0;
+let bgParticles = [];
 
-const holes = [
-  { par: 3, maxShots: 5, ball: {x:80,y:210}, hole: {x:520,y:210},
-    walls: [{x:50,y:140,w:500,h:18},{x:50,y:262,w:500,h:18},{x:50,y:140,w:18,h:140},{x:532,y:140,w:18,h:140},{x:240,y:158,w:18,h:80}] },
-  { par: 4, maxShots: 6, ball: {x:80,y:360}, hole: {x:520,y:70},
-    walls: [{x:50,y:50,w:520,h:18},{x:50,y:390,w:520,h:18},{x:50,y:50,w:18,h:358},{x:552,y:50,w:18,h:358},{x:190,y:180,w:18,h:210},{x:370,y:50,w:18,h:210}] },
-  { par: 5, maxShots: 7, ball: {x:80,y:80}, hole: {x:520,y:350},
-    walls: [{x:50,y:50,w:520,h:18},{x:50,y:380,w:520,h:18},{x:50,y:50,w:18,h:348},{x:552,y:50,w:18,h:348},{x:140,y:50,w:18,h:210},{x:290,y:180,w:18,h:200},{x:420,y:50,w:18,h:240}] }
-];
+const GRAVITY = 0.22;
+const FRICTION = 0.995;
 
-// ---- Particles ----
-function spawnParticles(x, y, count, colors, speed, life) {
-  for (let i = 0; i < count; i++) {
-    const angle = Math.random() * Math.PI * 2;
-    const s = speed * (0.4 + Math.random() * 0.8);
-    particles.push({
-      x, y,
-      vx: Math.cos(angle) * s,
-      vy: Math.sin(angle) * s,
-      life: life * (0.6 + Math.random() * 0.6),
-      maxLife: life,
-      size: 3 + Math.random() * 4,
-      color: colors[Math.floor(Math.random() * colors.length)],
-      gravity: 0.12
+function initBgParticles() {
+  bgParticles = [];
+  for (let i = 0; i < 25; i++) {
+    bgParticles.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: 1 + Math.random() * 2,
+      alpha: 0.05 + Math.random() * 0.15,
+      vy: -0.2 - Math.random() * 0.4,
+      vx: (Math.random() - 0.5) * 0.3
     });
   }
 }
 
-function spawnBounceParticles(x, y) {
-  spawnParticles(x, y, 6, ['#ffffff','#cccccc','#aaddff'], 2.5, 25);
+function init() {
+  score = 0;
+  streak = 0;
+  best = parseInt(localStorage.getItem('ptBest') || '0');
+  lives = 3;
+  gameOver = false;
+  particles = [];
+  setNewWind();
+  resetBall();
+  updateHUD();
+  initBgParticles();
+  document.getElementById('overlay').classList.remove('show');
+  requestAnimationFrame(loop);
 }
 
-function spawnHoleParticles(x, y) {
-  spawnParticles(x, y, 40, ['#00ff88','#ffcc00','#ff6644','#ff44aa','#44aaff','#ffffff'], 5, 60);
+function restartGame() { init(); }
+
+function setNewWind() {
+  wind = (Math.random() - 0.5) * 6;
+  const abs = Math.abs(wind);
+  if (abs < 0.5) windStr = 'None';
+  else if (abs < 2) windStr = (wind < 0 ? '← ' : '→ ') + 'Light';
+  else if (abs < 4) windStr = (wind < 0 ? '← ' : '→ ') + 'Medium';
+  else windStr = (wind < 0 ? '← ' : '→ ') + 'Strong!';
+  updateWindBar();
+}
+
+function updateWindBar() {
+  document.getElementById('windText').textContent = windStr;
+  const fill = document.getElementById('wind-fill');
+  const pct = (wind / 6) * 50;
+  if (wind >= 0) {
+    fill.style.left = '50%';
+    fill.style.width = pct + '%';
+    fill.style.background = 'linear-gradient(90deg, #ffd700, #ff9900)';
+  } else {
+    fill.style.left = (50 + pct) + '%';
+    fill.style.width = (-pct) + '%';
+    fill.style.background = 'linear-gradient(90deg, #ff9900, #ffd700)';
+  }
+}
+
+function resetBall() {
+  ballX = canvas.width / 2 + (Math.random() - 0.5) * 40;
+  ballY = canvas.height - 70;
+  ballVX = 0; ballVY = 0;
+  ballScale = 1;
+  ballRotation = 0;
+  ballRotSpeed = 0;
+  thrown = false; isDragging = false;
+  dragStart = null; dragEnd = null;
+  // Bin position (moves slightly each round)
+  binX = canvas.width / 2 + (Math.random() - 0.5) * 120;
+  binY = 160;
+  binW = 60; binH = 36;
+}
+
+function updateHUD() {
+  document.getElementById('scoreNum').textContent = score;
+  document.getElementById('streakNum').textContent = streak;
+  document.getElementById('bestNum').textContent = best;
+}
+
+// ---- Particles ----
+function spawnConfetti(x, y) {
+  const cols = ['#ffd700','#ff6644','#00ff88','#44aaff','#ff44cc','#ffffff'];
+  for (let i = 0; i < 45; i++) {
+    const a = Math.random() * Math.PI * 2;
+    const s = 3 + Math.random() * 5;
+    particles.push({
+      x, y,
+      vx: Math.cos(a) * s,
+      vy: Math.sin(a) * s - 2,
+      life: 55 + Math.random() * 30,
+      maxLife: 85,
+      size: 4 + Math.random() * 5,
+      color: cols[Math.floor(Math.random() * cols.length)],
+      gravity: 0.15,
+      rot: Math.random() * Math.PI * 2,
+      rotSpeed: (Math.random() - 0.5) * 0.3
+    });
+  }
+}
+
+function spawnMissParticles(x, y) {
+  for (let i = 0; i < 12; i++) {
+    const a = Math.random() * Math.PI * 2;
+    const s = 1.5 + Math.random() * 3;
+    particles.push({
+      x, y,
+      vx: Math.cos(a) * s,
+      vy: Math.sin(a) * s,
+      life: 25 + Math.random() * 15,
+      maxLife: 40,
+      size: 3 + Math.random() * 3,
+      color: '#aaaaaa',
+      gravity: 0.1,
+      rot: 0, rotSpeed: 0
+    });
+  }
 }
 
 function updateParticles() {
   particles = particles.filter(p => p.life > 0);
   particles.forEach(p => {
-    p.x += p.vx;
-    p.y += p.vy;
+    p.x += p.vx; p.y += p.vy;
     p.vy += p.gravity;
     p.vx *= 0.97;
+    p.rot += p.rotSpeed;
     p.life--;
   });
 }
@@ -260,417 +309,351 @@ function drawParticles() {
     const alpha = p.life / p.maxLife;
     ctx.save();
     ctx.globalAlpha = alpha;
+    ctx.translate(p.x, p.y);
+    ctx.rotate(p.rot);
     ctx.fillStyle = p.color;
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, p.size * alpha, 0, Math.PI * 2);
-    ctx.fill();
+    ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
     ctx.restore();
   });
 }
 
-// ---- Screen Shake ----
-function triggerShake(intensity, frames) {
-  shakeIntensity = intensity;
-  shakeFrames = frames;
-}
+function triggerShake(i, f) { shakeIntensity = i; shakeFrames = f; }
 
-// ---- Trail ----
-function addTrail() {
-  if (animating) {
-    trailPoints.push({ x: ball.x, y: ball.y, life: 18 });
+// ---- Draw ----
+function drawScene() {
+  ctx.save();
+  if (shakeFrames > 0) {
+    ctx.translate((Math.random()-0.5)*shakeIntensity, (Math.random()-0.5)*shakeIntensity);
+    shakeFrames--;
   }
-  trailPoints = trailPoints.filter(t => t.life > 0);
-  trailPoints.forEach(t => t.life--);
-}
 
-function drawTrail() {
-  trailPoints.forEach(t => {
-    const alpha = (t.life / 18) * 0.4;
+  // Background — office room feel
+  const bgGrad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+  bgGrad.addColorStop(0, '#2a3a5c');
+  bgGrad.addColorStop(0.6, '#1e2d47');
+  bgGrad.addColorStop(1, '#3a2a1a');
+  ctx.fillStyle = bgGrad;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Floor
+  ctx.fillStyle = '#4a3520';
+  ctx.fillRect(0, canvas.height - 40, canvas.width, 40);
+  ctx.fillStyle = '#5a4530';
+  ctx.fillRect(0, canvas.height - 42, canvas.width, 4);
+
+  // Wall detail
+  ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+  ctx.lineWidth = 1;
+  for (let i = 0; i < canvas.width; i += 40) {
+    ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height - 40); ctx.stroke();
+  }
+
+  // BG floating dust
+  bgParticles.forEach(p => {
+    p.x += p.vx + wind * 0.03;
+    p.y += p.vy;
+    if (p.y < -5) p.y = canvas.height;
+    if (p.x < 0) p.x = canvas.width;
+    if (p.x > canvas.width) p.x = 0;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(255,255,255,${p.alpha})`;
+    ctx.fill();
+  });
+
+  // Lives (crumpled papers at bottom)
+  for (let i = 0; i < 3; i++) {
     ctx.save();
-    ctx.globalAlpha = alpha;
-    ctx.beginPath();
-    ctx.arc(t.x, t.y, ball.radius * (t.life / 18), 0, Math.PI * 2);
-    ctx.fillStyle = '#aaddff';
-    ctx.fill();
+    ctx.globalAlpha = i < lives ? 1 : 0.25;
+    drawPaperBall(30 + i * 28, canvas.height - 20, 9, 0);
     ctx.restore();
+  }
+
+  // Bin
+  drawBin(binX, binY, binW, binH);
+
+  // Wind arrows
+  if (Math.abs(wind) > 0.4) {
+    drawWindArrows();
+  }
+
+  // Particles
+  drawParticles();
+
+  // Ball (only if in play)
+  if (!gameOver) {
+    ctx.save();
+    ctx.translate(ballX, ballY);
+    ctx.rotate(ballRotation);
+    ctx.scale(ballScale, ballScale);
+    drawPaperBall(0, 0, 18, 0);
+    ctx.restore();
+  }
+
+  // Drag line
+  if (isDragging && dragStart) {
+    ctx.save();
+    ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([5, 5]);
+    ctx.beginPath();
+    ctx.moveTo(dragStart.x, dragStart.y);
+    ctx.lineTo(dragEnd ? dragEnd.x : dragStart.x, dragEnd ? dragEnd.y : dragStart.y);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  ctx.restore();
+}
+
+function drawPaperBall(x, y, r, rot) {
+  ctx.save();
+  ctx.translate(x, y);
+  // Shadow
+  ctx.beginPath();
+  ctx.arc(3, 3, r, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(0,0,0,0.25)';
+  ctx.fill();
+  // Ball
+  const g = ctx.createRadialGradient(-r*0.3, -r*0.3, r*0.1, 0, 0, r);
+  g.addColorStop(0, '#f5f5f0');
+  g.addColorStop(0.5, '#e0e0d8');
+  g.addColorStop(1, '#c8c8c0');
+  ctx.beginPath();
+  ctx.arc(0, 0, r, 0, Math.PI * 2);
+  ctx.fillStyle = g;
+  ctx.fill();
+  // Crumple lines
+  ctx.strokeStyle = 'rgba(0,0,0,0.12)';
+  ctx.lineWidth = 1;
+  [[−r*0.3, −r*0.5, r*0.1, r*0.4],
+   [r*0.2, −r*0.6, −r*0.2, r*0.3],
+   [−r*0.5, r*0.1, r*0.4, −r*0.2]].forEach(([x1,y1,x2,y2]) => {
+    ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
   });
+  // Shine
+  ctx.beginPath();
+  ctx.arc(-r*0.3, -r*0.3, r*0.25, 0, Math.PI*2);
+  ctx.fillStyle = 'rgba(255,255,255,0.45)';
+  ctx.fill();
+  ctx.restore();
 }
 
-// ---- Pips ----
-function buildPips(max) {
-  const container = document.getElementById('shot-pips');
-  container.innerHTML = '';
-  for (let i = 0; i < max; i++) {
-    const pip = document.createElement('div');
-    pip.className = 'pip';
-    pip.id = 'pip' + i;
-    container.appendChild(pip);
+function drawBin(x, y, w, h) {
+  // Glow ring
+  ctx.save();
+  ctx.shadowBlur = 16;
+  ctx.shadowColor = 'rgba(255,215,0,0.4)';
+  ctx.strokeStyle = 'rgba(255,215,0,0.3)';
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.ellipse(x, y, w/2 + 6, 10, 0, 0, Math.PI*2);
+  ctx.stroke();
+  ctx.restore();
+
+  // Bin body (trapezoid)
+  ctx.save();
+  ctx.fillStyle = '#555';
+  ctx.beginPath();
+  ctx.moveTo(x - w/2, y);
+  ctx.lineTo(x + w/2, y);
+  ctx.lineTo(x + w/2 - 8, y + h);
+  ctx.lineTo(x - w/2 + 8, y + h);
+  ctx.closePath();
+  ctx.fill();
+
+  // Bin opening ellipse
+  ctx.beginPath();
+  ctx.ellipse(x, y, w/2, 10, 0, 0, Math.PI*2);
+  ctx.fillStyle = '#333';
+  ctx.fill();
+  ctx.strokeStyle = '#888';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // Bin lines
+  ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+  ctx.lineWidth = 1;
+  for (let i = 1; i < 3; i++) {
+    const t = i / 3;
+    const topW = w/2;
+    const botW = w/2 - 8;
+    const lw = topW - (topW - botW) * t;
+    ctx.beginPath();
+    ctx.moveTo(x - lw, y + h * t);
+    ctx.lineTo(x + lw, y + h * t);
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+
+function drawWindArrows() {
+  const dir = wind > 0 ? 1 : -1;
+  const strength = Math.abs(wind);
+  const count = strength > 3.5 ? 3 : 2;
+  const startX = wind > 0 ? 20 : canvas.width - 20;
+  for (let i = 0; i < count; i++) {
+    const alpha = 0.15 + i * 0.12;
+    const y = 80 + i * 50;
+    ctx.save();
+    ctx.globalAlpha = alpha + Math.sin(Date.now() / 300 + i) * 0.05;
+    ctx.strokeStyle = '#aaddff';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    const x1 = startX + dir * i * 30;
+    const x2 = x1 + dir * 40;
+    ctx.moveTo(x1, y);
+    ctx.lineTo(x2, y);
+    ctx.lineTo(x2 - dir*10, y - 8);
+    ctx.moveTo(x2, y);
+    ctx.lineTo(x2 - dir*10, y + 8);
+    ctx.stroke();
+    ctx.restore();
   }
 }
 
-function updatePips() {
-  const used = shots;
-  for (let i = 0; i < maxShots; i++) {
-    const pip = document.getElementById('pip' + i);
-    if (!pip) continue;
-    pip.className = 'pip';
-    if (i < used) pip.classList.add('used');
-    else if (i === maxShots - 1 && shotsLeft === 1) pip.classList.add('last');
+// ---- Physics ----
+function updateBall() {
+  if (!thrown) return;
+
+  ballVX += wind * 0.018;
+  ballVY += GRAVITY;
+  ballVX *= FRICTION;
+  ballX += ballVX;
+  ballY += ballVY;
+  ballRotation += ballRotSpeed;
+
+  // Scale down as it goes up (perspective)
+  const progress = 1 - (ballY / canvas.height);
+  ballScale = Math.max(0.35, 1 - progress * 0.55);
+
+  // Check if in bin
+  const inX = ballX > binX - binW/2 && ballX < binX + binW/2;
+  const inY = Math.abs(ballY - binY) < 22;
+  if (inX && inY && ballVY > 0) {
+    // SCORE!
+    score += 1 + Math.floor(streak / 3);
+    streak++;
+    if (score > best) { best = score; localStorage.setItem('ptBest', best); }
+    updateHUD();
+    spawnConfetti(binX, binY);
+    triggerShake(3, 10);
+    const msgs = streak >= 5 ? ['🔥 ON FIRE!', '💥 UNSTOPPABLE!', '👑 LEGENDARY!'] :
+                  streak >= 3 ? ['🎉 Hat Trick!', '⚡ Streak x' + streak, '🔥 Hot!'] :
+                  ['Nice! ✅', '🎯 In!', 'Swish! 🏀', 'Clean! ✨'];
+    showMessage(msgs[Math.floor(Math.random() * msgs.length)], '#ffd700');
+    setNewWind();
+    setTimeout(resetBall, 600);
+    thrown = false;
+    return;
+  }
+
+  // Missed — off screen
+  if (ballY > canvas.height || ballX < -50 || ballX > canvas.width + 50) {
+    spawnMissParticles(ballX < 0 ? 0 : ballX > canvas.width ? canvas.width : ballX, canvas.height - 40);
+    triggerShake(5, 15);
+    streak = 0;
+    lives--;
+    updateHUD();
+    const missMsgs = ['😬 Miss!', '💨 Too much wind!', '🙈 Nooo!', '😅 So close!'];
+    showMessage(missMsgs[Math.floor(Math.random() * missMsgs.length)], '#ff6644');
+    if (lives <= 0) {
+      setTimeout(endGame, 600);
+    } else {
+      setNewWind();
+      setTimeout(resetBall, 500);
+    }
+    thrown = false;
   }
 }
 
-// ---- Init ----
-function init() {
-  holeIndex = 0;
-  totalScore = 0;
-  document.getElementById('overlay').classList.remove('show');
-  loadHole();
-}
-
-function restartGame() {
-  init();
-}
-
-function loadHole() {
-  const h = holes[holeIndex];
-  ball = { x: h.ball.x, y: h.ball.y, vx: 0, vy: 0, radius: 10 };
-  hole = { x: h.hole.x, y: h.hole.y, radius: 14 };
-  walls = h.walls;
-  par = h.par;
-  maxShots = h.maxShots;
-  shots = 0;
-  shotsLeft = maxShots;
-  aiming = false; charging = false; animating = false; power = 0;
-  particles = []; trailPoints = [];
-  document.getElementById('holeNum').textContent = holeIndex + 1;
-  document.getElementById('parNum').textContent = par;
-  document.getElementById('shotNum').textContent = shotsLeft;
-  document.getElementById('power-fill').style.width = '0%';
-  const msg = document.getElementById('message');
-  msg.textContent = ''; msg.classList.remove('show');
-  document.getElementById('nextBtn').style.display = 'none';
-  document.getElementById('shotsCard').classList.remove('warning');
-  updateDots();
-  buildPips(maxShots);
-  draw();
-}
-
-function updateDots() {
-  for (let i = 0; i < holes.length; i++) {
-    const dot = document.getElementById('dot' + i);
-    dot.className = 'dot';
-    if (i < holeIndex) dot.classList.add('done');
-    else if (i === holeIndex) dot.classList.add('active');
-  }
+function endGame() {
+  gameOver = true;
+  document.getElementById('overlay-score').textContent = score;
+  document.getElementById('overlay-streak').textContent = best > 0 ? '🏆 Best: ' + best : '';
+  document.getElementById('overlay').classList.add('show');
 }
 
 function showMessage(text, color) {
   const msg = document.getElementById('message');
   msg.classList.remove('show');
   msg.textContent = text;
-  msg.style.color = color || '#00ff88';
-  msg.style.textShadow = `0 0 15px ${color || '#00ff88'}88`;
-  setTimeout(() => msg.classList.add('show'), 50);
-}
-
-// ---- Out of shots ----
-function outOfShots() {
-  animating = false;
-  totalScore += maxShots; // big penalty
-  showMessage('💀 Out of shots! +' + maxShots, '#ff4444');
-  triggerShake(6, 20);
-  spawnParticles(ball.x, ball.y, 20, ['#ff4444','#ff6644','#ffaa00'], 4, 40);
-  const scoreEl = document.getElementById('scoreNum');
-  scoreEl.textContent = '+' + totalScore;
-  scoreEl.style.color = '#ff6644';
-  if (holeIndex < holes.length - 1) {
-    setTimeout(() => { document.getElementById('nextBtn').style.display = 'inline-block'; }, 600);
-  } else {
-    setTimeout(showGameOver, 1200);
-  }
-}
-
-function showGameOver() {
-  const el = document.getElementById('overlay-score');
-  el.textContent = totalScore > 0 ? '+' + totalScore : totalScore;
-  el.style.color = totalScore < 0 ? '#00ff88' : totalScore > 0 ? '#ff6644' : '#ffffff';
-  document.getElementById('overlay').classList.add('show');
-}
-
-// ---- Draw ----
-function draw() {
-  ctx.save();
-  if (shakeFrames > 0) {
-    const sx = (Math.random() - 0.5) * shakeIntensity;
-    const sy = (Math.random() - 0.5) * shakeIntensity;
-    ctx.translate(sx, sy);
-    shakeFrames--;
-    if (shakeFrames === 0) shakeIntensity = 0;
-  }
-
-  ctx.clearRect(-20, -20, canvas.width + 40, canvas.height + 40);
-
-  // Background
-  const bgGrad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-  bgGrad.addColorStop(0, '#2d6a27');
-  bgGrad.addColorStop(1, '#1e4a1a');
-  ctx.fillStyle = bgGrad;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  // Grid
-  ctx.strokeStyle = 'rgba(255,255,255,0.04)';
-  ctx.lineWidth = 1;
-  for (let i = 0; i < canvas.width; i += 30) { ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height); ctx.stroke(); }
-  for (let j = 0; j < canvas.height; j += 30) { ctx.beginPath(); ctx.moveTo(0, j); ctx.lineTo(canvas.width, j); ctx.stroke(); }
-
-  // Walls
-  walls.forEach(w => {
-    ctx.fillStyle = 'rgba(0,0,0,0.3)';
-    ctx.fillRect(w.x + 4, w.y + 4, w.w, w.h);
-    const wg = ctx.createLinearGradient(w.x, w.y, w.x, w.y + w.h);
-    wg.addColorStop(0, '#a0704a'); wg.addColorStop(1, '#6b3a1f');
-    ctx.fillStyle = wg;
-    ctx.fillRect(w.x, w.y, w.w, w.h);
-    ctx.fillStyle = 'rgba(255,255,255,0.15)';
-    ctx.fillRect(w.x, w.y, w.w, 5);
-  });
-
-  // Hole glow
-  ctx.save();
-  ctx.shadowBlur = 18;
-  ctx.shadowColor = '#00ff88';
-  ctx.beginPath();
-  ctx.arc(hole.x, hole.y, hole.radius + 2, 0, Math.PI * 2);
-  ctx.strokeStyle = 'rgba(0,255,136,0.4)';
-  ctx.lineWidth = 3;
-  ctx.stroke();
-  ctx.restore();
-
-  // Hole
-  ctx.beginPath();
-  ctx.arc(hole.x + 3, hole.y + 3, hole.radius, 0, Math.PI * 2);
-  ctx.fillStyle = 'rgba(0,0,0,0.35)';
-  ctx.fill();
-  ctx.beginPath();
-  ctx.arc(hole.x, hole.y, hole.radius, 0, Math.PI * 2);
-  const hg = ctx.createRadialGradient(hole.x, hole.y, 2, hole.x, hole.y, hole.radius);
-  hg.addColorStop(0, '#000'); hg.addColorStop(1, '#222');
-  ctx.fillStyle = hg; ctx.fill();
-  ctx.strokeStyle = 'rgba(255,255,255,0.6)'; ctx.lineWidth = 2; ctx.stroke();
-
-  // Flag
-  ctx.strokeStyle = '#ddd'; ctx.lineWidth = 2;
-  ctx.beginPath(); ctx.moveTo(hole.x, hole.y - 4); ctx.lineTo(hole.x, hole.y - 32); ctx.stroke();
-  ctx.fillStyle = '#ff4455';
-  ctx.beginPath(); ctx.moveTo(hole.x, hole.y - 32); ctx.lineTo(hole.x + 16, hole.y - 25); ctx.lineTo(hole.x, hole.y - 18); ctx.closePath(); ctx.fill();
-
-  // Trail
-  drawTrail();
-
-  // Aim line
-  if (aiming && !animating) {
-    ctx.save();
-    ctx.strokeStyle = 'rgba(255,255,255,0.35)';
-    ctx.lineWidth = 1.5;
-    ctx.setLineDash([6, 6]);
-    ctx.beginPath();
-    ctx.moveTo(ball.x, ball.y);
-    ctx.lineTo(ball.x + Math.cos(aimAngle) * 90, ball.y + Math.sin(aimAngle) * 90);
-    ctx.stroke();
-    ctx.setLineDash([]);
-    ctx.strokeStyle = 'rgba(255,255,255,0.6)'; ctx.lineWidth = 2;
-    const tx = ball.x + Math.cos(aimAngle) * 90;
-    const ty = ball.y + Math.sin(aimAngle) * 90;
-    ctx.beginPath();
-    ctx.moveTo(tx, ty);
-    ctx.lineTo(tx - Math.cos(aimAngle - 0.4) * 12, ty - Math.sin(aimAngle - 0.4) * 12);
-    ctx.moveTo(tx, ty);
-    ctx.lineTo(tx - Math.cos(aimAngle + 0.4) * 12, ty - Math.sin(aimAngle + 0.4) * 12);
-    ctx.stroke();
-    ctx.restore();
-  }
-
-  // Particles
-  drawParticles();
-
-  // Ball shadow
-  ctx.beginPath();
-  ctx.arc(ball.x + 3, ball.y + 3, ball.radius, 0, Math.PI * 2);
-  ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.fill();
-
-  // Ball
-  const bg = ctx.createRadialGradient(ball.x - 3, ball.y - 3, 1, ball.x, ball.y, ball.radius);
-  bg.addColorStop(0, '#ffffff'); bg.addColorStop(0.5, '#e8e8e8'); bg.addColorStop(1, '#bbbbbb');
-  ctx.beginPath(); ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
-  ctx.fillStyle = bg; ctx.fill();
-  ctx.strokeStyle = 'rgba(0,0,0,0.2)'; ctx.lineWidth = 1; ctx.stroke();
-  ctx.beginPath(); ctx.arc(ball.x - 3, ball.y - 3, 3, 0, Math.PI * 2);
-  ctx.fillStyle = 'rgba(255,255,255,0.7)'; ctx.fill();
-
-  ctx.restore();
-}
-
-function updatePowerBar() {
-  const fill = document.getElementById('power-fill');
-  fill.style.width = power + '%';
-  if (power < 40) fill.style.background = 'linear-gradient(90deg, #00ff88, #00cc66)';
-  else if (power < 70) fill.style.background = 'linear-gradient(90deg, #ffcc00, #ff9900)';
-  else fill.style.background = 'linear-gradient(90deg, #ff6644, #ff2222)';
+  msg.style.color = color || '#ffd700';
+  setTimeout(() => msg.classList.add('show'), 40);
+  setTimeout(() => msg.classList.remove('show'), 1800);
 }
 
 // ---- Game Loop ----
-function update() {
-  if (!animating) return;
-
-  addTrail();
+function loop() {
+  updateBall();
   updateParticles();
-
-  ball.vx *= 0.987; ball.vy *= 0.987;
-  ball.x += ball.vx; ball.y += ball.vy;
-
-  walls.forEach(w => {
-    if (ball.x + ball.radius > w.x && ball.x - ball.radius < w.x + w.w &&
-        ball.y + ball.radius > w.y && ball.y - ball.radius < w.y + w.h) {
-      const oL = (ball.x + ball.radius) - w.x;
-      const oR = (w.x + w.w) - (ball.x - ball.radius);
-      const oT = (ball.y + ball.radius) - w.y;
-      const oB = (w.y + w.h) - (ball.y - ball.radius);
-      const min = Math.min(oL, oR, oT, oB);
-      if (min === oL) { ball.x = w.x - ball.radius; ball.vx *= -0.65; spawnBounceParticles(ball.x, ball.y); triggerShake(2, 5); }
-      else if (min === oR) { ball.x = w.x + w.w + ball.radius; ball.vx *= -0.65; spawnBounceParticles(ball.x, ball.y); triggerShake(2, 5); }
-      else if (min === oT) { ball.y = w.y - ball.radius; ball.vy *= -0.65; spawnBounceParticles(ball.x, ball.y); triggerShake(2, 5); }
-      else { ball.y = w.y + w.h + ball.radius; ball.vy *= -0.65; spawnBounceParticles(ball.x, ball.y); triggerShake(2, 5); }
-    }
-  });
-
-  if (ball.x - ball.radius < 0) { ball.x = ball.radius; ball.vx *= -0.65; spawnBounceParticles(ball.x, ball.y); triggerShake(2,5); }
-  if (ball.x + ball.radius > canvas.width) { ball.x = canvas.width - ball.radius; ball.vx *= -0.65; spawnBounceParticles(ball.x, ball.y); triggerShake(2,5); }
-  if (ball.y - ball.radius < 0) { ball.y = ball.radius; ball.vy *= -0.65; spawnBounceParticles(ball.x, ball.y); triggerShake(2,5); }
-  if (ball.y + ball.radius > canvas.height) { ball.y = canvas.height - ball.radius; ball.vy *= -0.65; spawnBounceParticles(ball.x, ball.y); triggerShake(2,5); }
-
-  // Check hole
-  const dx = ball.x - hole.x, dy = ball.y - hole.y;
-  if (Math.sqrt(dx*dx + dy*dy) < hole.radius) {
-    animating = false;
-    ball.x = hole.x; ball.y = hole.y;
-    spawnHoleParticles(hole.x, hole.y);
-    triggerShake(4, 12);
-
-    // Keep drawing particles after ball sinks
-    let celebFrames = 60;
-    function celebLoop() {
-      updateParticles();
-      draw();
-      if (celebFrames-- > 0) requestAnimationFrame(celebLoop);
-    }
-    celebLoop();
-
-    const diff = shots - par;
-    let msg = '', color = '#00ff88';
-    if (shots === 1) { msg = '🏆 Hole in One!'; color = '#ffcc00'; }
-    else if (diff <= -2) { msg = '🦅 Eagle! Amazing!'; color = '#ffcc00'; }
-    else if (diff === -1) { msg = '🐦 Birdie! Nice!'; color = '#00ff88'; }
-    else if (diff === 0) { msg = '✅ Par!'; color = '#aaffdd'; }
-    else if (diff === 1) { msg = '😬 Bogey'; color = '#ffaa44'; }
-    else { msg = '😅 Double Bogey+'; color = '#ff6644'; }
-
-    totalScore += diff;
-    const scoreEl = document.getElementById('scoreNum');
-    scoreEl.textContent = totalScore > 0 ? '+' + totalScore : totalScore;
-    scoreEl.style.color = totalScore < 0 ? '#00ff88' : totalScore > 0 ? '#ff6644' : '#fff';
-    showMessage(msg, color);
-
-    if (holeIndex < holes.length - 1) {
-      setTimeout(() => { document.getElementById('nextBtn').style.display = 'inline-block'; }, 700);
-    } else {
-      setTimeout(showGameOver, 1400);
-    }
-    return;
-  }
-
-  // Ball stopped
-  if (Math.abs(ball.vx) < 0.05 && Math.abs(ball.vy) < 0.05) {
-    ball.vx = 0; ball.vy = 0;
-    animating = false;
-    updateParticles();
-    draw();
-    if (shotsLeft <= 0) {
-      setTimeout(outOfShots, 200);
-    }
-    return;
-  }
-
-  draw();
-  requestAnimationFrame(update);
+  drawScene();
+  if (!gameOver) requestAnimationFrame(loop);
 }
 
-function nextHole() {
-  holeIndex++;
-  loadHole();
-}
-
-// ---- Shoot ----
-function shoot() {
-  if (power > 2 && shotsLeft > 0) {
-    shots++;
-    shotsLeft--;
-    document.getElementById('shotNum').textContent = shotsLeft;
-    if (shotsLeft <= 1) document.getElementById('shotsCard').classList.add('warning');
-    updatePips();
-    ball.vx = Math.cos(aimAngle) * power * 0.18;
-    ball.vy = Math.sin(aimAngle) * power * 0.18;
-    animating = true;
-    power = 0;
-    updatePowerBar();
-    requestAnimationFrame(update);
+// ---- Input ----
+function getPos(e, rect) {
+  if (e.touches) {
+    return { x: e.touches[0].clientX - rect.left, y: e.touches[0].clientY - rect.top };
   }
+  return { x: e.clientX - rect.left, y: e.clientY - rect.top };
 }
 
-// ---- Controls ----
 canvas.addEventListener('mousedown', (e) => {
-  if (animating || shotsLeft <= 0) return;
+  if (thrown || gameOver) return;
   const r = canvas.getBoundingClientRect();
-  aimAngle = Math.atan2(e.clientY - r.top - ball.y, e.clientX - r.left - ball.x);
-  aiming = true; charging = true; power = 0; draw();
+  dragStart = getPos(e, r);
+  dragEnd = { ...dragStart };
+  isDragging = true;
 });
+
 canvas.addEventListener('mousemove', (e) => {
-  if (!aiming || animating) return;
+  if (!isDragging) return;
   const r = canvas.getBoundingClientRect();
-  aimAngle = Math.atan2(e.clientY - r.top - ball.y, e.clientX - r.left - ball.x);
-  draw();
+  dragEnd = getPos(e, r);
 });
-canvas.addEventListener('mouseup', () => {
-  if (!aiming || animating) return;
-  aiming = false; charging = false;
-  shoot(); draw();
+
+canvas.addEventListener('mouseup', (e) => {
+  if (!isDragging || thrown || gameOver) return;
+  const r = canvas.getBoundingClientRect();
+  dragEnd = getPos(e, r);
+  launchBall();
 });
+
 canvas.addEventListener('touchstart', (e) => {
   e.preventDefault();
-  if (animating || shotsLeft <= 0) return;
-  const r = canvas.getBoundingClientRect(), t = e.touches[0];
-  aimAngle = Math.atan2(t.clientY - r.top - ball.y, t.clientX - r.left - ball.x);
-  aiming = true; charging = true; power = 0; draw();
+  if (thrown || gameOver) return;
+  const r = canvas.getBoundingClientRect();
+  dragStart = getPos(e, r);
+  dragEnd = { ...dragStart };
+  isDragging = true;
 });
 canvas.addEventListener('touchmove', (e) => {
   e.preventDefault();
-  if (!aiming) return;
-  const r = canvas.getBoundingClientRect(), t = e.touches[0];
-  aimAngle = Math.atan2(t.clientY - r.top - ball.y, t.clientX - r.left - ball.x);
-  draw();
+  if (!isDragging) return;
+  const r = canvas.getBoundingClientRect();
+  dragEnd = getPos(e, r);
 });
 canvas.addEventListener('touchend', (e) => {
   e.preventDefault();
-  if (!aiming) return;
-  aiming = false; charging = false;
-  shoot(); draw();
+  if (!isDragging || thrown) return;
+  launchBall();
 });
 
-setInterval(() => {
-  if (charging && aiming) {
-    power = Math.min(power + 1.5, 100);
-    updatePowerBar(); draw();
-  }
-}, 16);
+function launchBall() {
+  if (!dragStart || !dragEnd) return;
+  const dx = dragEnd.x - dragStart.x;
+  const dy = dragEnd.y - dragStart.y;
+  const dist = Math.sqrt(dx*dx + dy*dy);
+  if (dist < 10) { isDragging = false; return; }
+
+  const power = Math.min(dist / 30, 4);
+  ballVX = (dx / dist) * power * 1.4;
+  ballVY = (dy / dist) * power * 2.2;
+  ballRotSpeed = (dx / dist) * 0.15;
+  thrown = true;
+  isDragging = false;
+}
 
 init();
 </script>
