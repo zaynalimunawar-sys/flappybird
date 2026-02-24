@@ -2,81 +2,96 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Mini Golf Pro</title>
+<meta name="viewport" content="width=device-width, maximum-scale=1.0, user-scalable=no">
+<title>Mini Golf Pro — 42 Holes</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap');
   *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
   html,body{width:100%;height:100%;overflow:hidden;touch-action:none;font-family:'Nunito',sans-serif;color:#fff;background:#0a0f1e;}
+
   #bg-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;}
-  @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
   @keyframes fadeIn{from{opacity:0}to{opacity:1}}
   @keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
   @keyframes glowPulse{0%,100%{text-shadow:0 0 20px #00ff8880,0 0 40px #00ff8840}50%{text-shadow:0 0 30px #00ff88cc,0 0 60px #00ff8866}}
   @keyframes rotateSlow{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
-  @keyframes popIn{0%{transform:scale(0.2) rotate(-20deg);opacity:0}65%{transform:scale(1.12) rotate(4deg)}100%{transform:scale(1) rotate(0);opacity:1}}
+  @keyframes titleReveal{0%{opacity:0;letter-spacing:16px;filter:blur(8px)}100%{opacity:1;letter-spacing:4px;filter:blur(0)}}
   @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.25)}}
   @keyframes shimmer{0%,100%{opacity:.6}50%{opacity:1}}
   @keyframes bounceY{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
-  @keyframes shakePop{0%{transform:scale(.5) rotate(-12deg)}55%{transform:scale(1.15) rotate(4deg)}100%{transform:scale(1) rotate(0)}}
+  @keyframes popIn{0%{transform:scale(.2) rotate(-20deg);opacity:0}65%{transform:scale(1.12) rotate(4deg)}100%{transform:scale(1) rotate(0);opacity:1}}
   @keyframes slideIn{from{opacity:0;transform:translateY(30px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
-  @keyframes titleReveal{0%{opacity:0;letter-spacing:16px;filter:blur(8px)}100%{opacity:1;letter-spacing:4px;filter:blur(0)}}
+  @keyframes shakePop{0%{transform:scale(.5) rotate(-12deg)}55%{transform:scale(1.15) rotate(4deg)}100%{transform:scale(1) rotate(0)}}
 
-  #home-screen{position:relative;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%;gap:18px;padding:20px;animation:fadeIn .6s ease;}
+  /* HOME */
+
+  #home-screen{position:relative;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%;gap:18px;padding:20px;animation:fadeIn .5s ease;}
   #home-ring{position:absolute;width:220px;height:220px;border-radius:50%;border:1.5px solid rgba(0,255,136,.12);animation:rotateSlow 18s linear infinite;pointer-events:none;}
   #home-ring::before{content:'';position:absolute;inset:18px;border-radius:50%;border:1px solid rgba(0,255,136,.07);}
   #home-logo{font-size:64px;animation:floatY 3s ease-in-out infinite;filter:drop-shadow(0 8px 24px rgba(0,255,136,.35));position:relative;z-index:1;}
   #home-title{font-family:'Fredoka One',cursive;font-size:46px;letter-spacing:4px;color:#00ff88;animation:glowPulse 3s ease-in-out infinite,titleReveal .9s ease forwards;position:relative;z-index:1;}
   #home-subtitle{font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.35);position:relative;z-index:1;}
+
   #home-stats{display:flex;gap:10px;position:relative;z-index:1;}
   .stat-chip{background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:9px 18px;text-align:center;backdrop-filter:blur(12px);transition:transform .2s,border-color .2s;}
   .stat-chip:hover{transform:translateY(-2px);border-color:rgba(0,255,136,.3);}
-  .stat-chip-label{font-size:8px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:3px;}
+  .stat-chip-label{font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.35);margin-bottom:3px;}
   .stat-chip-val{font-family:'Fredoka One',cursive;font-size:22px;color:#00ff88;}
+
   #play-btn{position:relative;z-index:1;padding:15px 64px;font-size:22px;font-family:'Fredoka One',cursive;letter-spacing:3px;background:linear-gradient(135deg,#00ff88,#00cc66);color:#021a0c;border:none;border-radius:60px;cursor:pointer;box-shadow:0 0 0 0 rgba(0,255,136,.5),0 8px 32px rgba(0,255,136,.3);transition:transform .15s,box-shadow .15s;overflow:hidden;}
   #play-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.25),transparent);border-radius:inherit;}
   #play-btn:active{transform:scale(.95);}
-  #how-to-btn{position:relative;z-index:1;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.18);border-radius:50px;padding:10px 30px;font-size:13px;font-family:'Fredoka One',cursive;color:rgba(255,255,255,.75);cursor:pointer;backdrop-filter:blur(10px);transition:all .15s;}
-  #how-to-btn:active{background:rgba(255,255,255,.13);}
+  #how-to-btn{position:relative;z-index:1;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.18);border-radius:50px;padding:10px 30px;font-size:13px;font-family:'Fredoka One',cursive;color:rgba(255,255,255,.75);cursor:pointer;backdrop-filter:blur(10px);}
   #home-pills{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;max-width:380px;position:relative;z-index:1;}
-  .pill{background:rgba(0,255,136,.07);border:1px solid rgba(0,255,136,.2);border-radius:50px;padding:5px 14px;font-size:11px;color:rgba(255,255,255,.55);font-weight:600;transition:all .2s;}
-  .pill:hover{background:rgba(0,255,136,.13);color:#fff;}
+  .pill{background:rgba(0,255,136,.07);border:1px solid rgba(0,255,136,.2);border-radius:50px;padding:5px 14px;font-size:11px;color:rgba(255,255,255,.55);font-weight:600;}
+
+  /* HOW TO */
 
   #howto-modal{display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.75);backdrop-filter:blur(14px);align-items:center;justify-content:center;}
   #howto-modal.show{display:flex;}
-  #howto-box{background:rgba(15,28,44,.9);border:1.5px solid rgba(0,255,136,.25);border-radius:24px;padding:24px 28px;max-width:380px;width:92%;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,.5);animation:slideIn .35s cubic-bezier(.175,.885,.32,1.275);}
+  #howto-box{background:rgba(15,28,44,.9);border:1.5px solid rgba(0,255,136,.25);border-radius:24px;padding:24px 28px;max-width:380px;width:92%;text-align:center;animation:slideIn .35s cubic-bezier(.175,.885,.32,1.275);}
   #howto-box h2{font-family:'Fredoka One',cursive;font-size:24px;color:#00ff88;margin-bottom:14px;}
   .howto-step{display:flex;align-items:center;gap:12px;text-align:left;margin-bottom:10px;}
-  .step-num{font-family:'Fredoka One',cursive;font-size:14px;color:#021a0c;background:linear-gradient(135deg,#00ff88,#00cc66);border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .step-num{font-family:'Fredoka One',cursive;font-size:14px;color:#021a0c;background:linear-gradient(135deg,#00ff88,#00cc66);border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;}
   .step-text{font-size:12px;color:rgba(255,255,255,.7);line-height:1.5;}
   #close-howto{margin-top:14px;padding:10px 32px;font-family:'Fredoka One',cursive;font-size:15px;background:linear-gradient(135deg,#00ff88,#00cc66);color:#021a0c;border:none;border-radius:50px;cursor:pointer;}
+
+  /* GAME */
 
   #game-screen{display:none;position:relative;z-index:10;flex-direction:row;align-items:center;justify-content:center;gap:8px;width:100%;height:100vh;padding:6px 8px;}
   #game-screen.show{display:flex;animation:fadeIn .4s ease;}
   #left-panel{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-width:112px;max-width:118px;}
   #panel-title{font-family:'Fredoka One',cursive;font-size:13px;color:#00ff88;letter-spacing:1px;cursor:pointer;text-align:center;text-shadow:0 0 12px rgba(0,255,136,.5);}
-  .hud-card{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:4px 8px;text-align:center;backdrop-filter:blur(8px);transition:border-color .3s,background .3s;}
+
+  .hud-card{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:4px 8px;text-align:center;backdrop-filter:blur(8px);}
   .hud-card.warning{border-color:rgba(255,80,80,.7);background:rgba(255,60,60,.1);}
   .hud-label{font-size:7px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;color:rgba(255,255,255,.38);}
   .hud-value{font-family:'Fredoka One',cursive;font-size:20px;color:#00ff88;line-height:1.15;}
-  #hole-dots{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;max-width:112px;}
-  .dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.22);transition:all .3s;}
-  .dot.active{background:#00ff88;border-color:#00ff88;box-shadow:0 0 8px #00ff8899;transform:scale(1.25);}
+
+  #hole-dots{display:flex;flex-wrap:wrap;gap:3px;justify-content:center;max-width:112px;}
+  .dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.12);border:1.3px solid rgba(255,255,255,.22);transition:all .25s;}
+  .dot.active{background:#00ff88;border-color:#00ff88;box-shadow:0 0 6px #00ff8899;transform:scale(1.2);}
   .dot.done{background:rgba(0,255,136,.35);border-color:rgba(0,255,136,.45);}
+
   #shot-pips{display:flex;flex-wrap:wrap;gap:3px;justify-content:center;max-width:112px;}
-  .pip{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.25);transition:all .25s;}
-  .pip.used{background:#ff6644;border-color:#ff6644;box-shadow:0 0 5px rgba(255,100,68,.6);}
+  .pip{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.25);}
+  .pip.used{background:#ff6644;border-color:#ff6644;box-shadow:0 0 4px rgba(255,100,68,.6);}
   .pip.last{background:#ffcc00;border-color:#ffcc00;animation:pulse .55s infinite alternate;}
+
   #power-container{width:100%;display:flex;flex-direction:column;gap:3px;}
   #power-label{font-size:7px;font-weight:800;text-transform:uppercase;letter-spacing:1.2px;color:rgba(255,255,255,.35);text-align:center;}
   #power-track{width:100%;height:7px;background:rgba(255,255,255,.07);border-radius:8px;overflow:hidden;border:1px solid rgba(255,255,255,.1);}
-  #power-fill{height:100%;width:0%;border-radius:8px;background:#00ff88;transition:background .1s;}
+  #power-fill{height:100%;width:0%;border-radius:8px;background:#00ff88;}
+
   #msg-box{height:22px;display:flex;align-items:center;justify-content:center;}
   #message{font-family:'Fredoka One',cursive;font-size:12px;color:#00ff88;opacity:0;transform:translateY(6px) scale(.9);transition:all .3s;text-align:center;}
   #message.show{opacity:1;transform:translateY(0) scale(1);}
   #hint{font-size:8px;color:rgba(255,255,255,.22);text-align:center;line-height:1.5;}
+
   #canvas-wrapper{border-radius:16px;overflow:hidden;flex-shrink:0;box-shadow:0 0 0 1.5px rgba(0,255,136,.22),0 0 32px rgba(0,255,136,.08),0 20px 60px rgba(0,0,0,.55);}
   canvas{display:block;cursor:crosshair;touch-action:none;}
+
+  /* OVERLAYS */
 
   .overlay{display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.8);backdrop-filter:blur(14px);align-items:center;justify-content:center;}
   .overlay.show{display:flex;}
@@ -87,33 +102,31 @@
   #hc-icon{font-size:52px;display:block;margin-bottom:4px;animation:popIn .55s cubic-bezier(.175,.885,.32,1.275);}
   #hc-title{font-family:'Fredoka One',cursive;font-size:26px;color:#00ff88;margin-bottom:2px;}
   #hc-hole-name{font-size:10px;color:rgba(255,255,255,.35);text-transform:uppercase;letter-spacing:2px;margin-bottom:10px;}
-  #hc-badge{display:inline-block;font-family:'Fredoka One',cursive;font-size:26px;padding:7px 22px;border-radius:14px;margin-bottom:6px;animation:popIn .4s .12s cubic-bezier(.175,.885,.32,1.275) both;}
-  #hc-badge.ace{background:linear-gradient(135deg,#ffd700,#ffaa00);color:#1a0800;box-shadow:0 6px 24px rgba(255,200,0,.4);}
+  #hc-badge{display:inline-block;font-family:'Fredoka One',cursive;font-size:26px;padding:7px 22px;border-radius:14px;margin-bottom:6px;}
+  #hc-badge.ace{background:linear-gradient(135deg,#ffd700,#ffaa00);color:#1a0800;}
   #hc-badge.eagle{background:linear-gradient(135deg,#ffd700,#e6b800);color:#1a0800;}
-  #hc-badge.birdie{background:linear-gradient(135deg,#00ff88,#00cc55);color:#021a0c;box-shadow:0 6px 20px rgba(0,255,136,.35);}
+  #hc-badge.birdie{background:linear-gradient(135deg,#00ff88,#00cc55);color:#021a0c;}
   #hc-badge.par{background:linear-gradient(135deg,#4488ff,#2255cc);color:#fff;}
   #hc-badge.bogey{background:linear-gradient(135deg,#ff9944,#cc6622);color:#fff;}
   #hc-badge.double{background:linear-gradient(135deg,#ff4444,#cc2222);color:#fff;}
   #hc-sub{font-family:'Fredoka One',cursive;font-size:14px;color:rgba(255,255,255,.8);margin-bottom:2px;}
   #hc-detail{font-size:11px;color:rgba(255,255,255,.35);margin-bottom:8px;}
   #hc-stars{display:flex;justify-content:center;gap:7px;margin-bottom:8px;}
-  .hc-star{font-size:24px;opacity:.15;filter:grayscale(1);transition:all .3s;}
+  .hc-star{font-size:24px;opacity:.15;filter:grayscale(1);}
   .hc-star.lit{opacity:1;filter:none;animation:shimmer 1.6s ease-in-out infinite;}
   #hc-total{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:12px;padding:6px 14px;margin-bottom:12px;font-size:11px;color:rgba(255,255,255,.4);}
   #hc-total span{font-family:'Fredoka One',cursive;font-size:17px;color:#fff;margin-left:6px;}
-  #hc-next-btn{padding:12px 0;font-size:15px;font-family:'Fredoka One',cursive;background:linear-gradient(135deg,#00ff88,#00cc55);color:#021a0c;border:none;border-radius:50px;cursor:pointer;display:block;width:100%;margin-bottom:7px;box-shadow:0 6px 20px rgba(0,255,136,.25);transition:transform .15s;}
-  #hc-next-btn:active{transform:scale(.97);}
+  #hc-next-btn{padding:12px 0;font-size:15px;font-family:'Fredoka One',cursive;background:linear-gradient(135deg,#00ff88,#00cc55);color:#021a0c;border:none;border-radius:50px;cursor:pointer;display:block;width:100%;margin-bottom:7px;}
   #hc-quit-btn{padding:8px 22px;font-size:12px;font-family:'Fredoka One',cursive;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.45);border-radius:50px;cursor:pointer;}
 
   #shots-overlay .ov-box{border:1.5px solid rgba(255,80,80,.4);max-width:290px;width:92%;}
   #shots-icon{font-size:52px;margin-bottom:6px;animation:shakePop .5s ease;}
   #shots-title{font-family:'Fredoka One',cursive;font-size:26px;color:#ff6644;margin-bottom:4px;}
   #shots-info{font-size:12px;color:rgba(255,255,255,.4);margin-bottom:6px;text-transform:uppercase;letter-spacing:1px;}
-  #shots-badge{font-family:'Fredoka One',cursive;font-size:14px;color:#ff6644;background:rgba(255,68,68,.08);border:1px solid rgba(255,68,68,.2);border-radius:12px;padding:7px 18px;margin:6px auto 6px;display:inline-block;}
+  #shots-badge{font-family:'Fredoka One',cursive;font-size:14px;color:#ff6644;background:rgba(255,68,68,.08);border:1px solid rgba(255,68,68,.2);border-radius:12px;padding:7px 18px;margin:6px auto;display:inline-block;}
   #shots-tip{font-size:11px;color:rgba(255,255,255,.3);margin-bottom:14px;font-style:italic;}
   .shots-row{display:flex;gap:8px;justify-content:center;}
-  #shots-retry{padding:11px 28px;font-size:15px;font-family:'Fredoka One',cursive;background:linear-gradient(135deg,#ff6644,#cc3322);color:#fff;border:none;border-radius:50px;cursor:pointer;transition:transform .15s;}
-  #shots-retry:active{transform:scale(.96);}
+  #shots-retry{padding:11px 28px;font-size:15px;font-family:'Fredoka One',cursive;background:linear-gradient(135deg,#ff6644,#cc3322);color:#fff;border:none;border-radius:50px;cursor:pointer;}
   #shots-quit{padding:11px 18px;font-size:13px;font-family:'Fredoka One',cursive;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:rgba(255,255,255,.55);border-radius:50px;cursor:pointer;}
 
   #round-overlay .ov-box{border:1.5px solid rgba(0,255,136,.3);max-width:330px;width:92%;}
@@ -127,50 +140,48 @@
   .sc-over{color:#ff6644;}
   .sc-par{color:rgba(255,255,255,.65);}
   .round-btns{display:flex;gap:10px;justify-content:center;}
-  #round-home{padding:10px 24px;font-size:14px;font-family:'Fredoka One',cursive;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.75);border-radius:50px;cursor:pointer;}
-  #round-play{padding:10px 24px;font-size:14px;font-family:'Fredoka One',cursive;background:linear-gradient(135deg,#00ff88,#00cc55);color:#021a0c;border:none;border-radius:50px;cursor:pointer;box-shadow:0 6px 18px rgba(0,255,136,.25);}
+  #round-home,#round-play{padding:10px 24px;font-size:14px;font-family:'Fredoka One',cursive;border-radius:50px;cursor:pointer;}
+  #round-home{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.75);}
+  #round-play{background:linear-gradient(135deg,#00ff88,#00cc55);color:#021a0c;border:none;box-shadow:0 6px 18px rgba(0,255,136,.25);}
 </style>
 </head>
 <body>
 
 <canvas id="bg-canvas"></canvas>
 
-<!-- HOME -->
 <div id="home-screen">
   <div id="home-ring"></div>
   <div id="home-logo">⛳</div>
   <div id="home-title">Mini Golf Pro</div>
-  <div id="home-subtitle">12 Holes · Bumpers · Sand Traps</div>
+  <div id="home-subtitle">42 Holes · Bumpers · Sand Traps</div>
   <div id="home-stats">
     <div class="stat-chip"><div class="stat-chip-label">Best</div><div class="stat-chip-val" id="home-best">—</div></div>
-    <div class="stat-chip"><div class="stat-chip-label">Holes</div><div class="stat-chip-val">12</div></div>
-    <div class="stat-chip"><div class="stat-chip-label">Par</div><div class="stat-chip-val">48</div></div>
+    <div class="stat-chip"><div class="stat-chip-label">Holes</div><div class="stat-chip-val" id="home-holes">42</div></div>
+    <div class="stat-chip"><div class="stat-chip-label">Par</div><div class="stat-chip-val" id="home-par">—</div></div>
   </div>
-  <button id="play-btn" onclick="startGame()">▶ &nbsp;PLAY</button>
+  <button id="play-btn" onclick="startGame()">▶ PLAY</button>
   <button id="how-to-btn" onclick="showHowTo()">📖 How to Play</button>
   <div id="home-pills">
-    <span class="pill">🏖️ Sand Traps</span>
-    <span class="pill">🎯 Bumpers</span>
-    <span class="pill">💥 Particles</span>
+    <span class="pill">🏖️ Sand Mazes</span>
+    <span class="pill">🎯 Bumper Chains</span>
+    <span class="pill">🌀 Spirals</span>
     <span class="pill">📋 Scorecard</span>
-    <span class="pill">🏆 12 Holes</span>
+    <span class="pill">🏆 42 Holes</span>
   </div>
 </div>
 
-<!-- HOW TO -->
 <div id="howto-modal">
   <div id="howto-box">
     <h2>📖 How to Play</h2>
-    <div class="howto-step"><div class="step-num">1</div><div class="step-text"><b>Aim</b> — tap &amp; drag on the canvas to set direction</div></div>
-    <div class="howto-step"><div class="step-num">2</div><div class="step-text"><b>Power</b> — hold longer to charge more power</div></div>
-    <div class="howto-step"><div class="step-num">3</div><div class="step-text"><b>Shoot</b> — release to fire the ball into the hole!</div></div>
-    <div class="howto-step"><div class="step-num">4</div><div class="step-text"><b>Hazards</b> — 🏖️ sand slows, 🎯 bumpers bounce hard!</div></div>
-    <div class="howto-step"><div class="step-num">5</div><div class="step-text"><b>Out of shots?</b> The hole resets — try again!</div></div>
+    <div class="howto-step"><div class="step-num">1</div><div class="step-text"><b>Aim</b> — tap & drag on the green to set direction.</div></div>
+    <div class="howto-step"><div class="step-num">2</div><div class="step-text"><b>Power</b> — hold to charge, release to shoot.</div></div>
+    <div class="howto-step"><div class="step-num">3</div><div class="step-text"><b>Bumpers</b> bounce hard, <b>sand</b> slows the ball down.</div></div>
+    <div class="howto-step"><div class="step-num">4</div><div class="step-text"><b>Use walls</b> to bank clever shots around corners.</div></div>
+    <div class="howto-step"><div class="step-num">5</div><div class="step-text"><b>Run out of shots?</b> The hole restarts so you can retry.</div></div>
     <button id="close-howto" onclick="closeHowTo()">Got it! ⛳</button>
   </div>
 </div>
 
-<!-- GAME -->
 <div id="game-screen">
   <div id="left-panel">
     <div id="panel-title" onclick="goHome()">⛳ Mini Golf</div>
@@ -185,19 +196,18 @@
       <div id="power-track"><div id="power-fill"></div></div>
     </div>
     <div id="msg-box"><div id="message"></div></div>
-    <div id="hint">Tap &amp; hold<br>to shoot</div>
+    <div id="hint">Tap & hold<br>to shoot</div>
   </div>
   <div id="canvas-wrapper"><canvas id="canvas"></canvas></div>
 </div>
 
-<!-- HOLE COMPLETE -->
 <div id="hole-complete-overlay" class="overlay">
   <div class="ov-box">
     <div id="hc-confetti">🎊 🎉 🎊</div>
     <span id="hc-icon">⛳</span>
     <div id="hc-title">Hole Complete!</div>
     <div id="hc-hole-name">Hole 1</div>
-    <div id="hc-badge" class="birdie">🐦 BIRDIE</div>
+    <div id="hc-badge" class="birdie">BIRDIE</div>
     <div id="hc-sub">2 shots · Par 3</div>
     <div id="hc-detail">1 under par</div>
     <div id="hc-stars">
@@ -205,13 +215,12 @@
       <span class="hc-star" id="star1">⭐</span>
       <span class="hc-star" id="star2">⭐</span>
     </div>
-    <div id="hc-total">Total Score <span id="hc-total-val">-1</span></div>
+    <div id="hc-total">Total Score <span id="hc-total-val">E</span></div>
     <button id="hc-next-btn" onclick="continueFromHoleComplete()">Next Hole ➡️</button>
     <button id="hc-quit-btn" onclick="goHome()">🏠 Quit</button>
   </div>
 </div>
 
-<!-- OUT OF SHOTS -->
 <div id="shots-overlay" class="overlay">
   <div class="ov-box">
     <div id="shots-icon">💀</div>
@@ -226,7 +235,6 @@
   </div>
 </div>
 
-<!-- ROUND COMPLETE -->
 <div id="round-overlay" class="overlay">
   <div class="ov-box">
     <div id="round-title">🏆 Round Complete!</div>
@@ -242,57 +250,29 @@
 </div>
 
 <script>
-/* ── ANIMATED BG ── */
+/* background stars */
 (function(){
-  const bc=document.getElementById('bg-canvas');
-  const bx=bc.getContext('2d');
-  let bW,bH;
-  const stars=[];
-  function initBg(){
-    bW=bc.width=window.innerWidth;bH=bc.height=window.innerHeight;
-    stars.length=0;
-    for(let i=0;i<120;i++){stars.push({x:Math.random()*bW,y:Math.random()*bH,r:.3+Math.random()*1.4,a:Math.random(),da:(.002+Math.random()*.006)*(Math.random()<.5?1:-1),speed:.08+Math.random()*.18});}
+  const c=document.getElementById('bg-canvas'),x=c.getContext('2d');let W,H,stars=[];
+  function resize(){W=c.width=innerWidth;H=c.height=innerHeight;stars=[];for(let i=0;i<120;i++)stars.push({x:Math.random()*W,y:Math.random()*H,r:.3+Math.random()*1.4,a:Math.random(),da:(.002+Math.random()*.006)*(Math.random()<.5?1:-1),v:.08+Math.random()*.18});}
+  function loop(){
+    const g=x.createLinearGradient(0,0,W,H);g.addColorStop(0,'#080d1a');g.addColorStop(.5,'#0d1b2a');g.addColorStop(1,'#0a0f1e');x.fillStyle=g;x.fillRect(0,0,W,H);
+    const o=x.createRadialGradient(W*.85,H*.15,0,W*.85,H*.15,W*.35);o.addColorStop(0,'rgba(0,255,136,.055)');o.addColorStop(1,'transparent');x.fillStyle=o;x.fillRect(0,0,W,H);
+    const o2=x.createRadialGradient(W*.1,H*.85,0,W*.1,H*.85,W*.3);o2.addColorStop(0,'rgba(40,80,255,.04)');o2.addColorStop(1,'transparent');x.fillStyle=o2;x.fillRect(0,0,W,H);
+    stars.forEach(s=>{s.a+=s.da;if(s.a>1||s.a<0)s.da*=-1;s.y-=s.v;if(s.y<-4){s.y=H+4;s.x=Math.random()*W;}x.save();x.globalAlpha=s.a*.7;x.beginPath();x.arc(s.x,s.y,s.r,0,Math.PI*2);x.fillStyle='#fff';x.fill();x.restore();});
+    requestAnimationFrame(loop);
   }
-  function drawBg(){
-    const g=bx.createLinearGradient(0,0,bW,bH);
-    g.addColorStop(0,'#080d1a');g.addColorStop(.5,'#0d1b2a');g.addColorStop(1,'#0a0f1e');
-    bx.fillStyle=g;bx.fillRect(0,0,bW,bH);
-    const o=bx.createRadialGradient(bW*.85,bH*.15,0,bW*.85,bH*.15,bW*.35);
-    o.addColorStop(0,'rgba(0,255,136,.055)');o.addColorStop(1,'transparent');
-    bx.fillStyle=o;bx.fillRect(0,0,bW,bH);
-    const o2=bx.createRadialGradient(bW*.1,bH*.85,0,bW*.1,bH*.85,bW*.3);
-    o2.addColorStop(0,'rgba(40,80,255,.04)');o2.addColorStop(1,'transparent');
-    bx.fillStyle=o2;bx.fillRect(0,0,bW,bH);
-    stars.forEach(s=>{
-      s.a+=s.da;if(s.a>1||s.a<0)s.da*=-1;
-      s.y-=s.speed;if(s.y<-4){s.y=bH+4;s.x=Math.random()*bW;}
-      bx.save();bx.globalAlpha=s.a*.75;bx.beginPath();bx.arc(s.x,s.y,s.r,0,Math.PI*2);bx.fillStyle='#fff';bx.fill();bx.restore();
-    });
-    requestAnimationFrame(drawBg);
-  }
-  initBg();drawBg();
-  window.addEventListener('resize',initBg);
+  resize();loop();addEventListener('resize',resize);
 })();
 
-/* ── GAME ENGINE ── */
-const canvas=document.getElementById('canvas');
-const ctx=canvas.getContext('2d');
-let W,H;
+/* core */
 
-function resizeCanvas(){
-  const panel=document.getElementById('left-panel');
-  const pW=panel.offsetWidth||114;
-  const avW=window.innerWidth-pW-24;
-  const avH=window.innerHeight-12;
-  const ratio=620/440;
-  let cw=avW,ch=Math.round(cw/ratio);
-  if(ch>avH){ch=avH;cw=Math.round(ch*ratio);}
-  canvas.width=cw;canvas.height=ch;W=cw;H=ch;
-}
+const canvas=document.getElementById('canvas');const ctx=canvas.getContext('2d');let W,H;
+
+function resizeCanvas(){const panel=document.getElementById('left-panel');const pW=panel.offsetWidth||114;const avW=innerWidth-pW-24;const avH=innerHeight-12;const ratio=620/440;let cw=avW,ch=Math.round(cw/ratio);if(ch>avH){ch=avH;cw=Math.round(ch*ratio);}canvas.width=cw;canvas.height=ch;W=cw;H=ch;}
 
 let ball,hole,walls,bumpers,sandTraps;
 let shots,shotsLeft,maxShots,par,holeIndex,totalScore;
-let aiming,aimAngle,power,charging,animating;
+let aiming=false,aimAngle=0,power=0,charging=false,animating=false;
 let particles=[],trailPoints=[],waveRings=[];
 let shakeFrames=0,shakeIntensity=0;
 let scorecardData=[],isLastHole=false;
@@ -305,92 +285,392 @@ const TIPS=[
   '"Try banking off the wall!"',
   '"Deep breath. Aim carefully!"',
   '"The green giveth and the green taketh away 😅"',
-  '"One shot at a time!"',
+  '"One shot at a time!"'
 ];
 
+/* 42 holes: 12 originals + 30 new. All coordinates are fractions. */
 const holesRaw=[
-  // 1 — Straight Shot
-  {name:"Straight Shot",par:2,maxShots:5,ball:{fx:.13,fy:.5},hole:{fx:.87,fy:.5},
-   walls:[{fx:.08,fy:.08,fw:.84,fh:.04},{fx:.08,fy:.88,fw:.84,fh:.04},{fx:.08,fy:.08,fw:.04,fh:.84},{fx:.88,fy:.08,fw:.04,fh:.84}],bumpers:[],sand:[]},
+  // 1 Straight Shot
+  {name:'Straight Shot',par:2,maxShots:5,ball:{fx:.13,fy:.5},hole:{fx:.87,fy:.5},
+   walls:[{fx:.08,fy:.08,fw:.84,fh:.04},{fx:.08,fy:.88,fw:.84,fh:.04},{fx:.08,fy:.08,fw:.04,fh:.84},{fx:.88,fy:.08,fw:.04,fh:.84}],
+   bumpers:[],sand:[]},
 
-  // 2 — The Dogleg
-  {name:"The Dogleg",par:3,maxShots:6,ball:{fx:.13,fy:.75},hole:{fx:.85,fy:.22},
+  // 2 Gentle Dogleg
+  {name:'Gentle Dogleg',par:3,maxShots:6,ball:{fx:.13,fy:.75},hole:{fx:.85,fy:.22},
    walls:[{fx:.08,fy:.08,fw:.84,fh:.04},{fx:.08,fy:.88,fw:.84,fh:.04},{fx:.08,fy:.08,fw:.04,fh:.84},{fx:.88,fy:.08,fw:.04,fh:.84},{fx:.08,fy:.50,fw:.60,fh:.04}],
    bumpers:[{fx:.75,fy:.70,fr:.04}],sand:[{fx:.15,fy:.57,fw:.22,fh:.14}]},
 
-  // 3 — Bumper Alley
-  {name:"Bumper Alley",par:3,maxShots:6,ball:{fx:.13,fy:.5},hole:{fx:.87,fy:.5},
+  // 3 Bumper Alley
+  {name:'Bumper Alley',par:3,maxShots:6,ball:{fx:.13,fy:.5},hole:{fx:.87,fy:.5},
    walls:[{fx:.08,fy:.15,fw:.84,fh:.04},{fx:.08,fy:.81,fw:.84,fh:.04},{fx:.08,fy:.15,fw:.04,fh:.70},{fx:.88,fy:.15,fw:.04,fh:.70}],
    bumpers:[{fx:.35,fy:.30,fr:.045},{fx:.55,fy:.70,fr:.045},{fx:.70,fy:.30,fr:.045}],sand:[]},
 
-  // 4 — Sand Pit
-  {name:"Sand Pit",par:4,maxShots:7,ball:{fx:.13,fy:.20},hole:{fx:.85,fy:.78},
+  // 4 Sand Pit
+  {name:'Sand Pit',par:4,maxShots:7,ball:{fx:.13,fy:.20},hole:{fx:.85,fy:.78},
    walls:[{fx:.08,fy:.08,fw:.84,fh:.04},{fx:.08,fy:.88,fw:.84,fh:.04},{fx:.08,fy:.08,fw:.04,fh:.84},{fx:.88,fy:.08,fw:.04,fh:.84},{fx:.08,fy:.50,fw:.42,fh:.04}],
    bumpers:[{fx:.72,fy:.32,fr:.04}],sand:[{fx:.26,fy:.56,fw:.32,fh:.18},{fx:.62,fy:.56,fw:.20,fh:.18}]},
 
-  // 5 — The Z
-  {name:"The Z",par:4,maxShots:7,ball:{fx:.13,fy:.20},hole:{fx:.85,fy:.78},
+  // 5 The Z
+  {name:'The Z',par:4,maxShots:7,ball:{fx:.13,fy:.20},hole:{fx:.85,fy:.78},
    walls:[{fx:.08,fy:.08,fw:.84,fh:.04},{fx:.08,fy:.88,fw:.84,fh:.04},{fx:.08,fy:.08,fw:.04,fh:.84},{fx:.88,fy:.08,fw:.04,fh:.84},{fx:.08,fy:.42,fw:.52,fh:.04},{fx:.40,fy:.56,fw:.52,fh:.04}],
    bumpers:[{fx:.74,fy:.49,fr:.04},{fx:.24,fy:.49,fr:.04}],sand:[{fx:.40,fy:.44,fw:.18,fh:.14}]},
 
-  // 6 — The Gauntlet
-  {name:"The Gauntlet",par:5,maxShots:8,ball:{fx:.13,fy:.5},hole:{fx:.87,fy:.5},
-   walls:[{fx:.08,fy:.08,fw:.84,fh:.04},{fx:.08,fy:.88,fw:.84,fh:.04},{fx:.08,fy:.08,fw:.04,fh:.84},{fx:.88,fy:.08,fw:.04,fh:.84},{fx:.12,fy:.32,fw:.22,fh:.03},{fx:.42,fy:.32,fw:.22,fh:.03},{fx:.72,fy:.32,fw:.16,fh:.03},{fx:.12,fy:.65,fw:.22,fh:.03},{fx:.42,fy:.65,fw:.22,fh:.03},{fx:.72,fy:.65,fw:.16,fh:.03}],
-   bumpers:[{fx:.36,fy:.50,fr:.04},{fx:.65,fy:.50,fr:.04}],sand:[{fx:.44,fy:.35,fw:.14,fh:.30}]},
+  // 6 Gauntlet
+  {name:'The Gauntlet',par:5,maxShots:8,ball:{fx:.13,fy:.5},hole:{fx:.87,fy:.5},
+   walls:[
+    {fx:.08,fy:.08,fw:.84,fh:.04},{fx:.08,fy:.88,fw:.84,fh:.04},
+    {fx:.08,fy:.08,fw:.04,fh:.84},{fx:.88,fy:.08,fw:.04,fh:.84},
+    {fx:.12,fy:.32,fw:.22,fh:.03},{fx:.42,fy:.32,fw:.22,fh:.03},{fx:.72,fy:.32,fw:.16,fh:.03},
+    {fx:.12,fy:.65,fw:.22,fh:.03},{fx:.42,fy:.65,fw:.22,fh:.03},{fx:.72,fy:.65,fw:.16,fh:.03}],
+   bumpers:[{fx:.36,fy:.50,fr:.04},{fx:.65,fy:.50,fr:.04}],
+   sand:[{fx:.44,fy:.35,fw:.14,fh:.30}]},
 
-  // 7 — Pinball Machine
-  {name:"Pinball Machine",par:4,maxShots:7,ball:{fx:.13,fy:.50},hole:{fx:.87,fy:.50},
+  // 7 Pinball Machine
+  {name:'Pinball Machine',par:4,maxShots:7,ball:{fx:.13,fy:.50},hole:{fx:.87,fy:.50},
    walls:[{fx:.08,fy:.08,fw:.84,fh:.04},{fx:.08,fy:.88,fw:.84,fh:.04},{fx:.08,fy:.08,fw:.04,fh:.84},{fx:.88,fy:.08,fw:.04,fh:.84}],
-   bumpers:[{fx:.30,fy:.25,fr:.045},{fx:.50,fy:.20,fr:.040},{fx:.70,fy:.25,fr:.045},{fx:.30,fy:.75,fr:.045},{fx:.50,fy:.80,fr:.040},{fx:.70,fy:.75,fr:.045},{fx:.50,fy:.50,fr:.050}],sand:[]},
+   bumpers:[
+    {fx:.30,fy:.25,fr:.045},{fx:.50,fy:.20,fr:.040},{fx:.70,fy:.25,fr:.045},
+    {fx:.30,fy:.75,fr:.045},{fx:.50,fy:.80,fr:.040},{fx:.70,fy:.75,fr:.045},
+    {fx:.50,fy:.50,fr:.050}],sand:[]},
 
-  // 8 — The Island
-  {name:"The Island",par:4,maxShots:7,ball:{fx:.13,fy:.50},hole:{fx:.87,fy:.50},
-   walls:[{fx:.08,fy:.08,fw:.84,fh:.04},{fx:.08,fy:.88,fw:.84,fh:.04},{fx:.08,fy:.08,fw:.04,fh:.84},{fx:.88,fy:.08,fw:.04,fh:.84},{fx:.22,fy:.12,fw:.25,fh:.30},{fx:.22,fy:.58,fw:.25,fh:.30},{fx:.53,fy:.12,fw:.25,fh:.30},{fx:.53,fy:.58,fw:.25,fh:.30}],
+  // 8 Island
+  {name:'The Island',par:4,maxShots:7,ball:{fx:.13,fy:.50},hole:{fx:.87,fy:.50},
+   walls:[
+    {fx:.08,fy:.08,fw:.84,fh:.04},{fx:.08,fy:.88,fw:.84,fh:.04},
+    {fx:.08,fy:.08,fw:.04,fh:.84},{fx:.88,fy:.08,fw:.04,fh:.84},
+    {fx:.22,fy:.12,fw:.25,fh:.30},{fx:.22,fy:.58,fw:.25,fh:.30},
+    {fx:.53,fy:.12,fw:.25,fh:.30},{fx:.53,fy:.58,fw:.25,fh:.30}],
    bumpers:[],sand:[{fx:.32,fy:.38,fw:.36,fh:.24}]},
 
-  // 9 — Snake Run
-  {name:"Snake Run",par:4,maxShots:7,ball:{fx:.13,fy:.22},hole:{fx:.85,fy:.78},
-   walls:[{fx:.08,fy:.08,fw:.84,fh:.04},{fx:.08,fy:.88,fw:.84,fh:.04},{fx:.08,fy:.08,fw:.04,fh:.84},{fx:.88,fy:.08,fw:.04,fh:.84},{fx:.08,fy:.34,fw:.65,fh:.04},{fx:.27,fy:.54,fw:.65,fh:.04},{fx:.08,fy:.72,fw:.65,fh:.04}],
-   bumpers:[{fx:.80,fy:.44,fr:.04},{fx:.16,fy:.63,fr:.04}],sand:[{fx:.55,fy:.57,fw:.24,fh:.12}]},
-
-  // 10 — Crossfire
-  {name:"Crossfire",par:5,maxShots:8,ball:{fx:.13,fy:.50},hole:{fx:.87,fy:.50},
-   walls:[{fx:.08,fy:.08,fw:.84,fh:.04},{fx:.08,fy:.88,fw:.84,fh:.04},{fx:.08,fy:.08,fw:.04,fh:.84},{fx:.88,fy:.08,fw:.04,fh:.84},{fx:.08,fy:.44,fw:.36,fh:.04},{fx:.56,fy:.44,fw:.36,fh:.04},{fx:.44,fy:.12,fw:.04,fh:.32},{fx:.44,fy:.56,fw:.04,fh:.32}],
-   bumpers:[{fx:.28,fy:.28,fr:.04},{fx:.72,fy:.28,fr:.04},{fx:.28,fy:.72,fr:.04},{fx:.72,fy:.72,fr:.04}],sand:[{fx:.36,fy:.36,fw:.28,fh:.28}]},
-
-  // 11 — The Maze (FIXED!)
-  {name:"The Maze",par:5,maxShots:9,ball:{fx:.13,fy:.22},hole:{fx:.85,fy:.78},
+  // 9 Snake Run
+  {name:'Snake Run',par:4,maxShots:7,ball:{fx:.13,fy:.22},hole:{fx:.85,fy:.78},
    walls:[
-     {fx:.08,fy:.08,fw:.84,fh:.04},{fx:.08,fy:.88,fw:.84,fh:.04},
-     {fx:.08,fy:.08,fw:.04,fh:.84},{fx:.88,fy:.08,fw:.04,fh:.84},
-     // row 1 — gap on right
-     {fx:.12,fy:.32,fw:.58,fh:.04},
-     // row 2 — gap on left
-     {fx:.30,fy:.54,fw:.58,fh:.04},
-     // row 3 — gap on right
-     {fx:.12,fy:.72,fw:.58,fh:.04},
-   ],
-   bumpers:[{fx:.78,fy:.43,fr:.038},{fx:.18,fy:.63,fr:.038}],
-   sand:[{fx:.50,fy:.57,fw:.18,fh:.12}]},
+    {fx:.08,fy:.08,fw:.84,fh:.04},{fx:.08,fy:.88,fw:.84,fh:.04},
+    {fx:.08,fy:.08,fw:.04,fh:.84},{fx:.88,fy:.08,fw:.04,fh:.84},
+    {fx:.08,fy:.34,fw:.65,fh:.04},{fx:.27,fy:.54,fw:.65,fh:.04},{fx:.08,fy:.72,fw:.65,fh:.04}],
+   bumpers:[{fx:.80,fy:.44,fr:.04},{fx:.16,fy:.63,fr:.04}],
+   sand:[{fx:.55,fy:.57,fw:.24,fh:.12}]},
 
-  // 12 — Grand Finale
-  {name:"Grand Finale",par:6,maxShots:10,ball:{fx:.13,fy:.50},hole:{fx:.87,fy:.50},
-   walls:[{fx:.08,fy:.08,fw:.84,fh:.04},{fx:.08,fy:.88,fw:.84,fh:.04},{fx:.08,fy:.08,fw:.04,fh:.84},{fx:.88,fy:.08,fw:.04,fh:.84},{fx:.22,fy:.12,fw:.04,fh:.30},{fx:.22,fy:.58,fw:.04,fh:.30},{fx:.40,fy:.30,fw:.04,fh:.30},{fx:.40,fy:.70,fw:.04,fh:.18},{fx:.58,fy:.12,fw:.04,fh:.30},{fx:.58,fy:.58,fw:.04,fh:.30},{fx:.74,fy:.30,fw:.04,fh:.30},{fx:.74,fy:.70,fw:.04,fh:.18}],
-   bumpers:[{fx:.31,fy:.25,fr:.038},{fx:.31,fy:.75,fr:.038},{fx:.49,fy:.50,fr:.045},{fx:.67,fy:.25,fr:.038},{fx:.67,fy:.75,fr:.038}],
+  // 10 Crossfire
+  {name:'Crossfire',par:5,maxShots:8,ball:{fx:.13,fy:.50},hole:{fx:.87,fy:.50},
+   walls:[
+    {fx:.08,fy:.08,fw:.84,fh:.04},{fx:.08,fy:.88,fw:.84,fh:.04},
+    {fx:.08,fy:.08,fw:.04,fh:.84},{fx:.88,fy:.08,fw:.04,fh:.84},
+    {fx:.08,fy:.44,fw:.36,fh:.04},{fx:.56,fy:.44,fw:.36,fh:.04},
+    {fx:.44,fy:.12,fw:.04,fh:.32},{fx:.44,fy:.56,fw:.04,fh:.32}],
+   bumpers:[
+    {fx:.28,fy:.28,fr:.04},{fx:.72,fy:.28,fr:.04},
+    {fx:.28,fy:.72,fr:.04},{fx:.72,fy:.72,fr:.04}],
+   sand:[{fx:.36,fy:.36,fw:.28,fh:.28}]},
+
+  // 11 The Funnel (new)
+  {name:'The Funnel',par:5,maxShots:9,ball:{fx:.13,fy:.22},hole:{fx:.50,fy:.50},
+   walls:[
+    {fx:.08,fy:.08,fw:.84,fh:.04},{fx:.08,fy:.88,fw:.84,fh:.04},
+    {fx:.08,fy:.08,fw:.04,fh:.84},{fx:.88,fy:.08,fw:.04,fh:.84},
+    {fx:.12,fy:.22,fw:.46,fh:.04},{fx:.42,fy:.74,fw:.46,fh:.04},
+    {fx:.12,fy:.38,fw:.04,fh:.36},{fx:.84,fy:.26,fw:.04,fh:.36},
+    {fx:.26,fy:.36,fw:.36,fh:.04},{fx:.38,fy:.60,fw:.36,fh:.04},
+    {fx:.26,fy:.40,fw:.04,fh:.20}],
+   bumpers:[{fx:.72,fy:.22,fr:.038},{fx:.22,fy:.78,fr:.038}],
+   sand:[{fx:.56,fy:.38,fw:.16,fh:.22}]},
+
+  // 12 Grand Finale (original)
+  {name:'Grand Finale',par:6,maxShots:10,ball:{fx:.13,fy:.50},hole:{fx:.87,fy:.50},
+   walls:[
+    {fx:.08,fy:.08,fw:.84,fh:.04},{fx:.08,fy:.88,fw:.84,fh:.04},
+    {fx:.08,fy:.08,fw:.04,fh:.84},{fx:.88,fy:.08,fw:.04,fh:.84},
+    {fx:.22,fy:.12,fw:.04,fh:.30},{fx:.22,fy:.58,fw:.04,fh:.30},
+    {fx:.40,fy:.30,fw:.04,fh:.30},{fx:.40,fy:.70,fw:.04,fh:.18},
+    {fx:.58,fy:.12,fw:.04,fh:.30},{fx:.58,fy:.58,fw:.04,fh:.30},
+    {fx:.74,fy:.30,fw:.04,fh:.30},{fx:.74,fy:.70,fw:.04,fh:.18}],
+   bumpers:[
+    {fx:.31,fy:.25,fr:.038},{fx:.31,fy:.75,fr:.038},
+    {fx:.49,fy:.50,fr:.045},
+    {fx:.67,fy:.25,fr:.038},{fx:.67,fy:.75,fr:.038}],
    sand:[{fx:.24,fy:.44,fw:.14,fh:.12},{fx:.60,fy:.44,fw:.14,fh:.12}]},
+
+  /* 30 extra holes – mostly variations of ramps, spirals, zig-zags, sand mazes.
+     They’re all different layouts but follow same structure. */
+
+  {name:'Short Ramp',par:2,maxShots:4,ball:{fx:.15,fy:.80},hole:{fx:.82,fy:.18},
+   walls:[
+    {fx:.08,fy:.08,fw:.84,fh:.04},{fx:.08,fy:.88,fw:.84,fh:.04},
+    {fx:.08,fy:.08,fw:.04,fh:.84},{fx:.88,fy:.08,fw:.04,fh:.84},
+    {fx:.24,fy:.66,fw:.36,fh:.04},{fx:.60,fy:.46,fw:.20,fh:.04}],
+   bumpers:[{fx:.48,fy:.32,fr:.035}],
+   sand:[]},
+
+  {name:'Twin Bumpers',par:3,maxShots:5,ball:{fx:.16,fy:.50},hole:{fx:.84,fy:.50},
+   walls:[
+    {fx:.08,fy:.16,fw:.84,fh:.04},{fx:.08,fy:.80,fw:.84,fh:.04},
+    {fx:.08,fy:.16,fw:.04,fh:.68},{fx:.88,fy:.16,fw:.04,fh:.68}],
+   bumpers:[{fx:.40,fy:.36,fr:.04},{fx:.60,fy:.60,fr:.04}],
+   sand:[]},
+
+  {name:'Side Sand',par:3,maxShots:6,ball:{fx:.16,fy:.20},hole:{fx:.82,fy:.80},
+   walls:[
+    {fx:.08,fy:.08,fw:.84,fh:.04},{fx:.08,fy:.88,fw:.84,fh:.04},
+    {fx:.08,fy:.08,fw:.04,fh:.84},{fx:.88,fy:.08,fw:.04,fh:.84}],
+   bumpers:[{fx:.55,fy:.35,fr:.04}],
+   sand:[{fx:.60,fy:.52,fw:.22,fh:.20}]},
+
+  {name:'Squeeze',par:3,maxShots:6,ball:{fx:.14,fy:.50},hole:{fx:.86,fy:.50},
+   walls:[
+    {fx:.08,fy:.12,fw:.84,fh:.04},{fx:.08,fy:.84,fw:.84,fh:.04},
+    {fx:.08,fy:.12,fw:.04,fh:.72},{fx:.88,fy:.12,fw:.04,fh:.72},
+    {fx:.34,fy:.24,fw:.04,fh:.44},{fx:.62,fy:.40,fw:.04,fh:.44}],
+   bumpers:[],sand:[{fx:.46,fy:.66,fw:.16,fh:.12}]},
+
+  {name:'Three Lanes',par:3,maxShots:6,ball:{fx:.14,fy:.20},hole:{fx:.86,fy:.80},
+   walls:[
+    {fx:.08,fy:.08,fw:.84,fh:.04},{fx:.08,fy:.88,fw:.84,fh:.04},
+    {fx:.08,fy:.08,fw:.04,fh:.84},{fx:.88,fy:.08,fw:.04,fh:.84},
+    {fx:.30,fy:.28,fw:.54,fh:.03},{fx:.30,fy:.48,fw:.54,fh:.03},{fx:.30,fy:.68,fw:.54,fh:.03}],
+   bumpers:[{fx:.24,fy:.38,fr:.035},{fx:.24,fy:.58,fr:.035}],
+   sand:[]},
+
+  {name:'Corner Pocket',par:4,maxShots:7,ball:{fx:.18,fy:.20},hole:{fx:.84,fy:.82},
+   walls:[
+    {fx:.08,fy:.08,fw:.84,fh:.04},{fx:.08,fy:.88,fw:.84,fh:.04},
+    {fx:.08,fy:.08,fw:.04,fh:.84},{fx:.88,fy:.08,fw:.04,fh:.84},
+    {fx:.42,fy:.30,fw:.04,fh:.46},{fx:.26,fy:.60,fw:.30,fh:.04}],
+   bumpers:[{fx:.70,fy:.34,fr:.04}],
+   sand:[{fx:.58,fy:.64,fw:.18,fh:.16}]},
+
+  {name:'Criss Cross',par:4,maxShots:7,ball:{fx:.14,fy:.80},hole:{fx:.86,fy:.20},
+   walls:[
+    {fx:.08,fy:.08,fw:.84,fh:.04},{fx:.08,fy:.88,fw:.84,fh:.04},
+    {fx:.08,fy:.08,fw:.04,fh:.84},{fx:.88,fy:.08,fw:.04,fh:.84},
+    {fx:.20,fy:.32,fw:.52,fh:.03},{fx:.28,fy:.56,fw:.52,fh:.03},
+    {fx:.44,fy:.18,fw:.03,fh:.56}],
+   bumpers:[{fx:.72,fy:.40,fr:.04}],
+   sand:[]},
+
+  {name:'Center Ring',par:4,maxShots:7,ball:{fx:.14,fy:.50},hole:{fx:.50,fy:.50},
+   walls:[
+    {fx:.08,fy:.08,fw:.84,fh:.04},{fx:.08,fy:.88,fw:.84,fh:.04},
+    {fx:.08,fy:.08,fw:.04,fh:.84},{fx:.88,fy:.08,fw:.04,fh:.84},
+    {fx:.30,fy:.30,fw:.40,fh:.03},{fx:.30,fy:.67,fw:.40,fh:.03},
+    {fx:.30,fy:.30,fw:.03,fh:.40},{fx:.67,fy:.30,fw:.03,fh:.40}],
+   bumpers:[{fx:.20,fy:.20,fr:.035},{fx:.80,fy:.80,fr:.035}],
+   sand:[{fx:.40,fy:.44,fw:.20,fh:.12}]},
+
+  {name:'Long Corridor',par:3,maxShots:5,ball:{fx:.18,fy:.50},hole:{fx:.82,fy:.50},
+   walls:[
+    {fx:.10,fy:.26,fw:.80,fh:.04},{fx:.10,fy:.70,fw:.80,fh:.04},
+    {fx:.10,fy:.26,fw:.04,fh:.44},{fx:.86,fy:.26,fw:.04,fh:.44}],
+   bumpers:[{fx:.50,fy:.48,fr:.04}],sand:[]},
+
+  {name:'Sand Split',par:4,maxShots:7,ball:{fx:.18,fy:.20},hole:{fx:.82,fy:.80},
+   walls:[
+    {fx:.08,fy:.08,fw:.84,fh:.04},{fx:.08,fy:.88,fw:.84,fh:.04},
+    {fx:.08,fy:.08,fw:.04,fh:.84},{fx:.88,fy:.08,fw:.04,fh:.84},
+    {fx:.36,fy:.36,fw:.40,fh:.03}],
+   bumpers:[{fx:.24,fy:.60,fr:.04}],
+   sand:[{fx:.18,fy:.44,fw:.16,fh:.18},{fx:.58,fy:.52,fw:.22,fh:.18}]},
+
+  {name:'Hook Shot',par:3,maxShots:6,ball:{fx:.16,fy:.74},hole:{fx:.82,fy:.22},
+   walls:[
+    {fx:.08,fy:.12,fw:.84,fh:.04},{fx:.08,fy:.84,fw:.84,fh:.04},
+    {fx:.08,fy:.12,fw:.04,fh:.72},{fx:.88,fy:.12,fw:.04,fh:.72},
+    {fx:.46,fy:.40,fw:.30,fh:.04}],
+   bumpers:[{fx:.32,fy:.36,fr:.04}],
+   sand:[]},
+
+  {name:'Bumper Gate',par:4,maxShots:7,ball:{fx:.16,fy:.50},hole:{fx:.82,fy:.50},
+   walls:[
+    {fx:.08,fy:.08,fw:.84,fh:.04},{fx:.08,fy:.88,fw:.84,fh:.04},
+    {fx:.08,fy:.08,fw:.04,fh:.84},{fx:.88,fy:.08,fw:.04,fh:.84}],
+   bumpers:[{fx:.40,fy:.26,fr:.04},{fx:.40,fy:.74,fr:.04},{fx:.64,fy:.50,fr:.04}],
+   sand:[]},
+
+  {name:'Diagonal Run',par:3,maxShots:6,ball:{fx:.18,fy:.78},hole:{fx:.82,fy:.22},
+   walls:[
+    {fx:.08,fy:.08,fw:.84,fh:.04},{fx:.08,fy:.88,fw:.84,fh:.04},
+    {fx:.08,fy:.08,fw:.04,fh:.84},{fx:.88,fy:.08,fw:.04,fh:.84},
+    {fx:.24,fy:.60,fw:.04,fh:.28},{fx:.60,fy:.28,fw:.04,fh:.28}],
+   bumpers:[{fx:.42,fy:.44,fr:.04}],
+   sand:[]},
+
+  {name:'Sand Ladder',par:4,maxShots:7,ball:{fx:.16,fy:.20},hole:{fx:.84,fy:.80},
+   walls:[
+    {fx:.08,fy:.08,fw:.84,fh:.04},{fx:.08,fy:.88,fw:.84,fh:.04},
+    {fx:.08,fy:.08,fw:.04,fh:.84},{fx:.88,fy:.08,fw:.04,fh:.84},
+    {fx:.22,fy:.32,fw:.56,fh:.03},{fx:.22,fy:.52,fw:.56,fh:.03},{fx:.22,fy:.72,fw:.56,fh:.03}],
+   bumpers:[],
+   sand:[{fx:.24,fy:.35,fw:.14,fh:.10},{fx:.42,fy:.55,fw:.14,fh:.10},{fx:.60,fy:.75,fw:.14,fh:.10}]},
+
+  {name:'Offset Hole',par:4,maxShots:7,ball:{fx:.16,fy:.76},hole:{fx:.80,fy:.30},
+   walls:[
+    {fx:.08,fy:.12,fw:.84,fh:.04},{fx:.08,fy:.84,fw:.84,fh:.04},
+    {fx:.08,fy:.12,fw:.04,fh:.72},{fx:.88,fy:.12,fw:.04,fh:.72},
+    {fx:.32,fy:.44,fw:.48,fh:.03}],
+   bumpers:[{fx:.26,fy:.30,fr:.035},{fx:.74,fy:.68,fr:.035}],
+   sand:[]},
+
+  {name:'Mini Spiral',par:4,maxShots:7,ball:{fx:.16,fy:.24},hole:{fx:.80,fy:.76},
+   walls:[
+    {fx:.08,fy:.08,fw:.84,fh:.04},{fx:.08,fy:.88,fw:.84,fh:.04},
+    {fx:.08,fy:.08,fw:.04,fh:.84},{fx:.88,fy:.08,fw:.04,fh:.84},
+    {fx:.20,fy:.24,fw:.50,fh:.03},{fx:.20,fy:.68,fw:.03,fh:.44},{fx:.44,fy:.44,fw:.35,fh:.03},{fx:.76,fy:.44,fw:.03,fh:.32}],
+   bumpers:[{fx:.52,fy:.30,fr:.035}],
+   sand:[{fx:.36,fy:.56,fw:.18,fh:.14}]},
+
+  {name:'Center Sand',par:4,maxShots:7,ball:{fx:.16,fy:.20},hole:{fx:.84,fy:.80},
+   walls:[
+    {fx:.08,fy:.08,fw:.84,fh:.04},{fx:.08,fy:.88,fw:.84,fh:.04},
+    {fx:.08,fy:.08,fw:.04,fh:.84},{fx:.88,fy:.08,fw:.04,fh:.84}],
+   bumpers:[{fx:.30,fy:.40,fr:.04},{fx:.72,fy:.60,fr:.04}],
+   sand:[{fx:.40,fy:.40,fw:.24,fh:.24}]},
+
+  {name:'Triple Bumps',par:4,maxShots:7,ball:{fx:.16,fy:.76},hole:{fx:.84,fy:.24},
+   walls:[
+    {fx:.08,fy:.12,fw:.84,fh:.04},{fx:.08,fy:.84,fw:.84,fh:.04},
+    {fx:.08,fy:.12,fw:.04,fh:.72},{fx:.88,fy:.12,fw:.04,fh:.72}],
+   bumpers:[{fx:.36,fy:.30,fr:.038},{fx:.52,fy:.48,fr:.038},{fx:.68,fy:.66,fr:.038}],
+   sand:[]},
+
+  {name:'Backboard',par:3,maxShots:6,ball:{fx:.16,fy:.50},hole:{fx:.84,fy:.30},
+   walls:[
+    {fx:.08,fy:.16,fw:.84,fh:.04},{fx:.08,fy:.80,fw:.84,fh:.04},
+    {fx:.08,fy:.16,fw:.04,fh:.68},{fx:.88,fy:.16,fw:.04,fh:.68},
+    {fx:.70,fy:.16,fw:.04,fh:.28}],
+   bumpers:[{fx:.40,fy:.50,fr:.04}],
+   sand:[]},
+
+  {name:'Window',par:4,maxShots:7,ball:{fx:.16,fy:.50},hole:{fx:.84,fy:.50},
+   walls:[
+    {fx:.08,fy:.12,fw:.84,fh:.04},{fx:.08,fy:.84,fw:.84,fh:.04},
+    {fx:.08,fy:.12,fw:.04,fh:.72},{fx:.88,fy:.12,fw:.04,fh:.72},
+    {fx:.32,fy:.32,fw:.36,fh:.03},{fx:.32,fy:.64,fw:.36,fh:.03},
+    {fx:.32,fy:.32,fw:.03,fh:.35},{fx:.65,fy:.32,fw:.03,fh:.35}],
+   bumpers:[{fx:.22,fy:.22,fr:.03},{fx:.78,fy:.74,fr:.03}],
+   sand:[]},
+
+  {name:'Offset Islands',par:4,maxShots:7,ball:{fx:.18,fy:.24},hole:{fx:.80,fy:.76},
+   walls:[
+    {fx:.08,fy:.08,fw:.84,fh:.04},{fx:.08,fy:.88,fw:.84,fh:.04},
+    {fx:.08,fy:.08,fw:.04,fh:.84},{fx:.88,fy:.08,fw:.04,fh:.84}],
+   bumpers:[{fx:.34,fy:.50,fr:.035},{fx:.64,fy:.50,fr:.035}],
+   sand:[{fx:.24,fy:.30,fw:.18,fh:.16},{fx:.56,fy:.58,fw:.18,fh:.16}]},
+
+  {name:'Tunnels',par:4,maxShots:7,ball:{fx:.16,fy:.78},hole:{fx:.84,fy:.22},
+   walls:[
+    {fx:.08,fy:.12,fw:.84,fh:.04},{fx:.08,fy:.84,fw:.84,fh:.04},
+    {fx:.08,fy:.12,fw:.04,fh:.72},{fx:.88,fy:.12,fw:.04,fh:.72},
+    {fx:.30,fy:.36,fw:.40,fh:.03},{fx:.30,fy:.60,fw:.40,fh:.03}],
+   bumpers:[{fx:.70,fy:.36,fr:.035},{fx:.70,fy:.60,fr:.035}],
+   sand:[]},
+
+  {name:'Offset Funnel',par:5,maxShots:9,ball:{fx:.16,fy:.22},hole:{fx:.80,fy:.78},
+   walls:[
+    {fx:.08,fy:.08,fw:.84,fh:.04},{fx:.08,fy:.88,fw:.84,fh:.04},
+    {fx:.08,fy:.08,fw:.04,fh:.84},{fx:.88,fy:.08,fw:.04,fh:.84},
+    {fx:.18,fy:.24,fw:.52,fh:.03},{fx:.18,fy:.72,fw:.52,fh:.03},
+    {fx:.18,fy:.24,fw:.03,fh:.30},{fx:.67,fy:.42,fw:.03,fh:.30},
+    {fx:.30,fy:.48,fw:.26,fh:.03}],
+   bumpers:[{fx:.72,fy:.26,fr:.035}],
+   sand:[{fx:.52,fy:.52,fw:.20,fh:.18}]},
+
+  {name:'Sand Cross',par:5,maxShots:9,ball:{fx:.16,fy:.50},hole:{fx:.84,fy:.50},
+   walls:[
+    {fx:.08,fy:.12,fw:.84,fh:.04},{fx:.08,fy:.84,fw:.84,fh:.04},
+    {fx:.08,fy:.12,fw:.04,fh:.72},{fx:.88,fy:.12,fw:.04,fh:.72}],
+   bumpers:[{fx:.30,fy:.30,fr:.035},{fx:.70,fy:.70,fr:.035}],
+   sand:[
+    {fx:.36,fy:.28,fw:.20,fh:.16},
+    {fx:.36,fy:.56,fw:.20,fh:.16}
+   ]},
+
+  {name:'Bumper Spiral',par:5,maxShots:9,ball:{fx:.16,fy:.22},hole:{fx:.82,fy:.78},
+   walls:[
+    {fx:.08,fy:.08,fw:.84,fh:.04},{fx:.08,fy:.88,fw:.84,fh:.04},
+    {fx:.08,fy:.08,fw:.04,fh:.84},{fx:.88,fy:.08,fw:.04,fh:.84},
+    {fx:.22,fy:.24,fw:.50,fh:.03},{fx:.22,fy:.70,fw:.03,fh:.46},
+    {fx:.38,fy:.54,fw:.40,fh:.03},{fx:.78,fy:.38,fw:.03,fh:.32}],
+   bumpers:[
+    {fx:.36,fy:.30,fr:.035},{fx:.58,fy:.44,fr:.035},{fx:.70,fy:.60,fr:.035}],
+   sand:[]},
+
+  {name:'Stacked Shelves',par:4,maxShots:7,ball:{fx:.16,fy:.24},hole:{fx:.84,fy:.76},
+   walls:[
+    {fx:.08,fy:.12,fw:.84,fh:.04},{fx:.08,fy:.84,fw:.84,fh:.04},
+    {fx:.08,fy:.12,fw:.04,fh:.72},{fx:.88,fy:.12,fw:.04,fh:.72},
+    {fx:.18,fy:.32,fw:.64,fh:.03},{fx:.18,fy:.52,fw:.64,fh:.03},{fx:.18,fy:.72,fw:.64,fh:.03}],
+   bumpers:[{fx:.50,fy:.42,fr:.035}],
+   sand:[{fx:.40,fy:.62,fw:.18,fh:.12}]},
+
+  {name:'Loop Back',par:5,maxShots:9,ball:{fx:.18,fy:.76},hole:{fx:.80,fy:.24},
+   walls:[
+    {fx:.08,fy:.12,fw:.84,fh:.04},{fx:.08,fy:.84,fw:.84,fh:.04},
+    {fx:.08,fy:.12,fw:.04,fh:.72},{fx:.88,fy:.12,fw:.04,fh:.72},
+    {fx:.24,fy:.32,fw:.50,fh:.03},{fx:.24,fy:.64,fw:.50,fh:.03},
+    {fx:.24,fy:.32,fw:.03,fh:.35},{fx:.71,fy:.44,fw:.03,fh:.35}],
+   bumpers:[{fx:.50,fy:.24,fr:.035}],
+   sand:[{fx:.38,fy:.52,fw:.18,fh:.14}]},
+
+  {name:'Sand Gauntlet',par:5,maxShots:9,ball:{fx:.16,fy:.22},hole:{fx:.84,fy:.78},
+   walls:[
+    {fx:.08,fy:.08,fw:.84,fh:.04},{fx:.08,fy:.88,fw:.84,fh:.04},
+    {fx:.08,fy:.08,fw:.04,fh:.84},{fx:.88,fy:.08,fw:.04,fh:.84},
+    {fx:.22,fy:.32,fw:.60,fh:.03},{fx:.22,fy:.56,fw:.60,fh:.03}],
+   bumpers:[{fx:.32,fy:.44,fr:.035},{fx:.72,fy:.44,fr:.035}],
+   sand:[{fx:.34,fy:.36,fw:.16,fh:.14},{fx:.52,fy:.48,fw:.16,fh:.14},{fx:.70,fy:.60,fw:.16,fh:.14}]},
+
+  {name:'Tight S',par:4,maxShots:7,ball:{fx:.16,fy:.24},hole:{fx:.82,fy:.76},
+   walls:[
+    {fx:.08,fy:.08,fw:.84,fh:.04},{fx:.08,fy:.88,fw:.84,fh:.04},
+    {fx:.08,fy:.08,fw:.04,fh:.84},{fx:.88,fy:.08,fw:.04,fh:.84},
+    {fx:.20,fy:.28,fw:.50,fh:.03},{fx:.30,fy:.52,fw:.50,fh:.03},
+    {fx:.20,fy:.28,fw:.03,fh:.24},{fx:.77,fy:.52,fw:.03,fh:.24}],
+   bumpers:[{fx:.48,fy:.40,fr:.035}],
+   sand:[]},
+
+  {name:'Zig-Zag Walls',par:4,maxShots:7,ball:{fx:.16,fy:.76},hole:{fx:.84,fy:.24},
+   walls:[
+    {fx:.08,fy:.12,fw:.84,fh:.04},{fx:.08,fy:.84,fw:.84,fh:.04},
+    {fx:.08,fy:.12,fw:.04,fh:.72},{fx:.88,fy:.12,fw:.04,fh:.72},
+    {fx:.26,fy:.30,fw:.44,fh:.03},{fx:.30,fy:.54,fw:.44,fh:.03}],
+   bumpers:[{fx:.24,fy:.42,fr:.035},{fx:.72,fy:.42,fr:.035}],
+   sand:[{fx:.46,fy:.66,fw:.18,fh:.12}]},
+
+  {name:'Spiral Center',par:5,maxShots:9,ball:{fx:.16,fy:.24},hole:{fx:.50,fy:.50},
+   walls:[
+    {fx:.08,fy:.08,fw:.84,fh:.04},{fx:.08,fy:.88,fw:.84,fh:.04},
+    {fx:.08,fy:.08,fw:.04,fh:.84},{fx:.88,fy:.08,fw:.04,fh:.84},
+    {fx:.18,fy:.24,fw:.50,fh:.03},{fx:.18,fy:.70,fw:.03,fh:.46},
+    {fx:.34,fy:.54,fw:.40,fh:.03},{fx:.74,fy:.38,fw:.03,fh:.32}],
+   bumpers:[{fx:.32,fy:.32,fr:.035},{fx:.64,fy:.64,fr:.035}],
+   sand:[{fx:.44,fy:.44,fw:.16,fh:.16}]},
+
+  {name:'Final Test',par:6,maxShots:10,ball:{fx:.16,fy:.76},hole:{fx:.84,fy:.24},
+   walls:[
+    {fx:.08,fy:.12,fw:.84,fh:.04},{fx:.08,fy:.84,fw:.84,fh:.04},
+    {fx:.08,fy:.12,fw:.04,fh:.72},{fx:.88,fy:.12,fw:.04,fh:.72},
+    {fx:.26,fy:.30,fw:.44,fh:.03},{fx:.26,fy:.54,fw:.44,fh:.03},
+    {fx:.26,fy:.30,fw:.03,fh:.27},{fx:.67,fy:.42,fw:.03,fh:.27}],
+   bumpers:[
+    {fx:.36,fy:.40,fr:.035},{fx:.56,fy:.64,fr:.035},{fx:.76,fy:.52,fr:.035}],
+   sand:[{fx:.40,fy:.60,fw:.18,fh:.14}]}
 ];
 
 function scaleHole(r){
-  return{name:r.name,par:r.par,maxShots:r.maxShots,
-    ball:{x:r.ball.fx*W,y:r.ball.fy*H},hole:{x:r.hole.fx*W,y:r.hole.fy*H},
+  return{
+    name:r.name,par:r.par,maxShots:r.maxShots,
+    ball:{x:r.ball.fx*W,y:r.ball.fy*H},
+    hole:{x:r.hole.fx*W,y:r.hole.fy*H},
     walls:r.walls.map(w=>({x:w.fx*W,y:w.fy*H,w:w.fw*W,h:w.fh*H})),
     bumpers:r.bumpers.map(b=>({x:b.fx*W,y:b.fy*H,r:b.fr*Math.min(W,H)})),
-    sand:r.sand.map(s=>({x:s.fx*W,y:s.fy*H,w:s.fw*W,h:s.fh*H})),
+    sand:r.sand.map(s=>({x:s.fx*W,y:s.fy*H,w:s.fw*W,h:s.fh*H}))
   };
 }
 
+/* UI helpers */
+
 function showHowTo(){document.getElementById('howto-modal').classList.add('show');}
 function closeHowTo(){document.getElementById('howto-modal').classList.remove('show');}
+
 function startGame(){
   document.getElementById('home-screen').style.display='none';
   document.getElementById('game-screen').classList.add('show');
@@ -400,14 +680,24 @@ function goHome(){
   ['round-overlay','shots-overlay','hole-complete-overlay'].forEach(id=>document.getElementById(id).classList.remove('show'));
   document.getElementById('game-screen').classList.remove('show');
   document.getElementById('home-screen').style.display='flex';
-  const b=localStorage.getItem('mgBest');
-  document.getElementById('home-best').textContent=b!==null?(+b>0?'+'+b:b):'—';
+  const best=localStorage.getItem('mgBest');
+  document.getElementById('home-best').textContent=best!==null?(+best>0?'+'+best:best):'—';
 }
 function restartGame(){
   ['round-overlay','shots-overlay','hole-complete-overlay'].forEach(id=>document.getElementById(id).classList.remove('show'));
   initGame();
 }
-function initGame(){holeIndex=0;totalScore=0;scorecardData=[];buildHoleDots();loadHole();}
+
+/* game flow */
+
+function initGame(){
+  holeIndex=0;totalScore=0;scorecardData=[];
+  buildHoleDots();
+  const totalPar=holesRaw.reduce((s,h)=>s+h.par,0);
+  document.getElementById('home-par').textContent=totalPar;
+  loadHole();
+}
+
 function buildHoleDots(){
   const c=document.getElementById('hole-dots');c.innerHTML='';
   holesRaw.forEach((_,i)=>{const d=document.createElement('div');d.className='dot';d.id='dot'+i;c.appendChild(d);});
@@ -416,21 +706,11 @@ function buildPips(max){
   const c=document.getElementById('shot-pips');c.innerHTML='';
   for(let i=0;i<max;i++){const p=document.createElement('div');p.className='pip';p.id='pip'+i;c.appendChild(p);}
 }
-function updatePips(){
-  for(let i=0;i<maxShots;i++){
-    const p=document.getElementById('pip'+i);if(!p)continue;
-    p.className='pip';
-    if(i<shots)p.classList.add('used');
-    else if(i===maxShots-1&&shotsLeft===1)p.classList.add('last');
-  }
-}
 function updateDots(){
-  holesRaw.forEach((_,i)=>{
-    const d=document.getElementById('dot'+i);if(!d)return;
-    d.className='dot';
-    if(i<holeIndex)d.classList.add('done');
-    else if(i===holeIndex)d.classList.add('active');
-  });
+  holesRaw.forEach((_,i)=>{const d=document.getElementById('dot'+i);if(!d)return;d.className='dot';if(i<holeIndex)d.classList.add('done');else if(i===holeIndex)d.classList.add('active');});
+}
+function updatePips(){
+  for(let i=0;i<maxShots;i++){const p=document.getElementById('pip'+i);if(!p)continue;p.className='pip';if(i<shots)p.classList.add('used');else if(i===maxShots-1&&shotsLeft===1)p.classList.add('last');}
 }
 function loadHole(){
   const h=scaleHole(holesRaw[holeIndex]);
@@ -445,30 +725,32 @@ function loadHole(){
   document.getElementById('parNum').textContent=par;
   document.getElementById('shotNum').textContent=shotsLeft;
   document.getElementById('power-fill').style.width='0%';
-  const msg=document.getElementById('message');msg.textContent='';msg.classList.remove('show');
+  document.getElementById('message').textContent='';
+  document.getElementById('message').classList.remove('show');
   document.getElementById('shotsCard').classList.remove('warning');
   updateDots();buildPips(maxShots);draw();
 }
+
+/* overlays */
+
 function showHoleComplete(diff){
   let icon,cls,txt;
-  if(shots===1){icon='🏆';cls='ace';txt='🏆 HOLE IN ONE!';}
-  else if(diff<=-2){icon='🦅';cls='eagle';txt='🦅 EAGLE';}
-  else if(diff===-1){icon='🐦';cls='birdie';txt='🐦 BIRDIE';}
-  else if(diff===0){icon='✅';cls='par';txt='✅ PAR';}
-  else if(diff===1){icon='😬';cls='bogey';txt='😬 BOGEY';}
-  else{icon='😅';cls='double';txt='😅 DOUBLE+';}
+  if(shots===1){icon='🏆';cls='ace';txt='HOLE IN ONE';}
+  else if(diff<=-2){icon='🦅';cls='eagle';txt='EAGLE';}
+  else if(diff===-1){icon='🐦';cls='birdie';txt='BIRDIE';}
+  else if(diff===0){icon='✅';cls='par';txt='PAR';}
+  else if(diff===1){icon='😬';cls='bogey';txt='BOGEY';}
+  else{icon='😅';cls='double';txt='DOUBLE+';}
   document.getElementById('hc-icon').textContent=icon;
-  document.getElementById('hc-title').textContent=diff<=0?'Hole Complete! 🎉':'Hole Done!';
+  document.getElementById('hc-title').textContent=diff<=0?'Hole Complete!':'Hole Done!';
   document.getElementById('hc-hole-name').textContent=`Hole ${holeIndex+1} — ${holesRaw[holeIndex].name}`;
   const b=document.getElementById('hc-badge');b.className='hc-badge '+cls;b.textContent=txt;
   document.getElementById('hc-sub').textContent=`${shots} shot${shots!==1?'s':''} · Par ${par}`;
   const ad=Math.abs(diff);
   document.getElementById('hc-detail').textContent=diff===0?'Exactly on par':diff<0?`${ad} under par`:`${ad} over par`;
-  const sc=shots===1?3:diff<=-2?3:diff===-1?3:diff===0?2:diff===1?1:0;
-  for(let i=0;i<3;i++){const s=document.getElementById('star'+i);s.className='hc-star'+(i<sc?' lit':'');}
-  const tv=document.getElementById('hc-total-val');
-  tv.textContent=totalScore>0?'+'+totalScore:totalScore===0?'E':totalScore;
-  tv.style.color=totalScore<0?'#00ff88':totalScore>0?'#ff6644':'#fff';
+  const starCount=shots===1?3:diff<=-2?3:diff===-1?3:diff===0?2:diff===1?1:0;
+  for(let i=0;i<3;i++){const s=document.getElementById('star'+i);s.className='hc-star'+(i<starCount?' lit':'');}
+  const tv=document.getElementById('hc-total-val');tv.textContent=totalScore>0?'+'+totalScore:totalScore===0?'E':totalScore;tv.style.color=totalScore<0?'#00ff88':totalScore>0?'#ff6644':'#fff';
   document.getElementById('hc-next-btn').textContent=isLastHole?'🏆 See Final Score':'Next Hole ➡️';
   document.getElementById('hole-complete-overlay').classList.add('show');
 }
@@ -488,216 +770,88 @@ function continueAfterOutOfShots(){document.getElementById('shots-overlay').clas
 function showGameOver(){
   const best=parseInt(localStorage.getItem('mgBest')||'999');
   if(totalScore<best)localStorage.setItem('mgBest',totalScore);
-  const tbl=document.getElementById('scorecard');
-  while(tbl.rows.length>1)tbl.deleteRow(1);
-  scorecardData.forEach(s=>{
-    const row=tbl.insertRow();
-    row.insertCell().textContent=s.hole;row.insertCell().textContent=s.par;row.insertCell().textContent=s.shots;
-    const dc=row.insertCell();
-    dc.textContent=s.diff===0?'E':s.diff>0?'+'+s.diff:s.diff;
-    dc.className=s.diff<0?'sc-under':s.diff>0?'sc-over':'sc-par';
-  });
-  const se=document.getElementById('round-score');
-  se.textContent=totalScore>0?'+'+totalScore:totalScore;
-  se.style.color=totalScore<-6?'#ffd700':totalScore<0?'#00ff88':totalScore>6?'#ff4444':'#fff';
-  const grades=[{max:-10,text:'🏆 Golf Legend!'},{max:-5,text:'🦅 Eagle Scout!'},{max:0,text:'⛳ Par Player'},{max:6,text:'😅 Getting There!'},{max:99,text:'🔰 Keep Practicing!'}];
+  const tbl=document.getElementById('scorecard');while(tbl.rows.length>1)tbl.deleteRow(1);
+  scorecardData.forEach(s=>{const row=tbl.insertRow();row.insertCell().textContent=s.hole;row.insertCell().textContent=s.par;row.insertCell().textContent=s.shots;const dc=row.insertCell();dc.textContent=s.diff===0?'E':s.diff>0?'+'+s.diff:s.diff;dc.className=s.diff<0?'sc-under':s.diff>0?'sc-over':'sc-par';});
+  const se=document.getElementById('round-score');se.textContent=totalScore>0?'+'+totalScore:totalScore;se.style.color=totalScore<-6?'#ffd700':totalScore<0?'#00ff88':totalScore>6?'#ff4444':'#fff';
+  const grades=[{max:-15,text:'🏆 Golf Legend!'},{max:-7,text:'🦅 Eagle Scout!'},{max:0,text:'⛳ Par Player'},{max:10,text:'😅 Getting There!'},{max:99,text:'🔰 Keep Practicing!'}];
   document.getElementById('round-grade').textContent=grades.find(g=>totalScore<=g.max).text;
   document.getElementById('round-overlay').classList.add('show');
 }
-function updatePowerBar(){
-  const f=document.getElementById('power-fill');
-  f.style.width=power+'%';
-  f.style.background=power<40?'linear-gradient(90deg,#00ff88,#00cc55)':power<70?'linear-gradient(90deg,#ffcc00,#ff9900)':'linear-gradient(90deg,#ff5533,#ff1100)';
-}
+
+/* fx */
+
+function updatePowerBar(){const f=document.getElementById('power-fill');f.style.width=power+'%';f.style.background=power<40?'#00ff88':power<70?'#ffcc00':'#ff5533';}
 function spawnBounce(x,y){for(let i=0;i<7;i++){const a=Math.random()*Math.PI*2,s=1.5+Math.random()*2.5;particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:18,maxLife:18,size:2+Math.random()*2.5,color:'#aaddff',g:0});}}
-function spawnHole(x,y){const cols=['#00ff88','#ffcc00','#ff6644','#ff44aa','#44aaff','#fff','#ffdd44'];for(let i=0;i<55;i++){const a=Math.random()*Math.PI*2,s=2.5+Math.random()*6;particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-2.5,life:60,maxLife:60,size:2.5+Math.random()*4,color:cols[i%cols.length],g:.14});}waveRings.push({x,y,r:4,maxR:52,life:38,maxLife:38});}
+function spawnHole(x,y){for(let i=0;i<55;i++){const a=Math.random()*Math.PI*2,s=2.5+Math.random()*6;particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-2.5,life:60,maxLife:60,size:2.5+Math.random()*4,color:'#00ff88',g:.14});}waveRings.push({x,y,r:4,maxR:52,life:38,maxLife:38});}
 function spawnBumperHit(x,y){for(let i=0;i<12;i++){const a=Math.random()*Math.PI*2,s=2+Math.random()*4;particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:22,maxLife:22,size:2+Math.random()*3.5,color:'#ff88dd',g:.05});}}
 function triggerShake(i,f){shakeIntensity=i;shakeFrames=f;}
+
+/* render & physics */
 
 function draw(){
   if(!W||!H)return;
   ctx.save();
   if(shakeFrames>0){ctx.translate((Math.random()-.5)*shakeIntensity,(Math.random()-.5)*shakeIntensity);shakeFrames--;}
   ctx.clearRect(-20,-20,W+40,H+40);
-  const bg=ctx.createLinearGradient(0,0,W,H);bg.addColorStop(0,'#286622');bg.addColorStop(1,'#1a4416');
-  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
-  ctx.strokeStyle='rgba(255,255,255,.028)';ctx.lineWidth=1;
-  const gs=Math.min(W,H)*.065;
+  const bg=ctx.createLinearGradient(0,0,W,H);bg.addColorStop(0,'#286622');bg.addColorStop(1,'#1a4416');ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle='rgba(255,255,255,.028)';ctx.lineWidth=1;const gs=Math.min(W,H)*.065;
   for(let i=0;i<=W;i+=gs){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i,H);ctx.stroke();}
   for(let j=0;j<=H;j+=gs){ctx.beginPath();ctx.moveTo(0,j);ctx.lineTo(W,j);ctx.stroke();}
-  const vig=ctx.createRadialGradient(W/2,H/2,Math.min(W,H)*.2,W/2,H/2,Math.min(W,H)*.85);
-  vig.addColorStop(0,'transparent');vig.addColorStop(1,'rgba(0,0,0,.22)');
-  ctx.fillStyle=vig;ctx.fillRect(0,0,W,H);
+  const vig=ctx.createRadialGradient(W/2,H/2,Math.min(W,H)*.2,W/2,H/2,Math.min(W,H)*.85);vig.addColorStop(0,'transparent');vig.addColorStop(1,'rgba(0,0,0,.22)');ctx.fillStyle=vig;ctx.fillRect(0,0,W,H);
+
   sandTraps.forEach(s=>{
-    ctx.save();
-    const sg=ctx.createLinearGradient(s.x,s.y,s.x+s.w,s.y+s.h);
-    sg.addColorStop(0,'#d4a843');sg.addColorStop(1,'#b8902e');
-    ctx.fillStyle=sg;ctx.beginPath();ctx.roundRect(s.x,s.y,s.w,s.h,9);ctx.fill();
-    ctx.fillStyle='rgba(255,240,180,.18)';
-    for(let i=0;i<14;i++){ctx.beginPath();ctx.arc(s.x+s.w/2+Math.sin(i*7.4)*s.w*.38,s.y+s.h/2+Math.cos(i*5.2)*s.h*.33,1.6,0,Math.PI*2);ctx.fill();}
-    ctx.strokeStyle='rgba(0,0,0,.12)';ctx.lineWidth=1.5;ctx.beginPath();ctx.roundRect(s.x,s.y,s.w,s.h,9);ctx.stroke();
-    ctx.restore();
+    ctx.save();const sg=ctx.createLinearGradient(s.x,s.y,s.x+s.w,s.y+s.h);sg.addColorStop(0,'#d4a843');sg.addColorStop(1,'#b8902e');ctx.fillStyle=sg;ctx.beginPath();ctx.roundRect(s.x,s.y,s.w,s.h,9);ctx.fill();
+    ctx.fillStyle='rgba(255,240,180,.18)';for(let i=0;i<14;i++){ctx.beginPath();ctx.arc(s.x+s.w/2+Math.sin(i*7.4)*s.w*.38,s.y+s.h/2+Math.cos(i*5.2)*s.h*.33,1.6,0,Math.PI*2);ctx.fill();}
+    ctx.strokeStyle='rgba(0,0,0,.12)';ctx.lineWidth=1.5;ctx.beginPath();ctx.roundRect(s.x,s.y,s.w,s.h,9);ctx.stroke();ctx.restore();
   });
+
   walls.forEach(w=>{
     ctx.fillStyle='rgba(0,0,0,.3)';ctx.fillRect(w.x+3,w.y+3,w.w,w.h);
-    const wg=ctx.createLinearGradient(w.x,w.y,w.x,w.y+w.h);
-    wg.addColorStop(0,'#9e6840');wg.addColorStop(1,'#5e3010');
-    ctx.fillStyle=wg;ctx.fillRect(w.x,w.y,w.w,w.h);
+    const wg=ctx.createLinearGradient(w.x,w.y,w.x,w.y+w.h);wg.addColorStop(0,'#9e6840');wg.addColorStop(1,'#5e3010');ctx.fillStyle=wg;ctx.fillRect(w.x,w.y,w.w,w.h);
     ctx.fillStyle='rgba(255,255,255,.16)';ctx.fillRect(w.x,w.y,w.w,Math.min(4,w.h*.35));
     ctx.strokeStyle='rgba(0,0,0,.25)';ctx.lineWidth=1;ctx.strokeRect(w.x,w.y,w.w,w.h);
   });
+
   bumpers.forEach(b=>{
-    ctx.save();ctx.shadowBlur=18;ctx.shadowColor='#ff44bb';
-    ctx.beginPath();ctx.arc(b.x,b.y,b.r,0,Math.PI*2);
-    const bg2=ctx.createRadialGradient(b.x-b.r*.35,b.y-b.r*.35,1,b.x,b.y,b.r);
-    bg2.addColorStop(0,'#ff99dd');bg2.addColorStop(1,'#cc0066');
-    ctx.fillStyle=bg2;ctx.fill();ctx.strokeStyle='rgba(255,100,200,.7)';ctx.lineWidth=2;ctx.stroke();ctx.restore();
+    ctx.save();ctx.shadowBlur=18;ctx.shadowColor='#ff44bb';ctx.beginPath();ctx.arc(b.x,b.y,b.r,0,Math.PI*2);
+    const bg2=ctx.createRadialGradient(b.x-b.r*.35,b.y-b.r*.35,1,b.x,b.y,b.r);bg2.addColorStop(0,'#ff99dd');bg2.addColorStop(1,'#cc0066');ctx.fillStyle=bg2;ctx.fill();
+    ctx.strokeStyle='rgba(255,100,200,.7)';ctx.lineWidth=2;ctx.stroke();ctx.restore();
   });
-  waveRings.forEach(wr=>{
-    const a=wr.life/wr.maxLife;ctx.save();ctx.globalAlpha=a*.55;
-    ctx.strokeStyle='#00ff88';ctx.lineWidth=2;ctx.beginPath();ctx.arc(wr.x,wr.y,wr.r,0,Math.PI*2);ctx.stroke();ctx.restore();
-  });
+
+  waveRings.forEach(wr=>{const a=wr.life/wr.maxLife;ctx.save();ctx.globalAlpha=a*.55;ctx.strokeStyle='#00ff88';ctx.lineWidth=2;ctx.beginPath();ctx.arc(wr.x,wr.y,wr.r,0,Math.PI*2);ctx.stroke();ctx.restore();});
   ctx.beginPath();ctx.arc(hole.x+2,hole.y+2,hole.r,0,Math.PI*2);ctx.fillStyle='rgba(0,0,0,.45)';ctx.fill();
-  ctx.save();ctx.shadowBlur=20;ctx.shadowColor='#00ff88';ctx.strokeStyle='rgba(0,255,136,.4)';ctx.lineWidth=2.5;
-  ctx.beginPath();ctx.arc(hole.x,hole.y,hole.r+4,0,Math.PI*2);ctx.stroke();ctx.restore();
-  ctx.beginPath();ctx.arc(hole.x,hole.y,hole.r,0,Math.PI*2);
-  const hg=ctx.createRadialGradient(hole.x,hole.y,1,hole.x,hole.y,hole.r);
-  hg.addColorStop(0,'#000');hg.addColorStop(1,'#111');
-  ctx.fillStyle=hg;ctx.fill();ctx.strokeStyle='rgba(255,255,255,.45)';ctx.lineWidth=1.5;ctx.stroke();
-  const fH=hole.r*2.5;
-  ctx.strokeStyle='rgba(255,255,255,.7)';ctx.lineWidth=1.5;
-  ctx.beginPath();ctx.moveTo(hole.x,hole.y-4);ctx.lineTo(hole.x,hole.y-fH);ctx.stroke();
-  ctx.fillStyle='#ff3344';ctx.beginPath();ctx.moveTo(hole.x,hole.y-fH);ctx.lineTo(hole.x+fH*.52,hole.y-fH*.72);ctx.lineTo(hole.x,hole.y-fH*.44);ctx.closePath();ctx.fill();
+  ctx.save();ctx.shadowBlur=20;ctx.shadowColor='#00ff88';ctx.strokeStyle='rgba(0,255,136,.4)';ctx.lineWidth=2.5;ctx.beginPath();ctx.arc(hole.x,hole.y,hole.r+4,0,Math.PI*2);ctx.stroke();ctx.restore();
+  ctx.beginPath();ctx.arc(hole.x,hole.y,hole.r,0,Math.PI*2);const hg=ctx.createRadialGradient(hole.x,hole.y,1,hole.x,hole.y,hole.r);hg.addColorStop(0,'#000');hg.addColorStop(1,'#111');ctx.fillStyle=hg;ctx.fill();ctx.strokeStyle='rgba(255,255,255,.45)';ctx.lineWidth=1.5;ctx.stroke();
+  const fH=hole.r*2.5;ctx.strokeStyle='rgba(255,255,255,.7)';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(hole.x,hole.y-4);ctx.lineTo(hole.x,hole.y-fH);ctx.stroke();ctx.fillStyle='#ff3344';ctx.beginPath();ctx.moveTo(hole.x,hole.y-fH);ctx.lineTo(hole.x+fH*.52,hole.y-fH*.72);ctx.lineTo(hole.x,hole.y-fH*.44);ctx.closePath();ctx.fill();
+
   trailPoints.forEach(t=>{ctx.save();ctx.globalAlpha=(t.life/20)*.28;ctx.beginPath();ctx.arc(t.x,t.y,ball.r*(t.life/20)*.7,0,Math.PI*2);ctx.fillStyle='#99ccff';ctx.fill();ctx.restore();});
   particles.forEach(p=>{const a=p.life/p.maxLife;ctx.save();ctx.globalAlpha=a;ctx.beginPath();ctx.arc(p.x,p.y,p.size*a,0,Math.PI*2);ctx.fillStyle=p.color;ctx.fill();ctx.restore();});
+
   if(aiming&&!animating){
-    ctx.save();
-    const tl=Math.min(W,H)*.24;
-    const tx=ball.x+Math.cos(aimAngle)*tl,ty=ball.y+Math.sin(aimAngle)*tl;
-    ctx.strokeStyle='rgba(255,255,255,.22)';ctx.lineWidth=1.5;ctx.setLineDash([6,5]);
-    ctx.beginPath();ctx.moveTo(ball.x,ball.y);ctx.lineTo(tx,ty);ctx.stroke();
-    ctx.setLineDash([]);ctx.strokeStyle='rgba(255,255,255,.6)';ctx.lineWidth=2;
-    const al=tl*.13;
-    ctx.beginPath();ctx.moveTo(tx,ty);ctx.lineTo(tx-Math.cos(aimAngle-.38)*al,ty-Math.sin(aimAngle-.38)*al);ctx.moveTo(tx,ty);ctx.lineTo(tx-Math.cos(aimAngle+.38)*al,ty-Math.sin(aimAngle+.38)*al);ctx.stroke();ctx.restore();
+    ctx.save();const tl=Math.min(W,H)*.24;const tx=ball.x+Math.cos(aimAngle)*tl,ty=ball.y+Math.sin(aimAngle)*tl;
+    ctx.strokeStyle='rgba(255,255,255,.22)';ctx.lineWidth=1.5;ctx.setLineDash([6,5]);ctx.beginPath();ctx.moveTo(ball.x,ball.y);ctx.lineTo(tx,ty);ctx.stroke();
+    ctx.setLineDash([]);ctx.strokeStyle='rgba(255,255,255,.6)';ctx.lineWidth=2;const al=tl*.13;ctx.beginPath();ctx.moveTo(tx,ty);ctx.lineTo(tx-Math.cos(aimAngle-.38)*al,ty-Math.sin(aimAngle-.38)*al);ctx.moveTo(tx,ty);ctx.lineTo(tx-Math.cos(aimAngle+.38)*al,ty-Math.sin(aimAngle+.38)*al);ctx.stroke();ctx.restore();
   }
+
   ctx.beginPath();ctx.arc(ball.x+2,ball.y+2.5,ball.r,0,Math.PI*2);ctx.fillStyle='rgba(0,0,0,.32)';ctx.fill();
-  const ballG=ctx.createRadialGradient(ball.x-ball.r*.32,ball.y-ball.r*.32,.8,ball.x,ball.y,ball.r);
-  ballG.addColorStop(0,'#fff');ballG.addColorStop(.5,'#eaeaea');ballG.addColorStop(1,'#bbb');
-  ctx.beginPath();ctx.arc(ball.x,ball.y,ball.r,0,Math.PI*2);ctx.fillStyle=ballG;ctx.fill();
-  ctx.strokeStyle='rgba(0,0,0,.18)';ctx.lineWidth=1;ctx.stroke();
+  const ballG=ctx.createRadialGradient(ball.x-ball.r*.32,ball.y-ball.r*.32,.8,ball.x,ball.y,ball.r);ballG.addColorStop(0,'#fff');ballG.addColorStop(.5,'#eaeaea');ballG.addColorStop(1,'#bbb');ctx.beginPath();ctx.arc(ball.x,ball.y,ball.r,0,Math.PI*2);ctx.fillStyle=ballG;ctx.fill();ctx.strokeStyle='rgba(0,0,0,.18)';ctx.lineWidth=1;ctx.stroke();
   ctx.beginPath();ctx.arc(ball.x-ball.r*.3,ball.y-ball.r*.3,ball.r*.3,0,Math.PI*2);ctx.fillStyle='rgba(255,255,255,.72)';ctx.fill();
   ctx.restore();
 }
 
 function update(){
   if(!animating)return;
-  trailPoints.push({x:ball.x,y:ball.y,life:20});
-  trailPoints=trailPoints.filter(t=>t.life-->0);
-  particles=particles.filter(p=>p.life-->0);
-  particles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=p.g;p.vx*=.96;});
-  waveRings=waveRings.filter(w=>w.life-->0);
-  waveRings.forEach(w=>{w.r+=(w.maxR-w.r)*.12;});
+  trailPoints.push({x:ball.x,y:ball.y,life:20});trailPoints=trailPoints.filter(t=>t.life-->0);
+  particles=particles.filter(p=>p.life-->0);particles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=p.g;p.vx*=.96;});
+  waveRings=waveRings.filter(w=>w.life-->0);waveRings.forEach(w=>{w.r+=(w.maxR-w.r)*.12;});
   ball.vx*=.987;ball.vy*=.987;
   sandTraps.forEach(s=>{if(ball.x>s.x&&ball.x<s.x+s.w&&ball.y>s.y&&ball.y<s.y+s.h){ball.vx*=.93;ball.vy*=.93;}});
   ball.x+=ball.vx;ball.y+=ball.vy;
+
   walls.forEach(w=>{
     if(ball.x+ball.r>w.x&&ball.x-ball.r<w.x+w.w&&ball.y+ball.r>w.y&&ball.y-ball.r<w.y+w.h){
-      const oL=(ball.x+ball.r)-w.x,oR=(w.x+w.w)-(ball.x-ball.r),oT=(ball.y+ball.r)-w.y,oB=(w.y+w.h)-(ball.y-ball.r);
-      const mn=Math.min(oL,oR,oT,oB);
+      const oL=(ball.x+ball.r)-w.x,oR=(w.x+w.w)-(ball.x-ball.r),oT=(ball.y+ball.r)-w.y,oB=(w.y+w.h)-(ball.y-ball.r);const mn=Math.min(oL,oR,oT,oB);
       if(mn===oL){ball.x=w.x-ball.r;ball.vx*=-.65;spawnBounce(ball.x,ball.y);triggerShake(2,4);}
       else if(mn===oR){ball.x=w.x+w.w+ball.r;ball.vx*=-.65;spawnBounce(ball.x,ball.y);triggerShake(2,4);}
       else if(mn===oT){ball.y=w.y-ball.r;ball.vy*=-.65;spawnBounce(ball.x,ball.y);triggerShake(2,4);}
-      else{ball.y=w.y+w.h+ball.r;ball.vy*=-.65;spawnBounce(ball.x,ball.y);triggerShake(2,4);}
-    }
-  });
-  bumpers.forEach(b=>{
-    const dx=ball.x-b.x,dy=ball.y-b.y,dist=Math.sqrt(dx*dx+dy*dy);
-    if(dist<ball.r+b.r){
-      const nx=dx/dist,ny=dy/dist;
-      ball.x=b.x+nx*(ball.r+b.r);ball.y=b.y+ny*(ball.r+b.r);
-      const dot=ball.vx*nx+ball.vy*ny;
-      ball.vx=(ball.vx-2*dot*nx)*-.85;ball.vy=(ball.vy-2*dot*ny)*-.85;
-      const spd=Math.sqrt(ball.vx*ball.vx+ball.vy*ball.vy);
-      if(spd<4){ball.vx=nx*4;ball.vy=ny*4;}
-      spawnBumperHit(b.x,b.y);triggerShake(3,8);
-    }
-  });
-  if(ball.x-ball.r<0){ball.x=ball.r;ball.vx*=-.65;spawnBounce(ball.x,ball.y);}
-  if(ball.x+ball.r>W){ball.x=W-ball.r;ball.vx*=-.65;spawnBounce(ball.x,ball.y);}
-  if(ball.y-ball.r<0){ball.y=ball.r;ball.vy*=-.65;spawnBounce(ball.x,ball.y);}
-  if(ball.y+ball.r>H){ball.y=H-ball.r;ball.vy*=-.65;spawnBounce(ball.x,ball.y);}
-  const dx=ball.x-hole.x,dy=ball.y-hole.y;
-  if(Math.sqrt(dx*dx+dy*dy)<hole.r){
-    animating=false;ball.x=hole.x;ball.y=hole.y;
-    spawnHole(hole.x,hole.y);triggerShake(4,10);
-    let cf=55;
-    (function celebLoop(){
-      particles=particles.filter(p=>p.life-->0);particles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=p.g;p.vx*=.96;});
-      waveRings=waveRings.filter(w=>w.life-->0);waveRings.forEach(w=>{w.r+=(w.maxR-w.r)*.12;});
-      draw();if(cf-->0)requestAnimationFrame(celebLoop);
-    })();
-    const diff=shots-par;totalScore+=diff;
-    scorecardData.push({hole:holeIndex+1,par,shots,diff});
-    const se=document.getElementById('scoreNum');
-    se.textContent=totalScore>0?'+'+totalScore:totalScore;
-    se.style.color=totalScore<0?'#00ff88':totalScore>0?'#ff6644':'#fff';
-    setTimeout(()=>showHoleComplete(diff),750);
-    return;
-  }
-  if(Math.abs(ball.vx)<.05&&Math.abs(ball.vy)<.05){
-    ball.vx=0;ball.vy=0;animating=false;
-    if(shotsLeft<=0){setTimeout(showOutOfShots,400);}
-    return;
-  }
-  draw();requestAnimationFrame(update);
-}
-
-function shoot(){
-  if(power>2&&shotsLeft>0){
-    shots++;shotsLeft--;
-    document.getElementById('shotNum').textContent=shotsLeft;
-    if(shotsLeft<=1)document.getElementById('shotsCard').classList.add('warning');
-    updatePips();
-    ball.vx=Math.cos(aimAngle)*power*.18;ball.vy=Math.sin(aimAngle)*power*.18;
-    animating=true;power=0;updatePowerBar();
-    requestAnimationFrame(update);
-  }
-}
-
-canvas.addEventListener('mousedown',e=>{
-  if(animating||shotsLeft<=0)return;
-  const r=canvas.getBoundingClientRect();
-  aimAngle=Math.atan2(e.clientY-r.top-ball.y,e.clientX-r.left-ball.x);
-  aiming=true;charging=true;power=0;draw();
-});
-canvas.addEventListener('mousemove',e=>{
-  if(!aiming||animating)return;
-  const r=canvas.getBoundingClientRect();
-  aimAngle=Math.atan2(e.clientY-r.top-ball.y,e.clientX-r.left-ball.x);draw();
-});
-canvas.addEventListener('mouseup',()=>{if(!aiming||animating)return;aiming=false;charging=false;shoot();draw();});
-canvas.addEventListener('touchstart',e=>{
-  e.preventDefault();if(animating||shotsLeft<=0)return;
-  const r=canvas.getBoundingClientRect(),t=e.touches[0];
-  aimAngle=Math.atan2(t.clientY-r.top-ball.y,t.clientX-r.left-ball.x);
-  aiming=true;charging=true;power=0;draw();
-},{passive:false});
-canvas.addEventListener('touchmove',e=>{
-  e.preventDefault();if(!aiming)return;
-  const r=canvas.getBoundingClientRect(),t=e.touches[0];
-  aimAngle=Math.atan2(t.clientY-r.top-ball.y,t.clientX-r.left-ball.x);draw();
-},{passive:false});
-canvas.addEventListener('touchend',e=>{
-  e.preventDefault();if(!aiming)return;aiming=false;charging=false;shoot();draw();
-},{passive:false});
-
-setInterval(()=>{if(charging&&aiming){power=Math.min(power+1.5,100);updatePowerBar();draw();}},16);
-window.addEventListener('resize',()=>{
-  if(document.getElementById('game-screen').classList.contains('show')){resizeCanvas();loadHole();}
-});
-
-const sv=localStorage.getItem('mgBest');
-document.getElementById('home-best').textContent=sv!==null?(+sv>0?'+'+sv:sv):'—';
-</script>
-</body>
-</html>
+      else
