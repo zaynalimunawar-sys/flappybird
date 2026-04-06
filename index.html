@@ -2,382 +2,337 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Geometry Dash</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; font-family: Arial, sans-serif; overflow: hidden; }
-  canvas { display: block; border: 2px solid #444; }
-  #ui { color: white; font-size: 18px; margin-bottom: 8px; letter-spacing: 2px; }
+  body { background: #000; display: flex; align-items: center; justify-content: center; height: 100vh; }
+  canvas { display: block; }
 </style>
 </head>
 <body>
-<div id="ui">GEOMETRY DASH CLONE &nbsp;|&nbsp; <span id="scoreDisplay">0%</span></div>
-<canvas id="gameCanvas"></canvas>
+<canvas id="c"></canvas>
 <script>
-const canvas = document.getElementById('gameCanvas');
+const canvas = document.getElementById('c');
 const ctx = canvas.getContext('2d');
 canvas.width = 800;
-canvas.height = 400;
+canvas.height = 450;
 
-const GROUND = canvas.height - 60;
-const GRAVITY = 0.65;
-const JUMP_FORCE = -13.5;
-const SPEED = 5.5;
+// ── CONSTANTS ──────────────────────────────────────────────
+const GROUND_Y = 370;       // top of ground
+const PLAYER_SIZE = 36;
+const GRAVITY = 0.7;
+const JUMP_POWER = -14;
+const GAME_SPEED = 3.5;     // pixels per frame (slow & fair)
 
-let gameState = 'menu'; // menu, playing, dead
-let attempts = 1;
-let progress = 0;
+// ── STATE ──────────────────────────────────────────────────
+let state = 'menu';   // menu | playing | dead | win
+let attempt = 1;
+let camX = 0;
+let canJump = false;
+let jumpHeld = false;
 
-// Background layers
-const bgColors = ['#1a1a2e', '#16213e', '#0f3460'];
-let bgOffset = 0;
+const player = { x: 150, y: GROUND_Y - PLAYER_SIZE, vy: 0, rot: 0 };
 
-// Stars
-const stars = Array.from({length: 80}, () => ({
-  x: Math.random() * canvas.width,
-  y: Math.random() * GROUND,
-  r: Math.random() * 1.8 + 0.3,
-  speed: Math.random() * 0.5 + 0.2
-}));
-
-// Player
-const player = {
-  x: 120, y: GROUND - 40,
-  w: 38, h: 38,
-  vy: 0,
-  onGround: false,
-  rotation: 0,
-  dead: false
-};
-
-// Level design: {type: 'spike'|'block'|'platform', x, y, w, h}
-function buildLevel() {
-  const obs = [];
-  let x = 700;
-  const patterns = [
-    () => { obs.push({type:'spike', x, y: GROUND - 38, w: 38, h: 38}); x += 90; },
-    () => { obs.push({type:'spike', x, y: GROUND - 38, w: 38, h: 38}); obs.push({type:'spike', x: x+42, y: GROUND - 38, w: 38, h: 38}); x += 140; },
-    () => { obs.push({type:'block', x, y: GROUND - 40, w: 40, h: 40}); x += 110; },
-    () => { obs.push({type:'block', x, y: GROUND - 40, w: 40, h: 40}); obs.push({type:'spike', x: x+44, y: GROUND - 38, w: 38, h: 38}); x += 140; },
-    () => { obs.push({type:'platform', x, y: GROUND - 100, w: 90, h: 16}); obs.push({type:'spike', x: x+100, y: GROUND - 38, w: 38, h: 38}); x += 180; },
-    () => { for(let i=0;i<3;i++) { obs.push({type:'spike', x: x+i*42, y: GROUND - 38, w: 38, h: 38}); } x += 200; },
-  ];
-  for (let i = 0; i < 35; i++) {
-    const r = Math.floor(Math.random() * patterns.length);
-    patterns[r]();
-    x += Math.random() * 40 + 10;
+// ── LEVEL ──────────────────────────────────────────────────
+// Each object: { type: 'spike'|'block'|'platform', x, y, w, h }
+function makeLevel() {
+  const lvl = [];
+  // Helper: push spike at world x
+  function spike(x) {
+    lvl.push({ type: 'spike', x, y: GROUND_Y - 38, w: 38, h: 38 });
   }
-  return obs;
+  function block(x, y) {
+    y = y ?? GROUND_Y - 40;
+    lvl.push({ type: 'block', x, y, w: 40, h: 40 });
+  }
+  function platform(x, y, w) {
+    lvl.push({ type: 'platform', x, y, w: w ?? 80, h: 16 });
+  }
+
+  // Section 1 — warmup singles
+  spike(600); spike(700); spike(820); spike(920);
+  // Section 2 — double spikes
+  spike(1100); spike(1144); spike(1280); spike(1324);
+  // Section 3 — block jump
+  block(1500); spike(1600); block(1700); spike(1800);
+  // Section 4 — platform section
+  platform(1950, GROUND_Y - 110, 90);
+  spike(2060); spike(2120);
+  // Section 5 — triple spike gauntlet
+  spike(2300); spike(2344); spike(2388);
+  block(2500); spike(2560); block(2620);
+  // Section 6 — fast finish
+  spike(2800); spike(2844); block(2960); spike(3060); spike(3104);
+  platform(3200, GROUND_Y - 120, 100);
+  spike(3320); spike(3364); spike(3408);
+  // End marker
+  lvl.push({ type: 'end', x: 3600, y: 0, w: 10, h: GROUND_Y });
+
+  return lvl;
 }
 
-let obstacles = buildLevel();
-let levelWidth = Math.max(...obstacles.map(o => o.x + o.w)) + 400;
-let cameraX = 0;
+let level = makeLevel();
+const LEVEL_END = 3620;
 
-function resetGame() {
-  player.x = 120; player.y = GROUND - 40;
-  player.vy = 0; player.onGround = false;
-  player.rotation = 0; player.dead = false;
-  cameraX = 0; progress = 0;
-  obstacles = buildLevel();
-  levelWidth = Math.max(...obstacles.map(o => o.x + o.w)) + 400;
+function reset() {
+  player.x = 150;
+  player.y = GROUND_Y - PLAYER_SIZE;
+  player.vy = 0;
+  player.rot = 0;
+  camX = 0;
+  canJump = false;
 }
 
-// Input
-let jumpPressed = false;
+// ── INPUT ──────────────────────────────────────────────────
+function tryJump() {
+  if (state === 'menu') { state = 'playing'; reset(); return; }
+  if (state === 'dead')  { attempt++; state = 'playing'; reset(); return; }
+  if (state === 'win')   { attempt = 1; state = 'playing'; reset(); return; }
+  if (state === 'playing' && canJump) {
+    player.vy = JUMP_POWER;
+    canJump = false;
+  }
+}
+
 document.addEventListener('keydown', e => {
-  if (e.code === 'Space' || e.code === 'ArrowUp') {
-    e.preventDefault();
-    if (gameState === 'menu' || gameState === 'dead') { gameState = 'playing'; attempts++; resetGame(); }
-    else if (gameState === 'playing') jumpPressed = true;
-  }
+  if (e.code === 'Space' || e.code === 'ArrowUp') { e.preventDefault(); tryJump(); }
 });
-canvas.addEventListener('mousedown', () => {
-  if (gameState === 'menu' || gameState === 'dead') { gameState = 'playing'; attempts++; resetGame(); }
-  else if (gameState === 'playing') jumpPressed = true;
-});
-canvas.addEventListener('touchstart', e => {
-  e.preventDefault();
-  if (gameState === 'menu' || gameState === 'dead') { gameState = 'playing'; attempts++; resetGame(); }
-  else if (gameState === 'playing') jumpPressed = true;
-}, {passive: false});
+canvas.addEventListener('mousedown', tryJump);
+canvas.addEventListener('touchstart', e => { e.preventDefault(); tryJump(); }, { passive: false });
 
-function drawBackground() {
-  // Sky gradient
-  const grad = ctx.createLinearGradient(0, 0, 0, GROUND);
-  grad.addColorStop(0, '#0d0d2b');
-  grad.addColorStop(1, '#1a1a4e');
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  // Stars
-  stars.forEach(s => {
-    s.x -= s.speed;
-    if (s.x < 0) s.x = canvas.width;
-    ctx.beginPath();
-    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(255,255,255,0.8)';
-    ctx.fill();
-  });
-}
-
-function drawGround() {
-  // Ground tile effect
-  ctx.fillStyle = '#2d6a2d';
-  ctx.fillRect(0, GROUND, canvas.width, canvas.height - GROUND);
-  ctx.fillStyle = '#3a8a3a';
-  ctx.fillRect(0, GROUND, canvas.width, 8);
-  // Grid lines on ground
-  ctx.strokeStyle = '#1e4d1e';
-  ctx.lineWidth = 1;
-  const tileSize = 40;
-  const offset = (cameraX * SPEED) % tileSize;
-  for (let x = -offset; x < canvas.width; x += tileSize) {
-    ctx.beginPath(); ctx.moveTo(x, GROUND); ctx.lineTo(x, canvas.height); ctx.stroke();
-  }
-}
-
-function drawSpike(x, y, w, h, screenX) {
-  ctx.fillStyle = '#ff4444';
-  ctx.strokeStyle = '#ff0000';
-  ctx.lineWidth = 1.5;
-  ctx.beginPath();
-  ctx.moveTo(screenX, y + h);
-  ctx.lineTo(screenX + w / 2, y);
-  ctx.lineTo(screenX + w, y + h);
-  ctx.closePath();
-  ctx.fill();
-  ctx.stroke();
-  // Shine
-  ctx.fillStyle = 'rgba(255,200,200,0.4)';
-  ctx.beginPath();
-  ctx.moveTo(screenX + w/2, y + 4);
-  ctx.lineTo(screenX + w/2 - 6, y + h - 6);
-  ctx.lineTo(screenX + w/2, y + h - 4);
-  ctx.closePath();
-  ctx.fill();
-}
-
-function drawBlock(x, y, w, h, screenX) {
-  ctx.fillStyle = '#5588ff';
-  ctx.fillRect(screenX, y, w, h);
-  ctx.strokeStyle = '#3366dd';
-  ctx.lineWidth = 2;
-  ctx.strokeRect(screenX, y, w, h);
-  // Inner detail
-  ctx.fillStyle = 'rgba(255,255,255,0.15)';
-  ctx.fillRect(screenX+4, y+4, w-8, 10);
-  ctx.fillStyle = 'rgba(0,0,0,0.1)';
-  ctx.fillRect(screenX+4, y+h-12, w-8, 8);
-}
-
-function drawPlatform(x, y, w, h, screenX) {
-  ctx.fillStyle = '#ffaa00';
-  ctx.fillRect(screenX, y, w, h);
-  ctx.strokeStyle = '#cc8800';
-  ctx.lineWidth = 2;
-  ctx.strokeRect(screenX, y, w, h);
-}
-
-function drawPlayer() {
-  const sx = player.x - cameraX;
-  const sy = player.y;
-  ctx.save();
-  ctx.translate(sx + player.w / 2, sy + player.h / 2);
-  ctx.rotate(player.rotation * Math.PI / 180);
-  // Body
-  ctx.fillStyle = player.dead ? '#888' : '#00eeff';
-  ctx.strokeStyle = player.dead ? '#555' : '#00aacc';
-  ctx.lineWidth = 2.5;
-  ctx.fillRect(-player.w/2, -player.h/2, player.w, player.h);
-  ctx.strokeRect(-player.w/2, -player.h/2, player.w, player.h);
-  // Inner square
-  ctx.fillStyle = player.dead ? '#666' : '#0088aa';
-  ctx.fillRect(-player.w/2+7, -player.h/2+7, player.w-14, player.h-14);
-  // Star/dot
-  ctx.fillStyle = player.dead ? '#aaa' : '#ffffff';
-  ctx.beginPath();
-  ctx.arc(0, 0, 5, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.restore();
-
-  if (!player.dead) {
-    // Trail
-    ctx.fillStyle = 'rgba(0,238,255,0.15)';
-    ctx.fillRect(sx - 30, sy + player.h/2 - 8, 30, 8);
-  }
-}
-
-function drawObstacles() {
-  obstacles.forEach(o => {
-    const sx = o.x - cameraX;
-    if (sx > -100 && sx < canvas.width + 100) {
-      if (o.type === 'spike') drawSpike(o.x, o.y, o.w, o.h, sx);
-      else if (o.type === 'block') drawBlock(o.x, o.y, o.w, o.h, sx);
-      else if (o.type === 'platform') drawPlatform(o.x, o.y, o.w, o.h, sx);
-    }
-  });
-}
-
-function drawHUD() {
-  ctx.fillStyle = 'rgba(0,0,0,0.4)';
-  ctx.fillRect(0, 0, canvas.width, 36);
-  ctx.fillStyle = '#ffffff';
-  ctx.font = 'bold 16px Arial';
-  ctx.fillText(`Attempt ${attempts}`, 12, 22);
-  // Progress bar
-  const barW = 300;
-  const barX = (canvas.width - barW) / 2;
-  ctx.fillStyle = '#333';
-  ctx.fillRect(barX, 10, barW, 16);
-  ctx.fillStyle = '#00ff88';
-  ctx.fillRect(barX, 10, barW * (progress / 100), 16);
-  ctx.strokeStyle = '#fff';
-  ctx.lineWidth = 1;
-  ctx.strokeRect(barX, 10, barW, 16);
-  ctx.fillStyle = '#fff';
-  ctx.font = 'bold 11px Arial';
-  ctx.fillText(Math.floor(progress) + '%', barX + barW/2 - 12, 22);
-}
-
-function drawMenu() {
-  ctx.fillStyle = 'rgba(0,0,0,0.6)';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = '#00eeff';
-  ctx.font = 'bold 52px Arial';
-  ctx.textAlign = 'center';
-  ctx.fillText('GEOMETRY DASH', canvas.width/2, canvas.height/2 - 40);
-  ctx.fillStyle = '#ffffff';
-  ctx.font = '22px Arial';
-  ctx.fillText('Click, Tap, or SPACE to Start', canvas.width/2, canvas.height/2 + 20);
-  ctx.font = '16px Arial';
-  ctx.fillStyle = '#aaa';
-  ctx.fillText('Hold to jump higher! Avoid spikes & walls!', canvas.width/2, canvas.height/2 + 55);
-  ctx.textAlign = 'left';
-}
-
-function drawDead() {
-  ctx.fillStyle = 'rgba(180,0,0,0.35)';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = '#ff4444';
-  ctx.font = 'bold 44px Arial';
-  ctx.textAlign = 'center';
-  ctx.fillText('YOU DIED!', canvas.width/2, canvas.height/2 - 30);
-  ctx.fillStyle = '#ffffff';
-  ctx.font = '20px Arial';
-  ctx.fillText(`Attempt ${attempts} — ${Math.floor(progress)}% complete`, canvas.width/2, canvas.height/2 + 14);
-  ctx.font = '16px Arial';
-  ctx.fillStyle = '#ddd';
-  ctx.fillText('Click, Tap, or SPACE to try again', canvas.width/2, canvas.height/2 + 46);
-  ctx.textAlign = 'left';
-}
-
-function drawWin() {
-  ctx.fillStyle = 'rgba(0,100,0,0.45)';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = '#00ff88';
-  ctx.font = 'bold 48px Arial';
-  ctx.textAlign = 'center';
-  ctx.fillText('LEVEL COMPLETE!', canvas.width/2, canvas.height/2 - 20);
-  ctx.fillStyle = '#fff';
-  ctx.font = '22px Arial';
-  ctx.fillText(`Completed in ${attempts} attempt${attempts !== 1 ? 's' : ''}!`, canvas.width/2, canvas.height/2 + 30);
-  ctx.textAlign = 'left';
-}
-
-// Collision helpers
+// ── HELPERS ────────────────────────────────────────────────
 function rectsOverlap(ax, ay, aw, ah, bx, by, bw, bh) {
   return ax < bx+bw && ax+aw > bx && ay < by+bh && ay+ah > by;
 }
 
-function spikeHit(px, py, pw, ph, sx, sy, sw, sh) {
-  // Triangle-rectangle: shrink hitbox a bit for fairness
-  const cx = sx + sw / 2;
-  const tip = sy;
-  const base = sy + sh;
-  // Simple AABB with shrink
-  return rectsOverlap(px+5, py+5, pw-10, ph-10, sx+6, tip, sw-12, sh-6);
-}
-
+// ── UPDATE ─────────────────────────────────────────────────
 function update() {
-  if (gameState !== 'playing') return;
+  if (state !== 'playing') return;
 
-  // Move camera
-  cameraX += SPEED;
-  progress = Math.min(100, (cameraX / (levelWidth - canvas.width)) * 100);
+  // scroll
+  camX += GAME_SPEED;
 
-  // Player gravity
+  // gravity
   player.vy += GRAVITY;
   player.y += player.vy;
 
-  // Rotation while in air
-  if (!player.onGround) player.rotation += 5;
-  else player.rotation = Math.round(player.rotation / 90) * 90;
-
-  // Ground collision
-  player.onGround = false;
-  if (player.y >= GROUND - player.h) {
-    player.y = GROUND - player.h;
+  // rotate in air
+  const onGround = player.y >= GROUND_Y - PLAYER_SIZE;
+  if (!onGround) {
+    player.rot += 4.5;
+  } else {
+    // snap rotation to nearest 90
+    player.rot = Math.round(player.rot / 90) * 90;
+    player.y = GROUND_Y - PLAYER_SIZE;
     player.vy = 0;
-    player.onGround = true;
+    canJump = true;
   }
-
-  // Jump
-  if (jumpPressed && player.onGround) {
-    player.vy = JUMP_FORCE;
-    player.onGround = false;
-  }
-  jumpPressed = false;
 
   // Obstacle collision
-  obstacles.forEach(o => {
-    const ox = o.x - cameraX;
-    if (o.type === 'spike') {
-      if (spikeHit(player.x - cameraX, player.y, player.w, player.h, ox, o.y, o.w, o.h)) {
-        gameState = 'dead';
-      }
-    } else if (o.type === 'block') {
-      if (rectsOverlap(player.x - cameraX + 3, player.y + 3, player.w-6, player.h-6, ox, o.y, o.w, o.h)) {
-        gameState = 'dead';
-      }
-    } else if (o.type === 'platform') {
-      // Land on top only
-      if (rectsOverlap(player.x - cameraX, player.y, player.w, player.h, ox, o.y, o.w, o.h)) {
-        if (player.vy > 0 && player.y + player.h - player.vy <= o.y + 4) {
-          player.y = o.y - player.h;
+  for (const o of level) {
+    const sx = o.x - camX + player.x; // screen x of obstacle relative to player screen pos
+    // world-space overlap check
+    const px = camX; // camera offset; player is always at screen x=150, world x = camX + (150 - player.x offset)
+    // player world bounds
+    const pwx = camX - 150 + player.x; // actually let's keep player.x fixed at 150 screen
+    // player screen x is always 150
+    const PSX = 150, PSY = player.y;
+
+    const osx = o.x - camX; // obstacle screen x
+
+    if (o.type === 'end') {
+      if (osx <= 150) { state = 'win'; return; }
+    }
+
+    if (o.type === 'block' || o.type === 'platform') {
+      if (rectsOverlap(PSX+3, PSY+3, PLAYER_SIZE-6, PLAYER_SIZE-6, osx, o.y, o.w, o.h)) {
+        // land on top?
+        if (player.vy > 0 && PSY + PLAYER_SIZE - player.vy <= o.y + 5) {
+          player.y = o.y - PLAYER_SIZE;
           player.vy = 0;
-          player.onGround = true;
+          canJump = true;
         } else {
-          gameState = 'dead';
+          // hit side or bottom → die
+          state = 'dead';
+          return;
         }
       }
     }
-  });
 
-  // Win
-  if (cameraX >= levelWidth - canvas.width) {
-    progress = 100;
-    gameState = 'win';
+    if (o.type === 'spike') {
+      // tighter hitbox for spikes (fairness)
+      if (rectsOverlap(PSX+8, PSY+8, PLAYER_SIZE-16, PLAYER_SIZE-16, osx+7, o.y+10, o.w-14, o.h-12)) {
+        state = 'dead';
+        return;
+      }
+    }
   }
 }
 
-function gameLoop() {
-  drawBackground();
+// ── DRAW ───────────────────────────────────────────────────
+function drawBG() {
+  // Sky
+  const g = ctx.createLinearGradient(0,0,0,GROUND_Y);
+  g.addColorStop(0,'#0a0a2a');
+  g.addColorStop(1,'#1a1a5e');
+  ctx.fillStyle = g;
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  // Moving grid lines on sky
+  ctx.strokeStyle = 'rgba(100,100,255,0.08)';
+  ctx.lineWidth = 1;
+  const grid = 60;
+  const ox = camX % grid;
+  for (let x = -ox; x < canvas.width; x += grid) {
+    ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,GROUND_Y); ctx.stroke();
+  }
+  for (let y = 0; y < GROUND_Y; y += grid) {
+    ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(canvas.width,y); ctx.stroke();
+  }
+}
+
+function drawGround() {
+  ctx.fillStyle = '#1a7a1a';
+  ctx.fillRect(0, GROUND_Y, canvas.width, canvas.height - GROUND_Y);
+  ctx.fillStyle = '#22aa22';
+  ctx.fillRect(0, GROUND_Y, canvas.width, 6);
+  // tiles
+  ctx.strokeStyle = '#155a15';
+  ctx.lineWidth = 1;
+  const t = 40, off = camX % t;
+  for (let x = -off; x < canvas.width; x += t) {
+    ctx.beginPath(); ctx.moveTo(x, GROUND_Y); ctx.lineTo(x, canvas.height); ctx.stroke();
+  }
+  for (let y = GROUND_Y; y < canvas.height; y += t) {
+    ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(canvas.width,y); ctx.stroke();
+  }
+}
+
+function drawSpike(sx, o) {
+  ctx.fillStyle = '#ff3333';
+  ctx.strokeStyle = '#cc0000';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(sx, o.y + o.h);
+  ctx.lineTo(sx + o.w/2, o.y);
+  ctx.lineTo(sx + o.w, o.y + o.h);
+  ctx.closePath();
+  ctx.fill(); ctx.stroke();
+  // highlight
+  ctx.fillStyle = 'rgba(255,180,180,0.3)';
+  ctx.beginPath();
+  ctx.moveTo(sx + o.w/2, o.y + 5);
+  ctx.lineTo(sx + o.w/2 - 5, o.y + o.h - 8);
+  ctx.lineTo(sx + o.w/2 + 2, o.y + o.h - 4);
+  ctx.closePath(); ctx.fill();
+}
+
+function drawBlock(sx, o) {
+  ctx.fillStyle = '#4477ff';
+  ctx.fillRect(sx, o.y, o.w, o.h);
+  ctx.strokeStyle = '#2255cc';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(sx, o.y, o.w, o.h);
+  ctx.fillStyle = 'rgba(255,255,255,0.12)';
+  ctx.fillRect(sx+4, o.y+4, o.w-8, 10);
+}
+
+function drawPlatform(sx, o) {
+  ctx.fillStyle = '#ffaa00';
+  ctx.fillRect(sx, o.y, o.w, o.h);
+  ctx.strokeStyle = '#cc7700';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(sx, o.y, o.w, o.h);
+}
+
+function drawObstacles() {
+  for (const o of level) {
+    const sx = o.x - camX;
+    if (sx < -100 || sx > canvas.width + 100) continue;
+    if (o.type === 'spike')    drawSpike(sx, o);
+    if (o.type === 'block')    drawBlock(sx, o);
+    if (o.type === 'platform') drawPlatform(sx, o);
+  }
+}
+
+function drawPlayer() {
+  const sx = 150, sy = player.y;
+  const cx = sx + PLAYER_SIZE/2, cy = sy + PLAYER_SIZE/2;
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(player.rot * Math.PI / 180);
+  // cube body
+  ctx.fillStyle = '#00ddff';
+  ctx.fillRect(-PLAYER_SIZE/2, -PLAYER_SIZE/2, PLAYER_SIZE, PLAYER_SIZE);
+  ctx.strokeStyle = '#009bbb';
+  ctx.lineWidth = 2.5;
+  ctx.strokeRect(-PLAYER_SIZE/2, -PLAYER_SIZE/2, PLAYER_SIZE, PLAYER_SIZE);
+  // inner design
+  ctx.fillStyle = '#006688';
+  ctx.fillRect(-PLAYER_SIZE/2+7, -PLAYER_SIZE/2+7, PLAYER_SIZE-14, PLAYER_SIZE-14);
+  ctx.fillStyle = '#fff';
+  ctx.beginPath(); ctx.arc(0,0,4,0,Math.PI*2); ctx.fill();
+  ctx.restore();
+  // trail
+  ctx.fillStyle = 'rgba(0,220,255,0.1)';
+  ctx.fillRect(sx - 40, sy + PLAYER_SIZE - 10, 40, 8);
+}
+
+function drawHUD() {
+  // progress bar
+  const prog = Math.min(1, camX / (LEVEL_END - canvas.width + 150));
+  const bw = 300, bx = canvas.width/2 - bw/2;
+  ctx.fillStyle = 'rgba(0,0,0,0.5)';
+  ctx.fillRect(bx-2, 10, bw+4, 20);
+  ctx.fillStyle = '#00ff88';
+  ctx.fillRect(bx, 12, bw * prog, 16);
+  ctx.strokeStyle = '#fff';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(bx, 12, bw, 16);
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 11px Arial';
+  ctx.textAlign = 'center';
+  ctx.fillText(Math.floor(prog*100) + '%', canvas.width/2, 24);
+  ctx.textAlign = 'left';
+  ctx.font = 'bold 15px Arial';
+  ctx.fillStyle = '#fff';
+  ctx.fillText('Attempt ' + attempt, 12, 26);
+}
+
+function drawScreen(title, sub, col) {
+  ctx.fillStyle = 'rgba(0,0,0,0.55)';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle = col;
+  ctx.font = 'bold 54px Arial';
+  ctx.textAlign = 'center';
+  ctx.fillText(title, canvas.width/2, canvas.height/2 - 30);
+  ctx.fillStyle = '#eee';
+  ctx.font = '20px Arial';
+  ctx.fillText(sub, canvas.width/2, canvas.height/2 + 20);
+  ctx.fillStyle = '#aaa';
+  ctx.font = '15px Arial';
+  ctx.fillText('Click, tap or SPACE to continue', canvas.width/2, canvas.height/2 + 52);
+  ctx.textAlign = 'left';
+}
+
+// ── LOOP ───────────────────────────────────────────────────
+function loop() {
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  drawBG();
   drawGround();
   drawObstacles();
   drawPlayer();
-  drawHUD();
+  if (state === 'playing' || state === 'dead' || state === 'win') drawHUD();
 
-  if (gameState === 'menu') drawMenu();
-  else if (gameState === 'dead') drawDead();
-  else if (gameState === 'win') drawWin();
+  if (state === 'menu') drawScreen('GEOMETRY DASH', 'A Geometry Dash Clone', '#00ddff');
+  if (state === 'dead')  drawScreen('YOU DIED', 'Attempt ' + attempt + ' — press to retry', '#ff4444');
+  if (state === 'win')   drawScreen('LEVEL COMPLETE!', 'Finished in ' + attempt + ' attempt' + (attempt>1?'s':'') + '!', '#00ff88');
 
   update();
-  requestAnimationFrame(gameLoop);
+  requestAnimationFrame(loop);
 }
 
-gameLoop();
+loop();
 </script>
 </body>
 </html>
