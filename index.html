@@ -1,390 +1,383 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-    <title>Pathogen X - Upgraded</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            background: radial-gradient(ellipse at center, #050f05 0%, #000 100%); 
-            color: #c8f0c8; 
-            font-family: 'Inter', sans-serif; 
-            overflow: hidden; 
-            height: 100vh; 
-            width: 100vw; 
-            user-select: none; 
-            position: relative;
-        }
-        body::before {
-            content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: 
-                radial-gradient(circle at 20% 80%, rgba(0,255,102,0.03) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(0,255,102,0.03) 0%, transparent 50%);
-            animation: bgShift 20s ease-in-out infinite alternate;
-            pointer-events: none;
-        }
-        @keyframes bgShift { 0% { transform: translate(0,0); } 100% { transform: translate(50px, -50px); } }
-
-        .screen { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            display: none; pointer-events: auto; backdrop-filter: blur(2px);
-        }
-        .screen.active { display: flex; }
-
-        /* MENU SCREEN - Enhanced with particles */
-        #menuScreen { flex-direction: column; align-items: center; justify-content: center; 
-            background: radial-gradient(ellipse at center, #0a1f0a 0%, #000 100%);
-        }
-        .logo-icon { font-size: clamp(60px, 20vw, 100px); animation: pulseGlow 2s infinite; margin-bottom: 15px; }
-        @keyframes pulseGlow { 
-            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 20px rgba(0,255,102,0.6)); }
-            50% { transform: scale(1.05); filter: drop-shadow(0 0 40px rgba(0,255,102,0.9)); }
-        }
-        .logo-title { 
-            font-family: 'Orbitron', sans-serif; font-size: clamp(2.2rem, 8vw, 4rem); 
-            color: #00ff66; text-shadow: 0 0 30px rgba(0,255,102,0.8); letter-spacing: 6px; 
-            animation: titleFloat 3s ease-in-out infinite;
-        }
-        @keyframes titleFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
-        .logo-sub { color: #3a7a3a; font-size: 1rem; letter-spacing: 4px; margin: 10px 0 40px; }
-
-        .menu-btns { display: flex; flex-direction: column; gap: 15px; width: clamp(260px, 40vw, 300px); }
-        .mbtn { 
-            width: 100%; padding: 18px 0; border: none; border-radius: 12px; 
-            font-family: 'Orbitron', sans-serif; font-size: clamp(0.9rem, 2.5vw, 1.1rem); 
-            letter-spacing: 2.5px; cursor: pointer; transition: all 0.3s cubic-bezier(0.25,0.8,0.25,1); 
-            text-transform: uppercase; position: relative; overflow: hidden;
-        }
-        .mbtn::before {
-            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; 
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-            transition: left 0.5s;
-        }
-        .mbtn:hover::before { left: 100%; }
-        .mbtn-primary { 
-            background: linear-gradient(135deg, #00cc55, #008833); color: #000; font-weight: 800; 
-            box-shadow: 0 8px 25px rgba(0,204,85,0.4);
-        }
-        .mbtn-primary:hover { 
-            background: linear-gradient(135deg, #00ff66, #00aa44); transform: translateY(-3px) scale(1.02); 
-            box-shadow: 0 12px 35px rgba(0,255,102,0.6);
-        }
-        .mbtn-secondary { background: rgba(10,26,10,0.8); color: #44bb66; border: 2px solid #225533; }
-        .mbtn-secondary:hover { background: rgba(15,42,15,0.9); border-color: #44bb66; transform: translateY(-2px); }
-
-        #howToPlay { display: none; margin-top: 20px; background: rgba(10,26,10,0.9); border: 2px solid #1a3a1a; 
-            border-radius: 12px; padding: 20px 25px; max-width: 340px; color: #5aaa5a; font-size: 0.85rem; 
-            line-height: 1.7; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-
-        /* NAME SCREEN - Card with glassmorphism */
-        #nameScreen { flex-direction: column; align-items: center; justify-content: center; }
-        .ns-card { 
-            background: rgba(10,26,10,0.85); border: 2px solid rgba(26,58,26,0.6); 
-            border-radius: 20px; padding: 35px 40px; max-width: 520px; width: 92%; 
-            backdrop-filter: blur(10px); box-shadow: 0 20px 60px rgba(0,0,0,0.8);
-        }
-        .ns-card h2 { font-family: 'Orbitron', sans-serif; color: #00ff66; font-size: clamp(1.2rem, 4vw, 1.6rem); margin-bottom: 8px; }
-        .ns-hint { color: #3a7a3a; font-size: 0.85rem; margin-bottom: 25px; }
-        .field-label { color: #44aa66; font-size: 0.8rem; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 8px; }
-        #virusName { 
-            width: 100%; background: rgba(5,15,5,0.9); border: 2px solid #225533; border-radius: 10px; 
-            color: #00ff88; font-family: 'Inter', sans-serif; font-size: 1.1rem; padding: 15px 20px; 
-            outline: none; margin-bottom: 25px; letter-spacing: 2px; transition: all 0.3s;
-        }
-        #virusName:focus { border-color: #00ff66; box-shadow: 0 0 0 4px rgba(0,255,102,0.2); transform: scale(1.01); }
-        #virusName::placeholder { color: rgba(26,58,26,0.8); }
-
-        .type-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 15px; }
-        .type-card { 
-            background: rgba(5,15,5,0.9); border: 2px solid rgba(26,58,26,0.7); border-radius: 12px; 
-            padding: 15px 18px; cursor: pointer; transition: all 0.25s cubic-bezier(0.25,0.8,0.25,1); 
-            text-align: center;
-        }
-        .type-card:hover { border-color: #44aa66; transform: translateY(-4px); box-shadow: 0 10px 25px rgba(68,170,102,0.3); }
-        .type-card.active { border-color: #00ff66; background: rgba(3,26,8,0.95); box-shadow: 0 0 0 4px rgba(0,255,102,0.4); }
-        .tc-icon { font-size: 1.8rem; margin-bottom: 8px; }
-        .tc-name { font-family: 'Orbitron', sans-serif; color: #00ff88; font-size: 0.85rem; margin-top: 5px; }
-        .tc-tag { color: #3a7a3a; font-size: 0.7rem; margin-top: 4px; }
-
-        #typeDesc { background: rgba(5,15,5,0.9); border-radius: 10px; padding: 12px 18px; color: #44aa66; 
-            font-size: 0.82rem; line-height: 1.7; min-height: 45px; margin-bottom: 20px; }
-
-        .ns-footer { display: flex; gap: 15px; }
-        .ns-footer .mbtn { flex: 1; font-size: clamp(0.8rem, 2vw, 1rem); }
-
-        /* GAME SCREEN - Modern HUD with icons */
-        #gameScreen { flex-direction: column; }
-        #hud { 
-            display: flex; align-items: center; gap: 10px; padding: 12px 20px; 
-            background: rgba(0,0,0,0.9); border-bottom: 3px solid #0d2a0d; flex-shrink: 0; 
-            flex-wrap: wrap; backdrop-filter: blur(5px);
-        }
-        #virusLabel { 
-            font-family: 'Orbitron', sans-serif; color: #00ff66; font-size: clamp(0.6rem, 2vw, 0.9rem); 
-            flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; 
-            text-shadow: 0 0 10px rgba(0,255,102,0.5);
-        }
-        .hud-stat { 
-            display: flex; flex-direction: column; align-items: center; 
-            background: rgba(10,26,10,0.9); border: 2px solid rgba(26,58,26,0.6); border-radius: 10px; 
-            padding: 8px 12px; min-width: 75px; transition: all 0.3s;
-        }
-        .hud-stat:hover { transform: scale(1.05); box-shadow: 0 5px 20px rgba(0,255,102,0.3); }
-        .hs-lbl { font-size: 0.55rem; color: #3a7a3a; text-transform: uppercase; letter-spacing: 1px; }
-        .hs-val { font-family: 'Orbitron', sans-serif; font-size: clamp(0.7rem, 2.2vw, 0.95rem); font-weight: 800; margin-top: 2px; }
-        .hs-i .hs-val { color: #00ff88; text-shadow: 0 0 8px rgba(0,255,136,0.7); }
-        .hs-d .hs-val { color: #ff4444; text-shadow: 0 0 8px rgba(255,68,68,0.7); }
-        .hs-h .hs-val { color: #88ccff; }
-        .hs-dna .hs-val { color: #ffdd00; text-shadow: 0 0 8px rgba(255,221,0,0.8); }
-        .hud-virus-btn { 
-            background: linear-gradient(135deg, #003311, #005522); border: 2px solid #00aa44; border-radius: 10px; 
-            color: #00ff88; font-family: 'Orbitron', sans-serif; font-size: 0.75rem; padding: 10px 15px; 
-            cursor: pointer; letter-spacing: 1.5px; transition: all 0.25s; white-space: nowrap;
-        }
-        .hud-virus-btn:hover { 
-            background: linear-gradient(135deg, #005522, #008833); border-color: #00ff66; 
-            transform: translateY(-2px) scale(1.05); box-shadow: 0 8px 25px rgba(0,255,102,0.5);
-        }
-
-        /* MAP AREA - Enhanced SVG with glows */
-        #mapArea { position: relative; flex: 1; overflow: hidden; }
-        #svgMap { width: 100%; height: 100%; display: block; filter: drop-shadow(0 0 20px rgba(0,0,0,0.8)); }
-        #bubbleLayer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
-        #dnaPopups { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
-        #msgLog { 
-            position: absolute; bottom: 10px; right: 12px; text-align: right; pointer-events: none; z-index: 10; 
-            max-width: 280px; max-height: 120px; overflow: hidden;
-        }
-        .msg-item { 
-            background: rgba(0,0,0,0.9); border-left: 4px solid #00ff66; color: #88ff88; font-size: 0.7rem; 
-            padding: 6px 12px; margin: 4px 0; display: block; animation: fadeMsg 5s forwards; 
-            border-radius: 0 8px 8px 0; backdrop-filter: blur(5px);
-        }
-        @keyframes fadeMsg { 0%, 70% { opacity: 1; transform: translateX(0); } 100% { opacity: 0; transform: translateX(20px); } }
-
-        /* CURE BAR - Progress ring style */
-        #cureBarWrap { 
-            padding: 10px 20px; background: rgba(0,0,0,0.9); border-top: 2px solid #1a1a3a; flex-shrink: 0; 
-            display: flex; align-items: center; gap: 15px; backdrop-filter: blur(5px);
-        }
-        .cure-icon { font-size: 1.2rem; flex-shrink: 0; filter: drop-shadow(0 0 10px rgba(136,204,255,0.6)); }
-        .cure-track { flex: 1; }
-        .ctl { display: flex; justify-content: space-between; margin-bottom: 5px; }
-        .ctl span { font-size: 0.7rem; color: #8888cc; }
-        .ctl b { font-family: 'Orbitron', sans-serif; color: #aaaaff; font-size: 0.8rem; }
-        .cure-ring { 
-            width: 60px; height: 60px; border-radius: 50%; background: conic-gradient(#3333cc var(--progress, 0deg), #0a0a2a 0deg); 
-            display: flex; align-items: center; justify-content: center; position: relative; margin: 0 auto;
-        }
-        .cure-ring-inner { 
-            width: 40px; height: 40px; border-radius: 50%; background: #050f05; 
-            display: flex; align-items: center; justify-content: center; font-family: 'Orbitron'; 
-            font-size: 0.85rem; color: #88ccff; font-weight: 700;
-        }
-
-        /* VIRUS MENU - Modal with tabs and particles */
-        #virusMenu { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); 
-            z-index: 150; display: none; align-items: center; justify-content: center; 
-            backdrop-filter: blur(8px);
-        }
-        #virusMenu.active { display: flex; }
-        #vmBox { 
-            background: rgba(8,15,8,0.98); border: 3px solid #00aa44; border-radius: 20px; 
-            width: min(700px, 96vw); max-height: 90vh; overflow: hidden; display: flex; flex-direction: column; 
-            box-shadow: 0 0 80px rgba(0,170,68,0.5), 0 30px 80px rgba(0,0,0,0.9); animation: modalSlide 0.4s ease-out;
-        }
-        @keyframes modalSlide { from { opacity: 0; transform: scale(0.9) translateY(50px); } to { opacity: 1; transform: scale(1) translateY(0); } }
-
-        #vmHeader { 
-            background: linear-gradient(90deg, #003311, #005522); padding: 18px 25px; display: flex; align-items: center; gap: 15px; 
-            flex-shrink: 0; position: relative; overflow: hidden;
-        }
-        #vmHeader::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, #00ff66, transparent); }
-        .vm-icon { font-size: 2.2rem; filter: drop-shadow(0 0 15px currentColor); }
-        .vm-title { 
-            font-family: 'Orbitron', sans-serif; color: #00ff66; font-size: clamp(1rem, 3vw, 1.3rem); 
-            letter-spacing: 3px; text-shadow: 0 0 15px rgba(0,255,102,0.8);
-        }
-        .vm-dna-badge { 
-            margin-left: auto; background: linear-gradient(135deg, #1a1400, #332200); border: 2px solid #554400; 
-            border-radius: 25px; padding: 8px 18px; font-family: 'Orbitron', sans-serif; color: #ffdd00; 
-            font-size: 0.9rem; box-shadow: 0 5px 20px rgba(255,221,0,0.4); animation: dnaPulse 2s infinite;
-        }
-        @keyframes dnaPulse { 0%, 100% { box-shadow: 0 5px 20px rgba(255,221,0,0.4); } 50% { box-shadow: 0 5px 30px rgba(255,221,0,0.7); } }
-
-        #vmClose { 
-            background: transparent; border: 2px solid #225533; border-radius: 8px; color: #44aa66; 
-            font-size: 0.8rem; padding: 10px 15px; cursor: pointer; font-family: 'Orbitron', sans-serif; 
-            margin-left: 12px; transition: all 0.3s;
-        }
-        #vmClose:hover { border-color: #00ff66; color: #00ff66; transform: scale(1.05); background: rgba(0,255,102,0.1); }
-
-        #vmTabs { display: flex; gap: 0; border-bottom: 2px solid #1a3a1a; flex-shrink: 0; overflow-x: auto; }
-        .vm-tab { 
-            flex: 1; padding: 14px 12px; background: transparent; border: none; border-bottom: 3px solid transparent; 
-            color: #3a7a3a; font-family: 'Orbitron', sans-serif; font-size: clamp(0.6rem, 1.6vw, 0.75rem); 
-            cursor: pointer; letter-spacing: 1.5px; transition: all 0.3s; white-space: nowrap; text-transform: uppercase;
-        }
-        .vm-tab:hover { color: #44aa66; background: rgba(10,26,10,0.8); }
-        .vm-tab.active { color: #00ff66; border-bottom-color: #00ff66; background: rgba(3,26,8,0.9); }
-
-        #vmContent { flex: 1; overflow-y: auto; padding: 20px 25px; }
-        #vmContent::-webkit-scrollbar { width: 6px; }
-        #vmContent::-webkit-scrollbar-track { background: #050f05; }
-        #vmContent::-webkit-scrollbar-thumb { background: #225533; border-radius: 3px; }
-
-        .vm-section-title { 
-            font-family: 'Orbitron', sans-serif; color: #44aa66; font-size: 0.75rem; letter-spacing: 3px; 
-            text-transform: uppercase; margin: 15px 0 12px; padding-bottom: 6px; border-bottom: 2px solid #1a3a1a;
-        }
-        .evo-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
-        .evo-card { 
-            background: rgba(10,20,10,0.9); border: 2px solid rgba(26,58,26,0.7); border-radius: 16px; 
-            padding: 18px 16px; cursor: pointer; transition: all 0.3s cubic-bezier(0.25,0.8,0.25,1); 
-            text-align: center; position: relative; overflow: hidden;
-        }
-        .evo-card::before {
-            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; 
-            background: radial-gradient(circle, rgba(0,255,102,0.1) 0%, transparent 70%); 
-            opacity: 0; transition: opacity 0.3s;
-        }
-        .evo-card:hover:not(.disabled)::before { opacity: 1; }
-        .evo-card:hover:not(.disabled) { border-color: #44aa66; transform: translateY(-5px) rotate(1deg); box-shadow: 0 15px 40px rgba(68,170,102,0.4); }
-        .evo-card.can-buy { border-color: #00aa44; background: rgba(3,26,8,0.95); }
-        .evo-card.can-buy:hover { border-color: #00ff66; box-shadow: 0 15px 40px rgba(0,255,102,0.6); }
-        .evo-card.maxed { border-color: #ff6600; background: rgba(26,8,0,0.9); cursor: default; }
-        .evo-card.disabled { opacity: 0.4; cursor: default; }
-        .ec-icon { font-size: 2.5rem; margin-bottom: 10px; filter: drop-shadow(0 0 10px currentColor); transition: transform 0.3s; }
-        .evo-card:hover .ec-icon { transform: scale(1.1) rotate(5deg); }
-        .ec-name { font-family: 'Orbitron', sans-serif; color: #00ff88; font-size: 0.75rem; margin-bottom: 6px; }
-        .ec-desc { color: #3a7a3a; font-size: 0.68rem; line-height: 1.6; margin-bottom: 10px; }
-        .ec-cost { font-family: 'Orbitron', sans-serif; font-size: 0.7rem; color: #ffdd00; font-weight: 700; }
-        .ec-lv { position: absolute; top: 10px; right: 12px; font-size: 0.65rem; color: #3a6a3a; font-family: 'Orbitron', sans-serif; }
-        .ec-stars { color: #ffcc00; font-size: 0.85rem; margin-bottom: 6px; }
-        .ec-maxbadge { 
-            background: #ff6600; color: #fff; font-family: 'Orbitron', sans-serif; font-size: 0.65rem; 
-            padding: 4px 10px; border-radius: 15px; display: inline-block; animation: shake 0.5s infinite;
-        }
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-2px); } 75% { transform: translateX(2px); } }
-        .ec-effect { font-size: 0.65rem; color: #00cc66; margin-top: 5px; font-style: italic; }
-
-        /* BUBBLES - Particles on pop */
-        .bubble { 
-            position: absolute; border-radius: 50%; cursor: pointer; pointer-events: auto; 
-            display: flex; align-items: center; justify-content: center; font-size: 1.3rem; 
-            transition: transform 0.12s; box-shadow: 0 0 20px currentColor; animation: bubbleFloat 3s ease-in-out infinite;
-        }
-        @keyframes bubbleFloat { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-10px) scale(1.05); } }
-        .bubble:hover { transform: scale(1.2); }
-        .bubble.active { transform: scale(0.9); }
-        .bubble.bubble-pop { animation: bubblePop 0.4s cubic-bezier(0.25,0.8,0.25,1) forwards !important; }
-        @keyframes bubblePop { 
-            0% { transform: scale(1); opacity: 1; } 
-            50% { transform: scale(1.3); opacity: 0.8; box-shadow: 0 0 40px currentColor; }
-            100% { transform: scale(2); opacity: 0; }
-        }
-        .dna-pop { 
-            position: absolute; font-family: 'Orbitron', sans-serif; font-size: 1rem; font-weight: 900; 
-            pointer-events: none; animation: floatUp 1.2s cubic-bezier(0.25,0.8,0.25,1) forwards; 
-            text-shadow: 0 0 12px currentColor; filter: drop-shadow(0 0 10px currentColor);
-        }
-        @keyframes floatUp { 
-            0% { opacity: 1; transform: translateY(0) scale(1); } 
-            100% { opacity: 0; transform: translateY(-60px) scale(0.8); }
-        }
-
-        /* NEWS OVERLAY - Breaking news with urgency */
-        #newsOverlay { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); 
-            z-index: 200; display: none; align-items: center; justify-content: center; 
-            backdrop-filter: blur(10px);
-        }
-        #newsOverlay.active { display: flex; }
-        #newsBox { 
-            background: rgba(13,13,13,0.98); border: 3px solid #cc2200; border-radius: 20px; 
-            max-width: 480px; width: 92%; overflow: hidden; box-shadow: 0 0 80px rgba(204,34,0,0.6); 
-            animation: newsSlide 0.5s ease-out;
-        }
-        @keyframes newsSlide { from { opacity: 0; transform: scale(0.95) translateY(-30px); } to { opacity: 1; transform: scale(1) translateY(0); } }
-        #newsHeader { 
-            background: linear-gradient(90deg, #cc2200, #ff4400); padding: 15px 25px; display: flex; align-items: center; gap: 15px;
-        }
-        .live-badge { 
-            background: #fff; color: #cc2200; font-family: 'Orbitron', sans-serif; font-size: 0.75rem; font-weight: 900; 
-            padding: 4px 12px; border-radius: 5px; animation: blinkLive 1.2s infinite;
-        }
-        @keyframes blinkLive { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0.3; } }
-        .news-ch { font-family: 'Orbitron', sans-serif; color: #fff; font-size: 0.95rem; letter-spacing: 3px; }
-        .news-time { margin-left: auto; color: #ffaaaa; font-size: 0.75rem; }
-        #newsBody { padding: 25px 30px; }
-        #newsIcon { font-size: 3.2rem; text-align: center; margin-bottom: 15px; filter: drop-shadow(0 0 20px currentColor); }
-        #newsHeadline { 
-            font-family: 'Orbitron', sans-serif; color: #ff5533; font-size: clamp(0.85rem, 2.5vw, 1.1rem); 
-            margin-bottom: 12px; line-height: 1.4; text-align: center; text-shadow: 0 0 10px rgba(255,85,51,0.8);
-        }
-        #newsDivider { height: 2px; background: linear-gradient(90deg, transparent, #333, transparent); margin: 12px 0; }
-        #newsText { color: #99bb99; font-size: 0.85rem; line-height: 1.75; margin-bottom: 15px; }
-        .newsEffect { 
-            display: flex; align-items: flex-start; gap: 10px; background: rgba(10,10,10,0.9); border-radius: 10px; 
-            padding: 12px 18px; margin-bottom: 20px; border-left: 4px solid #ffdd00;
-        }
-        .eff-icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 2px; }
-        .eff-text { color: #ffdd88; font-size: 0.8rem; line-height: 1.6; }
-        #newsClose { 
-            width: 100%; padding: 14px; background: linear-gradient(135deg, #cc2200, #aa1100); border: none; 
-            border-radius: 12px; color: #fff; font-family: 'Orbitron', sans-serif; font-size: 0.85rem; 
-            letter-spacing: 2.5px; cursor: pointer; transition: all 0.3s;
-        }
-        #newsClose:hover { background: linear-gradient(135deg, #ff3300, #cc1100); transform: translateY(-2px); box-shadow: 0 10px 30px rgba(204,34,0,0.6); }
-
-        /* TOOLTIP - Floating info */
-        #tooltip { 
-            position: fixed; background: rgba(10,26,10,0.95); border: 2px solid #225533; border-radius: 12px; 
-            padding: 12px 18px; font-size: 0.75rem; color: #88cc88; pointer-events: none; z-index: 400; 
-            max-width: 220px; line-height: 1.7; backdrop-filter: blur(10px); box-shadow: 0 10px 40px rgba(0,0,0,0.8);
-            display: none; animation: tooltipFade 0.3s ease-out;
-        }
-        @keyframes tooltipFade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* END SCREEN - Victory/Defeat with stats */
-        #endScreen { flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.95); }
-        .end-card { 
-            background: rgba(10,10,10,0.9); border-radius: 25px; padding: 45px 50px; max-width: 480px; width: 90%; 
-            text-align: center; border: 2px solid rgba(26,26,26,0.8); backdrop-filter: blur(10px); 
-            box-shadow: 0 30px 100px rgba(0,0,0,0.9);
-        }
-        #endIcon { font-size: 4.5rem; margin-bottom: 20px; filter: drop-shadow(0 0 30px currentColor); animation: iconPulse 2s infinite; }
-        @keyframes iconPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
-        #endTitle { 
-            font-family: 'Orbitron', sans-serif; font-size: clamp(1.5rem, 6vw, 2.5rem); margin-bottom: 12px; 
-            letter-spacing: 5px; text-shadow: 0 0 30px currentColor;
-        }
-        .endTitle.win { color: #00ff66; }
-        .endTitle.lose { color: #ff3344; }
-        #endScore { 
-            background: rgba(15,15,15,1); border-radius: 12px; padding: 15px 25px; display: inline-block; 
-            font-family: 'Orbitron', sans-serif; color: #ffdd00; font-size: 1.1rem; margin: 12px 0 15px; 
-            box-shadow: inset 0 0 20px rgba(255,221,0,0.3);
-        }
-        #endMsg { color: #668866; font-size: 0.9rem; line-height: 1.8; margin-bottom: 30px; }
-        .end-btns { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
-        .country { fill: #0d2a0d; stroke: #1a4a1a; stroke-width: 0.8; cursor: pointer; transition: all 0.4s; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.5)); }
-        .country:hover { stroke: #00ff66 !important; stroke-width: 2.5; filter: drop-shadow(0 0 15px rgba(0,255,102,0.6)); }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Geometry Dash</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; font-family: Arial, sans-serif; overflow: hidden; }
+  canvas { display: block; border: 2px solid #444; }
+  #ui { color: white; font-size: 18px; margin-bottom: 8px; letter-spacing: 2px; }
+</style>
 </head>
 <body>
-    <!-- MENU -->
-    <div id="menuScreen" class="screen active">
-        <div class="logo-icon">🦠</div>
-        <div class="logo-title">PATHOGEN X</div>
-        <div class="logo-sub">INFECT • EVOLVE • ERADICATE</div>
-        <div class="menu-btns">
-            <button class="mbtn mbtn-primary" onclick="showName()">NEW GAME</button>
-            <button class="mbtn mbtn-secondary" onclick="toggleHowToPlay()">HOW TO PLAY</button>
-        </div>
-        <div id="howToPlay">
-            <b>Goal:</b> Infect & kill all humanity before the cure is complete.<br>
-            <b>Bubbles:</b> Pop
+<div id="ui">GEOMETRY DASH CLONE &nbsp;|&nbsp; <span id="scoreDisplay">0%</span></div>
+<canvas id="gameCanvas"></canvas>
+<script>
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+canvas.width = 800;
+canvas.height = 400;
+
+const GROUND = canvas.height - 60;
+const GRAVITY = 0.65;
+const JUMP_FORCE = -13.5;
+const SPEED = 5.5;
+
+let gameState = 'menu'; // menu, playing, dead
+let attempts = 1;
+let progress = 0;
+
+// Background layers
+const bgColors = ['#1a1a2e', '#16213e', '#0f3460'];
+let bgOffset = 0;
+
+// Stars
+const stars = Array.from({length: 80}, () => ({
+  x: Math.random() * canvas.width,
+  y: Math.random() * GROUND,
+  r: Math.random() * 1.8 + 0.3,
+  speed: Math.random() * 0.5 + 0.2
+}));
+
+// Player
+const player = {
+  x: 120, y: GROUND - 40,
+  w: 38, h: 38,
+  vy: 0,
+  onGround: false,
+  rotation: 0,
+  dead: false
+};
+
+// Level design: {type: 'spike'|'block'|'platform', x, y, w, h}
+function buildLevel() {
+  const obs = [];
+  let x = 700;
+  const patterns = [
+    () => { obs.push({type:'spike', x, y: GROUND - 38, w: 38, h: 38}); x += 90; },
+    () => { obs.push({type:'spike', x, y: GROUND - 38, w: 38, h: 38}); obs.push({type:'spike', x: x+42, y: GROUND - 38, w: 38, h: 38}); x += 140; },
+    () => { obs.push({type:'block', x, y: GROUND - 40, w: 40, h: 40}); x += 110; },
+    () => { obs.push({type:'block', x, y: GROUND - 40, w: 40, h: 40}); obs.push({type:'spike', x: x+44, y: GROUND - 38, w: 38, h: 38}); x += 140; },
+    () => { obs.push({type:'platform', x, y: GROUND - 100, w: 90, h: 16}); obs.push({type:'spike', x: x+100, y: GROUND - 38, w: 38, h: 38}); x += 180; },
+    () => { for(let i=0;i<3;i++) { obs.push({type:'spike', x: x+i*42, y: GROUND - 38, w: 38, h: 38}); } x += 200; },
+  ];
+  for (let i = 0; i < 35; i++) {
+    const r = Math.floor(Math.random() * patterns.length);
+    patterns[r]();
+    x += Math.random() * 40 + 10;
+  }
+  return obs;
+}
+
+let obstacles = buildLevel();
+let levelWidth = Math.max(...obstacles.map(o => o.x + o.w)) + 400;
+let cameraX = 0;
+
+function resetGame() {
+  player.x = 120; player.y = GROUND - 40;
+  player.vy = 0; player.onGround = false;
+  player.rotation = 0; player.dead = false;
+  cameraX = 0; progress = 0;
+  obstacles = buildLevel();
+  levelWidth = Math.max(...obstacles.map(o => o.x + o.w)) + 400;
+}
+
+// Input
+let jumpPressed = false;
+document.addEventListener('keydown', e => {
+  if (e.code === 'Space' || e.code === 'ArrowUp') {
+    e.preventDefault();
+    if (gameState === 'menu' || gameState === 'dead') { gameState = 'playing'; attempts++; resetGame(); }
+    else if (gameState === 'playing') jumpPressed = true;
+  }
+});
+canvas.addEventListener('mousedown', () => {
+  if (gameState === 'menu' || gameState === 'dead') { gameState = 'playing'; attempts++; resetGame(); }
+  else if (gameState === 'playing') jumpPressed = true;
+});
+canvas.addEventListener('touchstart', e => {
+  e.preventDefault();
+  if (gameState === 'menu' || gameState === 'dead') { gameState = 'playing'; attempts++; resetGame(); }
+  else if (gameState === 'playing') jumpPressed = true;
+}, {passive: false});
+
+function drawBackground() {
+  // Sky gradient
+  const grad = ctx.createLinearGradient(0, 0, 0, GROUND);
+  grad.addColorStop(0, '#0d0d2b');
+  grad.addColorStop(1, '#1a1a4e');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Stars
+  stars.forEach(s => {
+    s.x -= s.speed;
+    if (s.x < 0) s.x = canvas.width;
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(255,255,255,0.8)';
+    ctx.fill();
+  });
+}
+
+function drawGround() {
+  // Ground tile effect
+  ctx.fillStyle = '#2d6a2d';
+  ctx.fillRect(0, GROUND, canvas.width, canvas.height - GROUND);
+  ctx.fillStyle = '#3a8a3a';
+  ctx.fillRect(0, GROUND, canvas.width, 8);
+  // Grid lines on ground
+  ctx.strokeStyle = '#1e4d1e';
+  ctx.lineWidth = 1;
+  const tileSize = 40;
+  const offset = (cameraX * SPEED) % tileSize;
+  for (let x = -offset; x < canvas.width; x += tileSize) {
+    ctx.beginPath(); ctx.moveTo(x, GROUND); ctx.lineTo(x, canvas.height); ctx.stroke();
+  }
+}
+
+function drawSpike(x, y, w, h, screenX) {
+  ctx.fillStyle = '#ff4444';
+  ctx.strokeStyle = '#ff0000';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(screenX, y + h);
+  ctx.lineTo(screenX + w / 2, y);
+  ctx.lineTo(screenX + w, y + h);
+  ctx.closePath();
+  ctx.fill();
+  ctx.stroke();
+  // Shine
+  ctx.fillStyle = 'rgba(255,200,200,0.4)';
+  ctx.beginPath();
+  ctx.moveTo(screenX + w/2, y + 4);
+  ctx.lineTo(screenX + w/2 - 6, y + h - 6);
+  ctx.lineTo(screenX + w/2, y + h - 4);
+  ctx.closePath();
+  ctx.fill();
+}
+
+function drawBlock(x, y, w, h, screenX) {
+  ctx.fillStyle = '#5588ff';
+  ctx.fillRect(screenX, y, w, h);
+  ctx.strokeStyle = '#3366dd';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(screenX, y, w, h);
+  // Inner detail
+  ctx.fillStyle = 'rgba(255,255,255,0.15)';
+  ctx.fillRect(screenX+4, y+4, w-8, 10);
+  ctx.fillStyle = 'rgba(0,0,0,0.1)';
+  ctx.fillRect(screenX+4, y+h-12, w-8, 8);
+}
+
+function drawPlatform(x, y, w, h, screenX) {
+  ctx.fillStyle = '#ffaa00';
+  ctx.fillRect(screenX, y, w, h);
+  ctx.strokeStyle = '#cc8800';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(screenX, y, w, h);
+}
+
+function drawPlayer() {
+  const sx = player.x - cameraX;
+  const sy = player.y;
+  ctx.save();
+  ctx.translate(sx + player.w / 2, sy + player.h / 2);
+  ctx.rotate(player.rotation * Math.PI / 180);
+  // Body
+  ctx.fillStyle = player.dead ? '#888' : '#00eeff';
+  ctx.strokeStyle = player.dead ? '#555' : '#00aacc';
+  ctx.lineWidth = 2.5;
+  ctx.fillRect(-player.w/2, -player.h/2, player.w, player.h);
+  ctx.strokeRect(-player.w/2, -player.h/2, player.w, player.h);
+  // Inner square
+  ctx.fillStyle = player.dead ? '#666' : '#0088aa';
+  ctx.fillRect(-player.w/2+7, -player.h/2+7, player.w-14, player.h-14);
+  // Star/dot
+  ctx.fillStyle = player.dead ? '#aaa' : '#ffffff';
+  ctx.beginPath();
+  ctx.arc(0, 0, 5, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+
+  if (!player.dead) {
+    // Trail
+    ctx.fillStyle = 'rgba(0,238,255,0.15)';
+    ctx.fillRect(sx - 30, sy + player.h/2 - 8, 30, 8);
+  }
+}
+
+function drawObstacles() {
+  obstacles.forEach(o => {
+    const sx = o.x - cameraX;
+    if (sx > -100 && sx < canvas.width + 100) {
+      if (o.type === 'spike') drawSpike(o.x, o.y, o.w, o.h, sx);
+      else if (o.type === 'block') drawBlock(o.x, o.y, o.w, o.h, sx);
+      else if (o.type === 'platform') drawPlatform(o.x, o.y, o.w, o.h, sx);
+    }
+  });
+}
+
+function drawHUD() {
+  ctx.fillStyle = 'rgba(0,0,0,0.4)';
+  ctx.fillRect(0, 0, canvas.width, 36);
+  ctx.fillStyle = '#ffffff';
+  ctx.font = 'bold 16px Arial';
+  ctx.fillText(`Attempt ${attempts}`, 12, 22);
+  // Progress bar
+  const barW = 300;
+  const barX = (canvas.width - barW) / 2;
+  ctx.fillStyle = '#333';
+  ctx.fillRect(barX, 10, barW, 16);
+  ctx.fillStyle = '#00ff88';
+  ctx.fillRect(barX, 10, barW * (progress / 100), 16);
+  ctx.strokeStyle = '#fff';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(barX, 10, barW, 16);
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 11px Arial';
+  ctx.fillText(Math.floor(progress) + '%', barX + barW/2 - 12, 22);
+}
+
+function drawMenu() {
+  ctx.fillStyle = 'rgba(0,0,0,0.6)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#00eeff';
+  ctx.font = 'bold 52px Arial';
+  ctx.textAlign = 'center';
+  ctx.fillText('GEOMETRY DASH', canvas.width/2, canvas.height/2 - 40);
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '22px Arial';
+  ctx.fillText('Click, Tap, or SPACE to Start', canvas.width/2, canvas.height/2 + 20);
+  ctx.font = '16px Arial';
+  ctx.fillStyle = '#aaa';
+  ctx.fillText('Hold to jump higher! Avoid spikes & walls!', canvas.width/2, canvas.height/2 + 55);
+  ctx.textAlign = 'left';
+}
+
+function drawDead() {
+  ctx.fillStyle = 'rgba(180,0,0,0.35)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#ff4444';
+  ctx.font = 'bold 44px Arial';
+  ctx.textAlign = 'center';
+  ctx.fillText('YOU DIED!', canvas.width/2, canvas.height/2 - 30);
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '20px Arial';
+  ctx.fillText(`Attempt ${attempts} — ${Math.floor(progress)}% complete`, canvas.width/2, canvas.height/2 + 14);
+  ctx.font = '16px Arial';
+  ctx.fillStyle = '#ddd';
+  ctx.fillText('Click, Tap, or SPACE to try again', canvas.width/2, canvas.height/2 + 46);
+  ctx.textAlign = 'left';
+}
+
+function drawWin() {
+  ctx.fillStyle = 'rgba(0,100,0,0.45)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#00ff88';
+  ctx.font = 'bold 48px Arial';
+  ctx.textAlign = 'center';
+  ctx.fillText('LEVEL COMPLETE!', canvas.width/2, canvas.height/2 - 20);
+  ctx.fillStyle = '#fff';
+  ctx.font = '22px Arial';
+  ctx.fillText(`Completed in ${attempts} attempt${attempts !== 1 ? 's' : ''}!`, canvas.width/2, canvas.height/2 + 30);
+  ctx.textAlign = 'left';
+}
+
+// Collision helpers
+function rectsOverlap(ax, ay, aw, ah, bx, by, bw, bh) {
+  return ax < bx+bw && ax+aw > bx && ay < by+bh && ay+ah > by;
+}
+
+function spikeHit(px, py, pw, ph, sx, sy, sw, sh) {
+  // Triangle-rectangle: shrink hitbox a bit for fairness
+  const cx = sx + sw / 2;
+  const tip = sy;
+  const base = sy + sh;
+  // Simple AABB with shrink
+  return rectsOverlap(px+5, py+5, pw-10, ph-10, sx+6, tip, sw-12, sh-6);
+}
+
+function update() {
+  if (gameState !== 'playing') return;
+
+  // Move camera
+  cameraX += SPEED;
+  progress = Math.min(100, (cameraX / (levelWidth - canvas.width)) * 100);
+
+  // Player gravity
+  player.vy += GRAVITY;
+  player.y += player.vy;
+
+  // Rotation while in air
+  if (!player.onGround) player.rotation += 5;
+  else player.rotation = Math.round(player.rotation / 90) * 90;
+
+  // Ground collision
+  player.onGround = false;
+  if (player.y >= GROUND - player.h) {
+    player.y = GROUND - player.h;
+    player.vy = 0;
+    player.onGround = true;
+  }
+
+  // Jump
+  if (jumpPressed && player.onGround) {
+    player.vy = JUMP_FORCE;
+    player.onGround = false;
+  }
+  jumpPressed = false;
+
+  // Obstacle collision
+  obstacles.forEach(o => {
+    const ox = o.x - cameraX;
+    if (o.type === 'spike') {
+      if (spikeHit(player.x - cameraX, player.y, player.w, player.h, ox, o.y, o.w, o.h)) {
+        gameState = 'dead';
+      }
+    } else if (o.type === 'block') {
+      if (rectsOverlap(player.x - cameraX + 3, player.y + 3, player.w-6, player.h-6, ox, o.y, o.w, o.h)) {
+        gameState = 'dead';
+      }
+    } else if (o.type === 'platform') {
+      // Land on top only
+      if (rectsOverlap(player.x - cameraX, player.y, player.w, player.h, ox, o.y, o.w, o.h)) {
+        if (player.vy > 0 && player.y + player.h - player.vy <= o.y + 4) {
+          player.y = o.y - player.h;
+          player.vy = 0;
+          player.onGround = true;
+        } else {
+          gameState = 'dead';
+        }
+      }
+    }
+  });
+
+  // Win
+  if (cameraX >= levelWidth - canvas.width) {
+    progress = 100;
+    gameState = 'win';
+  }
+}
+
+function gameLoop() {
+  drawBackground();
+  drawGround();
+  drawObstacles();
+  drawPlayer();
+  drawHUD();
+
+  if (gameState === 'menu') drawMenu();
+  else if (gameState === 'dead') drawDead();
+  else if (gameState === 'win') drawWin();
+
+  update();
+  requestAnimationFrame(gameLoop);
+}
+
+gameLoop();
+</script>
+</body>
+</html>
