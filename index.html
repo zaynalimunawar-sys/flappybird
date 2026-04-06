@@ -1,786 +1,390 @@
-import os
-os.makedirs('/output', exist_ok=True)
-
-html = r'''<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
-<title>Pathogen X</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet"/>
-<style>
-*{margin:0;padding:0;box-sizing:border-box;}
-body{background:#050f05;color:#c8f0c8;font-family:'Inter',sans-serif;overflow:hidden;height:100vh;width:100vw;user-select:none;}
-.screen{position:fixed;top:0;left:0;width:100%;height:100%;display:none;pointer-events:auto;}
-.screen.active{display:flex;}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <title>Pathogen X - Upgraded</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            background: radial-gradient(ellipse at center, #050f05 0%, #000 100%); 
+            color: #c8f0c8; 
+            font-family: 'Inter', sans-serif; 
+            overflow: hidden; 
+            height: 100vh; 
+            width: 100vw; 
+            user-select: none; 
+            position: relative;
+        }
+        body::before {
+            content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(0,255,102,0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0,255,102,0.03) 0%, transparent 50%);
+            animation: bgShift 20s ease-in-out infinite alternate;
+            pointer-events: none;
+        }
+        @keyframes bgShift { 0% { transform: translate(0,0); } 100% { transform: translate(50px, -50px); } }
 
-/* MENU */
-#menuScreen{flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(ellipse at center,#0a1f0a 0%,#000 100%);}
-.logo-icon{font-size:80px;animation:pulse 2s infinite;margin-bottom:10px;}
-@keyframes pulse{0%,100%{transform:scale(1);filter:drop-shadow(0 0 14px #00ff66);}50%{transform:scale(1.1);filter:drop-shadow(0 0 34px #00ff66);}}
-.logo-title{font-family:'Orbitron',sans-serif;font-size:clamp(2rem,6vw,3.6rem);color:#00ff66;text-shadow:0 0 28px #00ff6688;letter-spacing:5px;}
-.logo-sub{color:#3a7a3a;font-size:0.82rem;letter-spacing:3px;margin:6px 0 36px;}
-.menu-btns{display:flex;flex-direction:column;gap:10px;width:250px;}
-.mbtn{width:100%;padding:13px 0;border:none;border-radius:7px;font-family:'Orbitron',sans-serif;font-size:0.82rem;letter-spacing:2px;cursor:pointer;transition:all 0.2s;text-transform:uppercase;}
-.mbtn-primary{background:linear-gradient(135deg,#00cc55,#008833);color:#000;font-weight:700;}
-.mbtn-primary:hover{background:linear-gradient(135deg,#00ff66,#00aa44);transform:translateY(-2px);box-shadow:0 6px 22px #00ff6644;}
-.mbtn-secondary{background:#0a1a0a;color:#44bb66;border:1px solid #225533;}
-.mbtn-secondary:hover{background:#0f2a0f;border-color:#44bb66;}
-#howToPlay{display:none;margin-top:14px;background:#0a1a0a;border:1px solid #1a3a1a;border-radius:8px;padding:14px 18px;max-width:310px;color:#5aaa5a;font-size:0.76rem;line-height:2.0;}
-#howToPlay b{color:#00ff88;}
+        .screen { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            display: none; pointer-events: auto; backdrop-filter: blur(2px);
+        }
+        .screen.active { display: flex; }
 
-/* NAME */
-#nameScreen{flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(ellipse at center,#0a1f0a 0%,#000 100%);}
-.ns-card{background:#0a1a0a;border:1px solid #1a3a1a;border-radius:12px;padding:26px 30px;max-width:480px;width:92%;}
-.ns-card h2{font-family:'Orbitron',sans-serif;color:#00ff66;font-size:clamp(1rem,3vw,1.4rem);margin-bottom:4px;}
-.ns-hint{color:#3a7a3a;font-size:0.76rem;margin-bottom:18px;}
-.field-label{color:#44aa66;font-size:0.72rem;letter-spacing:1px;text-transform:uppercase;margin-bottom:5px;}
-#virusName{width:100%;background:#050f05;border:1.5px solid #225533;border-radius:6px;color:#00ff88;font-family:'Inter',sans-serif;font-size:1rem;padding:10px 14px;outline:none;margin-bottom:18px;letter-spacing:2px;}
-#virusName:focus{border-color:#00ff66;box-shadow:0 0 0 3px #00ff6618;}
-#virusName::placeholder{color:#1a3a1a;}
-.type-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
-.type-card{background:#050f05;border:1.5px solid #1a3a1a;border-radius:8px;padding:10px 12px;cursor:pointer;transition:all 0.16s;}
-.type-card:hover{border-color:#44aa66;}
-.type-card.active{border-color:#00ff66;background:#031a0a;box-shadow:0 0 0 2px #00ff6625;}
-.tc-icon{font-size:1.4rem;}
-.tc-name{font-family:'Orbitron',sans-serif;color:#00ff88;font-size:0.7rem;margin-top:3px;}
-.tc-tag{color:#3a7a3a;font-size:0.62rem;margin-top:2px;}
-#typeDesc{background:#050f05;border-radius:6px;padding:8px 12px;color:#44aa66;font-size:0.74rem;line-height:1.65;min-height:36px;margin-bottom:16px;}
-.ns-footer{display:flex;gap:10px;}
-.ns-footer .mbtn{flex:1;}
+        /* MENU SCREEN - Enhanced with particles */
+        #menuScreen { flex-direction: column; align-items: center; justify-content: center; 
+            background: radial-gradient(ellipse at center, #0a1f0a 0%, #000 100%);
+        }
+        .logo-icon { font-size: clamp(60px, 20vw, 100px); animation: pulseGlow 2s infinite; margin-bottom: 15px; }
+        @keyframes pulseGlow { 
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 20px rgba(0,255,102,0.6)); }
+            50% { transform: scale(1.05); filter: drop-shadow(0 0 40px rgba(0,255,102,0.9)); }
+        }
+        .logo-title { 
+            font-family: 'Orbitron', sans-serif; font-size: clamp(2.2rem, 8vw, 4rem); 
+            color: #00ff66; text-shadow: 0 0 30px rgba(0,255,102,0.8); letter-spacing: 6px; 
+            animation: titleFloat 3s ease-in-out infinite;
+        }
+        @keyframes titleFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+        .logo-sub { color: #3a7a3a; font-size: 1rem; letter-spacing: 4px; margin: 10px 0 40px; }
 
-/* GAME */
-#gameScreen{flex-direction:column;}
+        .menu-btns { display: flex; flex-direction: column; gap: 15px; width: clamp(260px, 40vw, 300px); }
+        .mbtn { 
+            width: 100%; padding: 18px 0; border: none; border-radius: 12px; 
+            font-family: 'Orbitron', sans-serif; font-size: clamp(0.9rem, 2.5vw, 1.1rem); 
+            letter-spacing: 2.5px; cursor: pointer; transition: all 0.3s cubic-bezier(0.25,0.8,0.25,1); 
+            text-transform: uppercase; position: relative; overflow: hidden;
+        }
+        .mbtn::before {
+            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; 
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+        .mbtn:hover::before { left: 100%; }
+        .mbtn-primary { 
+            background: linear-gradient(135deg, #00cc55, #008833); color: #000; font-weight: 800; 
+            box-shadow: 0 8px 25px rgba(0,204,85,0.4);
+        }
+        .mbtn-primary:hover { 
+            background: linear-gradient(135deg, #00ff66, #00aa44); transform: translateY(-3px) scale(1.02); 
+            box-shadow: 0 12px 35px rgba(0,255,102,0.6);
+        }
+        .mbtn-secondary { background: rgba(10,26,10,0.8); color: #44bb66; border: 2px solid #225533; }
+        .mbtn-secondary:hover { background: rgba(15,42,15,0.9); border-color: #44bb66; transform: translateY(-2px); }
 
-/* HUD */
-#hud{display:flex;align-items:center;gap:6px;padding:6px 12px;background:#000000cc;border-bottom:2px solid #0d2a0d;flex-shrink:0;flex-wrap:wrap;}
-#virusLabel{font-family:'Orbitron',sans-serif;color:#00ff66;font-size:clamp(0.52rem,1.5vw,0.78rem);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.hud-stat{display:flex;flex-direction:column;align-items:center;background:#0a1a0a;border:1px solid #1a3a1a;border-radius:6px;padding:3px 9px;min-width:64px;}
-.hs-lbl{font-size:0.5rem;color:#3a7a3a;text-transform:uppercase;letter-spacing:0.8px;}
-.hs-val{font-family:'Orbitron',sans-serif;font-size:clamp(0.6rem,1.7vw,0.82rem);font-weight:700;margin-top:1px;}
-.hs-i .hs-val{color:#00ff88;} .hs-d .hs-val{color:#ff4444;} .hs-h .hs-val{color:#88ccff;} .hs-dna .hs-val{color:#ffdd00;}
-.hud-virus-btn{background:linear-gradient(135deg,#003311,#005522);border:1.5px solid #00aa44;border-radius:7px;color:#00ff88;font-family:'Orbitron',sans-serif;font-size:0.65rem;padding:5px 10px;cursor:pointer;letter-spacing:1px;transition:all 0.18s;white-space:nowrap;}
-.hud-virus-btn:hover{background:linear-gradient(135deg,#005522,#008833);border-color:#00ff66;transform:translateY(-1px);}
+        #howToPlay { display: none; margin-top: 20px; background: rgba(10,26,10,0.9); border: 2px solid #1a3a1a; 
+            border-radius: 12px; padding: 20px 25px; max-width: 340px; color: #5aaa5a; font-size: 0.85rem; 
+            line-height: 1.7; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
 
-/* MAP */
-#mapArea{position:relative;flex:1;overflow:hidden;}
-#svgMap{width:100%;height:100%;display:block;}
-#bubbleLayer{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;}
-#dnaPopups{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;}
-#msgLog{position:absolute;bottom:6px;right:8px;text-align:right;pointer-events:none;z-index:5;max-width:260px;}
-.msg-item{background:#000000dd;border-left:3px solid #00ff66;color:#88ff88;font-size:0.64rem;padding:3px 8px;margin:2px 0;display:block;animation:fadeMsg 4s forwards;border-radius:0 4px 4px 0;}
-@keyframes fadeMsg{0%,60%{opacity:1;}100%{opacity:0;}}
+        /* NAME SCREEN - Card with glassmorphism */
+        #nameScreen { flex-direction: column; align-items: center; justify-content: center; }
+        .ns-card { 
+            background: rgba(10,26,10,0.85); border: 2px solid rgba(26,58,26,0.6); 
+            border-radius: 20px; padding: 35px 40px; max-width: 520px; width: 92%; 
+            backdrop-filter: blur(10px); box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+        }
+        .ns-card h2 { font-family: 'Orbitron', sans-serif; color: #00ff66; font-size: clamp(1.2rem, 4vw, 1.6rem); margin-bottom: 8px; }
+        .ns-hint { color: #3a7a3a; font-size: 0.85rem; margin-bottom: 25px; }
+        .field-label { color: #44aa66; font-size: 0.8rem; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 8px; }
+        #virusName { 
+            width: 100%; background: rgba(5,15,5,0.9); border: 2px solid #225533; border-radius: 10px; 
+            color: #00ff88; font-family: 'Inter', sans-serif; font-size: 1.1rem; padding: 15px 20px; 
+            outline: none; margin-bottom: 25px; letter-spacing: 2px; transition: all 0.3s;
+        }
+        #virusName:focus { border-color: #00ff66; box-shadow: 0 0 0 4px rgba(0,255,102,0.2); transform: scale(1.01); }
+        #virusName::placeholder { color: rgba(26,58,26,0.8); }
 
-/* CURE BAR */
-#cureBarWrap{padding:5px 14px;background:#000000cc;border-top:1px solid #1a1a3a;flex-shrink:0;display:flex;align-items:center;gap:10px;}
-.cure-icon{font-size:0.95rem;flex-shrink:0;}
-.cure-track{flex:1;}
-.ctl{display:flex;justify-content:space-between;margin-bottom:2px;}
-.ctl span{font-size:0.62rem;color:#8888cc;} .ctl b{font-family:'Orbitron',sans-serif;color:#aaaaff;font-size:0.68rem;}
-#cureBarOuter{width:100%;height:7px;background:#0a0a2a;border-radius:4px;overflow:hidden;}
-#cureBarInner{height:100%;width:0%;background:linear-gradient(90deg,#3333cc,#8888ff,#ccccff);border-radius:4px;transition:width 0.4s;}
+        .type-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 15px; }
+        .type-card { 
+            background: rgba(5,15,5,0.9); border: 2px solid rgba(26,58,26,0.7); border-radius: 12px; 
+            padding: 15px 18px; cursor: pointer; transition: all 0.25s cubic-bezier(0.25,0.8,0.25,1); 
+            text-align: center;
+        }
+        .type-card:hover { border-color: #44aa66; transform: translateY(-4px); box-shadow: 0 10px 25px rgba(68,170,102,0.3); }
+        .type-card.active { border-color: #00ff66; background: rgba(3,26,8,0.95); box-shadow: 0 0 0 4px rgba(0,255,102,0.4); }
+        .tc-icon { font-size: 1.8rem; margin-bottom: 8px; }
+        .tc-name { font-family: 'Orbitron', sans-serif; color: #00ff88; font-size: 0.85rem; margin-top: 5px; }
+        .tc-tag { color: #3a7a3a; font-size: 0.7rem; margin-top: 4px; }
 
-/* ══ VIRUS UPGRADE MENU ══ */
-#virusMenu{position:fixed;top:0;left:0;width:100%;height:100%;background:#000000bb;z-index:150;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
-#virusMenu.active{display:flex;}
-#vmBox{background:#080f08;border:2px solid #00aa44;border-radius:14px;width:min(640px,96vw);max-height:88vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 0 60px #00aa4433,0 20px 60px #00000099;}
-#vmHeader{background:linear-gradient(90deg,#003311,#005522);padding:12px 18px;display:flex;align-items:center;gap:12px;flex-shrink:0;}
-#vmHeader .vm-icon{font-size:1.8rem;}
-.vm-title{font-family:'Orbitron',sans-serif;color:#00ff66;font-size:clamp(0.85rem,2.5vw,1.1rem);letter-spacing:2px;}
-.vm-dna-badge{margin-left:auto;background:#1a1400;border:1px solid #554400;border-radius:20px;padding:4px 12px;font-family:'Orbitron',sans-serif;color:#ffdd00;font-size:0.78rem;}
-#vmClose{background:transparent;border:1px solid #225533;border-radius:5px;color:#44aa66;font-size:0.7rem;padding:5px 10px;cursor:pointer;font-family:'Orbitron',sans-serif;margin-left:8px;}
-#vmClose:hover{border-color:#00ff66;color:#00ff66;}
-#vmTabs{display:flex;gap:0;border-bottom:1px solid #1a3a1a;flex-shrink:0;overflow-x:auto;}
-.vm-tab{flex:1;padding:9px 6px;background:transparent;border:none;border-bottom:2px solid transparent;color:#3a7a3a;font-family:'Orbitron',sans-serif;font-size:clamp(0.5rem,1.4vw,0.65rem);cursor:pointer;letter-spacing:1px;transition:all 0.18s;white-space:nowrap;text-transform:uppercase;}
-.vm-tab:hover{color:#44aa66;background:#0a1a0a;}
-.vm-tab.active{color:#00ff66;border-bottom-color:#00ff66;background:#031a0a;}
-#vmContent{flex:1;overflow-y:auto;padding:14px 16px;}
-#vmContent::-webkit-scrollbar{width:4px;}
-#vmContent::-webkit-scrollbar-track{background:#050f05;}
-#vmContent::-webkit-scrollbar-thumb{background:#225533;border-radius:2px;}
+        #typeDesc { background: rgba(5,15,5,0.9); border-radius: 10px; padding: 12px 18px; color: #44aa66; 
+            font-size: 0.82rem; line-height: 1.7; min-height: 45px; margin-bottom: 20px; }
 
-/* Upgrade cards inside menu */
-.vm-section-title{font-family:'Orbitron',sans-serif;color:#44aa66;font-size:0.65rem;letter-spacing:2px;text-transform:uppercase;margin:10px 0 8px;padding-bottom:4px;border-bottom:1px solid #1a3a1a;}
-.evo-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;}
-.evo-card{background:#0a140a;border:1.5px solid #1a3a1a;border-radius:10px;padding:12px 10px;cursor:pointer;transition:all 0.18s;text-align:center;position:relative;}
-.evo-card:hover:not(.disabled){background:#0f2a0f;border-color:#44aa66;transform:translateY(-2px);}
-.evo-card.can-buy{border-color:#00aa44;background:#031a08;}
-.evo-card.can-buy:hover{border-color:#00ff66;background:#052a10;box-shadow:0 4px 16px #00ff6622;}
-.evo-card.maxed{border-color:#ff6600;background:#1a0800;cursor:default;}
-.evo-card.disabled{opacity:0.3;cursor:default;}
-.ec-icon{font-size:2rem;margin-bottom:6px;}
-.ec-name{font-family:'Orbitron',sans-serif;color:#00ff88;font-size:0.65rem;margin-bottom:3px;}
-.ec-desc{color:#3a7a3a;font-size:0.6rem;line-height:1.5;margin-bottom:6px;}
-.ec-cost{font-family:'Orbitron',sans-serif;font-size:0.62rem;color:#ffdd00;}
-.ec-lv{position:absolute;top:6px;right:8px;font-size:0.55rem;color:#3a6a3a;font-family:'Orbitron',sans-serif;}
-.ec-stars{color:#ffcc00;font-size:0.7rem;margin-bottom:4px;}
-.ec-maxbadge{background:#ff6600;color:#fff;font-family:'Orbitron',sans-serif;font-size:0.55rem;padding:2px 6px;border-radius:10px;display:inline-block;}
-.ec-effect{font-size:0.58rem;color:#00cc66;margin-top:3px;}
+        .ns-footer { display: flex; gap: 15px; }
+        .ns-footer .mbtn { flex: 1; font-size: clamp(0.8rem, 2vw, 1rem); }
 
-/* Bubble pop styles */
-.bubble{position:absolute;border-radius:50%;cursor:pointer;pointer-events:auto;display:flex;align-items:center;justify-content:center;font-size:1.1rem;transition:transform 0.08s;animation:bubbleIn 0.3s ease-out;}
-@keyframes bubbleIn{from{transform:scale(0);}to{transform:scale(1);}}
-.bubble:hover{transform:scale(1.15);}
-.bubble:active{transform:scale(0.88);}
-.bubble-pop{animation:bubblePop 0.35s ease-out forwards !important;}
-@keyframes bubblePop{0%{transform:scale(1);opacity:1;}60%{transform:scale(1.5);opacity:0.6;}100%{transform:scale(2);opacity:0;}}
+        /* GAME SCREEN - Modern HUD with icons */
+        #gameScreen { flex-direction: column; }
+        #hud { 
+            display: flex; align-items: center; gap: 10px; padding: 12px 20px; 
+            background: rgba(0,0,0,0.9); border-bottom: 3px solid #0d2a0d; flex-shrink: 0; 
+            flex-wrap: wrap; backdrop-filter: blur(5px);
+        }
+        #virusLabel { 
+            font-family: 'Orbitron', sans-serif; color: #00ff66; font-size: clamp(0.6rem, 2vw, 0.9rem); 
+            flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; 
+            text-shadow: 0 0 10px rgba(0,255,102,0.5);
+        }
+        .hud-stat { 
+            display: flex; flex-direction: column; align-items: center; 
+            background: rgba(10,26,10,0.9); border: 2px solid rgba(26,58,26,0.6); border-radius: 10px; 
+            padding: 8px 12px; min-width: 75px; transition: all 0.3s;
+        }
+        .hud-stat:hover { transform: scale(1.05); box-shadow: 0 5px 20px rgba(0,255,102,0.3); }
+        .hs-lbl { font-size: 0.55rem; color: #3a7a3a; text-transform: uppercase; letter-spacing: 1px; }
+        .hs-val { font-family: 'Orbitron', sans-serif; font-size: clamp(0.7rem, 2.2vw, 0.95rem); font-weight: 800; margin-top: 2px; }
+        .hs-i .hs-val { color: #00ff88; text-shadow: 0 0 8px rgba(0,255,136,0.7); }
+        .hs-d .hs-val { color: #ff4444; text-shadow: 0 0 8px rgba(255,68,68,0.7); }
+        .hs-h .hs-val { color: #88ccff; }
+        .hs-dna .hs-val { color: #ffdd00; text-shadow: 0 0 8px rgba(255,221,0,0.8); }
+        .hud-virus-btn { 
+            background: linear-gradient(135deg, #003311, #005522); border: 2px solid #00aa44; border-radius: 10px; 
+            color: #00ff88; font-family: 'Orbitron', sans-serif; font-size: 0.75rem; padding: 10px 15px; 
+            cursor: pointer; letter-spacing: 1.5px; transition: all 0.25s; white-space: nowrap;
+        }
+        .hud-virus-btn:hover { 
+            background: linear-gradient(135deg, #005522, #008833); border-color: #00ff66; 
+            transform: translateY(-2px) scale(1.05); box-shadow: 0 8px 25px rgba(0,255,102,0.5);
+        }
 
-/* DNA pop */
-.dna-pop{position:absolute;font-family:'Orbitron',sans-serif;font-size:0.88rem;font-weight:700;pointer-events:none;animation:floatUp 1s ease-out forwards;text-shadow:0 0 8px currentColor;}
-@keyframes floatUp{0%{opacity:1;transform:translateY(0) scale(1);}100%{opacity:0;transform:translateY(-52px) scale(0.8);}}
+        /* MAP AREA - Enhanced SVG with glows */
+        #mapArea { position: relative; flex: 1; overflow: hidden; }
+        #svgMap { width: 100%; height: 100%; display: block; filter: drop-shadow(0 0 20px rgba(0,0,0,0.8)); }
+        #bubbleLayer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+        #dnaPopups { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+        #msgLog { 
+            position: absolute; bottom: 10px; right: 12px; text-align: right; pointer-events: none; z-index: 10; 
+            max-width: 280px; max-height: 120px; overflow: hidden;
+        }
+        .msg-item { 
+            background: rgba(0,0,0,0.9); border-left: 4px solid #00ff66; color: #88ff88; font-size: 0.7rem; 
+            padding: 6px 12px; margin: 4px 0; display: block; animation: fadeMsg 5s forwards; 
+            border-radius: 0 8px 8px 0; backdrop-filter: blur(5px);
+        }
+        @keyframes fadeMsg { 0%, 70% { opacity: 1; transform: translateX(0); } 100% { opacity: 0; transform: translateX(20px); } }
 
-/* BREAKING NEWS */
-#newsOverlay{position:fixed;top:0;left:0;width:100%;height:100%;background:#000000aa;z-index:200;display:none;align-items:center;justify-content:center;backdrop-filter:blur(3px);}
-#newsOverlay.active{display:flex;}
-#newsBox{background:#0d0d0d;border:2px solid #cc2200;border-radius:12px;max-width:430px;width:92%;overflow:hidden;box-shadow:0 0 60px #cc220055,0 20px 60px #00000088;}
-#newsHeader{background:linear-gradient(90deg,#cc2200,#ff4400);padding:8px 16px;display:flex;align-items:center;gap:10px;}
-.live-badge{background:#fff;color:#cc2200;font-family:'Orbitron',sans-serif;font-size:0.6rem;font-weight:900;padding:2px 7px;border-radius:3px;animation:blinkLive 1s infinite;}
-@keyframes blinkLive{0%,100%{opacity:1;}50%{opacity:0.2;}}
-.news-ch{font-family:'Orbitron',sans-serif;color:#fff;font-size:0.78rem;letter-spacing:2px;}
-.news-time{margin-left:auto;color:#ffaaaa;font-size:0.62rem;}
-#newsBody{padding:16px 18px;}
-#newsIcon{font-size:2.6rem;text-align:center;margin-bottom:8px;}
-#newsHeadline{font-family:'Orbitron',sans-serif;color:#ff5533;font-size:clamp(0.7rem,2vw,0.95rem);margin-bottom:8px;line-height:1.4;text-align:center;}
-#newsDivider{height:1px;background:linear-gradient(90deg,transparent,#333,transparent);margin:8px 0;}
-#newsText{color:#99bb99;font-size:0.76rem;line-height:1.72;margin-bottom:10px;}
-#newsEffect{display:flex;align-items:flex-start;gap:7px;background:#0a0a0a;border-radius:6px;padding:8px 11px;margin-bottom:14px;}
-.eff-icon{font-size:1rem;flex-shrink:0;}
-.eff-text{color:#ffdd88;font-size:0.71rem;line-height:1.5;}
-#newsClose{width:100%;padding:9px;background:linear-gradient(135deg,#cc2200,#aa1100);border:none;border-radius:7px;color:#fff;font-family:'Orbitron',sans-serif;font-size:0.72rem;letter-spacing:2px;cursor:pointer;transition:all 0.2s;}
-#newsClose:hover{background:linear-gradient(135deg,#ff3300,#cc1100);transform:translateY(-1px);}
+        /* CURE BAR - Progress ring style */
+        #cureBarWrap { 
+            padding: 10px 20px; background: rgba(0,0,0,0.9); border-top: 2px solid #1a1a3a; flex-shrink: 0; 
+            display: flex; align-items: center; gap: 15px; backdrop-filter: blur(5px);
+        }
+        .cure-icon { font-size: 1.2rem; flex-shrink: 0; filter: drop-shadow(0 0 10px rgba(136,204,255,0.6)); }
+        .cure-track { flex: 1; }
+        .ctl { display: flex; justify-content: space-between; margin-bottom: 5px; }
+        .ctl span { font-size: 0.7rem; color: #8888cc; }
+        .ctl b { font-family: 'Orbitron', sans-serif; color: #aaaaff; font-size: 0.8rem; }
+        .cure-ring { 
+            width: 60px; height: 60px; border-radius: 50%; background: conic-gradient(#3333cc var(--progress, 0deg), #0a0a2a 0deg); 
+            display: flex; align-items: center; justify-content: center; position: relative; margin: 0 auto;
+        }
+        .cure-ring-inner { 
+            width: 40px; height: 40px; border-radius: 50%; background: #050f05; 
+            display: flex; align-items: center; justify-content: center; font-family: 'Orbitron'; 
+            font-size: 0.85rem; color: #88ccff; font-weight: 700;
+        }
 
-/* TOOLTIP */
-#tooltip{position:fixed;background:#0a1a0a;border:1px solid #225533;border-radius:7px;padding:7px 11px;font-size:0.68rem;color:#88cc88;pointer-events:none;z-index:400;max-width:190px;line-height:1.6;display:none;}
+        /* VIRUS MENU - Modal with tabs and particles */
+        #virusMenu { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); 
+            z-index: 150; display: none; align-items: center; justify-content: center; 
+            backdrop-filter: blur(8px);
+        }
+        #virusMenu.active { display: flex; }
+        #vmBox { 
+            background: rgba(8,15,8,0.98); border: 3px solid #00aa44; border-radius: 20px; 
+            width: min(700px, 96vw); max-height: 90vh; overflow: hidden; display: flex; flex-direction: column; 
+            box-shadow: 0 0 80px rgba(0,170,68,0.5), 0 30px 80px rgba(0,0,0,0.9); animation: modalSlide 0.4s ease-out;
+        }
+        @keyframes modalSlide { from { opacity: 0; transform: scale(0.9) translateY(50px); } to { opacity: 1; transform: scale(1) translateY(0); } }
 
-/* END */
-#endScreen{flex-direction:column;align-items:center;justify-content:center;background:#000000f0;}
-.end-card{background:#0a0a0a;border-radius:16px;padding:32px 36px;max-width:420px;width:90%;text-align:center;border:1px solid #1a1a1a;}
-#endIcon{font-size:3.8rem;margin-bottom:10px;}
-#endTitle{font-family:'Orbitron',sans-serif;font-size:clamp(1.3rem,4.5vw,2.2rem);margin-bottom:8px;}
-#endTitle.win{color:#00ff66;text-shadow:0 0 24px #00ff6666;}
-#endTitle.lose{color:#ff3344;text-shadow:0 0 24px #ff334466;}
-#endScore{background:#0f0f0f;border-radius:8px;padding:9px 16px;display:inline-block;font-family:'Orbitron',sans-serif;color:#ffdd00;font-size:0.88rem;margin:8px 0 10px;}
-#endMsg{color:#668866;font-size:0.78rem;line-height:1.8;margin-bottom:20px;}
-.end-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
-.country{fill:#0d2a0d;stroke:#1a4a1a;stroke-width:0.5;cursor:pointer;transition:fill 0.5s,stroke 0.3s;}
-.country:hover{stroke:#00ff66 !important;stroke-width:1.5;}
-</style>
+        #vmHeader { 
+            background: linear-gradient(90deg, #003311, #005522); padding: 18px 25px; display: flex; align-items: center; gap: 15px; 
+            flex-shrink: 0; position: relative; overflow: hidden;
+        }
+        #vmHeader::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, #00ff66, transparent); }
+        .vm-icon { font-size: 2.2rem; filter: drop-shadow(0 0 15px currentColor); }
+        .vm-title { 
+            font-family: 'Orbitron', sans-serif; color: #00ff66; font-size: clamp(1rem, 3vw, 1.3rem); 
+            letter-spacing: 3px; text-shadow: 0 0 15px rgba(0,255,102,0.8);
+        }
+        .vm-dna-badge { 
+            margin-left: auto; background: linear-gradient(135deg, #1a1400, #332200); border: 2px solid #554400; 
+            border-radius: 25px; padding: 8px 18px; font-family: 'Orbitron', sans-serif; color: #ffdd00; 
+            font-size: 0.9rem; box-shadow: 0 5px 20px rgba(255,221,0,0.4); animation: dnaPulse 2s infinite;
+        }
+        @keyframes dnaPulse { 0%, 100% { box-shadow: 0 5px 20px rgba(255,221,0,0.4); } 50% { box-shadow: 0 5px 30px rgba(255,221,0,0.7); } }
+
+        #vmClose { 
+            background: transparent; border: 2px solid #225533; border-radius: 8px; color: #44aa66; 
+            font-size: 0.8rem; padding: 10px 15px; cursor: pointer; font-family: 'Orbitron', sans-serif; 
+            margin-left: 12px; transition: all 0.3s;
+        }
+        #vmClose:hover { border-color: #00ff66; color: #00ff66; transform: scale(1.05); background: rgba(0,255,102,0.1); }
+
+        #vmTabs { display: flex; gap: 0; border-bottom: 2px solid #1a3a1a; flex-shrink: 0; overflow-x: auto; }
+        .vm-tab { 
+            flex: 1; padding: 14px 12px; background: transparent; border: none; border-bottom: 3px solid transparent; 
+            color: #3a7a3a; font-family: 'Orbitron', sans-serif; font-size: clamp(0.6rem, 1.6vw, 0.75rem); 
+            cursor: pointer; letter-spacing: 1.5px; transition: all 0.3s; white-space: nowrap; text-transform: uppercase;
+        }
+        .vm-tab:hover { color: #44aa66; background: rgba(10,26,10,0.8); }
+        .vm-tab.active { color: #00ff66; border-bottom-color: #00ff66; background: rgba(3,26,8,0.9); }
+
+        #vmContent { flex: 1; overflow-y: auto; padding: 20px 25px; }
+        #vmContent::-webkit-scrollbar { width: 6px; }
+        #vmContent::-webkit-scrollbar-track { background: #050f05; }
+        #vmContent::-webkit-scrollbar-thumb { background: #225533; border-radius: 3px; }
+
+        .vm-section-title { 
+            font-family: 'Orbitron', sans-serif; color: #44aa66; font-size: 0.75rem; letter-spacing: 3px; 
+            text-transform: uppercase; margin: 15px 0 12px; padding-bottom: 6px; border-bottom: 2px solid #1a3a1a;
+        }
+        .evo-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+        .evo-card { 
+            background: rgba(10,20,10,0.9); border: 2px solid rgba(26,58,26,0.7); border-radius: 16px; 
+            padding: 18px 16px; cursor: pointer; transition: all 0.3s cubic-bezier(0.25,0.8,0.25,1); 
+            text-align: center; position: relative; overflow: hidden;
+        }
+        .evo-card::before {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; 
+            background: radial-gradient(circle, rgba(0,255,102,0.1) 0%, transparent 70%); 
+            opacity: 0; transition: opacity 0.3s;
+        }
+        .evo-card:hover:not(.disabled)::before { opacity: 1; }
+        .evo-card:hover:not(.disabled) { border-color: #44aa66; transform: translateY(-5px) rotate(1deg); box-shadow: 0 15px 40px rgba(68,170,102,0.4); }
+        .evo-card.can-buy { border-color: #00aa44; background: rgba(3,26,8,0.95); }
+        .evo-card.can-buy:hover { border-color: #00ff66; box-shadow: 0 15px 40px rgba(0,255,102,0.6); }
+        .evo-card.maxed { border-color: #ff6600; background: rgba(26,8,0,0.9); cursor: default; }
+        .evo-card.disabled { opacity: 0.4; cursor: default; }
+        .ec-icon { font-size: 2.5rem; margin-bottom: 10px; filter: drop-shadow(0 0 10px currentColor); transition: transform 0.3s; }
+        .evo-card:hover .ec-icon { transform: scale(1.1) rotate(5deg); }
+        .ec-name { font-family: 'Orbitron', sans-serif; color: #00ff88; font-size: 0.75rem; margin-bottom: 6px; }
+        .ec-desc { color: #3a7a3a; font-size: 0.68rem; line-height: 1.6; margin-bottom: 10px; }
+        .ec-cost { font-family: 'Orbitron', sans-serif; font-size: 0.7rem; color: #ffdd00; font-weight: 700; }
+        .ec-lv { position: absolute; top: 10px; right: 12px; font-size: 0.65rem; color: #3a6a3a; font-family: 'Orbitron', sans-serif; }
+        .ec-stars { color: #ffcc00; font-size: 0.85rem; margin-bottom: 6px; }
+        .ec-maxbadge { 
+            background: #ff6600; color: #fff; font-family: 'Orbitron', sans-serif; font-size: 0.65rem; 
+            padding: 4px 10px; border-radius: 15px; display: inline-block; animation: shake 0.5s infinite;
+        }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-2px); } 75% { transform: translateX(2px); } }
+        .ec-effect { font-size: 0.65rem; color: #00cc66; margin-top: 5px; font-style: italic; }
+
+        /* BUBBLES - Particles on pop */
+        .bubble { 
+            position: absolute; border-radius: 50%; cursor: pointer; pointer-events: auto; 
+            display: flex; align-items: center; justify-content: center; font-size: 1.3rem; 
+            transition: transform 0.12s; box-shadow: 0 0 20px currentColor; animation: bubbleFloat 3s ease-in-out infinite;
+        }
+        @keyframes bubbleFloat { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-10px) scale(1.05); } }
+        .bubble:hover { transform: scale(1.2); }
+        .bubble.active { transform: scale(0.9); }
+        .bubble.bubble-pop { animation: bubblePop 0.4s cubic-bezier(0.25,0.8,0.25,1) forwards !important; }
+        @keyframes bubblePop { 
+            0% { transform: scale(1); opacity: 1; } 
+            50% { transform: scale(1.3); opacity: 0.8; box-shadow: 0 0 40px currentColor; }
+            100% { transform: scale(2); opacity: 0; }
+        }
+        .dna-pop { 
+            position: absolute; font-family: 'Orbitron', sans-serif; font-size: 1rem; font-weight: 900; 
+            pointer-events: none; animation: floatUp 1.2s cubic-bezier(0.25,0.8,0.25,1) forwards; 
+            text-shadow: 0 0 12px currentColor; filter: drop-shadow(0 0 10px currentColor);
+        }
+        @keyframes floatUp { 
+            0% { opacity: 1; transform: translateY(0) scale(1); } 
+            100% { opacity: 0; transform: translateY(-60px) scale(0.8); }
+        }
+
+        /* NEWS OVERLAY - Breaking news with urgency */
+        #newsOverlay { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); 
+            z-index: 200; display: none; align-items: center; justify-content: center; 
+            backdrop-filter: blur(10px);
+        }
+        #newsOverlay.active { display: flex; }
+        #newsBox { 
+            background: rgba(13,13,13,0.98); border: 3px solid #cc2200; border-radius: 20px; 
+            max-width: 480px; width: 92%; overflow: hidden; box-shadow: 0 0 80px rgba(204,34,0,0.6); 
+            animation: newsSlide 0.5s ease-out;
+        }
+        @keyframes newsSlide { from { opacity: 0; transform: scale(0.95) translateY(-30px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        #newsHeader { 
+            background: linear-gradient(90deg, #cc2200, #ff4400); padding: 15px 25px; display: flex; align-items: center; gap: 15px;
+        }
+        .live-badge { 
+            background: #fff; color: #cc2200; font-family: 'Orbitron', sans-serif; font-size: 0.75rem; font-weight: 900; 
+            padding: 4px 12px; border-radius: 5px; animation: blinkLive 1.2s infinite;
+        }
+        @keyframes blinkLive { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0.3; } }
+        .news-ch { font-family: 'Orbitron', sans-serif; color: #fff; font-size: 0.95rem; letter-spacing: 3px; }
+        .news-time { margin-left: auto; color: #ffaaaa; font-size: 0.75rem; }
+        #newsBody { padding: 25px 30px; }
+        #newsIcon { font-size: 3.2rem; text-align: center; margin-bottom: 15px; filter: drop-shadow(0 0 20px currentColor); }
+        #newsHeadline { 
+            font-family: 'Orbitron', sans-serif; color: #ff5533; font-size: clamp(0.85rem, 2.5vw, 1.1rem); 
+            margin-bottom: 12px; line-height: 1.4; text-align: center; text-shadow: 0 0 10px rgba(255,85,51,0.8);
+        }
+        #newsDivider { height: 2px; background: linear-gradient(90deg, transparent, #333, transparent); margin: 12px 0; }
+        #newsText { color: #99bb99; font-size: 0.85rem; line-height: 1.75; margin-bottom: 15px; }
+        .newsEffect { 
+            display: flex; align-items: flex-start; gap: 10px; background: rgba(10,10,10,0.9); border-radius: 10px; 
+            padding: 12px 18px; margin-bottom: 20px; border-left: 4px solid #ffdd00;
+        }
+        .eff-icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 2px; }
+        .eff-text { color: #ffdd88; font-size: 0.8rem; line-height: 1.6; }
+        #newsClose { 
+            width: 100%; padding: 14px; background: linear-gradient(135deg, #cc2200, #aa1100); border: none; 
+            border-radius: 12px; color: #fff; font-family: 'Orbitron', sans-serif; font-size: 0.85rem; 
+            letter-spacing: 2.5px; cursor: pointer; transition: all 0.3s;
+        }
+        #newsClose:hover { background: linear-gradient(135deg, #ff3300, #cc1100); transform: translateY(-2px); box-shadow: 0 10px 30px rgba(204,34,0,0.6); }
+
+        /* TOOLTIP - Floating info */
+        #tooltip { 
+            position: fixed; background: rgba(10,26,10,0.95); border: 2px solid #225533; border-radius: 12px; 
+            padding: 12px 18px; font-size: 0.75rem; color: #88cc88; pointer-events: none; z-index: 400; 
+            max-width: 220px; line-height: 1.7; backdrop-filter: blur(10px); box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+            display: none; animation: tooltipFade 0.3s ease-out;
+        }
+        @keyframes tooltipFade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* END SCREEN - Victory/Defeat with stats */
+        #endScreen { flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.95); }
+        .end-card { 
+            background: rgba(10,10,10,0.9); border-radius: 25px; padding: 45px 50px; max-width: 480px; width: 90%; 
+            text-align: center; border: 2px solid rgba(26,26,26,0.8); backdrop-filter: blur(10px); 
+            box-shadow: 0 30px 100px rgba(0,0,0,0.9);
+        }
+        #endIcon { font-size: 4.5rem; margin-bottom: 20px; filter: drop-shadow(0 0 30px currentColor); animation: iconPulse 2s infinite; }
+        @keyframes iconPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+        #endTitle { 
+            font-family: 'Orbitron', sans-serif; font-size: clamp(1.5rem, 6vw, 2.5rem); margin-bottom: 12px; 
+            letter-spacing: 5px; text-shadow: 0 0 30px currentColor;
+        }
+        .endTitle.win { color: #00ff66; }
+        .endTitle.lose { color: #ff3344; }
+        #endScore { 
+            background: rgba(15,15,15,1); border-radius: 12px; padding: 15px 25px; display: inline-block; 
+            font-family: 'Orbitron', sans-serif; color: #ffdd00; font-size: 1.1rem; margin: 12px 0 15px; 
+            box-shadow: inset 0 0 20px rgba(255,221,0,0.3);
+        }
+        #endMsg { color: #668866; font-size: 0.9rem; line-height: 1.8; margin-bottom: 30px; }
+        .end-btns { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
+        .country { fill: #0d2a0d; stroke: #1a4a1a; stroke-width: 0.8; cursor: pointer; transition: all 0.4s; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.5)); }
+        .country:hover { stroke: #00ff66 !important; stroke-width: 2.5; filter: drop-shadow(0 0 15px rgba(0,255,102,0.6)); }
+    </style>
 </head>
 <body>
-
-<!-- MENU -->
-<div id="menuScreen" class="screen active">
-  <div class="logo-icon">🦠</div>
-  <div class="logo-title">PATHOGEN X</div>
-  <div class="logo-sub">INFECT · EVOLVE · ERADICATE</div>
-  <div class="menu-btns">
-    <button class="mbtn mbtn-primary" onclick="showName()">▶ &nbsp;NEW GAME</button>
-    <button class="mbtn mbtn-secondary" onclick="document.getElementById('howToPlay').style.display=document.getElementById('howToPlay').style.display==='block'?'none':'block'">?&nbsp; HOW TO PLAY</button>
-  </div>
-  <div id="howToPlay">
-    <b>🎯 Goal:</b> Infect &amp; kill all humanity before the cure is complete.<br>
-    <b>🫧 Bubbles:</b> Pop glowing bubbles on the map to spread your virus &amp; collect DNA.<br>
-    <b>🧬 DNA:</b> Spend DNA in the <b>Virus Menu</b> to evolve your pathogen.<br>
-    <b>🍽️ Upgrades:</b> Choose how it spreads — Food, Air, Water, Insects &amp; more!<br>
-    <b>💀 Lethality:</b> Kills people faster but also speeds up the cure.<br>
-    <b>💡 Tip:</b> Spread silently into all countries first, THEN go lethal!
-  </div>
-</div>
-
-<!-- NAME -->
-<div id="nameScreen" class="screen">
-  <div class="ns-card">
-    <h2>🧬 CREATE YOUR PATHOGEN</h2>
-    <div class="ns-hint">Name it, pick a type, and unleash it on humanity.</div>
-    <div class="field-label">Pathogen Name</div>
-    <input id="virusName" type="text" maxlength="18" placeholder="e.g. VIRON-9" autocomplete="off"/>
-    <div class="field-label">Pathogen Type</div>
-    <div class="type-grid" id="typeBtns"></div>
-    <div id="typeDesc"></div>
-    <div class="ns-footer">
-      <button class="mbtn mbtn-secondary" style="font-size:0.68rem;" onclick="showScreen('menuScreen')">← Back</button>
-      <button class="mbtn mbtn-primary" onclick="startGame()">Deploy ►</button>
-    </div>
-  </div>
-</div>
-
-<!-- GAME -->
-<div id="gameScreen" class="screen">
-  <div id="hud">
-    <div id="virusLabel">🦠</div>
-    <div class="hud-stat hs-i"><span class="hs-lbl">🤒 Infected</span><span class="hs-val" id="statInfected">0</span></div>
-    <div class="hud-stat hs-d"><span class="hs-lbl">💀 Dead</span><span class="hs-val" id="statDead">0</span></div>
-    <div class="hud-stat hs-h"><span class="hs-lbl">🫀 Healthy</span><span class="hs-val" id="statHealthy">8B</span></div>
-    <div class="hud-stat hs-dna"><span class="hs-lbl">🧬 DNA</span><span class="hs-val" id="statDNA">0</span></div>
-    <button class="hud-virus-btn" onclick="openVirusMenu()">🦠 VIRUS MENU ▲</button>
-  </div>
-  <div id="mapArea">
-    <svg id="svgMap" viewBox="0 0 2000 1001" xmlns="http://www.w3.org/2000/svg"></svg>
-    <div id="bubbleLayer"></div>
-    <div id="dnaPopups"></div>
-    <div id="msgLog"></div>
-  </div>
-  <div id="cureBarWrap">
-    <div class="cure-icon">🔬</div>
-    <div class="cure-track">
-      <div class="ctl"><span>Cure Research Progress</span><b id="curePercent">0%</b></div>
-      <div id="cureBarOuter"><div id="cureBarInner"></div></div>
-    </div>
-  </div>
-</div>
-
-<!-- ══ VIRUS MENU ══ -->
-<div id="virusMenu">
-  <div id="vmBox">
-    <div id="vmHeader">
-      <span class="vm-icon" id="vmIcon">🦠</span>
-      <div>
-        <div class="vm-title" id="vmTitle">VIRUS MENU</div>
-        <div style="color:#3a7a3a;font-size:0.62rem;margin-top:2px;">Spend DNA to evolve your pathogen</div>
-      </div>
-      <div class="vm-dna-badge">🧬 <span id="vmDNA">0</span> DNA</div>
-      <button id="vmClose" onclick="closeVirusMenu()">✕ CLOSE</button>
-    </div>
-    <div id="vmTabs">
-      <button class="vm-tab active" onclick="switchTab('transmission')">🚀 Transmission</button>
-      <button class="vm-tab" onclick="switchTab('symptoms')">🤒 Symptoms</button>
-      <button class="vm-tab" onclick="switchTab('abilities')">⚡ Abilities</button>
-      <button class="vm-tab" onclick="switchTab('resistance')">🛡️ Resistance</button>
-    </div>
-    <div id="vmContent"></div>
-  </div>
-</div>
-
-<!-- BREAKING NEWS -->
-<div id="newsOverlay">
-  <div id="newsBox">
-    <div id="newsHeader">
-      <span class="live-badge">● LIVE</span>
-      <span class="news-ch">WORLD NEWS</span>
-      <span class="news-time" id="newsTime"></span>
-    </div>
-    <div id="newsBody">
-      <div id="newsIcon"></div>
-      <div id="newsHeadline"></div>
-      <div id="newsDivider"></div>
-      <div id="newsText"></div>
-      <div id="newsEffect"><span class="eff-icon">📊</span><span class="eff-text" id="newsEffectText"></span></div>
-      <button id="newsClose" onclick="closeNews()">CONTINUE ►</button>
-    </div>
-  </div>
-</div>
-
-<!-- TOOLTIP -->
-<div id="tooltip"></div>
-
-<!-- END -->
-<div id="endScreen" class="screen">
-  <div class="end-card">
-    <div id="endIcon"></div>
-    <div id="endTitle"></div>
-    <div id="endScore"></div>
-    <div id="endMsg"></div>
-    <div class="end-btns">
-      <button class="mbtn mbtn-secondary" style="min-width:120px;" onclick="showScreen('menuScreen')">🏠 Menu</button>
-      <button class="mbtn mbtn-primary" style="min-width:120px;" onclick="showName()">🔄 Play Again</button>
-    </div>
-  </div>
-</div>
-
-<script>
-// ══════════════════════════════════════════
-// COUNTRY DATA
-// ══════════════════════════════════════════
-const COUNTRY_PATHS = [
-  {id:"USA",       name:"USA",        pop:330,  climate:"temperate", connections:["Canada","Mexico","UK"],           path:"M 220 280 L 420 280 L 420 380 L 350 400 L 280 390 L 220 370 Z"},
-  {id:"Canada",    name:"Canada",     pop:38,   climate:"cold",      connections:["USA","Greenland"],                path:"M 200 180 L 440 180 L 440 275 L 220 275 L 200 220 Z"},
-  {id:"Mexico",    name:"Mexico",     pop:130,  climate:"hot",       connections:["USA","C.America"],                path:"M 220 385 L 340 385 L 330 460 L 260 470 L 220 430 Z"},
-  {id:"C.America", name:"C.America",  pop:55,   climate:"hot",       connections:["Mexico","Brazil"],                path:"M 260 465 L 330 460 L 320 510 L 270 510 Z"},
-  {id:"Brazil",    name:"Brazil",     pop:215,  climate:"hot",       connections:["C.America","W.Africa","UK"],      path:"M 310 510 L 460 510 L 470 640 L 380 660 L 310 620 Z"},
-  {id:"Greenland", name:"Greenland",  pop:1,    climate:"cold",      connections:["Canada","Iceland"],               path:"M 460 130 L 560 130 L 560 200 L 480 210 Z"},
-  {id:"Iceland",   name:"Iceland",    pop:1,    climate:"cold",      connections:["Greenland","UK"],                 path:"M 580 175 L 620 175 L 620 205 L 585 205 Z"},
-  {id:"UK",        name:"UK",         pop:67,   climate:"temperate", connections:["France","Iceland","USA","Brazil"],path:"M 650 220 L 695 220 L 690 265 L 650 260 Z"},
-  {id:"France",    name:"France",     pop:67,   climate:"temperate", connections:["UK","Germany","Spain"],           path:"M 700 250 L 760 250 L 760 305 L 700 305 Z"},
-  {id:"Spain",     name:"Spain",      pop:47,   climate:"temperate", connections:["France","N.Africa"],              path:"M 640 295 L 700 295 L 700 340 L 645 340 Z"},
-  {id:"Germany",   name:"Germany",    pop:83,   climate:"temperate", connections:["France","Russia","India"],        path:"M 760 225 L 820 225 L 820 270 L 760 270 Z"},
-  {id:"Russia",    name:"Russia",     pop:145,  climate:"cold",      connections:["Germany","China","Japan"],        path:"M 820 160 L 1200 160 L 1200 300 L 820 300 Z"},
-  {id:"N.Africa",  name:"N.Africa",   pop:350,  climate:"hot",       connections:["Spain","W.Africa","Mid.East"],   path:"M 640 350 L 870 350 L 870 460 L 640 460 Z"},
-  {id:"W.Africa",  name:"W.Africa",   pop:450,  climate:"hot",       connections:["N.Africa","Brazil","S.Africa"],  path:"M 620 465 L 800 465 L 810 590 L 640 590 Z"},
-  {id:"S.Africa",  name:"S.Africa",   pop:60,   climate:"hot",       connections:["W.Africa","Mid.East"],           path:"M 720 600 L 840 600 L 830 700 L 740 710 Z"},
-  {id:"Mid.East",  name:"Mid.East",   pop:300,  climate:"hot",       connections:["N.Africa","India","Russia","S.Africa"],path:"M 870 340 L 1000 340 L 1010 450 L 875 455 Z"},
-  {id:"India",     name:"India",      pop:1400, climate:"hot",       connections:["Mid.East","China","SE Asia","Germany"],path:"M 1010 350 L 1120 350 L 1130 500 L 1060 530 L 1010 490 Z"},
-  {id:"China",     name:"China",      pop:1400, climate:"temperate", connections:["Russia","India","SE Asia","Japan"],path:"M 1120 200 L 1380 200 L 1390 390 L 1120 395 L 1120 340 Z"},
-  {id:"SE Asia",   name:"SE Asia",    pop:700,  climate:"hot",       connections:["China","India","Australia"],     path:"M 1280 400 L 1440 400 L 1450 520 L 1300 530 Z"},
-  {id:"Japan",     name:"Japan",      pop:126,  climate:"temperate", connections:["China","Russia"],                path:"M 1430 220 L 1490 220 L 1495 310 L 1435 305 Z"},
-  {id:"Australia", name:"Australia",  pop:26,   climate:"hot",       connections:["SE Asia"],                       path:"M 1350 580 L 1560 580 L 1570 720 L 1360 720 Z"},
-];
-
-const PLAGUE_TYPES = [
-  {name:"Bacteria", icon:"🦠", tag:"Balanced — Best for beginners",    infectMult:1.0,killMult:1.0,cureMult:1.0,  mutateRate:0.005,desc:"Well-rounded pathogen. Moderate spread, moderate lethality. Great starting choice."},
-  {name:"Virus",    icon:"🔴", tag:"Fast — High risk, high reward",     infectMult:1.3,killMult:1.2,cureMult:1.3, mutateRate:0.02, desc:"Mutates rapidly and spreads fast, but scientists develop the cure faster too."},
-  {name:"Parasite", icon:"🪱", tag:"Stealthy — Hard for scientists to find",infectMult:0.8,killMult:0.9,cureMult:0.6,mutateRate:0.003,desc:"Spreads quietly under the radar. Cure research is much slower."},
-  {name:"Fungus",   icon:"🍄", tag:"Hard mode — Rely on Spore Burst",   infectMult:0.6,killMult:0.7,cureMult:0.7, mutateRate:0.003,desc:"Very poor natural spread. Use Spore Burst to instantly seed new countries."},
-];
-
-// ══════════════════════════════════════════
-// EVOLUTION TREE — organised by tab
-// ══════════════════════════════════════════
-const EVOLUTIONS = {
-  transmission:[
-    {id:"food",      label:"Food Contamination", icon:"🍽️", maxLv:3, costs:[5,9,15],   effect:["Spreads in restaurants +10%","Spreads in restaurants +25%","Spreads in restaurants +50%"],  desc:"Your pathogen contaminates food supplies, spreading through eating and drinking.",         spreadBoost:[0.12,0.28,0.5]},
-    {id:"airborne",  label:"Airborne",            icon:"💨", maxLv:3, costs:[7,12,20],  effect:["Floats in air +15%","Floats in air +35%","Spreads country to country"],                      desc:"Virus particles float in the air and are inhaled by healthy people.",                      spreadBoost:[0.15,0.35,0.6]},
-    {id:"water",     label:"Water Supply",        icon:"💧", maxLv:2, costs:[6,12],     effect:["Contaminates water +20%","Contaminates rivers +40%"],                                        desc:"Spreads through drinking water and plumbing in cities.",                                   spreadBoost:[0.2,0.4]},
-    {id:"insect",    label:"Insect Vector",       icon:"🦟", maxLv:2, costs:[8,14],     effect:["Mosquitoes carry virus +15%","All insects carry virus +35%"],                               desc:"Insects like mosquitoes and flies spread your pathogen by biting healthy people.",          spreadBoost:[0.15,0.35]},
-    {id:"touch",     label:"Physical Contact",    icon:"🤝", maxLv:2, costs:[4,8],      effect:["Spreads by handshake +10%","Spreads by any touch +25%"],                                    desc:"Pathogen survives on skin and surfaces. Spreads through direct physical contact.",         spreadBoost:[0.1,0.25]},
-    {id:"animal",    label:"Animal Reservoir",    icon:"🐀", maxLv:2, costs:[9,16],     effect:["Rats carry virus +15%","All animals carry virus +30%"],                                     desc:"Animals like rats, bats and birds become carriers and spread to new regions.",             spreadBoost:[0.15,0.3]},
-  ],
-  symptoms:[
-    {id:"cough",     label:"Coughing",            icon:"😷", maxLv:2, costs:[5,10],     effect:["Coughing spreads virus +20%","Violent coughing +45%"],                                      desc:"Infected people cough, spraying virus particles into the air around them.",               lethBoost:[0,0], sympBoost:[0.2,0.45]},
-    {id:"fever",     label:"Fever",               icon:"🌡️", maxLv:2, costs:[6,11],     effect:["High fever weakens immune system","Extreme fever — 10% death rate"],                        desc:"Raises body temperature, weakening immunity. High levels cause death.",                    lethBoost:[0.001,0.004],sympBoost:[0.1,0.2]},
-    {id:"nausea",    label:"Nausea & Vomiting",   icon:"🤢", maxLv:2, costs:[5,9],      effect:["Vomit spreads virus +15%","Projectile vomit spreads far +30%"],                             desc:"Causes vomiting which spreads contamination to surfaces and water sources.",               lethBoost:[0,0.001],sympBoost:[0.15,0.3]},
-    {id:"rash",      label:"Skin Lesions",        icon:"🩹", maxLv:2, costs:[7,13],     effect:["Lesions spread on touch +15%","Open wounds — highly contagious"],                           desc:"Skin breaks down making contact transmission even more effective.",                        lethBoost:[0.001,0.003],sympBoost:[0.12,0.28]},
-    {id:"neuro",     label:"Neurological",        icon:"🧠", maxLv:2, costs:[10,18],    effect:["Confusion slows cure research","Brain damage — 15% death rate boost"],                      desc:"Attacks the brain. Infected people spread virus erratically. Slows cure.",                lethBoost:[0.002,0.006],sympBoost:[0.05,0.1],cureDebuff:[0.1,0.2]},
-    {id:"haem",      label:"Haemorrhage",         icon:"🩸", maxLv:1, costs:[20],       effect:["Internal bleeding — high death rate"],                                                      desc:"Causes internal bleeding. Extremely lethal but massively accelerates the cure.",           lethBoost:[0.015],sympBoost:[0.0],cureBoost:[0.5]},
-  ],
-  abilities:[
-    {id:"stealth",   label:"Stealth",             icon:"👁️", maxLv:2, costs:[10,18],    effect:["Symptoms hidden — cure -20%","Invisible to scientists — cure -40%"],                       desc:"Hides your pathogen from scientific detection. Greatly slows cure research.",              cureDebuff:[0.2,0.4]},
-    {id:"drugRes",   label:"Drug Resistance",     icon:"💊", maxLv:2, costs:[12,20],    effect:["Resistant to antibiotics — cure -25%","Resistant to all drugs — cure -45%"],               desc:"Your pathogen evolves resistance to medications, slowing the cure drastically.",           cureDebuff:[0.25,0.45]},
-    {id:"spore",     label:"Spore Burst",         icon:"🌫️", maxLv:1, costs:[15],       effect:["Instantly seeds 2 new countries"],                                                          desc:"One-time ability: immediately seeds 2 random uninfected countries.",                       special:"spore"},
-    {id:"mutation",  label:"Rapid Mutation",      icon:"🔀", maxLv:2, costs:[8,16],     effect:["Mutates faster — more DNA bubbles","Mutates rapidly — DNA bubbles 2x"],                    desc:"Your pathogen mutates faster, causing more DNA bubbles to appear on the map.",            dnaBoost:[1.5,2.5]},
-    {id:"hardShell", label:"Hard Shell",          icon:"🥚", maxLv:2, costs:[9,15],     effect:["Survives outside host 2x longer","Survives outside host 4x longer"],                       desc:"Pathogen survives longer on surfaces and in environments without a host.",                 spreadBoost:[0.1,0.22]},
-  ],
-  resistance:[
-    {id:"coldRes",   label:"Cold Climate",        icon:"❄️", maxLv:2, costs:[9,16],     effect:["Survives cold climates (50%)","Thrives in freezing temps (100%)"],                         desc:"Allows spread in cold countries like Russia, Canada and Greenland.",                       climateUnlock:"cold"},
-    {id:"heatRes",   label:"Hot Climate",         icon:"🌡️", maxLv:2, costs:[9,16],     effect:["Survives hot climates (50%)","Thrives in tropical heat (100%)"],                           desc:"Boosts infection in hot countries like Africa, India and Brazil.",                         climateUnlock:"hot"},
-    {id:"uvRes",     label:"UV Resistance",       icon:"☀️", maxLv:1, costs:[11],       effect:["Not killed by sunlight — spread in open areas"],                                            desc:"Pathogen survives in direct sunlight, enabling spread in open outdoor areas.",             spreadBoost:[0.15]},
-    {id:"acidRes",   label:"Stomach Acid Resist", icon:"🧪", maxLv:1, costs:[8],        effect:["Survives stomach acid — food transmission 2x"],                                             desc:"Survives being swallowed. Doubles the effectiveness of food-based transmission.",          foodBoost:true},
-    {id:"environ",   label:"Environmental",       icon:"🌍", maxLv:2, costs:[10,18],    effect:["Survives in soil & air longer","Survives in all environments"],                             desc:"Pathogen becomes extremely durable in all environmental conditions.",                      spreadBoost:[0.12,0.25]},
-  ],
-};
-
-const NEWS_EVENTS = [
-  {trigger:"firstInfection",icon:"🦠",headline:"UNKNOWN PATHOGEN DETECTED",          text:"Health officials report a mysterious illness in {country}. Authorities urge calm.",                                                  effect:"Cure research begins slowly.",            gameEffect:"none"},
-  {trigger:"spread5",       icon:"🌍",headline:"DISEASE CROSSES BORDERS",            text:"The illness is confirmed in 5 countries. The WHO has issued an international health advisory.",                                       effect:"Cure speed +20%",                         gameEffect:"boostCure:0.2"},
-  {trigger:"spread10",      icon:"⚠️",headline:"GLOBAL HEALTH EMERGENCY DECLARED",   text:"WHO declares a Public Health Emergency. Multiple nations announce travel bans.",                                                     effect:"Cure speed +40%.",                        gameEffect:"boostCure:0.4"},
-  {trigger:"deaths100k",    icon:"💀",headline:"DEATH TOLL SURPASSES 100,000",       text:"Morgues are overwhelmed. World leaders convene an emergency summit.",                                                                 effect:"Cure funding doubled.",                   gameEffect:"boostCure:0.5"},
-  {trigger:"deaths10m",     icon:"☠️",headline:"10 MILLION DEAD",                    text:"Infrastructure is collapsing. Hospitals far beyond capacity.",                                                                        effect:"Scientists fleeing — cure slowed.",        gameEffect:"slowCure:0.3"},
-  {trigger:"deaths100m",    icon:"💣",headline:"100M DEAD — SOCIETY COLLAPSING",      text:"Governments have collapsed. Scientists work in underground bunkers.",                                                                 effect:"Cure speed halved.",                      gameEffect:"slowCure:0.5"},
-  {trigger:"cureQuarter",   icon:"🔬",headline:"CURE 25% COMPLETE",                  text:"Scientists announce a major breakthrough. A cure could be months away.",                                                             effect:"Cure research accelerates.",              gameEffect:"boostCure:0.15"},
-  {trigger:"cureHalf",      icon:"💉",headline:"CURE HALFWAY THERE",                 text:"Human trials have begun. Governments pledge unlimited funding.",                                                                       effect:"Cure speed +30%.",                        gameEffect:"boostCure:0.3"},
-  {trigger:"cure75",        icon:"🏥",headline:"CURE 75% — FINAL PUSH",              text:"Mass production facilities on standby. Distribution within weeks if trials succeed.",                                                 effect:"Critical — cure almost done!",            gameEffect:"boostCure:0.2"},
-  {trigger:"allInfected",   icon:"🌑",headline:"NO HEALTHY HUMANS REMAIN",           text:"Every person on Earth is infected. Automated labs continue cure research.",                                                           effect:"Cure slows — no healthy scientists.",     gameEffect:"slowCure:0.6"},
-  {trigger:"randomBad",     icon:"🚢",headline:"CARGO SHIP QUARANTINE BREACHED",     text:"An infected vessel broke quarantine. Infected sailors now in port cities.",                                                           effect:"Pathogen seeded in 1 new country!",       gameEffect:"seedRandom"},
-  {trigger:"randomNeutral", icon:"📉",headline:"GLOBAL MARKETS COLLAPSE",            text:"Stock markets crash worldwide. Supply chains in freefall.",                                                                           effect:"No direct effect.",                       gameEffect:"none"},
-  {trigger:"military",      icon:"⚔️",headline:"MILITARY QUARANTINE ENFORCED",       text:"Coalition forces enforce global lockdowns. International movement banned.",                                                           effect:"Spread between countries -20%.",          gameEffect:"slowSpread:0.2"},
-];
-
-let state, rafId, lastTime, selectedType=0, newsQueue=[], newsTriggered={}, newsPaused=false, currentTab='transmission';
-
-// ══════════════════════════════════════════
-// SCREENS
-// ══════════════════════════════════════════
-function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
-function showName(){showScreen('nameScreen');buildTypeBtns();}
-function buildTypeBtns(){
-  const w=document.getElementById('typeBtns');w.innerHTML='';
-  PLAGUE_TYPES.forEach((t,i)=>{
-    const d=document.createElement('div');d.className='type-card'+(i===selectedType?' active':'');
-    d.innerHTML=`<div class="tc-icon">${t.icon}</div><div class="tc-name">${t.name}</div><div class="tc-tag">${t.tag}</div>`;
-    d.onclick=()=>{selectedType=i;buildTypeBtns();document.getElementById('typeDesc').textContent=t.desc;};
-    w.appendChild(d);
-  });
-  document.getElementById('typeDesc').textContent=PLAGUE_TYPES[selectedType].desc;
-}
-
-// ══════════════════════════════════════════
-// MAP
-// ══════════════════════════════════════════
-function buildMap(){
-  const svg=document.getElementById('svgMap');svg.innerHTML='';
-  const bg=document.createElementNS('http://www.w3.org/2000/svg','rect');
-  bg.setAttribute('width','2000');bg.setAttribute('height','1001');bg.setAttribute('fill','#030d18');svg.appendChild(bg);
-  for(let x=0;x<2000;x+=100){addLine(svg,x,0,x,1001,'#0a1a0a',0.5);}
-  for(let y=0;y<1001;y+=100){addLine(svg,0,y,2000,y,'#0a1a0a',0.5);}
-  const drawn=new Set();
-  COUNTRY_PATHS.forEach(c=>{
-    c.connections.forEach(cid=>{
-      const key=[c.id,cid].sort().join('-');if(drawn.has(key))return;drawn.add(key);
-      const t=COUNTRY_PATHS.find(p=>p.id===cid);if(!t)return;
-      const b1=getBB(c.path),b2=getBB(t.path);
-      const l=document.createElementNS('http://www.w3.org/2000/svg','line');
-      l.setAttribute('x1',b1.cx);l.setAttribute('y1',b1.cy);l.setAttribute('x2',b2.cx);l.setAttribute('y2',b2.cy);
-      l.setAttribute('stroke','#0d2a0d');l.setAttribute('stroke-width','1');l.setAttribute('stroke-dasharray','6 4');svg.appendChild(l);
-    });
-  });
-  COUNTRY_PATHS.forEach(c=>{
-    const p=document.createElementNS('http://www.w3.org/2000/svg','path');
-    p.setAttribute('d',c.path);p.setAttribute('class','country');p.setAttribute('id','country_'+c.id);
-    const bb=getBB(c.path);
-    const tx=mkText(bb.cx,bb.cy-6,c.name,'Inter',13,'600','#1a4a1a','label_'+c.id);
-    const px=mkText(bb.cx,bb.cy+8,fmtPop(c.pop),'Inter',9,'400','#1a3a1a','pop_'+c.id);
-    svg.appendChild(p);svg.appendChild(tx);svg.appendChild(px);
-    p.addEventListener('click',()=>onCountryClick(c.id));
-    p.addEventListener('mouseenter',e=>showTip(e,c.id));
-    p.addEventListener('mousemove',e=>moveTip(e));
-    p.addEventListener('mouseleave',hideTip);
-  });
-}
-function addLine(svg,x1,y1,x2,y2,stroke,sw){const l=document.createElementNS('http://www.w3.org/2000/svg','line');l.setAttribute('x1',x1);l.setAttribute('y1',y1);l.setAttribute('x2',x2);l.setAttribute('y2',y2);l.setAttribute('stroke',stroke);l.setAttribute('stroke-width',sw);svg.appendChild(l);}
-function mkText(x,y,text,font,size,weight,fill,id){const t=document.createElementNS('http://www.w3.org/2000/svg','text');t.setAttribute('x',x);t.setAttribute('y',y);t.setAttribute('text-anchor','middle');t.setAttribute('dominant-baseline','middle');t.setAttribute('fill',fill);t.setAttribute('font-size',size);t.setAttribute('font-family',font);t.setAttribute('font-weight',weight);t.setAttribute('id',id);t.setAttribute('pointer-events','none');t.textContent=text;return t;}
-function getBB(d){const n=d.match(/[\d.]+/g).map(Number);let xs=[],ys=[];for(let i=0;i<n.length;i+=2){xs.push(n[i]);ys.push(n[i+1]);}const mx=Math.min(...xs),Mx=Math.max(...xs),my=Math.min(...ys),My=Math.max(...ys);return{cx:(mx+Mx)/2,cy:(my+My)/2,w:Mx-mx,h:My-my};}
-function fmtPop(n){if(n>=1000)return(n/1000).toFixed(1)+'B';return n+'M';}
-function onCountryClick(id){
-  if(!state||state.gameOver)return;
-  const c=state.countries.find(x=>x.id===id);if(!c||!c.firstInfected)return;
-  const amt=Math.max(1,Math.floor((c.infected+c.dead)/c.pop*3));
-  state.dna+=amt;
-  const bb=getBB(COUNTRY_PATHS.find(p=>p.id===id).path);
-  const r=document.getElementById('svgMap').getBoundingClientRect();
-  popDNA(bb.cx/2000*r.width+r.left,bb.cy/1001*r.height+r.top,'+'+amt,'#00ff88');
-}
-function showTip(e,id){
-  if(!state)return;
-  const c=state.countries.find(x=>x.id===id);const cp=COUNTRY_PATHS.find(x=>x.id===id);if(!c||!cp)return;
-  document.getElementById('tooltip').innerHTML=`<b style="color:#00ff88">${c.name}</b><br>Pop: ${fmtPop(c.pop)}<br>Climate: ${cp.climate==='cold'?'❄️ Cold':cp.climate==='hot'?'🌡️ Hot':'🌤️ Temperate'}<br>${c.firstInfected?`<span style="color:#00ff66">Infected: ${fmt(c.infected)}</span><br><span style="color:#ff4444">Dead: ${fmt(c.dead)}</span>`:'<span style="color:#336633">Not yet infected</span>'}`;
-  document.getElementById('tooltip').style.display='block';moveTip(e);
-}
-function moveTip(e){const t=document.getElementById('tooltip');t.style.left=(e.clientX+14)+'px';t.style.top=(e.clientY-10)+'px';}
-function hideTip(){document.getElementById('tooltip').style.display='none';}
-function updateCountryVisual(c){
-  const p=document.getElementById('country_'+c.id);const lb=document.getElementById('label_'+c.id);const pb=document.getElementById('pop_'+c.id);if(!p)return;
-  const r=(c.infected+c.dead)/c.pop,dr=c.dead/c.pop;
-  if(!c.firstInfected){p.style.fill='#0d2a0d';p.style.stroke='#1a4a1a';lb.style.fill='#1a4a1a';if(pb)pb.style.fill='#122a12';}
-  else if(dr>0.7){p.style.fill='#2a0000';p.style.stroke='rgba(255,50,50,0.6)';lb.style.fill='#ff5555';if(pb)pb.style.fill='#aa3333';}
-  else if(dr>0.3){p.style.fill='#440000';p.style.stroke='rgba(200,50,50,0.5)';lb.style.fill='#ff7755';if(pb)pb.style.fill='#aa4433';}
-  else if(r>0.6){p.style.fill='#002211';p.style.stroke='rgba(0,255,100,0.8)';lb.style.fill='#00ffaa';if(pb)pb.style.fill='#00aa66';}
-  else if(r>0.2){p.style.fill='#005522';p.style.stroke='rgba(0,200,80,0.7)';lb.style.fill='#00ff88';if(pb)pb.style.fill='#00bb55';}
-  else{p.style.fill='#1a5a1a';p.style.stroke='rgba(0,150,60,0.5)';lb.style.fill='#44ff66';if(pb)pb.style.fill='#228833';}
-}
-
-// ══════════════════════════════════════════
-// GAME
-// ══════════════════════════════════════════
-function startGame(){
-  const name=document.getElementById('virusName').value.trim()||'PATHOGEN-X';
-  const type=PLAGUE_TYPES[selectedType];
-  // Flatten evolutions
-  const ev={};
-  Object.values(EVOLUTIONS).flat().forEach(e=>ev[e.id]=0);
-  state={name,type,dna:10,cureProgress:0,tick:0,gameOver:false,evolutions:ev,sporeDone:false,
-    cureMultiplier:1,spreadMultiplier:1,airDebuff:0,mutateRate:type.mutateRate,
-    countries:COUNTRY_PATHS.map(c=>({...c,infected:0,dead:0,firstInfected:false}))};
-  newsTriggered={};newsQueue=[];newsPaused=false;
-  buildMap();
-  const starters=state.countries.filter(c=>c.climate==='temperate');
-  const start=starters[Math.floor(Math.random()*starters.length)];
-  start.infected=Math.floor(start.pop*0.001)+1;start.firstInfected=true;updateCountryVisual(start);
-  addMsg('🦠 '+name+' detected in '+start.name+'!');
-  queueNews('firstInfection',start.name);
-  document.getElementById('virusLabel').textContent='🦠 '+name+'  •  '+type.icon+' '+type.name;
-  document.getElementById('vmTitle').textContent=name.toUpperCase()+' — VIRUS MENU';
-  document.getElementById('vmIcon').textContent=type.icon;
-  showScreen('gameScreen');
-  lastTime=performance.now();if(rafId)cancelAnimationFrame(rafId);
-  rafId=requestAnimationFrame(loop);
-}
-
-function loop(ts){
-  if(state.gameOver)return;
-  if(newsPaused){lastTime=ts;rafId=requestAnimationFrame(loop);return;}
-  const dt=Math.min((ts-lastTime)/1000,0.1);lastTime=ts;state.tick++;
-  update(dt);rafId=requestAnimationFrame(loop);
-}
-
-function calcSpreadMult(){
-  const ev=state.evolutions;
-  let m=1;
-  // Transmission upgrades
-  const tList=EVOLUTIONS.transmission;
-  tList.forEach(e=>{const lv=ev[e.id]||0;if(lv>0&&e.spreadBoost)m+=e.spreadBoost[lv-1];});
-  const aList=EVOLUTIONS.abilities;
-  aList.forEach(e=>{const lv=ev[e.id]||0;if(lv>0&&e.spreadBoost)m+=e.spreadBoost[lv-1];});
-  const rList=EVOLUTIONS.resistance;
-  rList.forEach(e=>{const lv=ev[e.id]||0;if(lv>0&&e.spreadBoost)m+=e.spreadBoost[lv-1];});
-  return m * state.spreadMultiplier;
-}
-function calcLethalityRate(){
-  const ev=state.evolutions;let r=0;
-  EVOLUTIONS.symptoms.forEach(e=>{const lv=ev[e.id]||0;if(lv>0&&e.lethBoost)r+=e.lethBoost[lv-1];});
-  return r;
-}
-function calcCureDebuff(){
-  const ev=state.evolutions;let d=0;
-  Object.values(EVOLUTIONS).flat().forEach(e=>{const lv=ev[e.id]||0;if(lv>0&&e.cureDebuff)d+=e.cureDebuff[lv-1];});
-  return Math.min(0.85,d);
-}
-function calcSymptomBoost(){
-  const ev=state.evolutions;let s=0;
-  EVOLUTIONS.symptoms.forEach(e=>{const lv=ev[e.id]||0;if(lv>0&&e.sympBoost)s+=e.sympBoost[lv-1];});
-  return s;
-}
-function calcMutateRate(){
-  const ev=state.evolutions;
-  const mutLv=ev.mutation||0;
-  const mult=mutLv===0?1:mutLv===1?1.5:2.5;
-  return state.type.mutateRate*mult;
-}
-function calcClimate(c){
-  const ev=state.evolutions;
-  const coldLv=ev.coldRes||0;const heatLv=ev.heatRes||0;
-  if(c.climate==='cold') return 0.15+coldLv*0.42;
-  if(c.climate==='hot')  return 0.4+heatLv*0.3+(ev.insect||0)*0.12+(ev.water||0)*0.08+(ev.food||0)*0.06;
-  return 1;
-}
-
-function update(dt){
-  const ev=state.evolutions,type=state.type;
-  let tI=0,tD=0,tP=0;
-  const sm=calcSpreadMult();
-  const lr=calcLethalityRate();
-  const cd=calcCureDebuff();
-  const sb=calcSymptomBoost();
-  const mr=calcMutateRate();
-
-  state.countries.forEach(c=>{
-    tP+=c.pop;if(!c.firstInfected)return;tI+=c.infected;tD+=c.dead;
-    const cm=calcClimate(c);
-    const symMod=1+sb;
-    const sRate=0.009*type.infectMult*cm*symMod*sm*dt*60;
-    c.infected=Math.min(c.infected+c.infected*sRate,c.pop-c.dead);
-    if(lr>0){const d=c.infected*lr*dt*60;c.dead=Math.min(c.dead+d,c.pop);c.infected=Math.max(0,c.infected-d);}
-    const airMod=(ev.airborne||0)*0.002*(1-state.airDebuff);
-    c.connections.forEach(cid=>{
-      const t=state.countries.find(x=>x.id===cid);if(!t||t.infected>=t.pop*0.001)return;
-      const tc=calcClimate(t);
-      if(Math.random()<(0.002*type.infectMult+airMod)*tc*sm*dt*60){
-        if(!t.firstInfected){
-          t.firstInfected=true;t.infected=1;
-          addMsg('🌍 '+state.name+' spreads to '+t.name+'!');
-          spawnBubble(t);updateCountryVisual(t);
-          const nc=state.countries.filter(x=>x.firstInfected).length;
-          if(nc===5&&!newsTriggered.s5){newsTriggered.s5=true;queueNews('spread5','');}
-          if(nc===10&&!newsTriggered.s10){newsTriggered.s10=true;queueNews('spread10','');}
-        } else t.infected=Math.max(t.infected,t.pop*0.001);
-      }
-    });
-    if(mr>0&&Math.random()<mr*dt*60)spawnBubble(c);
-    updateCountryVisual(c);
-  });
-
-  // Passive bubble
-  if(state.tick%80===0){const inf=state.countries.filter(c=>c.firstInfected);if(inf.length)spawnBubble(inf[Math.floor(Math.random()*inf.length)]);}
-
-  // Cure
-  const ir=(tI+tD)/tP;
-  const letBoost=1+lr*180;
-  const cs=(ir>0.05?0.007:0.0015)*type.cureMult*(1-cd)*letBoost*state.cureMultiplier*dt*60;
-  if(ir>0||tD>0)state.cureProgress=Math.min(100,state.cureProgress+cs);
-
-  // News triggers
-  if(tD>100000&&!newsTriggered.d1){newsTriggered.d1=true;queueNews('deaths100k','');}
-  if(tD>10000000&&!newsTriggered.d2){newsTriggered.d2=true;queueNews('deaths10m','');}
-  if(tD>100000000&&!newsTriggered.d3){newsTriggered.d3=true;queueNews('deaths100m','');}
-  if(state.cureProgress>=25&&!newsTriggered.c1){newsTriggered.c1=true;queueNews('cureQuarter','');}
-  if(state.cureProgress>=50&&!newsTriggered.c2){newsTriggered.c2=true;queueNews('cureHalf','');}
-  if(state.cureProgress>=75&&!newsTriggered.c3){newsTriggered.c3=true;queueNews('cure75','');}
-  if(ir>=1&&!newsTriggered.ai){newsTriggered.ai=true;queueNews('allInfected','');}
-  if((state.tick===600||state.tick===1400||state.tick===2200)&&!newsTriggered['r'+state.tick]){
-    newsTriggered['r'+state.tick]=true;
-    const rands=['randomBad','randomNeutral','military'];queueNews(rands[Math.floor(Math.random()*rands.length)],'');
-  }
-  if(ev.spore===1&&!state.sporeDone){
-    state.sporeDone=true;
-    const u=state.countries.filter(c=>!c.firstInfected);
-    for(let i=0;i<Math.min(2,u.length);i++){const t=u.splice(Math.floor(Math.random()*u.length),1)[0];t.firstInfected=true;t.infected=1;updateCountryVisual(t);addMsg('🌫️ Spore burst seeds '+t.name+'!');}
-  }
-
-  // UI
-  document.getElementById('statInfected').textContent=fmt(tI);
-  document.getElementById('statDead').textContent=fmt(tD);
-  document.getElementById('statHealthy').textContent=fmt(Math.max(0,tP-tI-tD));
-  document.getElementById('statDNA').textContent=Math.floor(state.dna);
-  document.getElementById('vmDNA').textContent=Math.floor(state.dna);
-  const cp=Math.floor(state.cureProgress);
-  document.getElementById('curePercent').textContent=cp+'%';
-  document.getElementById('cureBarInner').style.width=cp+'%';
-  document.getElementById('cureBarInner').style.background=cp>75?'linear-gradient(90deg,#cc2200,#ff4400)':cp>50?'linear-gradient(90deg,#aa8800,#ffcc00)':'linear-gradient(90deg,#3333cc,#8888ff,#ccccff)';
-
-  if(tD>=tP*0.999)endGame(true);
-  if(state.cureProgress>=100)endGame(false);
-}
-
-// ══════════════════════════════════════════
-// BUBBLES — pop to spread & collect DNA
-// ══════════════════════════════════════════
-const BUBBLE_TYPES = [
-  {emoji:'🫧', color:'#00ff88', border:'#00aa44', dna:2, spreadBoost:0.01, label:'Spread!'},
-  {emoji:'🧬', color:'#ffdd00', border:'#aa8800', dna:4, spreadBoost:0.005, label:'+DNA'},
-  {emoji:'💉', color:'#ff8800', border:'#aa5500', dna:1, spreadBoost:0.02, label:'Infect!'},
-  {emoji:'⚗️',  color:'#aa44ff', border:'#6600cc', dna:6, spreadBoost:0.0,  label:'+DNA!!'},
-];
-
-function spawnBubble(c){
-  const cp=COUNTRY_PATHS.find(p=>p.id===c.id);if(!cp)return;
-  const bb=getBB(cp.path);
-  const svgEl=document.getElementById('svgMap');const rect=svgEl.getBoundingClientRect();
-  const px=(bb.cx+(Math.random()-0.5)*bb.w*0.45)/2000*rect.width;
-  const py=(bb.cy+(Math.random()-0.5)*bb.h*0.45)/1001*rect.height;
-  const btype=BUBBLE_TYPES[Math.floor(Math.random()*BUBBLE_TYPES.length)];
-  const sz=32+Math.floor(Math.random()*14);
-  const div=document.createElement('div');
-  div.className='bubble';
-  div.style.cssText=`left:${px}px;top:${py}px;width:${sz}px;height:${sz}px;background:radial-gradient(circle at 35% 35%,${btype.color}55,${btype.color}22);border:2px solid ${btype.border};box-shadow:0 0 10px ${btype.color}66;`;
-  div.textContent=btype.emoji;
-  div.style.fontSize=(sz*0.52)+'px';
-  div.addEventListener('click',e=>{
-    e.stopPropagation();
-    div.className='bubble bubble-pop';
-    const amt=btype.dna+(Math.random()<0.3?2:0);
-    state.dna+=amt;
-    // Slightly boost spread in this country
-    c.infected=Math.min(c.infected*(1+btype.spreadBoost+0.01),c.pop-c.dead);
-    popDNA(px+rect.left,py+rect.top,'+'+amt,btype.color);
-    // Show label
-    const lbl=document.createElement('div');
-    lbl.style.cssText=`position:absolute;left:${px}px;top:${py-20}px;color:${btype.color};font-family:'Orbitron',sans-serif;font-size:0.7rem;pointer-events:none;animation:floatUp 1s ease-out forwards;z-index:20;`;
-    lbl.textContent=btype.label;document.getElementById('bubbleLayer').appendChild(lbl);
-    setTimeout(()=>{div.remove();lbl.remove();},350);
-  });
-  document.getElementById('bubbleLayer').appendChild(div);
-  const lifetime=2500+Math.random()*2000;
-  setTimeout(()=>div.remove(),lifetime);
-}
-
-function popDNA(x,y,text,color='#ffdd00'){
-  const wrap=document.getElementById('dnaPopups');const el=document.createElement('div');
-  el.className='dna-pop';el.style.color=color;
-  const r=document.getElementById('mapArea').getBoundingClientRect();
-  el.style.left=(x-r.left)+'px';el.style.top=(y-r.top)+'px';
-  el.textContent=text;wrap.appendChild(el);setTimeout(()=>el.remove(),1000);
-}
-
-function addMsg(t){
-  if(!state)return;const log=document.getElementById('msgLog');
-  const el=document.createElement('div');el.className='msg-item';el.textContent=t;
-  log.appendChild(el);setTimeout(()=>el.remove(),4000);
-  while(log.children.length>5)log.removeChild(log.firstChild);
-}
-
-// ══════════════════════════════════════════
-// VIRUS MENU
-// ══════════════════════════════════════════
-function openVirusMenu(){
-  document.getElementById('vmDNA').textContent=Math.floor(state.dna);
-  renderTab(currentTab);
-  document.getElementById('virusMenu').classList.add('active');
-}
-function closeVirusMenu(){document.getElementById('virusMenu').classList.remove('active');}
-function switchTab(tab){
-  currentTab=tab;
-  document.querySelectorAll('.vm-tab').forEach(t=>t.classList.remove('active'));
-  event.target.classList.add('active');
-  renderTab(tab);
-}
-
-function renderTab(tab){
-  const content=document.getElementById('vmContent');content.innerHTML='';
-  const evos=EVOLUTIONS[tab];if(!evos)return;
-  const title=document.createElement('div');title.className='vm-section-title';
-  const labels={transmission:'🚀 How Does It Spread?',symptoms:'🤒 What Does It Do To People?',abilities:'⚡ Special Abilities',resistance:'🛡️ Climate & Environment'};
-  title.textContent=labels[tab]||tab.toUpperCase();content.appendChild(title);
-  const grid=document.createElement('div');grid.className='evo-cards';
-  evos.forEach(evo=>{
-    const lv=state.evolutions[evo.id]||0;
-    const maxed=lv>=evo.maxLv;
-    const cost=maxed?0:evo.costs[lv];
-    const canBuy=!maxed&&state.dna>=cost;
-    const card=document.createElement('div');
-    card.className='evo-card'+(maxed?' maxed':canBuy?' can-buy':'');
-    if(maxed||state.dna<cost)card.classList.add(maxed?'':' disabled');
-    // Stars
-    let stars='';for(let i=0;i<evo.maxLv;i++)stars+=(i<lv?'★':'☆');
-    card.innerHTML=`
-      <div class="ec-lv">${lv>0?lv+'/'+evo.maxLv:''}</div>
-      <div class="ec-icon">${evo.icon}</div>
-      <div class="ec-name">${evo.label}</div>
-      <div class="ec-stars">${stars}</div>
-      <div class="ec-desc">${evo.desc}</div>
-      ${lv>0&&evo.effect?`<div class="ec-effect">✓ ${evo.effect[lv-1]}</div>`:''}
-      ${!maxed?`<div class="ec-cost">${canBuy?'⬆️ ':''} ${cost} DNA${lv<evo.maxLv&&lv>0?' → Lv'+(lv+1):''}${lv===0?' (unlock)':''}</div>`:'<div><span class="ec-maxbadge">✓ MAXED</span></div>'}
-    `;
-    if(!maxed&&canBuy){
-      card.addEventListener('click',()=>{
-        buyEvo(evo.id,cost);
-        renderTab(tab);
-        document.getElementById('vmDNA').textContent=Math.floor(state.dna);
-        addMsg('⬆️ '+evo.icon+' '+evo.label+' upgraded to Lv'+(lv+1)+'!');
-      });
-    }
-    grid.appendChild(card);
-  });
-  content.appendChild(grid);
-}
-
-function buyEvo(id,cost){
-  if(state.dna<cost)return;
-  state.dna-=cost;
-  state.evolutions[id]=(state.evolutions[id]||0)+1;
-}
-
-// ══════════════════════════════════════════
-// NEWS
-// ══════════════════════════════════════════
-function queueNews(trigger,country){
-  const evt=NEWS_EVENTS.find(e=>e.trigger===trigger);if(!evt)return;
-  newsQueue.push({...evt,country});
-  if(!newsPaused&&newsQueue.length===1)showNextNews();
-}
-function showNextNews(){
-  if(!newsQueue.length){newsPaused=false;return;}
-  newsPaused=true;const evt=newsQueue.shift();
-  document.getElementById('newsTime').textContent=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-  document.getElementById('newsIcon').textContent=evt.icon;
-  document.getElementById('newsHeadline').textContent=evt.headline;
-  document.getElementById('newsText').textContent=evt.text.replace('{country}',evt.country||'an unknown region');
-  document.getElementById('newsEffectText').textContent=evt.effect;
-  document.getElementById('newsOverlay').classList.add('active');
-  applyNewsEffect(evt.gameEffect);
-}
-function closeNews(){document.getElementById('newsOverlay').classList.remove('active');if(newsQueue.length)setTimeout(showNextNews,1200);else newsPaused=false;}
-function applyNewsEffect(eff){
-  if(!eff||eff==='none')return;const[t,v]=eff.split(':');const vv=parseFloat(v)||0;
-  if(t==='boostCure')state.cureMultiplier=Math.min(3,state.cureMultiplier+vv);
-  else if(t==='slowCure')state.cureMultiplier=Math.max(0.1,state.cureMultiplier-vv);
-  else if(t==='slowSpread')state.spreadMultiplier=Math.max(0.1,state.spreadMultiplier-vv);
-  else if(t==='seedRandom'){const u=state.countries.filter(c=>!c.firstInfected);if(u.length){const t2=u[Math.floor(Math.random()*u.length)];t2.firstInfected=true;t2.infected=1;updateCountryVisual(t2);addMsg('🚢 Outbreak in '+t2.name+'!');}}
-}
-
-// ══════════════════════════════════════════
-// HELPERS
-// ══════════════════════════════════════════
-function fmt(n){n=Math.floor(n);if(n>=1e9)return(n/1e9).toFixed(1)+'B';if(n>=1e6)return(n/1e6).toFixed(1)+'M';if(n>=1e3)return(n/1e3).toFixed(0)+'K';return n;}
-function endGame(won){
-  if(state.gameOver)return;state.gameOver=true;cancelAnimationFrame(rafId);
-  document.getElementById('newsOverlay').classList.remove('active');
-  document.getElementById('virusMenu').classList.remove('active');
-  const tp=state.countries.reduce((a,c)=>a+c.pop,0);
-  const td=state.countries.reduce((a,c)=>a+c.dead,0);
-  const pct=((td/tp)*100).toFixed(1);
-  document.getElementById('endIcon').textContent=won?'☠️':'💉';
-  const t=document.getElementById('endTitle');t.className=won?'win':'lose';
-  t.textContent=won?'HUMANITY EXTINCT':'CURE FOUND';
-  document.getElementById('endScore').textContent=won?'💀 '+pct+'% of humanity wiped out':'🔬 '+pct+'% killed before eradication';
-  document.getElementById('endMsg').textContent=won
-    ?state.name+' achieved total domination. The '+state.type.name+' pathogen is forever in history.'
-    :'Scientists completed the cure. Try evolving Stealth and Drug Resistance earlier next time!';
-  showScreen('endScreen');
-}
-
-buildTypeBtns();
-</script>
-</body>
-</html>'''
-
-with open('/output/pathogen-x.html','w') as f:
-    f.write(html)
-print("Done!", len(html), "bytes")
+    <!-- MENU -->
+    <div id="menuScreen" class="screen active">
+        <div class="logo-icon">🦠</div>
+        <div class="logo-title">PATHOGEN X</div>
+        <div class="logo-sub">INFECT • EVOLVE • ERADICATE</div>
+        <div class="menu-btns">
+            <button class="mbtn mbtn-primary" onclick="showName()">NEW GAME</button>
+            <button class="mbtn mbtn-secondary" onclick="toggleHowToPlay()">HOW TO PLAY</button>
+        </div>
+        <div id="howToPlay">
+            <b>Goal:</b> Infect & kill all humanity before the cure is complete.<br>
+            <b>Bubbles:</b> Pop
