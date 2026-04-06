@@ -6,7 +6,7 @@
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { background: #000; display: flex; align-items: center; justify-content: center; height: 100vh; }
-  canvas { display: block; }
+  canvas { display: block; border-radius: 8px; box-shadow: 0 0 40px rgba(0,200,255,0.3); }
 </style>
 </head>
 <body>
@@ -17,321 +17,310 @@ const ctx = canvas.getContext('2d');
 canvas.width = 800;
 canvas.height = 450;
 
-// ── CONSTANTS ──────────────────────────────────────────────
-const GROUND_Y = 370;       // top of ground
+const GROUND_Y = 370;
 const PLAYER_SIZE = 36;
-const GRAVITY = 0.7;
-const JUMP_POWER = -14;
-const GAME_SPEED = 3.5;     // pixels per frame (slow & fair)
+const GRAVITY = 0.75;
+const JUMP_POWER = -11.5;   // shorter jump
+const GAME_SPEED = 3.5;
 
-// ── STATE ──────────────────────────────────────────────────
-let state = 'menu';   // menu | playing | dead | win
+let state = 'menu';
 let attempt = 1;
 let camX = 0;
 let canJump = false;
-let jumpHeld = false;
+let bestPercent = 0;
+let currentPercent = 0;
 
 const player = { x: 150, y: GROUND_Y - PLAYER_SIZE, vy: 0, rot: 0 };
 
-// ── LEVEL ──────────────────────────────────────────────────
-// Each object: { type: 'spike'|'block'|'platform', x, y, w, h }
 function makeLevel() {
   const lvl = [];
-  // Helper: push spike at world x
-  function spike(x) {
-    lvl.push({ type: 'spike', x, y: GROUND_Y - 38, w: 38, h: 38 });
-  }
-  function block(x, y) {
-    y = y ?? GROUND_Y - 40;
-    lvl.push({ type: 'block', x, y, w: 40, h: 40 });
-  }
-  function platform(x, y, w) {
-    lvl.push({ type: 'platform', x, y, w: w ?? 80, h: 16 });
-  }
+  function spike(x) { lvl.push({ type:'spike', x, y: GROUND_Y-38, w:38, h:38 }); }
+  function block(x, y) { lvl.push({ type:'block', x, y: y ?? GROUND_Y-40, w:40, h:40 }); }
+  function platform(x, y, w) { lvl.push({ type:'platform', x, y, w: w??80, h:16 }); }
 
-  // Section 1 — warmup singles
-  spike(600); spike(700); spike(820); spike(920);
-  // Section 2 — double spikes
-  spike(1100); spike(1144); spike(1280); spike(1324);
-  // Section 3 — block jump
-  block(1500); spike(1600); block(1700); spike(1800);
-  // Section 4 — platform section
-  platform(1950, GROUND_Y - 110, 90);
-  spike(2060); spike(2120);
-  // Section 5 — triple spike gauntlet
-  spike(2300); spike(2344); spike(2388);
-  block(2500); spike(2560); block(2620);
-  // Section 6 — fast finish
-  spike(2800); spike(2844); block(2960); spike(3060); spike(3104);
-  platform(3200, GROUND_Y - 120, 100);
-  spike(3320); spike(3364); spike(3408);
-  // End marker
-  lvl.push({ type: 'end', x: 3600, y: 0, w: 10, h: GROUND_Y });
-
+  spike(600); spike(720); spike(860); spike(980);
+  spike(1150); spike(1194);
+  spike(1350); spike(1394); spike(1438);
+  block(1600); spike(1700); block(1800); spike(1900);
+  platform(2050, GROUND_Y-110, 90); spike(2160); spike(2220);
+  spike(2400); spike(2444); spike(2488);
+  block(2650); spike(2750); block(2860);
+  spike(3050); spike(3094);
+  platform(3250, GROUND_Y-115, 100); spike(3370); spike(3414); spike(3458);
+  spike(3650); spike(3694); spike(3738); block(3860); spike(3960);
+  lvl.push({ type:'end', x:4100, y:0, w:10, h:GROUND_Y });
   return lvl;
 }
 
 let level = makeLevel();
-const LEVEL_END = 3620;
+const LEVEL_END = 4100;
 
 function reset() {
-  player.x = 150;
-  player.y = GROUND_Y - PLAYER_SIZE;
-  player.vy = 0;
-  player.rot = 0;
-  camX = 0;
-  canJump = false;
+  player.x = 150; player.y = GROUND_Y - PLAYER_SIZE;
+  player.vy = 0; player.rot = 0;
+  camX = 0; canJump = false; currentPercent = 0;
 }
 
-// ── INPUT ──────────────────────────────────────────────────
 function tryJump() {
   if (state === 'menu') { state = 'playing'; reset(); return; }
   if (state === 'dead')  { attempt++; state = 'playing'; reset(); return; }
   if (state === 'win')   { attempt = 1; state = 'playing'; reset(); return; }
-  if (state === 'playing' && canJump) {
-    player.vy = JUMP_POWER;
-    canJump = false;
-  }
+  if (state === 'playing' && canJump) { player.vy = JUMP_POWER; canJump = false; }
 }
 
 document.addEventListener('keydown', e => {
   if (e.code === 'Space' || e.code === 'ArrowUp') { e.preventDefault(); tryJump(); }
 });
 canvas.addEventListener('mousedown', tryJump);
-canvas.addEventListener('touchstart', e => { e.preventDefault(); tryJump(); }, { passive: false });
+canvas.addEventListener('touchstart', e => { e.preventDefault(); tryJump(); }, { passive:false });
 
-// ── HELPERS ────────────────────────────────────────────────
-function rectsOverlap(ax, ay, aw, ah, bx, by, bw, bh) {
+function rectsOverlap(ax,ay,aw,ah,bx,by,bw,bh) {
   return ax < bx+bw && ax+aw > bx && ay < by+bh && ay+ah > by;
 }
 
-// ── UPDATE ─────────────────────────────────────────────────
 function update() {
   if (state !== 'playing') return;
-
-  // scroll
   camX += GAME_SPEED;
+  currentPercent = Math.min(100, Math.floor((camX / (LEVEL_END - canvas.width + 150)) * 100));
+  if (currentPercent > bestPercent) bestPercent = currentPercent;
 
-  // gravity
   player.vy += GRAVITY;
   player.y += player.vy;
 
-  // rotate in air
   const onGround = player.y >= GROUND_Y - PLAYER_SIZE;
-  if (!onGround) {
-    player.rot += 4.5;
-  } else {
-    // snap rotation to nearest 90
+  if (!onGround) { player.rot += 4.5; }
+  else {
     player.rot = Math.round(player.rot / 90) * 90;
     player.y = GROUND_Y - PLAYER_SIZE;
-    player.vy = 0;
-    canJump = true;
+    player.vy = 0; canJump = true;
   }
 
-  // Obstacle collision
   for (const o of level) {
-    const sx = o.x - camX + player.x; // screen x of obstacle relative to player screen pos
-    // world-space overlap check
-    const px = camX; // camera offset; player is always at screen x=150, world x = camX + (150 - player.x offset)
-    // player world bounds
-    const pwx = camX - 150 + player.x; // actually let's keep player.x fixed at 150 screen
-    // player screen x is always 150
-    const PSX = 150, PSY = player.y;
-
-    const osx = o.x - camX; // obstacle screen x
-
-    if (o.type === 'end') {
-      if (osx <= 150) { state = 'win'; return; }
-    }
-
+    const osx = o.x - camX;
+    if (o.type === 'end') { if (osx <= 150) { state = 'win'; return; } }
     if (o.type === 'block' || o.type === 'platform') {
-      if (rectsOverlap(PSX+3, PSY+3, PLAYER_SIZE-6, PLAYER_SIZE-6, osx, o.y, o.w, o.h)) {
-        // land on top?
-        if (player.vy > 0 && PSY + PLAYER_SIZE - player.vy <= o.y + 5) {
-          player.y = o.y - PLAYER_SIZE;
-          player.vy = 0;
-          canJump = true;
-        } else {
-          // hit side or bottom → die
-          state = 'dead';
-          return;
-        }
+      if (rectsOverlap(150+3, player.y+3, PLAYER_SIZE-6, PLAYER_SIZE-6, osx, o.y, o.w, o.h)) {
+        if (player.vy > 0 && player.y + PLAYER_SIZE - player.vy <= o.y + 5) {
+          player.y = o.y - PLAYER_SIZE; player.vy = 0; canJump = true;
+        } else { state = 'dead'; return; }
       }
     }
-
     if (o.type === 'spike') {
-      // tighter hitbox for spikes (fairness)
-      if (rectsOverlap(PSX+8, PSY+8, PLAYER_SIZE-16, PLAYER_SIZE-16, osx+7, o.y+10, o.w-14, o.h-12)) {
-        state = 'dead';
-        return;
+      if (rectsOverlap(150+8, player.y+8, PLAYER_SIZE-16, PLAYER_SIZE-16, osx+7, o.y+10, o.w-14, o.h-12)) {
+        state = 'dead'; return;
       }
     }
   }
 }
 
-// ── DRAW ───────────────────────────────────────────────────
+// ── DRAW BG ────────────────────────────────────────────────
 function drawBG() {
-  // Sky
   const g = ctx.createLinearGradient(0,0,0,GROUND_Y);
-  g.addColorStop(0,'#0a0a2a');
-  g.addColorStop(1,'#1a1a5e');
-  ctx.fillStyle = g;
-  ctx.fillRect(0,0,canvas.width,canvas.height);
+  g.addColorStop(0,'#070720'); g.addColorStop(1,'#12125a');
+  ctx.fillStyle = g; ctx.fillRect(0,0,canvas.width,canvas.height);
 
-  // Moving grid lines on sky
-  ctx.strokeStyle = 'rgba(100,100,255,0.08)';
-  ctx.lineWidth = 1;
-  const grid = 60;
-  const ox = camX % grid;
-  for (let x = -ox; x < canvas.width; x += grid) {
-    ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,GROUND_Y); ctx.stroke();
-  }
-  for (let y = 0; y < GROUND_Y; y += grid) {
-    ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(canvas.width,y); ctx.stroke();
-  }
+  // moving grid
+  ctx.strokeStyle = 'rgba(80,80,255,0.07)'; ctx.lineWidth = 1;
+  const grid = 60, ox = camX % grid;
+  for (let x = -ox; x < canvas.width; x += grid) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,GROUND_Y); ctx.stroke(); }
+  for (let y = 0; y < GROUND_Y; y += grid) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(canvas.width,y); ctx.stroke(); }
 }
 
 function drawGround() {
-  ctx.fillStyle = '#1a7a1a';
-  ctx.fillRect(0, GROUND_Y, canvas.width, canvas.height - GROUND_Y);
-  ctx.fillStyle = '#22aa22';
-  ctx.fillRect(0, GROUND_Y, canvas.width, 6);
-  // tiles
-  ctx.strokeStyle = '#155a15';
-  ctx.lineWidth = 1;
-  const t = 40, off = camX % t;
-  for (let x = -off; x < canvas.width; x += t) {
-    ctx.beginPath(); ctx.moveTo(x, GROUND_Y); ctx.lineTo(x, canvas.height); ctx.stroke();
-  }
-  for (let y = GROUND_Y; y < canvas.height; y += t) {
-    ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(canvas.width,y); ctx.stroke();
-  }
+  ctx.fillStyle = '#145214'; ctx.fillRect(0,GROUND_Y,canvas.width,canvas.height-GROUND_Y);
+  // top glow strip
+  const gg = ctx.createLinearGradient(0,GROUND_Y,0,GROUND_Y+10);
+  gg.addColorStop(0,'#44ff44'); gg.addColorStop(1,'#22aa22');
+  ctx.fillStyle = gg; ctx.fillRect(0,GROUND_Y,canvas.width,8);
+  ctx.strokeStyle='#0e3d0e'; ctx.lineWidth=1;
+  const t=40, off=camX%t;
+  for (let x=-off; x<canvas.width; x+=t) { ctx.beginPath(); ctx.moveTo(x,GROUND_Y); ctx.lineTo(x,canvas.height); ctx.stroke(); }
+  for (let y=GROUND_Y; y<canvas.height; y+=t) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(canvas.width,y); ctx.stroke(); }
 }
 
-function drawSpike(sx, o) {
-  ctx.fillStyle = '#ff3333';
-  ctx.strokeStyle = '#cc0000';
-  ctx.lineWidth = 1.5;
-  ctx.beginPath();
-  ctx.moveTo(sx, o.y + o.h);
-  ctx.lineTo(sx + o.w/2, o.y);
-  ctx.lineTo(sx + o.w, o.y + o.h);
-  ctx.closePath();
+function drawSpike(sx,o) {
+  // shadow
+  ctx.fillStyle='rgba(0,0,0,0.25)';
+  ctx.beginPath(); ctx.ellipse(sx+o.w/2,o.y+o.h,o.w/2,5,0,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#ff3333'; ctx.strokeStyle='#aa0000'; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.moveTo(sx,o.y+o.h); ctx.lineTo(sx+o.w/2,o.y); ctx.lineTo(sx+o.w,o.y+o.h); ctx.closePath();
   ctx.fill(); ctx.stroke();
-  // highlight
-  ctx.fillStyle = 'rgba(255,180,180,0.3)';
-  ctx.beginPath();
-  ctx.moveTo(sx + o.w/2, o.y + 5);
-  ctx.lineTo(sx + o.w/2 - 5, o.y + o.h - 8);
-  ctx.lineTo(sx + o.w/2 + 2, o.y + o.h - 4);
-  ctx.closePath(); ctx.fill();
+  ctx.fillStyle='rgba(255,200,200,0.35)';
+  ctx.beginPath(); ctx.moveTo(sx+o.w/2,o.y+5); ctx.lineTo(sx+o.w/2-5,o.y+o.h-10); ctx.lineTo(sx+o.w/2+2,o.y+o.h-6); ctx.closePath(); ctx.fill();
 }
 
-function drawBlock(sx, o) {
-  ctx.fillStyle = '#4477ff';
-  ctx.fillRect(sx, o.y, o.w, o.h);
-  ctx.strokeStyle = '#2255cc';
-  ctx.lineWidth = 2;
-  ctx.strokeRect(sx, o.y, o.w, o.h);
-  ctx.fillStyle = 'rgba(255,255,255,0.12)';
-  ctx.fillRect(sx+4, o.y+4, o.w-8, 10);
+function drawBlock(sx,o) {
+  // shadow
+  ctx.fillStyle='rgba(0,0,0,0.2)'; ctx.fillRect(sx+4,o.y+o.h,o.w,5);
+  ctx.fillStyle='#4477ff'; ctx.fillRect(sx,o.y,o.w,o.h);
+  // top highlight
+  ctx.fillStyle='rgba(255,255,255,0.18)'; ctx.fillRect(sx+3,o.y+3,o.w-6,9);
+  // bottom shadow
+  ctx.fillStyle='rgba(0,0,0,0.2)'; ctx.fillRect(sx+3,o.y+o.h-10,o.w-6,7);
+  ctx.strokeStyle='#2255cc'; ctx.lineWidth=2; ctx.strokeRect(sx,o.y,o.w,o.h);
+  // inner square
+  ctx.strokeStyle='rgba(255,255,255,0.15)'; ctx.lineWidth=1; ctx.strokeRect(sx+6,o.y+6,o.w-12,o.h-12);
 }
 
-function drawPlatform(sx, o) {
-  ctx.fillStyle = '#ffaa00';
-  ctx.fillRect(sx, o.y, o.w, o.h);
-  ctx.strokeStyle = '#cc7700';
-  ctx.lineWidth = 2;
-  ctx.strokeRect(sx, o.y, o.w, o.h);
+function drawPlatform(sx,o) {
+  ctx.fillStyle='rgba(0,0,0,0.2)'; ctx.fillRect(sx+4,o.y+o.h,o.w,4);
+  ctx.fillStyle='#ffaa00'; ctx.fillRect(sx,o.y,o.w,o.h);
+  ctx.fillStyle='rgba(255,255,255,0.2)'; ctx.fillRect(sx+3,o.y+2,o.w-6,5);
+  ctx.strokeStyle='#cc7700'; ctx.lineWidth=2; ctx.strokeRect(sx,o.y,o.w,o.h);
 }
 
 function drawObstacles() {
   for (const o of level) {
     const sx = o.x - camX;
-    if (sx < -100 || sx > canvas.width + 100) continue;
-    if (o.type === 'spike')    drawSpike(sx, o);
-    if (o.type === 'block')    drawBlock(sx, o);
-    if (o.type === 'platform') drawPlatform(sx, o);
+    if (sx < -100 || sx > canvas.width+100) continue;
+    if (o.type==='spike') drawSpike(sx,o);
+    if (o.type==='block') drawBlock(sx,o);
+    if (o.type==='platform') drawPlatform(sx,o);
   }
 }
 
 function drawPlayer() {
-  const sx = 150, sy = player.y;
-  const cx = sx + PLAYER_SIZE/2, cy = sy + PLAYER_SIZE/2;
+  const sx=150, sy=player.y, cx=sx+PLAYER_SIZE/2, cy=sy+PLAYER_SIZE/2;
+  // glow
   ctx.save();
-  ctx.translate(cx, cy);
-  ctx.rotate(player.rot * Math.PI / 180);
-  // cube body
-  ctx.fillStyle = '#00ddff';
-  ctx.fillRect(-PLAYER_SIZE/2, -PLAYER_SIZE/2, PLAYER_SIZE, PLAYER_SIZE);
-  ctx.strokeStyle = '#009bbb';
-  ctx.lineWidth = 2.5;
-  ctx.strokeRect(-PLAYER_SIZE/2, -PLAYER_SIZE/2, PLAYER_SIZE, PLAYER_SIZE);
-  // inner design
-  ctx.fillStyle = '#006688';
-  ctx.fillRect(-PLAYER_SIZE/2+7, -PLAYER_SIZE/2+7, PLAYER_SIZE-14, PLAYER_SIZE-14);
-  ctx.fillStyle = '#fff';
-  ctx.beginPath(); ctx.arc(0,0,4,0,Math.PI*2); ctx.fill();
+  ctx.shadowColor='#00ddff'; ctx.shadowBlur=18;
+  ctx.translate(cx,cy); ctx.rotate(player.rot*Math.PI/180);
+  ctx.fillStyle='#00ddff'; ctx.fillRect(-PLAYER_SIZE/2,-PLAYER_SIZE/2,PLAYER_SIZE,PLAYER_SIZE);
+  ctx.restore();
+  ctx.save();
+  ctx.translate(cx,cy); ctx.rotate(player.rot*Math.PI/180);
+  ctx.fillStyle='#00ddff'; ctx.fillRect(-PLAYER_SIZE/2,-PLAYER_SIZE/2,PLAYER_SIZE,PLAYER_SIZE);
+  ctx.strokeStyle='#00aabb'; ctx.lineWidth=2.5; ctx.strokeRect(-PLAYER_SIZE/2,-PLAYER_SIZE/2,PLAYER_SIZE,PLAYER_SIZE);
+  ctx.fillStyle='#005577'; ctx.fillRect(-PLAYER_SIZE/2+7,-PLAYER_SIZE/2+7,PLAYER_SIZE-14,PLAYER_SIZE-14);
+  ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(0,0,4,0,Math.PI*2); ctx.fill();
   ctx.restore();
   // trail
-  ctx.fillStyle = 'rgba(0,220,255,0.1)';
-  ctx.fillRect(sx - 40, sy + PLAYER_SIZE - 10, 40, 8);
+  for (let i=1;i<=5;i++) {
+    ctx.fillStyle=`rgba(0,220,255,${0.07*i})`;
+    ctx.fillRect(sx-i*9, sy+PLAYER_SIZE-10, 8, 8);
+  }
 }
 
+// ── HUD ────────────────────────────────────────────────────
 function drawHUD() {
-  // progress bar
+  // Top bar bg
+  ctx.fillStyle='rgba(0,0,0,0.55)';
+  roundRect(0,0,canvas.width,44,0); ctx.fill();
+
+  // Attempt badge (left)
+  ctx.fillStyle='rgba(255,255,255,0.08)';
+  roundRect(10,8,130,28,6); ctx.fill();
+  ctx.strokeStyle='rgba(255,255,255,0.15)'; ctx.lineWidth=1;
+  roundRect(10,8,130,28,6); ctx.stroke();
+  ctx.fillStyle='#aaa'; ctx.font='11px Arial'; ctx.textAlign='left';
+  ctx.fillText('ATTEMPT', 18, 21);
+  ctx.fillStyle='#fff'; ctx.font='bold 16px Arial';
+  ctx.fillText(attempt, 86, 31);
+
+  // Progress bar (center)
   const prog = Math.min(1, camX / (LEVEL_END - canvas.width + 150));
-  const bw = 300, bx = canvas.width/2 - bw/2;
-  ctx.fillStyle = 'rgba(0,0,0,0.5)';
-  ctx.fillRect(bx-2, 10, bw+4, 20);
-  ctx.fillStyle = '#00ff88';
-  ctx.fillRect(bx, 12, bw * prog, 16);
-  ctx.strokeStyle = '#fff';
-  ctx.lineWidth = 1;
-  ctx.strokeRect(bx, 12, bw, 16);
-  ctx.fillStyle = '#fff';
-  ctx.font = 'bold 11px Arial';
-  ctx.textAlign = 'center';
-  ctx.fillText(Math.floor(prog*100) + '%', canvas.width/2, 24);
-  ctx.textAlign = 'left';
-  ctx.font = 'bold 15px Arial';
-  ctx.fillStyle = '#fff';
-  ctx.fillText('Attempt ' + attempt, 12, 26);
+  const bw=260, bx=canvas.width/2-bw/2;
+  ctx.fillStyle='rgba(255,255,255,0.07)'; roundRect(bx,12,bw,20,10); ctx.fill();
+  // fill
+  if (prog > 0) {
+    ctx.save();
+    ctx.beginPath(); roundRect(bx,12,bw*prog,20,10); ctx.clip();
+    const pg = ctx.createLinearGradient(bx,0,bx+bw,0);
+    pg.addColorStop(0,'#00cc66'); pg.addColorStop(1,'#00ffaa');
+    ctx.fillStyle=pg; ctx.fillRect(bx,12,bw*prog,20); ctx.restore();
+  }
+  ctx.strokeStyle='rgba(255,255,255,0.2)'; ctx.lineWidth=1;
+  roundRect(bx,12,bw,20,10); ctx.stroke();
+  ctx.fillStyle='#fff'; ctx.font='bold 12px Arial'; ctx.textAlign='center';
+  ctx.fillText(Math.floor(prog*100)+'%', canvas.width/2, 26);
+
+  // Best badge (right)
+  ctx.fillStyle='rgba(255,255,255,0.08)';
+  roundRect(canvas.width-140,8,130,28,6); ctx.fill();
+  ctx.strokeStyle='rgba(255,255,255,0.15)'; ctx.lineWidth=1;
+  roundRect(canvas.width-140,8,130,28,6); ctx.stroke();
+  ctx.fillStyle='#aaa'; ctx.font='11px Arial'; ctx.textAlign='left';
+  ctx.fillText('BEST', canvas.width-132, 21);
+  ctx.fillStyle='#ffdd00'; ctx.font='bold 16px Arial';
+  ctx.fillText(bestPercent+'%', canvas.width-100, 31);
+
+  ctx.textAlign='left';
 }
 
-function drawScreen(title, sub, col) {
-  ctx.fillStyle = 'rgba(0,0,0,0.55)';
-  ctx.fillRect(0,0,canvas.width,canvas.height);
-  ctx.fillStyle = col;
-  ctx.font = 'bold 54px Arial';
-  ctx.textAlign = 'center';
-  ctx.fillText(title, canvas.width/2, canvas.height/2 - 30);
-  ctx.fillStyle = '#eee';
-  ctx.font = '20px Arial';
-  ctx.fillText(sub, canvas.width/2, canvas.height/2 + 20);
-  ctx.fillStyle = '#aaa';
-  ctx.font = '15px Arial';
-  ctx.fillText('Click, tap or SPACE to continue', canvas.width/2, canvas.height/2 + 52);
-  ctx.textAlign = 'left';
+function roundRect(x,y,w,h,r) {
+  ctx.beginPath();
+  ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y);
+  ctx.closePath();
+}
+
+// ── OVERLAY SCREENS ────────────────────────────────────────
+function drawMenu() {
+  ctx.fillStyle='rgba(0,0,0,0.6)'; ctx.fillRect(0,0,canvas.width,canvas.height);
+  // Title glow
+  ctx.save(); ctx.shadowColor='#00ddff'; ctx.shadowBlur=30;
+  ctx.fillStyle='#00ddff'; ctx.font='bold 58px Arial'; ctx.textAlign='center';
+  ctx.fillText('GEOMETRY DASH', canvas.width/2, canvas.height/2-50); ctx.restore();
+  // subtitle
+  ctx.fillStyle='rgba(255,255,255,0.85)'; ctx.font='20px Arial'; ctx.textAlign='center';
+  ctx.fillText('Jump over spikes and survive!', canvas.width/2, canvas.height/2+5);
+  // play button
+  ctx.save(); ctx.shadowColor='#00ff88'; ctx.shadowBlur=20;
+  ctx.fillStyle='#00cc66'; roundRect(canvas.width/2-90, canvas.height/2+30, 180, 46, 23); ctx.fill(); ctx.restore();
+  ctx.strokeStyle='#00ff88'; ctx.lineWidth=2; roundRect(canvas.width/2-90, canvas.height/2+30, 180, 46, 23); ctx.stroke();
+  ctx.fillStyle='#fff'; ctx.font='bold 20px Arial'; ctx.textAlign='center';
+  ctx.fillText('▶  PLAY', canvas.width/2, canvas.height/2+60);
+  ctx.fillStyle='rgba(255,255,255,0.35)'; ctx.font='13px Arial';
+  ctx.fillText('SPACE / Click / Tap', canvas.width/2, canvas.height/2+96);
+  ctx.textAlign='left';
+}
+
+function drawDead() {
+  ctx.fillStyle='rgba(0,0,0,0.6)'; ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.save(); ctx.shadowColor='#ff4444'; ctx.shadowBlur=25;
+  ctx.fillStyle='#ff4444'; ctx.font='bold 54px Arial'; ctx.textAlign='center';
+  ctx.fillText('YOU DIED', canvas.width/2, canvas.height/2-45); ctx.restore();
+  ctx.fillStyle='rgba(255,255,255,0.7)'; ctx.font='18px Arial'; ctx.textAlign='center';
+  ctx.fillText(currentPercent + '% complete', canvas.width/2, canvas.height/2+2);
+  // retry button
+  ctx.save(); ctx.shadowColor='#ffaa00'; ctx.shadowBlur=18;
+  ctx.fillStyle='#cc7700'; roundRect(canvas.width/2-100, canvas.height/2+25, 200, 46, 23); ctx.fill(); ctx.restore();
+  ctx.strokeStyle='#ffcc00'; ctx.lineWidth=2; roundRect(canvas.width/2-100, canvas.height/2+25, 200, 46, 23); ctx.stroke();
+  ctx.fillStyle='#fff'; ctx.font='bold 20px Arial'; ctx.textAlign='center';
+  ctx.fillText('↺  RETRY', canvas.width/2, canvas.height/2+55);
+  ctx.fillStyle='rgba(255,255,255,0.35)'; ctx.font='13px Arial';
+  ctx.fillText('SPACE / Click / Tap', canvas.width/2, canvas.height/2+90);
+  ctx.textAlign='left';
+}
+
+function drawWin() {
+  ctx.fillStyle='rgba(0,0,0,0.6)'; ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.save(); ctx.shadowColor='#00ff88'; ctx.shadowBlur=30;
+  ctx.fillStyle='#00ff88'; ctx.font='bold 50px Arial'; ctx.textAlign='center';
+  ctx.fillText('LEVEL COMPLETE!', canvas.width/2, canvas.height/2-45); ctx.restore();
+  ctx.fillStyle='#ffdd00'; ctx.font='22px Arial'; ctx.textAlign='center';
+  ctx.fillText('Completed in ' + attempt + ' attempt' + (attempt>1?'s':'') + '!', canvas.width/2, canvas.height/2+10);
+  ctx.save(); ctx.shadowColor='#00ff88'; ctx.shadowBlur=18;
+  ctx.fillStyle='#00aa55'; roundRect(canvas.width/2-100, canvas.height/2+30, 200, 46, 23); ctx.fill(); ctx.restore();
+  ctx.strokeStyle='#00ff88'; ctx.lineWidth=2; roundRect(canvas.width/2-100, canvas.height/2+30, 200, 46, 23); ctx.stroke();
+  ctx.fillStyle='#fff'; ctx.font='bold 20px Arial'; ctx.textAlign='center';
+  ctx.fillText('▶  PLAY AGAIN', canvas.width/2, canvas.height/2+60);
+  ctx.textAlign='left';
 }
 
 // ── LOOP ───────────────────────────────────────────────────
 function loop() {
   ctx.clearRect(0,0,canvas.width,canvas.height);
-  drawBG();
-  drawGround();
-  drawObstacles();
-  drawPlayer();
-  if (state === 'playing' || state === 'dead' || state === 'win') drawHUD();
-
-  if (state === 'menu') drawScreen('GEOMETRY DASH', 'A Geometry Dash Clone', '#00ddff');
-  if (state === 'dead')  drawScreen('YOU DIED', 'Attempt ' + attempt + ' — press to retry', '#ff4444');
-  if (state === 'win')   drawScreen('LEVEL COMPLETE!', 'Finished in ' + attempt + ' attempt' + (attempt>1?'s':'') + '!', '#00ff88');
-
+  drawBG(); drawGround(); drawObstacles(); drawPlayer();
+  if (state !== 'menu') drawHUD();
+  if (state === 'menu') drawMenu();
+  if (state === 'dead') drawDead();
+  if (state === 'win')  drawWin();
   update();
   requestAnimationFrame(loop);
 }
-
 loop();
 </script>
 </body>
