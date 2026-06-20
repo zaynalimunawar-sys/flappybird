@@ -369,21 +369,41 @@ function playClick(){sfx(750,0.05,'square',0.07);}
 function playTick(){sfx(1200,0.03,'square',0.05);}
 
 // ══════════════════════════════════════════
-// MOTION PERMISSION
+// MOTION PERMISSION — iOS + Android
 // ══════════════════════════════════════════
 let motionGranted=false;
+let orientGranted=false;
+
+async function grantAllSensors(){
+  // iOS 13+ requires explicit permission per event type from a user gesture
+  try{
+    if(typeof DeviceMotionEvent!=='undefined' && typeof DeviceMotionEvent.requestPermission==='function'){
+      const r=await DeviceMotionEvent.requestPermission();
+      if(r==='granted') motionGranted=true;
+    } else { motionGranted=true; }
+  }catch(e){ motionGranted=true; }
+
+  try{
+    if(typeof DeviceOrientationEvent!=='undefined' && typeof DeviceOrientationEvent.requestPermission==='function'){
+      const r=await DeviceOrientationEvent.requestPermission();
+      if(r==='granted') orientGranted=true;
+    } else { orientGranted=true; }
+  }catch(e){ orientGranted=true; }
+}
+
 function requestMotion(cb){
-  if(typeof DeviceMotionEvent!=='undefined' && typeof DeviceMotionEvent.requestPermission==='function'){
-    document.getElementById('perm-overlay').classList.add('show');
-    document.getElementById('perm-btn').onclick=()=>{
-      DeviceMotionEvent.requestPermission().then(r=>{
-        if(r==='granted') motionGranted=true;
-        dismissPerm(); if(cb) cb();
-      }).catch(()=>{dismissPerm();if(cb)cb();});
-    };
-  } else {
-    motionGranted=true; if(cb) cb();
-  }
+  const overlay=document.getElementById('perm-overlay');
+  // Check if we need to ask (iOS only needs this once per session)
+  const needsAsk=(typeof DeviceMotionEvent!=='undefined' && typeof DeviceMotionEvent.requestPermission==='function')
+               ||(typeof DeviceOrientationEvent!=='undefined' && typeof DeviceOrientationEvent.requestPermission==='function');
+  if(!needsAsk){ motionGranted=true; orientGranted=true; if(cb)cb(); return; }
+  if(motionGranted && orientGranted){ if(cb)cb(); return; }
+  overlay.classList.add('show');
+  document.getElementById('perm-btn').onclick=async()=>{
+    await grantAllSensors();
+    dismissPerm();
+    if(cb)cb();
+  };
 }
 function dismissPerm(){document.getElementById('perm-overlay').classList.remove('show');}
 
@@ -425,7 +445,7 @@ const PUZZLES=[
   hint:'WHAT IF UP BECAME DOWN?',
   build(area,solve){
     let done=false;
-    const ind=mkInd('Waiting for flip…');
+    const ind=mkInd('Something has to change…');
     const arrow=mk('div','font-size:56px;transition:transform 400ms var(--ease);');
     arrow.textContent='📱';
     let gamma=0,beta=0;
@@ -433,24 +453,21 @@ const PUZZLES=[
     function onOrient(e){
       if(done)return;
       beta=e.beta||0; gamma=e.gamma||0;
-      // Upside down: beta near ±180 or gamma near ±90 when portrait+flipped
-      const ang=(e.alpha||0);
-      // phone upside down = beta > 135 or beta < -135, or use gamma twist check
-      // More reliable: check if the phone is flipped via gamma ~ ±90 with beta ~0 for landscape flip
-      // For portrait upside down: beta close to ±170-180
-      const flipped= (Math.abs(beta)>140) || (Math.abs(gamma)>140);
+      // beta < -90: phone upside-down portrait (inverted)
+      // beta > 150: also inverted from certain orientations
+      const flipped = (beta < -90) || (beta > 150);
       arrow.style.transform= flipped ? 'rotate(180deg)' : 'rotate(0deg)';
       if(flipped){
-        ind.textContent='🙃 Flipped! Hold…';
+        ind.textContent='There it is… hold still…';
         ind.classList.add('active-state');
-        if(!done._timer) done._timer=setTimeout(()=>{done=true;window.removeEventListener('deviceorientation',onOrient);solve('You flipped it!');},800);
+        if(!done._timer) done._timer=setTimeout(()=>{done=true;window.removeEventListener('deviceorientation',onOrient,true);solve('You flipped it!');},800);
       } else {
         ind.classList.remove('active-state');
-        ind.textContent='Waiting for flip…';
+        ind.textContent='Something has to change…';
         clearTimeout(done._timer); done._timer=null;
       }
     }
-    if(motionGranted||true) window.addEventListener('deviceorientation',onOrient);
+    if(motionGranted||true) window.addEventListener('deviceorientation',onOrient,true);
 
     // Fallback: orientation change via CSS media
     const mq=window.matchMedia('(orientation: landscape)');
@@ -463,7 +480,7 @@ const PUZZLES=[
     });
 
     app(area,arrow,ind);
-    area._cleanup=()=>{window.removeEventListener('deviceorientation',onOrient);};
+    area._cleanup=()=>{window.removeEventListener('deviceorientation',onOrient,true);window.removeEventListener('orientationchange',onRotate);};
   }
 },
 
@@ -474,28 +491,31 @@ const PUZZLES=[
   hint:'DISAPPEAR FOR A MOMENT',
   build(area,solve){
     let done=false;
-    const ind=mkInd('You\'re currently online');
+    const ind=mkInd('Still connected to the world…');
     const icon=mk('div','font-size:56px;transition:all 300ms;');
     icon.textContent='📶';
 
-    function check(){
+    function goOffline(){
       if(done)return;
-      if(!navigator.onLine){
-        done=true;
-        icon.textContent='✈️';
-        ind.textContent='Offline detected!';
-        ind.classList.add('active-state');
-        solve('You went offline!');
-      } else {
-        ind.classList.remove('active-state');
-        ind.textContent='Still online… disconnect!';
-      }
+      done=true;
+      icon.textContent='✈️';
+      ind.textContent='Silence at last…';
+      ind.classList.add('active-state');
+      solve('You went offline!');
     }
-    window.addEventListener('offline',()=>{check();});
-    // poll fallback
-    const poll=setInterval(()=>{if(!navigator.onLine)check();},500);
+    function checkOnline(){
+      if(done)return;
+      if(!navigator.onLine){ goOffline(); return; }
+      // Fetch probe — if this fails, we're offline
+      fetch('https://www.google.com/favicon.ico?_='+Date.now(),{mode:'no-cors',cache:'no-store'})
+        .then(()=>{ ind.textContent='Still connected… think differently…'; })
+        .catch(()=>{ goOffline(); });
+    }
+    window.addEventListener('offline', goOffline);
+    const poll=setInterval(()=>{ if(!navigator.onLine) goOffline(); else checkOnline(); },1000);
+    checkOnline();
     app(area,icon,ind);
-    area._cleanup=()=>{clearInterval(poll);window.removeEventListener('offline',check);};
+    area._cleanup=()=>{clearInterval(poll);window.removeEventListener('offline',goOffline);};
   }
 },
 
@@ -508,7 +528,7 @@ const PUZZLES=[
     let count=0,lastShake=0,done=false;
     const disp=mk('div','font-family:var(--font-display);font-size:52px;color:var(--color-primary);font-variant-numeric:tabular-nums;');
     disp.textContent='0 / 3';
-    const ind=mkInd('Shake your phone!');
+    const ind=mkInd('Waiting for something…');
     const icon=mk('div','font-size:56px;');
     icon.textContent='📳';
 
@@ -528,7 +548,7 @@ const PUZZLES=[
         if(count>=3){done=true;window.removeEventListener('devicemotion',onMotion);solve('You shook it!');}
       }
     }
-    window.addEventListener('devicemotion',onMotion);
+    window.addEventListener('devicemotion',onMotion,{passive:true});
     app(area,icon,disp,ind);
     area._cleanup=()=>window.removeEventListener('devicemotion',onMotion);
   }
@@ -541,7 +561,7 @@ const PUZZLES=[
   hint:'LET THE TABLE SEE WHAT YOU CANNOT',
   build(area,solve){
     let done=false;
-    const ind=mkInd('Waiting for face-down…');
+    const ind=mkInd('Not quite right yet…');
     const icon=mk('div','font-size:56px;transition:transform 400ms;');
     icon.textContent='📱';
     let holdTimer=null;
@@ -549,29 +569,31 @@ const PUZZLES=[
     function onOrient(e){
       if(done)return;
       const b=e.beta||0;
-      const faceDown=(b< -60 || b>150); // z-axis pointing down = face down
+      // Face down: screen pointing at table = beta near -90 (lying flat face down)
+      // beta = -90 means screen faces ground. Give some tolerance.
+      const faceDown=(b < -70 && b > -110);
       if(faceDown){
         icon.style.transform='translateY(8px) scale(0.9)';
-        ind.textContent='Face-down! Hold…';
+        ind.textContent='Yes… hold it there…';
         ind.classList.add('active-state');
-        if(!holdTimer) holdTimer=setTimeout(()=>{done=true;window.removeEventListener('deviceorientation',onOrient);solve('Placed it down!');},1000);
+        if(!holdTimer) holdTimer=setTimeout(()=>{done=true;window.removeEventListener('deviceorientation',onOrient,true);solve('Placed it down!');},1000);
       } else {
         icon.style.transform='none';
         ind.classList.remove('active-state');
-        ind.textContent='Waiting for face-down…';
+        ind.textContent='Not quite right yet…';
         clearTimeout(holdTimer); holdTimer=null;
       }
     }
-    window.addEventListener('deviceorientation',onOrient);
+    window.addEventListener('deviceorientation',onOrient,true);
 
     // Desktop/no-sensor fallback
     const fallback=mk('button','');
     fallback.className='btn btn-ghost btn-sm';
     fallback.textContent='No sensors? Click here';
     fallback.style.marginTop='12px';
-    fallback.onclick=()=>{done=true;solve('(Simulated face-down)');};
+    fallback.onclick=()=>{done=true;solve('Understood…');};
     app(area,icon,ind,fallback);
-    area._cleanup=()=>{window.removeEventListener('deviceorientation',onOrient);clearTimeout(holdTimer);};
+    area._cleanup=()=>{window.removeEventListener('deviceorientation',onOrient,true);clearTimeout(holdTimer);};
   }
 },
 
@@ -584,27 +606,28 @@ const PUZZLES=[
     let done=false,holdTimer=null;
     const arrow=mk('div','font-size:56px;transition:transform 300ms var(--ease);');
     arrow.textContent='📱';
-    const ind=mkInd('Tilt left…');
+    const ind=mkInd('Something feels off…');
 
     function onOrient(e){
       if(done)return;
       const g=e.gamma||0;
       const tilt=Math.round(g);
-      arrow.style.transform=`rotate(${Math.max(-45,Math.min(45,g))}deg)`;
-      if(g< -30){
-        ind.textContent=`Tilted ${tilt}°! Hold…`;
+      // gamma: negative = tilted left, positive = tilted right
+      arrow.style.transform=`rotate(${Math.max(-50,Math.min(50,g))}deg)`;
+      if(g< -25){
+        ind.textContent='Getting warmer… hold…';
         ind.classList.add('active-state');
-        if(!holdTimer) holdTimer=setTimeout(()=>{done=true;window.removeEventListener('deviceorientation',onOrient);solve('Great tilt!');},1000);
+        if(!holdTimer) holdTimer=setTimeout(()=>{done=true;window.removeEventListener('deviceorientation',onOrient,true);solve('Great tilt!');},1000);
       } else {
         ind.classList.remove('active-state');
-        ind.textContent=`Tilt left… (${tilt}°)`;
+        ind.textContent='Something feels off…';
         clearTimeout(holdTimer); holdTimer=null;
       }
     }
-    window.addEventListener('deviceorientation',onOrient);
-    const fb=mkFallbackBtn(()=>{done=true;window.removeEventListener('deviceorientation',onOrient);solve('(Simulated)');});
+    window.addEventListener('deviceorientation',onOrient,true);
+    const fb=mkFallbackBtn(()=>{done=true;window.removeEventListener('deviceorientation',onOrient,true);solve('Understood…');});
     app(area,arrow,ind,fb);
-    area._cleanup=()=>{window.removeEventListener('deviceorientation',onOrient);clearTimeout(holdTimer);};
+    area._cleanup=()=>{window.removeEventListener('deviceorientation',onOrient,true);clearTimeout(holdTimer);};
   }
 },
 
@@ -616,7 +639,7 @@ const PUZZLES=[
   build(area,solve){
     let done=false,progress=0,last={x:0,y:0,z:0},timer=null;
     const ring=mkProgRing();
-    const ind=mkInd('Hold still…');
+    const ind=mkInd('Too much noise…');
     let interval=null;
 
     function onMotion(e){
@@ -626,18 +649,18 @@ const PUZZLES=[
       const dx=Math.abs((acc.x||0)-last.x),dy=Math.abs((acc.y||0)-last.y),dz=Math.abs((acc.z||0)-last.z);
       last={x:acc.x||0,y:acc.y||0,z:acc.z||0};
       const moved=dx+dy+dz;
-      if(moved>0.8){
-        progress=0;ring.set(0);ind.textContent='Moved! Start again…';ind.classList.remove('active-state');ind.classList.add('warn-state');
+      if(moved>1.2){
+        progress=0;ring.set(0);ind.textContent='Disrupted… try again…';ind.classList.remove('active-state');ind.classList.add('warn-state');
         setTimeout(()=>ind.classList.remove('warn-state'),500);
       }
     }
-    window.addEventListener('devicemotion',onMotion);
+    window.addEventListener('devicemotion',onMotion,{passive:true});
     interval=setInterval(()=>{
       if(done)return;
       progress=Math.min(progress+0.1/4,1);
       ring.set(progress);
       const rem=Math.ceil((1-progress)*4);
-      ind.textContent=progress<1?`Hold still… ${rem}s`:'Done!';
+      ind.textContent=progress<1?`${rem}s remaining…`:'Almost…';
       if(progress<0.5) ind.classList.remove('active-state');
       else ind.classList.add('active-state');
       if(progress>=1){done=true;clearInterval(interval);window.removeEventListener('devicemotion',onMotion);solve('Zen master!');}
@@ -682,7 +705,7 @@ const PUZZLES=[
     let done=false;
     const icon=mk('div','font-size:56px;transition:transform 400ms var(--ease);');
     icon.textContent='📱';
-    const ind=mkInd('Currently portrait…');
+    const ind=mkInd('Something isn\'t right about this view…');
 
     function check(){
       if(done)return;
@@ -692,17 +715,19 @@ const PUZZLES=[
         done=true;
         icon.textContent='🏞️';
         icon.style.transform='rotate(90deg)';
-        ind.textContent='Landscape! 🎉';
+        ind.textContent='There we go…';
         ind.classList.add('active-state');
         setTimeout(()=>solve('You rotated it!'),600);
       } else {
-        ind.textContent='Still portrait… turn it!';
+        ind.textContent='Not quite the right perspective…';
       }
     }
     window.addEventListener('orientationchange',check);
     window.matchMedia('(orientation:landscape)').addEventListener('change',e=>{if(e.matches)check();});
+    // also fire immediately in case already landscape
+    check();
 
-    const fb=mkFallbackBtn(()=>{done=true;solve('(Simulated landscape)');});
+    const fb=mkFallbackBtn(()=>{done=true;solve('Understood…');});
     app(area,icon,ind,fb);
     area._cleanup=()=>window.removeEventListener('orientationchange',check);
   }
@@ -792,20 +817,20 @@ const PUZZLES=[
       const angle=Math.round(b);
       // beta=90 is upright, beta near 0 is flat/tilted toward face
       icon.style.transform=`rotateX(${Math.max(-60,Math.min(30,90-b))}deg)`;
-      if(b<30&&b>-30){
+      if(b<25&&b>-25){
         ind.textContent=`Flat! ${angle}° — Hold…`;
         ind.classList.add('active-state');
-        if(!holdTimer) holdTimer=setTimeout(()=>{done=true;window.removeEventListener('deviceorientation',onOrient);solve('Lying flat!');},1000);
+        if(!holdTimer) holdTimer=setTimeout(()=>{done=true;window.removeEventListener('deviceorientation',onOrient,true);solve('Lying flat!');},1000);
       } else {
         ind.classList.remove('active-state');
         ind.textContent=`Beta: ${angle}° (need < 30°)`;
         clearTimeout(holdTimer);holdTimer=null;
       }
     }
-    window.addEventListener('deviceorientation',onOrient);
-    const fb=mkFallbackBtn(()=>{done=true;window.removeEventListener('deviceorientation',onOrient);solve('(Simulated)');});
+    window.addEventListener('deviceorientation',onOrient,true);
+    const fb=mkFallbackBtn(()=>{done=true;window.removeEventListener('deviceorientation',onOrient,true);solve('Understood…');});
     app(area,icon,ind,fb);
-    area._cleanup=()=>{window.removeEventListener('deviceorientation',onOrient);clearTimeout(holdTimer);};
+    area._cleanup=()=>{window.removeEventListener('deviceorientation',onOrient,true);clearTimeout(holdTimer);};
   }
 },
 
@@ -849,7 +874,7 @@ const PUZZLES=[
   hint:'CHAOS, THEN CONTROL',
   build(area,solve){
     let phase='shake',lastShake=0,stillTimer=null,done=false;
-    const ind=mkInd('Shake it once!');
+    const ind=mkInd('Waiting for the first move…');
     const icon=mk('div','font-size:56px;');
     icon.textContent='🎲';
 
@@ -862,25 +887,25 @@ const PUZZLES=[
       if(phase==='shake'&&mag>18&&now-lastShake>800){
         lastShake=now;phase='freeze';
         icon.textContent='🧊';
-        ind.textContent='Now FREEZE! Don\'t move!';
+        ind.textContent='Now find the eye of the storm…';
         sfx(600,0.15);
       } else if(phase==='freeze'){
         const delta=Math.abs(mag-9.8);
         if(delta>1.5){
           clearTimeout(stillTimer);stillTimer=null;
-          ind.textContent='You moved! Shake once more…';
+          ind.textContent='Too much disturbance… begin again…';
           ind.classList.remove('active-state');
           icon.textContent='💥';
           phase='shake';
-          setTimeout(()=>{icon.textContent='🎲';ind.textContent='Shake it once!';},600);
+          setTimeout(()=>{icon.textContent='🎲';ind.textContent='Waiting for the first move…';},600);
         } else {
           ind.classList.add('active-state');
           if(!stillTimer) stillTimer=setTimeout(()=>{done=true;window.removeEventListener('devicemotion',onMotion);solve('Shake and freeze!');},2000);
         }
       }
     }
-    window.addEventListener('devicemotion',onMotion);
-    const fb=mkFallbackBtn(()=>{done=true;window.removeEventListener('devicemotion',onMotion);solve('(Simulated)');});
+    window.addEventListener('devicemotion',onMotion,{passive:true});
+    const fb=mkFallbackBtn(()=>{done=true;window.removeEventListener('devicemotion',onMotion);solve('Understood…');});
     app(area,icon,ind,fb);
     area._cleanup=()=>{window.removeEventListener('devicemotion',onMotion);clearTimeout(stillTimer);};
   }
@@ -895,7 +920,7 @@ const PUZZLES=[
     let flat=false,taps=0,done=false;
     const disp=mk('div','font-family:var(--font-display);font-size:40px;color:var(--color-primary);font-variant-numeric:tabular-nums;');
     disp.textContent='0 / 3';
-    const flatInd=mkInd('Step 1: Lay phone flat');
+    const flatInd=mkInd('It\'s been standing long enough…');
     const btn=mkBtn('⭐');
     btn.style.opacity='0.3';
     btn.style.cursor='not-allowed';
@@ -903,24 +928,26 @@ const PUZZLES=[
     function onOrient(e){
       if(done)return;
       const b=e.beta||90;
-      flat=(Math.abs(b)<35);
-      flatInd.textContent=flat?'✅ Flat! Now tap 3x':'Lay phone flat first…';
+      // beta=0 means flat on table face up, beta=90 is upright
+      // We want near-flat: beta between -20 and 20
+      flat=(Math.abs(b)<25);
+      flatInd.textContent=flat?'✅ Good… now finish it.':'It\'s been standing long enough…';
       flat?flatInd.classList.add('active-state'):flatInd.classList.remove('active-state');
       btn.style.opacity=flat?'1':'0.3';
       btn.style.cursor=flat?'pointer':'not-allowed';
     }
-    window.addEventListener('deviceorientation',onOrient);
+    window.addEventListener('deviceorientation',onOrient,true);
 
     btn.onclick=()=>{
       if(!flat){playErr();sfx(200,0.2,'sawtooth',0.1);return;}
       playClick();taps++;pulse(btn);disp.textContent=taps+' / 3';
-      if(taps>=3){done=true;window.removeEventListener('deviceorientation',onOrient);solve('FINAL BOSS DEFEATED!');}
+      if(taps>=3){done=true;window.removeEventListener('deviceorientation',onOrient,true);solve('FINAL BOSS DEFEATED!');}
     };
 
-    const fb=mkFallbackBtn(()=>{flat=true;btn.style.opacity='1';btn.style.cursor='pointer';flatInd.textContent='✅ (Simulated flat)';flatInd.classList.add('active-state');});
+    const fb=mkFallbackBtn(()=>{flat=true;btn.style.opacity='1';btn.style.cursor='pointer';flatInd.textContent='✅ Good… now finish it.';flatInd.classList.add('active-state');});
     fb.textContent='Simulate flat (no sensors)';
     app(area,flatInd,disp,btn,fb);
-    area._cleanup=()=>window.removeEventListener('deviceorientation',onOrient);
+    area._cleanup=()=>window.removeEventListener('deviceorientation',onOrient,true);
   }
 }
 ];
@@ -971,10 +998,13 @@ function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classL
 
 function startGame(){
   initAudio();
-  curIdx=0;solved=0;skipped=0;startTime=Date.now();
-  showScreen('puzzle-screen');
-  loadPuzzle(0);
-  requestMotion(()=>{});
+  curIdx=0;solved=0;skipped=0;
+  // Always ask for sensor permission FIRST (must be from user gesture)
+  requestMotion(()=>{
+    startTime=Date.now();
+    showScreen('puzzle-screen');
+    loadPuzzle(0);
+  });
 }
 
 function loadPuzzle(idx){
