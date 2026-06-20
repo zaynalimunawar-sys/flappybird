@@ -1,332 +1,1066 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
-<title>Geometry Dash</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Think Outside The Phone</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { background: #000; display: flex; align-items: center; justify-content: center; height: 100vh; }
-  canvas { border-radius: 6px; }
+:root {
+  --font-display: 'Space Mono', monospace;
+  --font-body: 'Space Grotesk', sans-serif;
+  --color-bg: #07060e;
+  --color-surface: rgba(255,255,255,0.05);
+  --color-surface-2: rgba(255,255,255,0.09);
+  --color-border: rgba(255,255,255,0.10);
+  --color-text: #eae8f2;
+  --color-text-muted: #8a88a2;
+  --color-text-faint: #44425a;
+  --color-primary: #c4a8ff;
+  --color-primary-glow: rgba(196,168,255,0.18);
+  --color-success: #6fffa2;
+  --color-success-glow: rgba(111,255,162,0.15);
+  --color-warning: #ffdd88;
+  --color-danger: #ff6b9d;
+  --color-danger-glow: rgba(255,107,157,0.15);
+  --radius-sm: 6px; --radius-md: 12px; --radius-lg: 20px; --radius-full: 9999px;
+  --sp1:4px;--sp2:8px;--sp3:12px;--sp4:16px;--sp6:24px;--sp8:32px;--sp12:48px;--sp16:64px;
+  --ease: cubic-bezier(0.16,1,0.3,1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{-webkit-font-smoothing:antialiased;touch-action:manipulation;}
+body{
+  min-height:100dvh; font-family:var(--font-body); font-size:16px;
+  color:var(--color-text); background:var(--color-bg);
+  overflow:hidden; display:flex; align-items:center; justify-content:center;
+  user-select:none; -webkit-user-select:none;
+}
+canvas{position:fixed;inset:0;z-index:0;pointer-events:none;}
+#confetti-canvas{z-index:60;}
+
+/* ─── SCREENS ─── */
+.screen{
+  position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;padding:var(--sp6);
+  opacity:0;pointer-events:none;transition:opacity 0.45s ease;
+}
+.screen.active{opacity:1;pointer-events:all;}
+
+/* ─── TITLE ─── */
+.phone-icon{
+  font-size:72px;margin-bottom:var(--sp4);
+  animation:float 3s ease-in-out infinite;
+  filter:drop-shadow(0 0 28px var(--color-primary));
+}
+@keyframes float{0%,100%{transform:translateY(0) rotate(-6deg);}50%{transform:translateY(-14px) rotate(6deg);}}
+.game-title{
+  font-family:var(--font-display);font-size:clamp(1.5rem,5vw,2.8rem);
+  font-weight:700;letter-spacing:-0.02em;text-align:center;line-height:1.1;
+  background:linear-gradient(135deg,var(--color-primary) 0%,#e0b8ff 50%,var(--color-success) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-bottom:var(--sp3);
+}
+.game-sub{font-size:13px;color:var(--color-text-muted);text-align:center;margin-bottom:var(--sp8);letter-spacing:0.1em;text-transform:uppercase;}
+.tag-row{display:flex;gap:var(--sp2);flex-wrap:wrap;justify-content:center;margin-bottom:var(--sp6);}
+.tag{
+  font-size:11px;font-family:var(--font-display);letter-spacing:0.06em;
+  padding:5px 12px;border-radius:var(--radius-full);border:1px solid var(--color-border);
+  color:var(--color-text-muted);background:var(--color-surface);
+}
+
+/* ─── BUTTONS ─── */
+.btn{
+  font-family:var(--font-display);font-size:13px;font-weight:700;
+  letter-spacing:0.05em;padding:14px 32px;border-radius:var(--radius-full);
+  border:none;cursor:pointer;transition:all 200ms var(--ease);text-transform:uppercase;
+  -webkit-tap-highlight-color:transparent;
+}
+.btn-primary{
+  background:var(--color-primary);color:#07060e;
+  box-shadow:0 0 32px var(--color-primary-glow),0 4px 16px rgba(0,0,0,0.35);
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 48px rgba(196,168,255,0.28),0 8px 24px rgba(0,0,0,0.4);}
+.btn-primary:active{transform:scale(0.97);}
+.btn-ghost{background:var(--color-surface);color:var(--color-text-muted);border:1px solid var(--color-border);}
+.btn-ghost:hover{background:var(--color-surface-2);color:var(--color-text);}
+.btn-sm{padding:11px 20px;font-size:12px;}
+.btn-danger{background:var(--color-danger);color:#07060e;box-shadow:0 0 24px var(--color-danger-glow);}
+
+/* ─── PUZZLE SCREEN ─── */
+#puzzle-screen{gap:var(--sp4);justify-content:flex-start;padding-top:max(env(safe-area-inset-top,0px),var(--sp8));}
+.puzzle-meta{display:flex;align-items:center;gap:var(--sp4);width:100%;max-width:480px;padding-top:var(--sp4);}
+.puzzle-num{font-family:var(--font-display);font-size:11px;color:var(--color-text-faint);letter-spacing:0.1em;white-space:nowrap;}
+.prog-wrap{flex:1;height:4px;background:var(--color-surface-2);border-radius:var(--radius-full);overflow:hidden;}
+.prog-bar{height:100%;background:linear-gradient(90deg,var(--color-primary),var(--color-success));border-radius:var(--radius-full);transition:width 0.6s var(--ease);}
+
+.puzzle-card{
+  background:var(--color-surface);border:1px solid var(--color-border);
+  border-radius:var(--radius-lg);padding:var(--sp6);width:100%;max-width:480px;
+  text-align:center;backdrop-filter:blur(16px);position:relative;overflow:hidden;
+}
+.puzzle-card::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(circle at 50% 0%,rgba(196,168,255,0.07) 0%,transparent 70%);
+}
+.p-emoji{font-size:52px;margin-bottom:var(--sp3);display:block;filter:drop-shadow(0 4px 16px rgba(0,0,0,0.6));}
+.p-title{font-family:var(--font-display);font-size:clamp(0.95rem,3vw,1.3rem);font-weight:700;color:var(--color-primary);margin-bottom:var(--sp2);letter-spacing:-0.01em;}
+.p-desc{font-size:14px;color:var(--color-text-muted);line-height:1.6;margin-bottom:var(--sp4);max-width:34ch;margin-inline:auto;}
+.p-hint{font-size:11px;color:var(--color-text-faint);font-family:var(--font-display);letter-spacing:0.07em;}
+
+/* ─── DIFFICULTY BADGE ─── */
+.diff-badge{
+  position:absolute;top:var(--sp3);right:var(--sp3);
+  font-size:10px;font-family:var(--font-display);letter-spacing:0.06em;
+  padding:3px 10px;border-radius:var(--radius-full);
+}
+.diff-medium{background:rgba(255,221,136,0.15);color:var(--color-warning);border:1px solid rgba(255,221,136,0.2);}
+.diff-hard{background:rgba(255,107,157,0.12);color:var(--color-danger);border:1px solid rgba(255,107,157,0.2);}
+.diff-extreme{background:rgba(196,168,255,0.12);color:var(--color-primary);border:1px solid rgba(196,168,255,0.2);}
+
+/* ─── INTERACTION AREA ─── */
+.iarea{width:100%;max-width:480px;display:flex;flex-direction:column;align-items:center;gap:var(--sp3);}
+
+/* ─── BIG BUTTON ─── */
+.big-btn{
+  width:110px;height:110px;border-radius:var(--radius-full);
+  background:var(--color-surface);border:2px solid var(--color-border);
+  display:flex;align-items:center;justify-content:center;font-size:44px;
+  cursor:pointer;transition:all 200ms var(--ease);-webkit-tap-highlight-color:transparent;
+}
+.big-btn:active,.big-btn.pressed{
+  transform:scale(0.9);background:var(--color-primary-glow);
+  border-color:var(--color-primary);box-shadow:0 0 32px var(--color-primary-glow);
+}
+
+/* ─── COUNTER DISPLAY ─── */
+.count-display{font-family:var(--font-display);font-size:52px;color:var(--color-primary);font-variant-numeric:tabular-nums;line-height:1;}
+.count-goal{font-size:12px;color:var(--color-text-faint);font-family:var(--font-display);letter-spacing:0.07em;margin-top:4px;}
+
+/* ─── SLIDER ─── */
+.slider-row{width:100%;display:flex;align-items:center;gap:var(--sp3);}
+input[type=range]{
+  flex:1;-webkit-appearance:none;height:6px;
+  border-radius:var(--radius-full);background:var(--color-surface-2);outline:none;cursor:pointer;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:24px;height:24px;border-radius:var(--radius-full);
+  background:var(--color-primary);cursor:pointer;box-shadow:0 0 12px var(--color-primary-glow);
+  transition:transform 200ms var(--ease);
+}
+input[type=range]::-webkit-slider-thumb:active{transform:scale(1.25);}
+.slider-lbl{font-family:var(--font-display);font-size:12px;color:var(--color-text-faint);min-width:28px;text-align:center;}
+
+/* ─── TYPE INPUT ─── */
+.type-row{display:flex;width:100%;gap:var(--sp2);}
+.type-input{
+  flex:1;background:var(--color-surface);border:1px solid var(--color-border);
+  border-radius:var(--radius-md);color:var(--color-text);font-family:var(--font-display);
+  font-size:14px;padding:12px var(--sp4);outline:none;transition:all 200ms var(--ease);
+}
+.type-input:focus{border-color:var(--color-primary);box-shadow:0 0 0 3px var(--color-primary-glow);}
+
+/* ─── VISUAL INDICATOR ─── */
+.vis-indicator{
+  width:100%;padding:var(--sp4);border-radius:var(--radius-md);
+  background:var(--color-surface-2);border:1px solid var(--color-border);
+  text-align:center;font-family:var(--font-display);font-size:12px;
+  color:var(--color-text-muted);letter-spacing:0.05em;
+  transition:all 300ms var(--ease);
+}
+.vis-indicator.active-state{
+  border-color:var(--color-success);color:var(--color-success);
+  background:var(--color-success-glow);box-shadow:0 0 24px var(--color-success-glow);
+}
+.vis-indicator.warn-state{
+  border-color:var(--color-warning);color:var(--color-warning);
+  background:rgba(255,221,136,0.08);
+}
+
+/* ─── ORIENTATION METER ─── */
+.orient-ring{
+  width:120px;height:120px;border-radius:var(--radius-full);
+  background:var(--color-surface);border:2px solid var(--color-border);
+  display:flex;align-items:center;justify-content:center;position:relative;overflow:visible;
+  transition:border-color 300ms;
+}
+.orient-arrow{
+  font-size:44px;transition:transform 200ms var(--ease);
+  transform-origin:center center;
+}
+.orient-labels{display:flex;gap:var(--sp8);margin-top:var(--sp2);}
+.orient-lbl{font-size:11px;color:var(--color-text-faint);font-family:var(--font-display);text-align:center;}
+
+/* ─── PROGRESS CIRCLE ─── */
+.prog-circle-wrap{position:relative;width:100px;height:100px;}
+.prog-circle-wrap svg{width:100%;height:100%;transform:rotate(-90deg);}
+.prog-circle-bg{fill:none;stroke:rgba(255,255,255,0.07);stroke-width:6;}
+.prog-circle-fg{fill:none;stroke:var(--color-primary);stroke-width:6;stroke-linecap:round;stroke-dasharray:283;stroke-dashoffset:283;transition:stroke-dashoffset 0.1s linear;}
+.prog-circle-label{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-display);font-size:18px;color:var(--color-primary);font-weight:700;
+}
+
+/* ─── SEQ DOTS ─── */
+.seq-row{display:flex;gap:var(--sp2);align-items:center;}
+.seq-dot{width:12px;height:12px;border-radius:var(--radius-full);background:var(--color-surface-2);border:1px solid var(--color-border);transition:all 200ms var(--ease);}
+.seq-dot.lit{background:var(--color-primary);box-shadow:0 0 8px var(--color-primary);}
+.seq-dot.done{background:var(--color-success);box-shadow:0 0 8px var(--color-success);}
+
+/* ─── COLOR GRID ─── */
+.color-grid{display:grid;grid-template-columns:repeat(5,44px);gap:var(--sp2);}
+.cswatch{width:44px;height:44px;border-radius:var(--radius-md);border:2px solid transparent;cursor:pointer;transition:all 200ms var(--ease);}
+.cswatch:hover{transform:scale(1.1);}
+.cswatch.selected{border-color:#fff;box-shadow:0 0 12px rgba(255,255,255,0.3);transform:scale(1.1);}
+
+/* ─── FEEDBACK ─── */
+.feedback{
+  position:fixed;inset:0;z-index:80;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:var(--sp4);
+  opacity:0;pointer-events:none;transition:opacity 0.3s ease;
+  backdrop-filter:blur(4px);
+}
+.feedback.show{opacity:1;pointer-events:all;}
+.fb-emoji{font-size:80px;animation:pop 0.4s var(--ease);}
+.fb-title{font-family:var(--font-display);font-size:clamp(1.2rem,4vw,2rem);font-weight:700;text-align:center;}
+.fb-sub{font-size:14px;color:var(--color-text-muted);text-align:center;max-width:28ch;}
+@keyframes pop{0%{transform:scale(0.2);opacity:0;}100%{transform:scale(1);opacity:1;}}
+
+/* ─── WIN ─── */
+#win-screen{gap:var(--sp6);}
+.win-title{
+  font-family:var(--font-display);font-size:clamp(1.8rem,5vw,3rem);font-weight:700;text-align:center;
+  background:linear-gradient(135deg,var(--color-success),#b0ffce);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.win-stats{display:flex;gap:var(--sp6);padding:var(--sp6);background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);}
+.wstat{text-align:center;}
+.wstat-val{font-family:var(--font-display);font-size:26px;font-weight:700;color:var(--color-primary);font-variant-numeric:tabular-nums;}
+.wstat-lbl{font-size:11px;color:var(--color-text-muted);letter-spacing:0.08em;text-transform:uppercase;}
+
+/* ─── BOTTOM ROW ─── */
+.bottom-row{display:flex;gap:var(--sp4);align-items:center;}
+.skip-btn{font-size:12px;color:var(--color-text-faint);cursor:pointer;font-family:var(--font-display);letter-spacing:0.04em;transition:color 200ms;}
+.skip-btn:hover{color:var(--color-text-muted);}
+
+/* ─── PERMISSION OVERLAY ─── */
+.perm-overlay{
+  position:fixed;inset:0;z-index:90;background:rgba(7,6,14,0.9);backdrop-filter:blur(8px);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:var(--sp4);
+  padding:var(--sp8);opacity:0;pointer-events:none;transition:opacity 0.3s;
+}
+.perm-overlay.show{opacity:1;pointer-events:all;}
+.perm-title{font-family:var(--font-display);font-size:1.3rem;font-weight:700;color:var(--color-primary);text-align:center;}
+.perm-desc{font-size:14px;color:var(--color-text-muted);text-align:center;max-width:30ch;line-height:1.6;}
+
+/* ─── MOBILE HEIGHT ─── */
+@media(max-height:680px){
+  .puzzle-card{padding:var(--sp4);}
+  .p-emoji{font-size:36px;margin-bottom:var(--sp2);}
+  .p-desc{margin-bottom:var(--sp3);}
+  #puzzle-screen{padding-top:var(--sp4);}
+}
 </style>
 </head>
 <body>
-anvas id="c" width="800" height="400"></canvas>
+<canvas id="bg-canvas"></canvas>
+<canvas id="confetti-canvas"></canvas>
+
+<!-- PERMISSION OVERLAY -->
+<div class="perm-overlay" id="perm-overlay">
+  <div style="font-size:56px;">📡</div>
+  <div class="perm-title">Motion Access Needed</div>
+  <div class="perm-desc">Some puzzles use your phone's sensors. Allow access to unlock all puzzles.</div>
+  <button class="btn btn-primary" id="perm-btn">Allow Motion</button>
+  <button class="btn btn-ghost btn-sm" onclick="dismissPerm()">Skip for now</button>
+</div>
+
+<!-- TITLE SCREEN -->
+<div class="screen active" id="title-screen">
+  <div class="phone-icon">📱</div>
+  <h1 class="game-title">Think Outside<br>The Phone</h1>
+  <p class="game-sub">Puzzles that break the rules</p>
+  <div class="tag-row">
+    <span class="tag">📡 USE YOUR SENSORS</span>
+    <span class="tag">📵 GO OFFLINE</span>
+    <span class="tag">🔄 FLIP IT</span>
+    <span class="tag">📳 SHAKE IT</span>
+  </div>
+  <button class="btn btn-primary" onclick="startGame()">START</button>
+  <p style="margin-top:var(--sp4);font-size:12px;color:var(--color-text-faint);text-align:center;max-width:28ch;line-height:1.6;">
+    15 puzzles. Real phone interactions. No screen tapping allowed for most.
+  </p>
+</div>
+
+<!-- PUZZLE SCREEN -->
+<div class="screen" id="puzzle-screen">
+  <div class="puzzle-meta">
+    <span class="puzzle-num" id="puzzle-num">1 / 15</span>
+    <div class="prog-wrap"><div class="prog-bar" id="prog-bar" style="width:0%"></div></div>
+  </div>
+  <div class="puzzle-card" id="puzzle-card">
+    <span class="p-emoji" id="p-emoji">📱</span>
+    <div class="diff-badge diff-medium" id="diff-badge">MEDIUM</div>
+    <h2 class="p-title" id="p-title">…</h2>
+    <p class="p-desc" id="p-desc">…</p>
+    <p class="p-hint" id="p-hint"></p>
+  </div>
+  <div class="iarea" id="iarea"></div>
+  <div class="bottom-row">
+    <span class="skip-btn" onclick="skipPuzzle()">→ skip</span>
+  </div>
+</div>
+
+<!-- FEEDBACK -->
+<div class="feedback" id="feedback">
+  <div class="fb-emoji" id="fb-emoji">✅</div>
+  <div class="fb-title" id="fb-title">Solved!</div>
+  <div class="fb-sub" id="fb-sub"></div>
+</div>
+
+<!-- WIN SCREEN -->
+<div class="screen" id="win-screen">
+  <div style="font-size:64px;animation:float 2s ease-in-out infinite;filter:drop-shadow(0 0 28px var(--color-success));">🏆</div>
+  <h2 class="win-title">You thought<br>outside the phone!</h2>
+  <div class="win-stats">
+    <div class="wstat"><div class="wstat-val" id="w-solved">0</div><div class="wstat-lbl">Solved</div></div>
+    <div class="wstat"><div class="wstat-val" id="w-skipped">0</div><div class="wstat-lbl">Skipped</div></div>
+    <div class="wstat"><div class="wstat-val" id="w-time">0s</div><div class="wstat-lbl">Time</div></div>
+  </div>
+  <button class="btn btn-primary" onclick="restartGame()">PLAY AGAIN</button>
+</div>
+
 <script>
-const ctx = document.getElementById('c').getContext('2d');
+// ══════════════════════════════════════════
+// STARFIELD BG
+// ══════════════════════════════════════════
+(function(){
+  const c=document.getElementById('bg-canvas'),ctx=c.getContext('2d');
+  let stars=[];
+  function resize(){c.width=innerWidth;c.height=innerHeight;stars=Array.from({length:100},()=>({x:Math.random()*c.width,y:Math.random()*c.height,r:Math.random()*1.4+0.2,a:Math.random()*Math.PI*2,sp:Math.random()*0.4+0.05}));}
+  function draw(){
+    ctx.clearRect(0,0,c.width,c.height);
+    stars.forEach(s=>{
+      s.a+=s.sp*0.02;
+      const al=(Math.sin(s.a)+1)/2*0.55+0.05;
+      ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(196,168,255,${al})`;ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  window.addEventListener('resize',resize);resize();draw();
+})();
 
-// ── CONSTANTS ──────────────────────────────────────────────
-const GROUND = 320;      // top of ground
-const PLAYER_W = 36;
-const PLAYER_H = 36;
-const GRAVITY = 0.5;
-const JUMP_FORCE = -10;
-const SPEED = 3.8;       // side‑scroll speed
-
-// ── STATE ──────────────────────────────────────────────────
-let state = 'menu';      // menu | playing | dead
-let attempts = 1;
-let camX = 0;
-let progress = 0;        // 0–100 %
-
-// ── PLAYER ─────────────────────────────────────────────────
-const player = {
-  x: 140,
-  y: GROUND - PLAYER_H,
-  vx: 0,
-  vy: 0,
-  onGround: false,
-  rot: 0,
-};
-
-// ── LEVEL ──────────────────────────────────────────────────
-function makeLevel() {
-  return [
-    { type: 'spike', x: 600,  y: GROUND-38,  w: 38, h: 38 },
-    { type: 'spike', x: 750,  y: GROUND-38,  w: 38, h: 38 },
-    { type: 'spike', x: 900,  y: GROUND-38,  w: 38, h: 38 },
-    { type: 'spike', x: 1050, y: GROUND-38,  w: 38, h: 38 },
-
-    { type: 'spike', x: 1200, y: GROUND-38,  w: 38, h: 38 },
-    { type: 'spike', x: 1300, y: GROUND-38,  w: 38, h: 38 }, // 100px gap
-
-    { type: 'block', x: 1480, y: GROUND-40,  w: 40, h: 40 },
-    { type: 'spike', x: 1600, y: GROUND-38,  w: 38, h: 38 },
-
-    { type: 'spike', x: 1800, y: GROUND-38,  w: 38, h: 38 },
-    { type: 'spike', x: 1900, y: GROUND-38,  w: 38, h: 38 },
-    { type: 'spike', x: 2000, y: GROUND-38,  w: 38, h: 38 }, // 100px gaps
-
-    { type: 'block', x: 2200, y: GROUND-40,  w: 40, h: 40 },
-    { type: 'spike', x: 2350, y: GROUND-38,  w: 38, h: 38 },
-    { type: 'spike', x: 2450, y: GROUND-38,  w: 38, h: 38 },
-
-    { type: 'end', x: 2600, y: 0, w: 30, h: GROUND }
-  ];
+// ══════════════════════════════════════════
+// AUDIO
+// ══════════════════════════════════════════
+let audioCtx=null;
+function initAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();}
+function sfx(freq=440,dur=0.15,type='sine',vol=0.15){
+  try{initAudio();const o=audioCtx.createOscillator(),g=audioCtx.createGain();
+  o.type=type;o.frequency.value=freq;g.gain.setValueAtTime(vol,audioCtx.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+dur);
+  o.connect(g).connect(audioCtx.destination);o.start();o.stop(audioCtx.currentTime+dur);}catch(e){}
 }
-let level = makeLevel();
+function playOK(){[523,659,784,1047].forEach((f,i)=>setTimeout(()=>sfx(f,0.18,'sine',0.12),i*75));}
+function playErr(){sfx(180,0.35,'sawtooth',0.1);}
+function playClick(){sfx(750,0.05,'square',0.07);}
+function playTick(){sfx(1200,0.03,'square',0.05);}
 
-// ── INPUT ──────────────────────────────────────────────────
-function jump() {
-  if (state === 'menu') {
-    state = 'playing';
-    attempts = 1;
-    reset();
-  }
-  else if (state === 'playing' && player.onGround) {
-    player.vy = JUMP_FORCE;
-    player.onGround = false;
-  }
-  else if (state === 'dead') {
-    state = 'playing';
-    attempts++;
-    reset();
+// ══════════════════════════════════════════
+// MOTION PERMISSION
+// ══════════════════════════════════════════
+let motionGranted=false;
+function requestMotion(cb){
+  if(typeof DeviceMotionEvent!=='undefined' && typeof DeviceMotionEvent.requestPermission==='function'){
+    document.getElementById('perm-overlay').classList.add('show');
+    document.getElementById('perm-btn').onclick=()=>{
+      DeviceMotionEvent.requestPermission().then(r=>{
+        if(r==='granted') motionGranted=true;
+        dismissPerm(); if(cb) cb();
+      }).catch(()=>{dismissPerm();if(cb)cb();});
+    };
+  } else {
+    motionGranted=true; if(cb) cb();
   }
 }
+function dismissPerm(){document.getElementById('perm-overlay').classList.remove('show');}
 
-// listen for click/tap
-ctx.canvas.addEventListener('mousedown', jump);
-ctx.canvas.addEventListener('touchstart', e => { e.preventDefault(); jump(); }, { passive: false });
+// ══════════════════════════════════════════
+// GAME STATE
+// ══════════════════════════════════════════
+let curIdx=0,solved=0,skipped=0,startTime=0;
 
-// listen for space / up
-document.addEventListener('keydown', e => {
-  if (e.code === 'Space' || e.code === 'ArrowUp') {
-    e.preventDefault();
-    jump();
+// ══════════════════════════════════════════
+// PUZZLES
+// ══════════════════════════════════════════
+const PUZZLES=[
+
+// ─── EASY warm-up ───
+{
+  emoji:'👆',title:'Lucky Seven',diff:'medium',
+  desc:'Some numbers are right. Every other number is wrong.',
+  hint:'PRECISION BEATS SPEED',
+  build(area,solve,fail){
+    let n=0;
+    const wrap=mk('div','display:flex;flex-direction:column;align-items:center;gap:16px;');
+    const disp=mk('div','font-family:var(--font-display);font-size:56px;color:var(--color-primary);font-variant-numeric:tabular-nums;');
+    disp.textContent='0';
+    const btn=mkBtn('👆');
+    btn.onclick=()=>{
+      playClick();n++;disp.textContent=n;
+      pulse(btn);
+      if(n===7) solve('Exactly 7!');
+      else if(n>7){playErr();n=0;disp.textContent='0';}
+    };
+    app(wrap,disp,btn);area.appendChild(wrap);
   }
-});
+},
 
-// ── HELPERS ────────────────────────────────────────────────
-function reset() {
-  player.x = 140;
-  player.y = GROUND - PLAYER_H;
-  player.vy = 0;
-  player.rot = 0;
-  camX = 0;
-  progress = 0;
-}
+// ─── FLIP UPSIDE DOWN ───
+{
+  emoji:'🙃',title:'New Perspective',diff:'hard',
+  desc:'The world might make more sense from a completely different point of view.',
+  hint:'WHAT IF UP BECAME DOWN?',
+  build(area,solve){
+    let done=false;
+    const ind=mkInd('Waiting for flip…');
+    const arrow=mk('div','font-size:56px;transition:transform 400ms var(--ease);');
+    arrow.textContent='📱';
+    let gamma=0,beta=0;
 
-function overlaps(ax, ay, aw, ah, bx, by, bw, bh) {
-  return ax < bx+bw && ax+aw > bx && ay < by+bh && ay+ah > by;
-}
-
-// ── UPDATE ─────────────────────────────────────────────────
-function update() {
-  if (state !== 'playing') return;
-
-  // move camera
-  camX += SPEED;
-  progress = Math.min(100, Math.floor((camX / 2300) * 100));  // 2300 ~ level length
-
-  // gravity
-  player.vy += GRAVITY;
-  player.y += player.vy;
-
-  // ground
-  if (player.y >= GROUND - PLAYER_H) {
-    player.y = GROUND - PLAYER_H;
-    player.vy = 0;
-    player.rot = 0;
-    player.onGround = true;
-  }
-
-  // rotate in air
-  else {
-    player.rot += 4;
-  }
-
-  // collisions
-  for (const o of level) {
-    const osx = o.x - camX;  // screen x of obstacle
-
-    // win condition
-    if (o.type === 'end' && osx <= 140) {
-      state = 'win';
-      return;
-    }
-
-    if (o.type === 'spike' || o.type === 'block') {
-      const px = 140; // player always on screen x = 140
-      const py = player.y;
-
-      // shrink hitbox so it feels fair
-      if (overlaps(px+4, py+4, PLAYER_W-8, PLAYER_H-8, osx+4, o.y+4, o.w-8, o.h-8)) {
-        state = 'dead';
-        return;
+    function onOrient(e){
+      if(done)return;
+      beta=e.beta||0; gamma=e.gamma||0;
+      // Upside down: beta near ±180 or gamma near ±90 when portrait+flipped
+      const ang=(e.alpha||0);
+      // phone upside down = beta > 135 or beta < -135, or use gamma twist check
+      // More reliable: check if the phone is flipped via gamma ~ ±90 with beta ~0 for landscape flip
+      // For portrait upside down: beta close to ±170-180
+      const flipped= (Math.abs(beta)>140) || (Math.abs(gamma)>140);
+      arrow.style.transform= flipped ? 'rotate(180deg)' : 'rotate(0deg)';
+      if(flipped){
+        ind.textContent='🙃 Flipped! Hold…';
+        ind.classList.add('active-state');
+        if(!done._timer) done._timer=setTimeout(()=>{done=true;window.removeEventListener('deviceorientation',onOrient);solve('You flipped it!');},800);
+      } else {
+        ind.classList.remove('active-state');
+        ind.textContent='Waiting for flip…';
+        clearTimeout(done._timer); done._timer=null;
       }
     }
+    if(motionGranted||true) window.addEventListener('deviceorientation',onOrient);
+
+    // Fallback: orientation change via CSS media
+    const mq=window.matchMedia('(orientation: landscape)');
+    let lastOrient=window.screen.orientation?.angle||0;
+    window.addEventListener('orientationchange',()=>{
+      const angle=window.screen.orientation?.angle||window.orientation||0;
+      if(Math.abs(angle)===180 && !done){
+        done=true; solve('You flipped it 180°!');
+      }
+    });
+
+    app(area,arrow,ind);
+    area._cleanup=()=>{window.removeEventListener('deviceorientation',onOrient);};
+  }
+},
+
+// ─── GO OFFLINE ───
+{
+  emoji:'📵',title:'Signal Lost',diff:'extreme',
+  desc:'This puzzle only opens when the outside world goes quiet.',
+  hint:'DISAPPEAR FOR A MOMENT',
+  build(area,solve){
+    let done=false;
+    const ind=mkInd('You\'re currently online');
+    const icon=mk('div','font-size:56px;transition:all 300ms;');
+    icon.textContent='📶';
+
+    function check(){
+      if(done)return;
+      if(!navigator.onLine){
+        done=true;
+        icon.textContent='✈️';
+        ind.textContent='Offline detected!';
+        ind.classList.add('active-state');
+        solve('You went offline!');
+      } else {
+        ind.classList.remove('active-state');
+        ind.textContent='Still online… disconnect!';
+      }
+    }
+    window.addEventListener('offline',()=>{check();});
+    // poll fallback
+    const poll=setInterval(()=>{if(!navigator.onLine)check();},500);
+    app(area,icon,ind);
+    area._cleanup=()=>{clearInterval(poll);window.removeEventListener('offline',check);};
+  }
+},
+
+// ─── SHAKE IT ───
+{
+  emoji:'📳',title:'Rattle & Solve',diff:'hard',
+  desc:'Some things only wake up after a little chaos.',
+  hint:'DISTURB THE CALM',
+  build(area,solve){
+    let count=0,lastShake=0,done=false;
+    const disp=mk('div','font-family:var(--font-display);font-size:52px;color:var(--color-primary);font-variant-numeric:tabular-nums;');
+    disp.textContent='0 / 3';
+    const ind=mkInd('Shake your phone!');
+    const icon=mk('div','font-size:56px;');
+    icon.textContent='📳';
+
+    function onMotion(e){
+      if(done)return;
+      const acc=e.accelerationIncludingGravity;
+      if(!acc)return;
+      const mag=Math.sqrt((acc.x||0)**2+(acc.y||0)**2+(acc.z||0)**2);
+      const now=Date.now();
+      if(mag>18 && now-lastShake>600){
+        lastShake=now; count++;
+        disp.textContent=count+' / 3';
+        sfx(400+count*100,0.1,'sine',0.15);
+        icon.textContent=['📳','🤝','💥','🎉'][Math.min(count,3)];
+        ind.classList.add('active-state');
+        setTimeout(()=>ind.classList.remove('active-state'),300);
+        if(count>=3){done=true;window.removeEventListener('devicemotion',onMotion);solve('You shook it!');}
+      }
+    }
+    window.addEventListener('devicemotion',onMotion);
+    app(area,icon,disp,ind);
+    area._cleanup=()=>window.removeEventListener('devicemotion',onMotion);
+  }
+},
+
+// ─── HOLD FACE DOWN ───
+{
+  emoji:'⬇️',title:'In The Dark',diff:'hard',
+  desc:'The answer may only appear when the screen is no longer watching.',
+  hint:'LET THE TABLE SEE WHAT YOU CANNOT',
+  build(area,solve){
+    let done=false;
+    const ind=mkInd('Waiting for face-down…');
+    const icon=mk('div','font-size:56px;transition:transform 400ms;');
+    icon.textContent='📱';
+    let holdTimer=null;
+
+    function onOrient(e){
+      if(done)return;
+      const b=e.beta||0;
+      const faceDown=(b< -60 || b>150); // z-axis pointing down = face down
+      if(faceDown){
+        icon.style.transform='translateY(8px) scale(0.9)';
+        ind.textContent='Face-down! Hold…';
+        ind.classList.add('active-state');
+        if(!holdTimer) holdTimer=setTimeout(()=>{done=true;window.removeEventListener('deviceorientation',onOrient);solve('Placed it down!');},1000);
+      } else {
+        icon.style.transform='none';
+        ind.classList.remove('active-state');
+        ind.textContent='Waiting for face-down…';
+        clearTimeout(holdTimer); holdTimer=null;
+      }
+    }
+    window.addEventListener('deviceorientation',onOrient);
+
+    // Desktop/no-sensor fallback
+    const fallback=mk('button','');
+    fallback.className='btn btn-ghost btn-sm';
+    fallback.textContent='No sensors? Click here';
+    fallback.style.marginTop='12px';
+    fallback.onclick=()=>{done=true;solve('(Simulated face-down)');};
+    app(area,icon,ind,fallback);
+    area._cleanup=()=>{window.removeEventListener('deviceorientation',onOrient);clearTimeout(holdTimer);};
+  }
+},
+
+// ─── TILT LEFT ───
+{
+  emoji:'↙️',title:'Off Balance',diff:'medium',
+  desc:'A small shift in perspective unlocks more than any button ever could.',
+  hint:'LEAN INTO THE WRONG SIDE',
+  build(area,solve){
+    let done=false,holdTimer=null;
+    const arrow=mk('div','font-size:56px;transition:transform 300ms var(--ease);');
+    arrow.textContent='📱';
+    const ind=mkInd('Tilt left…');
+
+    function onOrient(e){
+      if(done)return;
+      const g=e.gamma||0;
+      const tilt=Math.round(g);
+      arrow.style.transform=`rotate(${Math.max(-45,Math.min(45,g))}deg)`;
+      if(g< -30){
+        ind.textContent=`Tilted ${tilt}°! Hold…`;
+        ind.classList.add('active-state');
+        if(!holdTimer) holdTimer=setTimeout(()=>{done=true;window.removeEventListener('deviceorientation',onOrient);solve('Great tilt!');},1000);
+      } else {
+        ind.classList.remove('active-state');
+        ind.textContent=`Tilt left… (${tilt}°)`;
+        clearTimeout(holdTimer); holdTimer=null;
+      }
+    }
+    window.addEventListener('deviceorientation',onOrient);
+    const fb=mkFallbackBtn(()=>{done=true;window.removeEventListener('deviceorientation',onOrient);solve('(Simulated)');});
+    app(area,arrow,ind,fb);
+    area._cleanup=()=>{window.removeEventListener('deviceorientation',onOrient);clearTimeout(holdTimer);};
+  }
+},
+
+// ─── DON'T MOVE ───
+{
+  emoji:'🧘',title:'The Patience Test',diff:'extreme',
+  desc:'Not every puzzle rewards action. This one rewards its absence.',
+  hint:'BECOME A STATUE',
+  build(area,solve){
+    let done=false,progress=0,last={x:0,y:0,z:0},timer=null;
+    const ring=mkProgRing();
+    const ind=mkInd('Hold still…');
+    let interval=null;
+
+    function onMotion(e){
+      if(done)return;
+      const acc=e.accelerationIncludingGravity;
+      if(!acc)return;
+      const dx=Math.abs((acc.x||0)-last.x),dy=Math.abs((acc.y||0)-last.y),dz=Math.abs((acc.z||0)-last.z);
+      last={x:acc.x||0,y:acc.y||0,z:acc.z||0};
+      const moved=dx+dy+dz;
+      if(moved>0.8){
+        progress=0;ring.set(0);ind.textContent='Moved! Start again…';ind.classList.remove('active-state');ind.classList.add('warn-state');
+        setTimeout(()=>ind.classList.remove('warn-state'),500);
+      }
+    }
+    window.addEventListener('devicemotion',onMotion);
+    interval=setInterval(()=>{
+      if(done)return;
+      progress=Math.min(progress+0.1/4,1);
+      ring.set(progress);
+      const rem=Math.ceil((1-progress)*4);
+      ind.textContent=progress<1?`Hold still… ${rem}s`:'Done!';
+      if(progress<0.5) ind.classList.remove('active-state');
+      else ind.classList.add('active-state');
+      if(progress>=1){done=true;clearInterval(interval);window.removeEventListener('devicemotion',onMotion);solve('Zen master!');}
+    },100);
+    app(area,ring.el,ind);
+    area._cleanup=()=>{clearInterval(interval);window.removeEventListener('devicemotion',onMotion);};
+  }
+},
+
+// ─── VOLUME (simulated) ───
+{
+  emoji:'🔊',title:'Louder',diff:'medium',
+  desc:'This puzzle craves presence. More presence than the screen alone can give.',
+  hint:'THE SIDES KNOW WHAT THE SCREEN DOES NOT',
+  build(area,solve){
+    const ind=mkInd('Did you max out the volume?');
+    const icon=mk('div','font-size:56px;');
+    icon.textContent='🔇';
+    let stage=0;
+    const stages=['🔇','🔈','🔉','🔊'];
+    const btn=mk('button','');
+    btn.className='btn btn-primary';
+    btn.textContent='YES, IT\'S MAXED';
+    btn.onclick=()=>{
+      stage=Math.min(stage+1,3);
+      icon.textContent=stages[stage];
+      if(stage===3){solve('LOUD! That\'s the spirit!');}
+      else{ind.textContent='Keep going, turn it up more!';playClick();}
+    };
+    const note=mk('p','font-size:12px;color:var(--color-text-faint);text-align:center;max-width:26ch;line-height:1.6;margin-top:8px;');
+    note.textContent='Use the physical volume buttons on the side of your phone.';
+    app(area,icon,ind,btn,note);
+  }
+},
+
+// ─── ROTATE LANDSCAPE ───
+{
+  emoji:'🔄',title:'Widescreen',diff:'medium',
+  desc:'Some things were never meant to be seen standing upright.',
+  hint:'THINK CINEMATIC',
+  build(area,solve){
+    let done=false;
+    const icon=mk('div','font-size:56px;transition:transform 400ms var(--ease);');
+    icon.textContent='📱';
+    const ind=mkInd('Currently portrait…');
+
+    function check(){
+      if(done)return;
+      const angle=window.screen?.orientation?.angle??window.orientation??0;
+      const isLandscape=Math.abs(angle)===90||window.matchMedia('(orientation:landscape)').matches;
+      if(isLandscape){
+        done=true;
+        icon.textContent='🏞️';
+        icon.style.transform='rotate(90deg)';
+        ind.textContent='Landscape! 🎉';
+        ind.classList.add('active-state');
+        setTimeout(()=>solve('You rotated it!'),600);
+      } else {
+        ind.textContent='Still portrait… turn it!';
+      }
+    }
+    window.addEventListener('orientationchange',check);
+    window.matchMedia('(orientation:landscape)').addEventListener('change',e=>{if(e.matches)check();});
+
+    const fb=mkFallbackBtn(()=>{done=true;solve('(Simulated landscape)');});
+    app(area,icon,ind,fb);
+    area._cleanup=()=>window.removeEventListener('orientationchange',check);
+  }
+},
+
+// ─── SECRET WORD ───
+{
+  emoji:'🤫',title:'It Was Always There',diff:'medium',
+  desc:'The answer has been staring at you since before you even started.',
+  hint:'LOOK UP',
+  build(area,solve,fail){
+    const row=mk('div','');row.className='type-row';
+    const inp=mk('input','');inp.className='type-input';inp.placeholder='thinkoutsidethephone';inp.type='text';inp.autocomplete='off';inp.autocorrect='off';
+    const btn=mk('button','');btn.className='btn btn-primary btn-sm';btn.textContent='→';
+    const go=()=>{
+      const v=inp.value.trim().toLowerCase().replace(/\s+/g,'');
+      if(v==='thinkoutsidethephone'||v.includes('outside')&&v.includes('phone')){solve('Nailed it!');}
+      else{inp.style.borderColor='var(--color-danger)';setTimeout(()=>inp.style.borderColor='',600);playErr();}
+    };
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter')go();});
+    btn.onclick=go;
+    row.appendChild(inp);row.appendChild(btn);
+    area.appendChild(row);
+  }
+},
+
+// ─── HOLD 5 SECONDS ───
+{
+  emoji:'✊',title:'Five',diff:'hard',
+  desc:'Neither too eager nor too patient. Only one moment is exactly right.',
+  hint:'FEEL IT, DON\'T COUNT IT',
+  build(area,solve,fail){
+    let holding=false,start=0,done=false;
+    const ring=mkProgRing();
+    const disp=mk('div','font-family:var(--font-display);font-size:20px;color:var(--color-text-muted);margin-top:8px;');
+    disp.textContent='Press and hold';
+    const btn=mkBtn('✊');
+    let raf=null;
+
+    const startHold=()=>{
+      if(done)return;
+      holding=true;start=Date.now();
+      function tick(){
+        if(!holding)return;
+        const t=(Date.now()-start)/1000;
+        const p=Math.min(t/5,1);
+        ring.set(p);
+        disp.textContent=t.toFixed(1)+'s';
+        if(t>5.5){holding=false;done=true;fail('Too long! '+t.toFixed(1)+'s',true);}
+        else raf=requestAnimationFrame(tick);
+      }
+      raf=requestAnimationFrame(tick);
+    };
+    const endHold=()=>{
+      if(!holding||done)return;
+      holding=false;
+      cancelAnimationFrame(raf);
+      const t=(Date.now()-start)/1000;
+      ring.set(0);
+      if(t>=4.7&&t<=5.3){done=true;solve(`${t.toFixed(2)}s — perfect!`);}
+      else{playErr();disp.textContent=`${t.toFixed(2)}s — need 5.0s`;ring.set(0);}
+    };
+    btn.addEventListener('mousedown',startHold);
+    btn.addEventListener('touchstart',e=>{e.preventDefault();startHold();},{passive:false});
+    btn.addEventListener('mouseup',endHold);
+    btn.addEventListener('touchend',endHold);
+    btn.addEventListener('mouseleave',()=>{if(holding)endHold();});
+    app(area,ring.el,disp,btn);
+    area._cleanup=()=>cancelAnimationFrame(raf);
+  }
+},
+
+// ─── TILT FORWARD (toward face) ───
+{
+  emoji:'🫱',title:'Rest A Moment',diff:'hard',
+  desc:'It has been upright for a while now. Maybe it deserves a rest.',
+  hint:'LESS STANDING, MORE RESTING',
+  build(area,solve){
+    let done=false,holdTimer=null;
+    const icon=mk('div','font-size:56px;transition:transform 400ms;');
+    icon.textContent='📱';
+    const ind=mkInd('Tilt top toward you…');
+
+    function onOrient(e){
+      if(done)return;
+      const b=e.beta||90;
+      const angle=Math.round(b);
+      // beta=90 is upright, beta near 0 is flat/tilted toward face
+      icon.style.transform=`rotateX(${Math.max(-60,Math.min(30,90-b))}deg)`;
+      if(b<30&&b>-30){
+        ind.textContent=`Flat! ${angle}° — Hold…`;
+        ind.classList.add('active-state');
+        if(!holdTimer) holdTimer=setTimeout(()=>{done=true;window.removeEventListener('deviceorientation',onOrient);solve('Lying flat!');},1000);
+      } else {
+        ind.classList.remove('active-state');
+        ind.textContent=`Beta: ${angle}° (need < 30°)`;
+        clearTimeout(holdTimer);holdTimer=null;
+      }
+    }
+    window.addEventListener('deviceorientation',onOrient);
+    const fb=mkFallbackBtn(()=>{done=true;window.removeEventListener('deviceorientation',onOrient);solve('(Simulated)');});
+    app(area,icon,ind,fb);
+    area._cleanup=()=>{window.removeEventListener('deviceorientation',onOrient);clearTimeout(holdTimer);};
+  }
+},
+
+// ─── RAINBOW ORDER ───
+{
+  emoji:'🌈',title:'After The Rain',diff:'medium',
+  desc:'Nature painted this sequence long before you arrived.',
+  hint:'CHASE THE SKY AFTER RAIN',
+  build(area,solve,fail){
+    const cols=[{c:'#ff4d6d',n:'red'},{c:'#ff9a3c',n:'orange'},{c:'#ffe03c',n:'yellow'},{c:'#3cffa0',n:'green'},{c:'#4da8ff',n:'blue'}];
+    const shuffled=[...cols].sort(()=>Math.random()-0.5);
+    const correct=['red','orange','yellow','green','blue'];
+    let seq=[];
+    const seqRow=mk('div','');seqRow.className='seq-row';
+    const dots=correct.map(()=>{const d=mk('div','');d.className='seq-dot';seqRow.appendChild(d);return d;});
+    const grid=mk('div','');grid.className='color-grid';
+    shuffled.forEach(({c,n})=>{
+      const sw=mk('div','');sw.className='cswatch';sw.style.background=c;
+      sw.onclick=()=>{
+        playClick();
+        if(seq.includes(n))return;
+        if(n===correct[seq.length]){
+          seq.push(n);dots[seq.length-1].classList.add('done');sw.classList.add('selected');
+          if(seq.length===5)solve('Perfect rainbow!');
+        } else {
+          playErr();seq=[];
+          dots.forEach(d=>{d.className='seq-dot';});
+          grid.querySelectorAll('.cswatch').forEach(s=>s.classList.remove('selected'));
+        }
+      };
+      grid.appendChild(sw);
+    });
+    app(area,seqRow,grid);
+  }
+},
+
+// ─── SHAKE THEN STOP ───
+{
+  emoji:'🎲',title:'Storm & Calm',diff:'extreme',
+  desc:'Every storm has an eye. Find the chaos, then find the silence inside it.',
+  hint:'CHAOS, THEN CONTROL',
+  build(area,solve){
+    let phase='shake',lastShake=0,stillTimer=null,done=false;
+    const ind=mkInd('Shake it once!');
+    const icon=mk('div','font-size:56px;');
+    icon.textContent='🎲';
+
+    function onMotion(e){
+      if(done)return;
+      const acc=e.accelerationIncludingGravity;
+      if(!acc)return;
+      const mag=Math.sqrt((acc.x||0)**2+(acc.y||0)**2+(acc.z||0)**2);
+      const now=Date.now();
+      if(phase==='shake'&&mag>18&&now-lastShake>800){
+        lastShake=now;phase='freeze';
+        icon.textContent='🧊';
+        ind.textContent='Now FREEZE! Don\'t move!';
+        sfx(600,0.15);
+      } else if(phase==='freeze'){
+        const delta=Math.abs(mag-9.8);
+        if(delta>1.5){
+          clearTimeout(stillTimer);stillTimer=null;
+          ind.textContent='You moved! Shake once more…';
+          ind.classList.remove('active-state');
+          icon.textContent='💥';
+          phase='shake';
+          setTimeout(()=>{icon.textContent='🎲';ind.textContent='Shake it once!';},600);
+        } else {
+          ind.classList.add('active-state');
+          if(!stillTimer) stillTimer=setTimeout(()=>{done=true;window.removeEventListener('devicemotion',onMotion);solve('Shake and freeze!');},2000);
+        }
+      }
+    }
+    window.addEventListener('devicemotion',onMotion);
+    const fb=mkFallbackBtn(()=>{done=true;window.removeEventListener('devicemotion',onMotion);solve('(Simulated)');});
+    app(area,icon,ind,fb);
+    area._cleanup=()=>{window.removeEventListener('devicemotion',onMotion);clearTimeout(stillTimer);};
+  }
+},
+
+// ─── FINAL PUZZLE ───
+{
+  emoji:'🌟',title:'Equilibrium',diff:'extreme',
+  desc:'Balance. Then commitment. The last puzzle asks for both at once.',
+  hint:'STILL WATERS RUN DEEP',
+  build(area,solve){
+    let flat=false,taps=0,done=false;
+    const disp=mk('div','font-family:var(--font-display);font-size:40px;color:var(--color-primary);font-variant-numeric:tabular-nums;');
+    disp.textContent='0 / 3';
+    const flatInd=mkInd('Step 1: Lay phone flat');
+    const btn=mkBtn('⭐');
+    btn.style.opacity='0.3';
+    btn.style.cursor='not-allowed';
+
+    function onOrient(e){
+      if(done)return;
+      const b=e.beta||90;
+      flat=(Math.abs(b)<35);
+      flatInd.textContent=flat?'✅ Flat! Now tap 3x':'Lay phone flat first…';
+      flat?flatInd.classList.add('active-state'):flatInd.classList.remove('active-state');
+      btn.style.opacity=flat?'1':'0.3';
+      btn.style.cursor=flat?'pointer':'not-allowed';
+    }
+    window.addEventListener('deviceorientation',onOrient);
+
+    btn.onclick=()=>{
+      if(!flat){playErr();sfx(200,0.2,'sawtooth',0.1);return;}
+      playClick();taps++;pulse(btn);disp.textContent=taps+' / 3';
+      if(taps>=3){done=true;window.removeEventListener('deviceorientation',onOrient);solve('FINAL BOSS DEFEATED!');}
+    };
+
+    const fb=mkFallbackBtn(()=>{flat=true;btn.style.opacity='1';btn.style.cursor='pointer';flatInd.textContent='✅ (Simulated flat)';flatInd.classList.add('active-state');});
+    fb.textContent='Simulate flat (no sensors)';
+    app(area,flatInd,disp,btn,fb);
+    area._cleanup=()=>window.removeEventListener('deviceorientation',onOrient);
   }
 }
+];
 
-// ── DRAW ───────────────────────────────────────────────────
-function drawBG() {
-  ctx.fillStyle = '#0a0a2a';
-  ctx.fillRect(0, 0, 800, 400);
+// ══════════════════════════════════════════
+// DOM HELPERS
+// ══════════════════════════════════════════
+function mk(tag,css){const el=document.createElement(tag);if(css)el.style.cssText=css;return el;}
+function app(parent,...kids){kids.forEach(k=>parent.appendChild(k));}
+function mkBtn(emoji){
+  const b=mk('div','');b.className='big-btn';b.textContent=emoji;return b;
 }
-
-function drawGround() {
-  const g = ctx.createLinearGradient(0, GROUND, 0, 400);
-  g.addColorStop(0, '#22aa22');
-  g.addColorStop(1, '#104010');
-  ctx.fillStyle = g;
-  ctx.fillRect(0, GROUND, 800, 400 - GROUND);
+function pulse(el){
+  el.classList.add('pressed');
+  setTimeout(()=>el.classList.remove('pressed'),120);
 }
-
-function drawSpike(x, y, w, h) {
-  ctx.fillStyle = '#ff3333';
-  ctx.beginPath();
-  ctx.moveTo(x, y + h);
-  ctx.lineTo(x + w/2, y);
-  ctx.lineTo(x + w, y + h);
-  ctx.closePath();
-  ctx.fill();
-  ctx.strokeStyle = '#aa0000';
-  ctx.stroke();
+function mkInd(text){
+  const d=mk('div','');d.className='vis-indicator';d.textContent=text;return d;
 }
-
-function drawBlock(x, y, w, h) {
-  ctx.fillStyle = '#4477ff';
-  ctx.fillRect(x, y, w, h);
-  ctx.strokeStyle = '#2255cc';
-  ctx.strokeRect(x, y, w, h);
+function mkFallbackBtn(cb){
+  const b=mk('button','');b.className='btn btn-ghost btn-sm';
+  b.style.marginTop='8px';b.textContent='No sensors? Tap here';
+  b.onclick=cb;return b;
 }
-
-function drawPlayer() {
-  const cx = 140 + PLAYER_W/2;
-  const cy = player.y + PLAYER_H/2;
-
-  ctx.save();
-  ctx.translate(cx, cy);
-  ctx.rotate(player.rot * Math.PI / 180);
-
-  ctx.fillStyle = '#00eeff';
-  ctx.fillRect(-PLAYER_W/2, -PLAYER_H/2, PLAYER_W, PLAYER_H);
-  ctx.strokeStyle = '#00aacc';
-  ctx.strokeRect(-PLAYER_W/2, -PLAYER_H/2, PLAYER_W, PLAYER_H);
-
-  ctx.fillStyle = '#0088aa';
-  ctx.fillRect(-PLAYER_W/2+6, -PLAYER_H/2+6, PLAYER_W-12, PLAYER_H-12);
-
-  ctx.fillStyle = '#ffffff';
-  ctx.beginPath();
-  ctx.arc(0, 0, 5, 0, Math.PI*2);
-  ctx.fill();
-
-  ctx.restore();
-}
-
-function drawObstacles() {
-  for (const o of level) {
-    const osx = o.x - camX;
-    if (osx < -100 || osx > 900) continue;  // skip off‑screen
-
-    if (o.type === 'spike') {
-      drawSpike(osx, o.y, o.w, o.h);
+function mkProgRing(){
+  const wrap=mk('div','');wrap.className='prog-circle-wrap';
+  wrap.innerHTML=`<svg viewBox="0 0 100 100"><circle class="prog-circle-bg" cx="50" cy="50" r="45"/><circle class="prog-circle-fg" id="pcfg_${Date.now()}" cx="50" cy="50" r="45"/></svg><div class="prog-circle-label" id="pclbl_${Date.now()}">0%</div>`;
+  const fg=wrap.querySelector('.prog-circle-fg');
+  const lbl=wrap.querySelector('.prog-circle-label');
+  return {
+    el:wrap,
+    set(v){
+      const circ=2*Math.PI*45;
+      fg.style.strokeDashoffset=circ*(1-v);
+      lbl.textContent=Math.round(v*100)+'%';
+      if(v>0.8)fg.style.stroke='var(--color-success)';
+      else if(v>0.5)fg.style.stroke='var(--color-warning)';
+      else fg.style.stroke='var(--color-primary)';
     }
-    else if (o.type === 'block') {
-      drawBlock(osx, o.y, o.w, o.h);
-    }
+  };
+}
+
+// ══════════════════════════════════════════
+// GAME FLOW
+// ══════════════════════════════════════════
+const DIFFS={medium:'diff-medium',hard:'diff-hard',extreme:'diff-extreme'};
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+
+function startGame(){
+  initAudio();
+  curIdx=0;solved=0;skipped=0;startTime=Date.now();
+  showScreen('puzzle-screen');
+  loadPuzzle(0);
+  requestMotion(()=>{});
+}
+
+function loadPuzzle(idx){
+  if(idx>=PUZZLES.length){showWin();return;}
+  const p=PUZZLES[idx];
+  document.getElementById('puzzle-num').textContent=`${idx+1} / ${PUZZLES.length}`;
+  document.getElementById('prog-bar').style.width=(idx/PUZZLES.length*100)+'%';
+  document.getElementById('p-emoji').textContent=p.emoji;
+  document.getElementById('p-title').textContent=p.title;
+  document.getElementById('p-desc').textContent=p.desc;
+  document.getElementById('p-hint').textContent=p.hint;
+  const badge=document.getElementById('diff-badge');
+  badge.textContent=p.diff.toUpperCase();
+  badge.className='diff-badge '+DIFFS[p.diff];
+  const area=document.getElementById('iarea');
+  if(area._cleanup){area._cleanup();area._cleanup=null;}
+  area.innerHTML='';
+  p.build(area,solvePuzzle,failPuzzle);
+}
+
+function solvePuzzle(msg=''){
+  playOK();solved++;
+  showFeedback('✅','Solved!',msg,'var(--color-success)','rgba(111,255,162,0.08)');
+  setTimeout(()=>{hideFeedback();nextPuzzle();},1900);
+}
+function failPuzzle(msg='',reset=false){
+  playErr();
+  showFeedback('❌','Nope!',msg,'var(--color-danger)','rgba(255,107,157,0.08)');
+  setTimeout(()=>{hideFeedback();if(reset)loadPuzzle(curIdx);},1700);
+}
+function skipPuzzle(){skipped++;nextPuzzle();}
+function nextPuzzle(){curIdx++;if(curIdx>=PUZZLES.length)showWin();else loadPuzzle(curIdx);}
+
+function showFeedback(emoji,title,sub,color,bg){
+  const fb=document.getElementById('feedback');
+  document.getElementById('fb-emoji').textContent=emoji;
+  document.getElementById('fb-title').textContent=title;
+  document.getElementById('fb-title').style.color=color;
+  document.getElementById('fb-sub').textContent=sub;
+  fb.style.background=`radial-gradient(circle,${bg} 0%,transparent 70%)`;
+  fb.classList.add('show');
+}
+function hideFeedback(){document.getElementById('feedback').classList.remove('show');}
+
+function showWin(){
+  const t=Math.round((Date.now()-startTime)/1000);
+  document.getElementById('w-solved').textContent=solved;
+  document.getElementById('w-skipped').textContent=skipped;
+  document.getElementById('w-time').textContent=t+'s';
+  showScreen('win-screen');
+  launchConfetti();
+}
+function restartGame(){stopConfetti();startGame();}
+
+// ══════════════════════════════════════════
+// CONFETTI
+// ══════════════════════════════════════════
+let craf=null;
+function launchConfetti(){
+  const c=document.getElementById('confetti-canvas');
+  c.width=innerWidth;c.height=innerHeight;
+  const ctx=c.getContext('2d');
+  const cols=['#c4a8ff','#6fffa2','#ffdd88','#ff6b9d','#4da8ff'];
+  const ps=Array.from({length:140},()=>({
+    x:Math.random()*innerWidth,y:-20,
+    vx:(Math.random()-0.5)*5,vy:Math.random()*5+2,
+    r:Math.random()*6+3,rot:Math.random()*360,vr:(Math.random()-0.5)*9,
+    col:cols[Math.floor(Math.random()*cols.length)]
+  }));
+  function draw(){
+    ctx.clearRect(0,0,c.width,c.height);
+    ps.forEach(p=>{
+      p.x+=p.vx;p.y+=p.vy;p.rot+=p.vr;
+      ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.rot*Math.PI/180);
+      ctx.fillStyle=p.col;ctx.fillRect(-p.r,-p.r*.5,p.r*2,p.r);
+      ctx.restore();
+      if(p.y>innerHeight+30){p.y=-20;p.x=Math.random()*innerWidth;}
+    });
+    craf=requestAnimationFrame(draw);
   }
+  draw();
 }
-
-function drawUI() {
-  const barW = 240;
-  const bx = 800/2 - barW/2;
-  const by = 10;
-
-  // shadow bar
-  ctx.fillStyle = 'rgba(0,0,0,0.3)';
-  ctx.fillRect(bx-4, by-4, barW+8, 28);
-
-  // bg bar
-  ctx.fillStyle = '#111';
-  ctx.fillRect(bx, by, barW, 20);
-
-  // fill bar (green)
-  ctx.fillStyle = '#00cc66';
-  ctx.fillRect(bx, by, barW * (progress / 100), 20);
-
-  // border
-  ctx.strokeStyle = '#555';
-  ctx.strokeRect(bx, by, barW, 20);
-
-  // text
-  ctx.fillStyle = '#fff';
-  ctx.font = '14px Arial';
-  ctx.textAlign = 'center';
-  ctx.fillText(`Progress: ${progress}%`, 800/2, by+15);
-
-  // attempts
-  ctx.fillStyle = '#aaa';
-  ctx.textAlign = 'left';
-  ctx.fillText(`Attempt ${attempts}`, 10, 20);
+function stopConfetti(){
+  if(craf)cancelAnimationFrame(craf);
+  document.getElementById('confetti-canvas').getContext('2d').clearRect(0,0,innerWidth,innerHeight);
 }
-
-function drawMenu() {
-  ctx.fillStyle = 'rgba(0,0,0,0.7)';
-  ctx.fillRect(0, 0, 800, 400);
-
-  ctx.fillStyle = '#00eeff';
-  ctx.font = 'bold 48px Arial';
-  ctx.textAlign = 'center';
-  ctx.fillText('GEOMETRY DASH', 800/2, 200);
-
-  ctx.fillStyle = '#ffffff';
-  ctx.font = '18px Arial';
-  ctx.fillText('Click, Tap, or SPACE to jump', 800/2, 250);
-}
-
-function drawDead() {
-  ctx.fillStyle = 'rgba(180,0,0,0.3)';
-  ctx.fillRect(0, 0, 800, 400);
-
-  ctx.fillStyle = '#ff4444';
-  ctx.font = 'bold 40px Arial';
-  ctx.textAlign = 'center';
-  ctx.fillText('YOU DIED', 800/2, 200);
-
-  ctx.fillStyle = '#ffffff';
-  ctx.font = '16px Arial';
-  ctx.fillText(`Progress: ${progress}%`, 800/2, 240);
-  ctx.fillText(`Attempt ${attempts}`, 800/2, 260);
-  ctx.fillText('Click, Tap, or SPACE to retry', 800/2, 290);
-
-  ctx.textAlign = 'left';
-}
-
-function drawWin() {
-  ctx.fillStyle = 'rgba(0,140,0,0.35)';
-  ctx.fillRect(0, 0, 800, 400);
-
-  ctx.fillStyle = '#00cc88';
-  ctx.font = 'bold 42px Arial';
-  ctx.textAlign = 'center';
-  ctx.fillText('LEVEL DONE', 800/2, 200);
-
-  ctx.fillStyle = '#ffffff';
-  ctx.font = '16px Arial';
-  ctx.fillText(`Finished in ${attempts} attempt${attempts !== 1 ? 's' : ''}!`, 800/2, 240);
-
-  ctx.textAlign = 'left';
-}
-
-// ── GAME LOOP ──────────────────────────────────────────────
-function loop() {
-  ctx.clearRect(0, 0, 800, 400);
-  drawBG();
-  drawGround();
-  drawObstacles();
-  drawPlayer();
-
-  if (state === 'menu')  drawMenu();
-  if (state === 'dead')  drawDead();
-  if (state === 'win')   drawWin();
-  if (state !== 'menu')  drawUI();
-
-  update();
-  requestAnimationFrame(loop);
-}
-
-loop();
 </script>
 </body>
 </html>
