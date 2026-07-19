@@ -833,6 +833,82 @@ body.is-ipad .menu-scroll { padding: 30px 24px 44px; }
 body.is-ipad .tc-joystick { left:34px; bottom:34px; }
 body.is-ipad .tc-actions { right:28px; bottom:28px; }
 
+
+
+/* ═══════════════════ ONLINE MULTIPLAYER UI ═══════════════════ */
+.online-open-btn {
+  padding: 12px 22px; border-radius: 12px; border: none;
+  background: linear-gradient(135deg, #00d4ff, #0077ff); color: #fff;
+  font-family: 'Bangers', cursive; font-size: 1.05rem; letter-spacing: 1.5px;
+  box-shadow: 0 8px 18px rgba(0,140,255,0.28); cursor: pointer;
+}
+#online-screen {
+  position: fixed; inset: 0; z-index: 210; display: none; flex-direction: column;
+  background: radial-gradient(ellipse at center, #180a28 0%, #0a0d1c 72%);
+}
+#online-screen.active { display: flex; }
+.online-topbar {
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  padding:14px 16px; border-bottom:1px solid rgba(255,255,255,0.08);
+  background: rgba(12,14,25,0.72); backdrop-filter: blur(10px);
+}
+.online-title {
+  font-family:'Bangers',cursive; color:#fff; font-size:clamp(1.4rem,4vw,2rem); letter-spacing:2px;
+}
+.online-close-btn {
+  padding:10px 14px; border-radius:10px; background:rgba(255,255,255,0.08); color:#fff; border:1px solid rgba(255,255,255,0.14);
+}
+.online-layout {
+  flex:1; display:grid; grid-template-columns: 1.1fr 0.9fr; gap:18px; padding:18px; overflow:auto;
+}
+.online-panel {
+  background: rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:18px; padding:18px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+}
+.online-panel h3 {
+  font-family:'Bangers',cursive; color:#00d4ff; letter-spacing:1px; font-size:1.2rem; margin-bottom:10px;
+}
+.online-sub { color: rgba(255,255,255,0.72); font-size:0.95rem; margin-bottom:14px; }
+.online-actions { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:12px; }
+.online-main-btn, .online-secondary-btn {
+  padding:12px 18px; border-radius:12px; border:none; color:#fff; cursor:pointer;
+  font-family:'Bangers',cursive; letter-spacing:1px; font-size:1rem;
+}
+.online-main-btn { background: linear-gradient(135deg,#00d4ff,#0088ff); box-shadow:0 8px 18px rgba(0,140,255,.28); }
+.online-secondary-btn { background: rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.12); }
+.online-code-box {
+  display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 16px; border-radius:14px;
+  background:rgba(0,0,0,0.22); border:1px solid rgba(255,255,255,0.08); margin:12px 0;
+}
+.online-code {
+  font-family:'Rajdhani',sans-serif; font-size:1.1rem; letter-spacing:2px; color:#fff; font-weight:700; word-break:break-all;
+}
+.online-copy-btn {
+  padding:10px 14px; border-radius:10px; background:#00d4ff; color:#04111d; font-weight:700;
+}
+.online-input, .online-select {
+  width:100%; padding:12px 14px; border-radius:12px; border:1px solid rgba(255,255,255,0.14);
+  background:rgba(255,255,255,0.06); color:#fff; margin:8px 0 12px;
+}
+.online-input::placeholder { color:rgba(255,255,255,0.42); }
+.online-status {
+  min-height:44px; padding:12px 14px; border-radius:12px; background:rgba(255,255,255,0.06); color:#fff; font-size:0.92rem;
+  border:1px solid rgba(255,255,255,0.08);
+}
+.online-status.good { border-color: rgba(0,255,170,0.34); color:#9cffdb; }
+.online-status.warn { border-color: rgba(255,170,0,0.34); color:#ffd48a; }
+.online-status.bad  { border-color: rgba(255,90,90,0.34); color:#ffb2b2; }
+.online-list { display:flex; flex-direction:column; gap:10px; margin-top:12px; }
+.online-pill {
+  display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:999px; background:rgba(255,255,255,0.08); color:#fff;
+}
+.online-note { color: rgba(255,255,255,0.58); font-size:0.82rem; line-height:1.5; margin-top:12px; }
+body.is-phone .online-layout { grid-template-columns:1fr; padding:12px; gap:12px; }
+body.is-phone .online-panel { padding:14px; border-radius:14px; }
+body.is-phone .online-open-btn { font-size:0.92rem; padding:10px 14px; }
+body.is-phone .online-main-btn, body.is-phone .online-secondary-btn { width:100%; }
+body.is-phone .online-code-box { flex-direction:column; align-items:flex-start; }
+
 </style>
 </head>
 <body>
@@ -925,8 +1001,54 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
 
     <button class="start-btn" id="startBtn">FIGHT!</button>
     <div class="menu-btn-row">
+      <button class="online-open-btn" id="onlineOpenBtn">🌐 ONLINE</button>
       <button class="shop-open-btn" id="shopOpenBtn">🛒 SHOP</button>
       <button class="pass-open-btn" id="passOpenBtn">🎫 PASS</button>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- ONLINE MULTIPLAYER -->
+<div id="online-screen">
+  <div class="online-topbar">
+    <div class="online-title">🌐 ONLINE FRIEND MATCH</div>
+    <button class="online-close-btn" id="onlineCloseBtn">Back</button>
+  </div>
+  <div class="online-layout">
+    <div class="online-panel">
+      <h3>Host match</h3>
+      <p class="online-sub">Create one code, send it to your friend, then start a 1v1 match.</p>
+      <div class="online-actions">
+        <button class="online-main-btn" id="hostOnlineBtn">Create Code</button>
+        <button class="online-secondary-btn" id="disconnectOnlineBtn">Reset</button>
+      </div>
+      <div class="online-code-box">
+        <div>
+          <div class="online-note" style="margin-top:0;margin-bottom:4px;">Your friend code</div>
+          <div class="online-code" id="onlineCodeVal">NOT CONNECTED</div>
+        </div>
+        <button class="online-copy-btn" id="copyOnlineCodeBtn">Copy</button>
+      </div>
+      <div class="online-list">
+        <span class="online-pill" id="onlineRolePill">Role: offline</span>
+        <span class="online-pill" id="onlineConnPill">Peer: not connected</span>
+      </div>
+      <div class="online-note">Host runs the match simulation. This first version is designed for private 1v1 tests with one friend.</div>
+    </div>
+    <div class="online-panel">
+      <h3>Join match</h3>
+      <p class="online-sub">Paste your friend's code and connect to them directly.</p>
+      <input class="online-input" id="joinCodeInput" placeholder="Enter friend code" autocomplete="off" />
+      <div class="online-actions">
+        <button class="online-main-btn" id="joinOnlineBtn">Join Code</button>
+        <button class="online-secondary-btn" id="startOnlineMatchBtn">Start Online Match</button>
+      </div>
+      <label class="online-note" for="onlineCharSelect">Online character</label>
+      <select class="online-select" id="onlineCharSelect"></select>
+      <div class="online-status warn" id="onlineStatusBox">Pick Host or Join. After both players connect, the host can start the online match.</div>
+      <div class="online-note">If direct connection fails on some networks, PeerJS/WebRTC may need a different relay setup. This is normal for a first-pass peer-to-peer version.</div>
     </div>
   </div>
 </div>
@@ -1063,6 +1185,7 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
 <!-- DEBUG -->
 <div id="debug" style="display:none;">FPS: --</div>
 
+<script src="https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js"></script>
 <script>
 // ═══════════════════ DEVICE SELECT (iPad vs iPhone) ═══════════════════
 (function initDeviceSelect() {
@@ -1110,6 +1233,152 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
   setInterval(checkRotate, 500);
 })();
 
+
+// ═══════════════════ ONLINE MULTIPLAYER (PEERJS) ═══════════════════
+let onlineMode = false;
+let onlineRole = 'offline';
+let onlinePeer = null;
+let onlineConn = null;
+let onlineRemoteReady = false;
+let onlineRoomCode = '';
+let onlineLastPayloadAt = 0;
+let onlineSyncInterval = null;
+let remoteKeys = {};
+let onlineCharacterChoice = 'jin';
+let onlineSelectedRemoteChar = 'jin';
+let onlineConnectedPeerId = '';
+let onlineSnapshotBuffer = null;
+
+function onlineEl(id){ return document.getElementById(id); }
+function setOnlineStatus(msg, cls='warn') {
+  const box = onlineEl('onlineStatusBox');
+  if (!box) return;
+  box.textContent = msg;
+  box.className = 'online-status ' + cls;
+}
+function updateOnlinePills() {
+  const role = onlineEl('onlineRolePill');
+  const conn = onlineEl('onlineConnPill');
+  if (role) role.textContent = 'Role: ' + onlineRole;
+  if (conn) conn.textContent = 'Peer: ' + (onlineConnectedPeerId || 'not connected');
+  const code = onlineEl('onlineCodeVal');
+  if (code) code.textContent = onlineRoomCode || 'NOT CONNECTED';
+}
+function destroyOnlinePeer() {
+  try { if (onlineConn) onlineConn.close(); } catch(e) {}
+  try { if (onlinePeer) onlinePeer.destroy(); } catch(e) {}
+  onlinePeer = null; onlineConn = null; onlineRemoteReady = false; onlineRoomCode = '';
+  onlineRole = 'offline'; onlineConnectedPeerId = ''; onlineSnapshotBuffer = null;
+  remoteKeys = {};
+  if (onlineSyncInterval) { clearInterval(onlineSyncInterval); onlineSyncInterval = null; }
+  updateOnlinePills();
+}
+function sendOnline(msg) {
+  if (onlineConn && onlineConn.open) {
+    try { onlineConn.send(msg); } catch(e) {}
+  }
+}
+function beginOnlineSyncLoop() {
+  if (onlineSyncInterval) clearInterval(onlineSyncInterval);
+  onlineSyncInterval = setInterval(() => {
+    if (!onlineMode || gameState !== 'playing') return;
+    if (onlineRole === 'host') {
+      const payload = {
+        type:'snapshot',
+        stageTimer,
+        fighters: fighters.map(f => ({
+          id:f.id, x:f.x, y:f.y, vx:f.vx, vy:f.vy, damage:f.damage, stocks:f.stocks,
+          facing:f.facing, dead:f.dead, visible:f.visible, respawnTimer:f.respawnTimer,
+          hitFlash:f.hitFlash, stunTimer:f.stunTimer, blockTimer:f.blockTimer,
+          animState:f.animState, ai:f.ai, name:f.name, color:f.color
+        })),
+        projectiles: projectiles.map(p => ({ x:p.x, y:p.y, vx:p.vx, vy:p.vy, dir:p.dir, life:p.life, w:p.w, h:p.h, color:p.color, ownerId:p.owner?.id ?? 0 })),
+        particles: particles.slice(-30),
+        flashAlpha,
+      };
+      sendOnline(payload);
+    } else if (onlineRole === 'client') {
+      sendOnline({ type:'inputs', keys: { KeyA:!!keys.KeyA, KeyD:!!keys.KeyD, KeyW:!!keys.KeyW, KeyS:!!keys.KeyS, KeyJ:!!keys.KeyJ, KeyK:!!keys.KeyK, KeyL:!!keys.KeyL, ShiftLeft:!!keys.ShiftLeft } });
+    }
+  }, 1000/20);
+}
+function applyOnlineSnapshot(snap) {
+  if (!snap || !snap.fighters || fighters.length < 2) return;
+  stageTimer = snap.stageTimer ?? stageTimer;
+  for (const sf of snap.fighters) {
+    const f = fighters.find(x => x.id === sf.id);
+    if (!f) continue;
+    Object.assign(f, sf);
+  }
+  projectiles = (snap.projectiles || []).map(p => ({ ...p, owner: fighters.find(f => f.id === p.ownerId) || fighters[0] }));
+  flashAlpha = snap.flashAlpha ?? flashAlpha;
+}
+function setupOnlineConnection(conn, role) {
+  onlineConn = conn;
+  onlineRole = role;
+  onlineConnectedPeerId = conn.peer || '';
+  updateOnlinePills();
+  setOnlineStatus('Connected to ' + onlineConnectedPeerId + '. Choose characters, then the host can start.', 'good');
+  conn.on('open', () => {
+    onlineConnectedPeerId = conn.peer || onlineConnectedPeerId;
+    updateOnlinePills();
+    sendOnline({ type:'hello', role: onlineRole, charId: onlineCharacterChoice });
+  });
+  conn.on('data', data => {
+    if (!data || typeof data !== 'object') return;
+    if (data.type === 'hello') {
+      onlineSelectedRemoteChar = data.charId || onlineSelectedRemoteChar;
+      onlineRemoteReady = true;
+      setOnlineStatus('Friend connected. Host can start when ready.', 'good');
+    }
+    if (data.type === 'inputs' && onlineRole === 'host') {
+      remoteKeys = data.keys || {};
+      onlineLastPayloadAt = performance.now();
+    }
+    if (data.type === 'snapshot' && onlineRole === 'client') {
+      onlineSnapshotBuffer = data;
+      onlineLastPayloadAt = performance.now();
+    }
+    if (data.type === 'startMatch') {
+      onlineMode = true;
+      if (typeof selectedCharId !== 'undefined') selectedCharId = data.hostCharId || selectedCharId;
+      onlineSelectedRemoteChar = data.clientCharId || onlineSelectedRemoteChar;
+      selectedStage = data.stageId || selectedStage;
+      cpuCount = 0;
+      if (onlineRole === 'client') {
+        if (typeof selectedCharId !== 'undefined') selectedCharId = data.clientCharId || selectedCharId;
+      }
+      startGame();
+      beginOnlineSyncLoop();
+      setOnlineStatus('Online match live.', 'good');
+    }
+    if (data.type === 'disconnectNotice') {
+      setOnlineStatus('Friend disconnected.', 'bad');
+      onlineMode = false;
+    }
+  });
+  conn.on('close', () => {
+    setOnlineStatus('Connection closed.', 'bad');
+    onlineConnectedPeerId = '';
+    onlineRemoteReady = false;
+    updateOnlinePills();
+  });
+  conn.on('error', () => setOnlineStatus('Connection error.', 'bad'));
+}
+function fillOnlineCharacterSelect() {
+  const sel = onlineEl('onlineCharSelect');
+  if (!sel || typeof CHARACTERS === 'undefined') return;
+  sel.innerHTML = CHARACTERS.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+  sel.value = (typeof selectedCharId !== 'undefined' && selectedCharId) ? selectedCharId : CHARACTERS[0].id;
+  onlineCharacterChoice = sel.value;
+  sel.addEventListener('change', () => {
+    onlineCharacterChoice = sel.value;
+    if (typeof selectedCharId !== 'undefined') selectedCharId = sel.value;
+    sendOnline({ type:'hello', role: onlineRole, charId: onlineCharacterChoice });
+  });
+}
+function openOnlineScreen(){ onlineEl('online-screen')?.classList.add('active'); fillOnlineCharacterSelect(); updateOnlinePills(); }
+function closeOnlineScreen(){ onlineEl('online-screen')?.classList.remove('active'); }
 // ─── CONFIG ─────────────────────────────────────────────────────────────────
 const GRAVITY = 1750;
 const PLAYER_SPEED = 420;
@@ -3518,6 +3787,62 @@ document.querySelectorAll('.cpu-btn').forEach(btn => {
     cpuCount = parseInt(btn.dataset.count);
   });
 });
+
+document.getElementById('onlineOpenBtn')?.addEventListener('click', openOnlineScreen);
+document.getElementById('onlineCloseBtn')?.addEventListener('click', closeOnlineScreen);
+document.getElementById('copyOnlineCodeBtn')?.addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText(onlineRoomCode || ''); setOnlineStatus('Code copied.', 'good'); }
+  catch(e){ setOnlineStatus('Copy failed. Long-press and copy manually.', 'warn'); }
+});
+document.getElementById('disconnectOnlineBtn')?.addEventListener('click', () => {
+  destroyOnlinePeer();
+  setOnlineStatus('Online session reset.', 'warn');
+});
+document.getElementById('hostOnlineBtn')?.addEventListener('click', () => {
+  if (!window.Peer) { setOnlineStatus('PeerJS failed to load.', 'bad'); return; }
+  destroyOnlinePeer();
+  setOnlineStatus('Creating friend code…', 'warn');
+  onlinePeer = new Peer();
+  onlineRole = 'host';
+  updateOnlinePills();
+  onlinePeer.on('open', id => {
+    onlineRoomCode = id;
+    updateOnlinePills();
+    setOnlineStatus('Code ready. Send it to your friend and wait for them to join.', 'good');
+  });
+  onlinePeer.on('connection', conn => {
+    setupOnlineConnection(conn, 'host');
+  });
+  onlinePeer.on('error', err => setOnlineStatus('Host error: ' + err.type, 'bad'));
+});
+document.getElementById('joinOnlineBtn')?.addEventListener('click', () => {
+  const code = (document.getElementById('joinCodeInput')?.value || '').trim();
+  if (!code) { setOnlineStatus('Enter a friend code first.', 'bad'); return; }
+  if (!window.Peer) { setOnlineStatus('PeerJS failed to load.', 'bad'); return; }
+  destroyOnlinePeer();
+  setOnlineStatus('Joining friend code…', 'warn');
+  onlinePeer = new Peer();
+  onlineRole = 'client';
+  onlinePeer.on('open', () => {
+    const conn = onlinePeer.connect(code, { reliable: true });
+    onlineRoomCode = code;
+    setupOnlineConnection(conn, 'client');
+  });
+  onlinePeer.on('error', err => setOnlineStatus('Join error: ' + err.type, 'bad'));
+});
+document.getElementById('startOnlineMatchBtn')?.addEventListener('click', () => {
+  if (onlineRole !== 'host') { setOnlineStatus('Only the host can start the online match.', 'warn'); return; }
+  if (!onlineConn || !onlineConn.open) { setOnlineStatus('Connect to your friend first.', 'bad'); return; }
+  onlineMode = true;
+  cpuCount = 0;
+  onlineSelectedRemoteChar = onlineSelectedRemoteChar || 'jin';
+  sendOnline({ type:'startMatch', hostCharId: selectedCharId, clientCharId: onlineSelectedRemoteChar, stageId: selectedStage });
+  startGame();
+  beginOnlineSyncLoop();
+  closeOnlineScreen();
+  setOnlineStatus('Online match started.', 'good');
+});
+
 document.getElementById('startBtn').addEventListener('click', startGame);
 document.getElementById('resumeBtn').addEventListener('click', togglePause);
 document.getElementById('pauseMenuBtn').addEventListener('click', goToMenu);
