@@ -219,6 +219,56 @@ body { font-family: 'Rajdhani', sans-serif; color: var(--color-text); display: f
 .char-stat-pip { width: 5px; height: 12px; border-radius: 2px; background: rgba(255,255,255,0.15); }
 .char-stat-pip.filled { background: currentColor; }
 .char-desc { margin-top: 12px; font-size: 0.8rem; color: var(--color-muted); text-align: center; max-width: 560px; min-height: 20px; }
+.mastery-open-btn {
+  margin-top: 14px; padding: 10px 26px; border-radius: 12px; border: 2px solid rgba(0,224,255,0.35);
+  background: rgba(0,224,255,0.08); color: #66e0ff; cursor: pointer;
+  font-family: 'Bangers', cursive; font-size: 1rem; letter-spacing: 1.5px; transition: all 200ms ease;
+}
+.mastery-open-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,224,255,0.3); border-color: #66e0ff; }
+
+/* ─── MASTERY SCREEN ─── */
+#mastery-screen {
+  position: fixed; inset: 0; z-index: 113; display: none; align-items: center; justify-content: center;
+  background: rgba(0,0,0,0.78); backdrop-filter: blur(6px);
+}
+#mastery-screen.active { display: flex; }
+.mastery-box {
+  background: linear-gradient(160deg,#0a1a2e,#0d0d1a); border: 2px solid rgba(0,224,255,0.35);
+  border-radius: 24px; padding: 32px 30px; display: flex; flex-direction: column; align-items: center; gap: 16px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6); max-width: 420px; width: 90vw;
+  animation: rewardPop 0.35s cubic-bezier(.34,1.56,.64,1);
+}
+.mastery-close-x {
+  align-self: flex-end; background: none; border: none; color: var(--color-muted); font-size: 1.3rem; cursor: pointer; margin: -10px -6px -12px 0;
+}
+.mastery-close-x:hover { color: #fff; }
+.mastery-char-icon { font-size: 56px; filter: drop-shadow(0 4px 12px rgba(0,0,0,0.4)); }
+.mastery-char-name { font-family: 'Bangers', cursive; font-size: 1.5rem; color: #fff; }
+.mastery-prestige-tag {
+  font-family: 'Bangers', cursive; font-size: 0.95rem; padding: 4px 16px; border-radius: 20px;
+  border: 2px solid currentColor; letter-spacing: 1px;
+}
+.mastery-level-row { display: flex; align-items: center; gap: 10px; width: 100%; }
+.mastery-level-num { font-family: 'Bangers', cursive; font-size: 1.3rem; color: #66e0ff; min-width: 60px; text-align: center; }
+.mastery-xp-bar-wrap { flex: 1; height: 14px; background: rgba(255,255,255,0.08); border-radius: 8px; overflow: hidden; border: 1px solid rgba(255,255,255,0.12); }
+.mastery-xp-bar { height: 100%; background: linear-gradient(90deg,#00aaff,#00e0ff); border-radius: 8px; transition: width 0.3s ease; }
+.mastery-xp-label { font-size: 0.75rem; color: var(--color-muted); text-align: center; }
+.mastery-prestige-track { display: flex; gap: 10px; margin-top: 4px; }
+.mastery-prestige-pip {
+  width: 54px; height: 54px; border-radius: 14px; border: 2px solid rgba(255,255,255,0.15);
+  display: flex; align-items: center; justify-content: center; font-size: 22px;
+  background: rgba(255,255,255,0.03); transition: all 200ms ease;
+}
+.mastery-prestige-pip.done { border-color: currentColor; background: rgba(255,255,255,0.08); box-shadow: 0 0 14px currentColor; }
+.mastery-prestige-btn {
+  margin-top: 6px; padding: 12px 30px; border-radius: 14px; border: none; cursor: pointer;
+  font-family: 'Bangers', cursive; font-size: 1.15rem; letter-spacing: 1.5px;
+  background: linear-gradient(135deg,#00aaff,#0066cc); color: #fff;
+  box-shadow: 0 4px 20px rgba(0,170,255,0.4); transition: transform 150ms ease;
+}
+.mastery-prestige-btn:hover { transform: scale(1.05); }
+.mastery-prestige-btn:disabled { opacity: 0.35; cursor: not-allowed; box-shadow: none; }
+.mastery-maxed-text { font-size: 0.85rem; color: #ffd700; text-align: center; font-weight: 700; }
 
 /* ─── COINS + SHOP BUTTON ─── */
 .coins-display {
@@ -236,6 +286,69 @@ body { font-family: 'Rajdhani', sans-serif; color: var(--color-text); display: f
   box-shadow: 0 4px 24px rgba(255,150,0,0.4);
 }
 .shop-open-btn:hover { transform: translateY(-3px) scale(1.04); box-shadow: 0 8px 32px rgba(255,150,0,0.7); }
+.pass-open-btn {
+  padding: 16px 32px; border-radius: 12px; border: none;
+  background: linear-gradient(135deg, #ff2288, #6600cc); color: #fff;
+  font-family: 'Bangers', cursive; font-size: 1.5rem; letter-spacing: 2px;
+  cursor: pointer; transition: all 200ms ease;
+  box-shadow: 0 4px 24px rgba(255,20,140,0.4); position: relative; overflow: hidden;
+}
+.pass-open-btn:hover { transform: translateY(-3px) scale(1.04); box-shadow: 0 8px 32px rgba(255,20,140,0.7); }
+.pass-open-btn::after {
+  content: ''; position: absolute; inset: 0; background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.35) 50%, transparent 70%);
+  transform: translateX(-100%); animation: passShine 2.4s ease-in-out infinite;
+}
+@keyframes passShine { 0% { transform: translateX(-100%); } 60%,100% { transform: translateX(100%); } }
+
+.trophy-display {
+  display: flex; align-items: center; gap: 8px; background: rgba(255,150,0,0.12);
+  border: 2px solid rgba(255,150,0,0.4); border-radius: 30px; padding: 8px 20px;
+  font-family: 'Bangers', cursive; font-size: 1.3rem; color: #ffaa33;
+  text-shadow: 0 0 14px #ff8800; margin-bottom: 18px;
+}
+.profile-open-btn {
+  width: 48px; height: 48px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.25);
+  background: rgba(255,255,255,0.08); color: #fff; font-size: 1.3rem; cursor: pointer;
+  transition: all 200ms ease; margin-bottom: 18px;
+}
+.profile-open-btn:hover { border-color: var(--color-p1); transform: scale(1.08); }
+
+/* ─── PROFILE SCREEN ─── */
+#profile-screen {
+  position: fixed; inset: 0; z-index: 112; display: none; flex-direction: column;
+  background: radial-gradient(ellipse at 50% 0%, #1a1a3e 0%, #0d0d1a 70%);
+  overflow-y: auto; -webkit-overflow-scrolling: touch;
+}
+#profile-screen.active { display: flex; }
+.profile-topbar {
+  position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: 16px;
+  padding: 18px 20px; background: rgba(10,10,26,0.92); backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.profile-title { font-family: 'Bangers', cursive; font-size: clamp(1.4rem, 4vw, 2rem); color: var(--color-p1); text-shadow: 0 0 20px #00d4ff88; flex: 1; }
+.profile-close-btn {
+  padding: 8px 18px; border-radius: 24px; border: 2px solid var(--color-border);
+  background: var(--color-surface); color: var(--color-text); cursor: pointer;
+  font-family: 'Rajdhani', sans-serif; font-weight: 600;
+}
+.profile-close-btn:hover { border-color: var(--color-p1); color: var(--color-p1); }
+.profile-body { padding: 30px 20px 60px; display: flex; flex-direction: column; align-items: center; gap: 22px; }
+.profile-avatar-wrap {
+  width: 120px; height: 120px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  background: radial-gradient(circle at 35% 30%, #ffe680, #ff9900 70%); box-shadow: 0 0 0 6px rgba(255,255,255,0.12), 0 10px 30px rgba(0,0,0,0.4);
+  font-size: 52px; position: relative;
+}
+.profile-name-input {
+  background: rgba(255,255,255,0.06); border: 2px solid var(--color-border); border-radius: 10px;
+  color: #fff; font-family: 'Bangers', cursive; font-size: 1.4rem; text-align: center; padding: 8px 16px;
+  max-width: 260px;
+}
+.profile-name-input:focus { outline: none; border-color: var(--color-p1); }
+.profile-rank-badge { display: flex; align-items: center; gap: 8px; background: rgba(255,150,0,0.12); border: 2px solid rgba(255,150,0,0.4); border-radius: 30px; padding: 8px 22px; font-family:'Bangers',cursive; font-size: 1.2rem; color: #ffaa33; }
+.profile-stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; max-width: 460px; width: 100%; }
+.profile-stat-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 16px; text-align: center; }
+.profile-stat-val { font-family: 'Bangers', cursive; font-size: 1.6rem; color: var(--color-p1); }
+.profile-stat-label { font-size: 0.7rem; color: var(--color-muted); letter-spacing: 1.5px; text-transform: uppercase; margin-top: 4px; }
 
 /* ─── SHOP SCREEN ─── */
 #shop-screen {
@@ -273,6 +386,39 @@ body { font-family: 'Rajdhani', sans-serif; color: var(--color-text); display: f
 
 .shop-body { padding: 24px 20px 60px; }
 .shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; max-width: 900px; margin: 0 auto; }
+
+/* ─── BRAWL STARS STYLE: FEATURED OFFER + RARITY ─── */
+.shop-featured-banner {
+  max-width: 900px; margin: 0 auto 24px; border-radius: 20px; padding: 18px 22px;
+  background: linear-gradient(120deg, #ff8800 0%, #ff2288 50%, #aa00ff 100%);
+  display: flex; align-items: center; gap: 18px; flex-wrap: wrap; position: relative; overflow: hidden;
+  box-shadow: 0 8px 30px rgba(255,60,150,0.35);
+}
+.shop-featured-banner::before {
+  content: ''; position: absolute; inset: 0;
+  background: repeating-linear-gradient(45deg, rgba(255,255,255,0.08) 0 10px, transparent 10px 20px);
+}
+.shop-featured-icon { font-size: 52px; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.4)); z-index: 1; animation: featuredBounce 1.6s ease-in-out infinite; }
+@keyframes featuredBounce { 0%,100% { transform: translateY(0) rotate(-4deg); } 50% { transform: translateY(-6px) rotate(4deg); } }
+.shop-featured-info { flex: 1; z-index: 1; min-width: 160px; }
+.shop-featured-label { font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.85); font-weight: 700; }
+.shop-featured-name { font-family: 'Bangers', cursive; font-size: 1.5rem; color: #fff; text-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+.shop-featured-timer { font-size: 0.78rem; color: #fff; background: rgba(0,0,0,0.25); border-radius: 20px; padding: 4px 12px; display: inline-block; margin-top: 4px; font-weight: 700; }
+.shop-featured-price { font-family: 'Bangers', cursive; font-size: 1.3rem; color: #fff; background: rgba(0,0,0,0.3); padding: 10px 24px; border-radius: 14px; z-index: 1; cursor: pointer; transition: transform 150ms ease; border: 2px solid rgba(255,255,255,0.4); }
+.shop-featured-price:hover { transform: scale(1.06); }
+
+.shop-card.rarity-common { border-color: rgba(180,180,190,0.35); }
+.shop-card.rarity-rare { border-color: rgba(60,160,255,0.55); box-shadow: 0 0 16px rgba(60,160,255,0.15); }
+.shop-card.rarity-epic { border-color: rgba(190,60,255,0.6); box-shadow: 0 0 18px rgba(190,60,255,0.2); }
+.shop-card.rarity-legendary { border-color: rgba(255,190,40,0.7); box-shadow: 0 0 22px rgba(255,190,40,0.28); }
+.shop-rarity-tag {
+  font-size: 0.6rem; letter-spacing: 1px; text-transform: uppercase; font-weight: 800; padding: 2px 8px;
+  border-radius: 8px; margin-top: -2px;
+}
+.shop-rarity-tag.rarity-common { background: rgba(180,180,190,0.18); color: #c8c8d0; }
+.shop-rarity-tag.rarity-rare { background: rgba(60,160,255,0.18); color: #6cc0ff; }
+.shop-rarity-tag.rarity-epic { background: rgba(190,60,255,0.18); color: #d590ff; }
+.shop-rarity-tag.rarity-legendary { background: rgba(255,190,40,0.2); color: #ffd75c; }
 .shop-card {
   background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.1); border-radius: 18px;
   padding: 16px 12px; display: flex; flex-direction: column; align-items: center; gap: 8px;
@@ -328,7 +474,138 @@ body { font-family: 'Rajdhani', sans-serif; color: var(--color-text); display: f
 }
 .reward-close-btn:hover { transform: scale(1.05); }
 
-/* HIT FLASH */
+/* ─── DAILY STREAK ─── */
+#daily-streak-overlay {
+  position: fixed; inset: 0; z-index: 210; display: none; align-items: center; justify-content: center;
+  background: rgba(0,0,0,0.8); backdrop-filter: blur(6px);
+}
+#daily-streak-overlay.active { display: flex; }
+.daily-box {
+  background: linear-gradient(160deg,#1a0a2e,#0d0d1a); border: 2px solid rgba(255,200,0,0.4);
+  border-radius: 24px; padding: 32px 28px; display: flex; flex-direction: column; align-items: center; gap: 18px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6); animation: rewardPop 0.4s cubic-bezier(.34,1.56,.64,1);
+  max-width: 560px;
+}
+.daily-title { font-family: 'Bangers', cursive; font-size: 1.8rem; color: #ffdd44; text-shadow: 0 0 20px rgba(255,180,0,0.5); text-align: center; }
+.daily-subtitle { font-size: 0.85rem; color: var(--color-muted); text-align: center; margin-top: -10px; }
+.daily-row { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.daily-day-card {
+  width: 66px; min-height: 84px; border-radius: 12px; border: 2px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.04); display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 4px; padding: 8px 4px; position: relative;
+}
+.daily-day-card.claimed { border-color: rgba(0,255,150,0.4); background: rgba(0,255,150,0.08); opacity: 0.6; }
+.daily-day-card.today { border-color: #ffdd44; box-shadow: 0 0 18px rgba(255,220,0,0.5); animation: passClaimPulse 1.1s ease-in-out infinite; }
+.daily-day-num { font-size: 0.62rem; color: var(--color-muted); letter-spacing: 0.5px; text-transform: uppercase; }
+.daily-day-icon { font-size: 22px; }
+.daily-day-amount { font-size: 0.6rem; color: #ffdd44; font-weight: 700; }
+.daily-claim-btn {
+  padding: 12px 36px; border-radius: 30px; border: none; background: linear-gradient(135deg,#ffdd00,#ff9900);
+  color: #3a1a00; font-family: 'Bangers', cursive; font-size: 1.15rem; cursor: pointer;
+  box-shadow: 0 4px 20px rgba(255,180,0,0.4);
+}
+.daily-claim-btn:hover { transform: scale(1.05); }
+.daily-streak-flame { font-size: 2.2rem; }
+
+/* ─── FIGHT PASS SCREEN (Brawl Stars style) ─── */
+#pass-screen {
+  position: fixed; inset: 0; z-index: 115; display: none; flex-direction: column;
+  background: linear-gradient(180deg, #1a0a30 0%, #0d0d1a 100%);
+  overflow-y: auto; -webkit-overflow-scrolling: touch;
+}
+#pass-screen.active { display: flex; }
+.pass-hero {
+  position: relative; padding: 50px 20px 90px; text-align: center; overflow: hidden;
+  background: linear-gradient(160deg, #ff2288 0%, #aa00e0 55%, #4400aa 100%);
+}
+.pass-hero::before {
+  content: ''; position: absolute; inset: 0;
+  background: repeating-linear-gradient(-45deg, rgba(255,255,255,0.06) 0 14px, transparent 14px 28px);
+}
+.pass-close-btn {
+  position: absolute; top: 16px; right: 16px; z-index: 6;
+  padding: 8px 16px; border-radius: 24px; border: 2px solid rgba(255,255,255,0.35);
+  background: rgba(0,0,0,0.25); color: #fff; cursor: pointer;
+  font-family: 'Rajdhani', sans-serif; font-weight: 700;
+}
+.pass-close-btn:hover { border-color: #fff; }
+.pass-season-label { position: relative; z-index: 1; font-size: 0.85rem; letter-spacing: 3px; text-transform: uppercase; color: rgba(255,255,255,0.85); font-weight: 700; }
+.pass-title {
+  position: relative; z-index: 1; font-family: 'Bangers', cursive; font-size: clamp(2.4rem, 7vw, 4rem);
+  color: #fff; text-shadow: 0 4px 18px rgba(0,0,0,0.4); letter-spacing: 3px; margin: 2px 0 18px;
+}
+.pass-tier-badge {
+  position: relative; z-index: 1; width: 116px; height: 116px; margin: 0 auto 10px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #ffe680, #ffaa00 60%, #cc6600 100%);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  box-shadow: 0 0 0 6px rgba(255,255,255,0.25), 0 10px 30px rgba(0,0,0,0.35);
+  animation: passBadgeFloat 2.6s ease-in-out infinite;
+}
+@keyframes passBadgeFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+.pass-tier-badge .pass-tier-current-num { font-family: 'Bangers', cursive; font-size: 2.4rem; color: #3a1a00; line-height: 1; }
+.pass-tier-badge .pass-tier-current-label { font-size: 0.6rem; letter-spacing: 1px; text-transform: uppercase; color: #5a2a00; font-weight: 800; }
+.pass-xp-bar-wrap {
+  position: relative; z-index: 1; width: min(360px, 84vw); height: 18px; margin: 0 auto;
+  background: rgba(0,0,0,0.35); border-radius: 10px; overflow: hidden; border: 2px solid rgba(255,255,255,0.3);
+}
+.pass-xp-bar { height: 100%; background: linear-gradient(90deg,#ffdd44,#ff9900); border-radius: 10px; transition: width 0.4s ease; box-shadow: 0 0 12px rgba(255,180,0,0.6); }
+.pass-tier-label {
+  position: relative; z-index: 1; margin-top: 8px; font-size: 0.82rem; color: rgba(255,255,255,0.9); font-weight: 700; letter-spacing: 0.5px;
+}
+.pass-upgrade-banner {
+  position: relative; z-index: 1; margin: 20px auto -46px; max-width: 480px; padding: 14px 20px; border-radius: 18px;
+  background: rgba(10,5,20,0.85); backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: space-between;
+  gap: 14px; flex-wrap: wrap; box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+}
+.pass-upgrade-banner.owned { border-color: rgba(0,255,150,0.5); background: rgba(0,40,25,0.85); }
+.pass-upgrade-text { font-size: 0.88rem; text-align: left; }
+.pass-upgrade-text b { color: #ff66bb; }
+.pass-upgrade-banner.owned .pass-upgrade-text b { color: #44ffaa; }
+.pass-upgrade-btn {
+  padding: 10px 22px; border-radius: 10px; border: none; cursor: pointer;
+  font-family: 'Bangers', cursive; font-size: 1.05rem; letter-spacing: 1px;
+  background: linear-gradient(135deg,#ffdd00,#ff9900); color: #3a1a00;
+  box-shadow: 0 4px 16px rgba(255,180,0,0.4); transition: transform 150ms ease; white-space: nowrap;
+}
+.pass-upgrade-btn:hover { transform: scale(1.05); }
+
+.pass-track-scroll { padding: 70px 20px 60px; overflow-x: auto; }
+.pass-track-title { text-align: center; font-size: 0.78rem; letter-spacing: 3px; text-transform: uppercase; color: var(--color-muted); margin: 26px 0 14px; }
+.pass-track-title.premium { color: #ffcc44; }
+.pass-track { display: flex; gap: 0; max-width: 100%; padding-bottom: 10px; position: relative; }
+.pass-tier-col { display: flex; flex-direction: column; align-items: center; min-width: 104px; position: relative; }
+.pass-track-line {
+  position: absolute; top: 46px; left: 0; right: 0; height: 6px; background: rgba(255,255,255,0.08); border-radius: 3px; z-index: 0;
+}
+.pass-track-line.filled { background: linear-gradient(90deg,#ffdd44,#ff9900); }
+.pass-tier-num {
+  font-family: 'Bangers', cursive; font-size: 0.78rem; color: rgba(255,255,255,0.35); text-align: center; margin-bottom: 8px; z-index: 1;
+}
+.pass-tier-num.reached { color: #ffdd44; }
+.pass-reward-card {
+  width: 88px; min-height: 100px; border-radius: 16px; border: 3px solid rgba(255,255,255,0.12);
+  background: linear-gradient(160deg, #22203a, #14121f); display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 4px; padding: 10px 4px; position: relative; transition: all 200ms ease; z-index: 1;
+}
+.pass-reward-card.locked { opacity: 0.5; }
+.pass-reward-card.unlocked { border-color: rgba(0,255,150,0.5); background: linear-gradient(160deg,#0f3325,#0a1f18); }
+.pass-reward-card.claimable {
+  border-color: #ffdd44; box-shadow: 0 0 20px rgba(255,220,0,0.5);
+  background: linear-gradient(160deg,#3a2a00,#241a00); animation: passClaimPulse 1.1s ease-in-out infinite;
+}
+@keyframes passClaimPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.07); } }
+.pass-reward-card.locked-premium { border-style: dashed; border-color: rgba(255,204,68,0.4); }
+.pass-reward-icon { font-size: 32px; filter: drop-shadow(0 3px 8px rgba(0,0,0,0.5)); }
+.pass-reward-name { font-size: 0.62rem; text-align: center; color: rgba(255,255,255,0.7); line-height: 1.15; }
+.pass-reward-lock { position: absolute; top: 6px; right: 6px; font-size: 12px; opacity: 0.75; }
+.pass-claim-btn {
+  width: calc(100% - 6px); padding: 5px; border-radius: 8px; border: none; cursor: pointer; margin-top: 2px;
+  font-size: 0.62rem; font-weight: 800; background: linear-gradient(135deg,#ffdd00,#ffaa00); color: #3a1a00;
+  letter-spacing: 0.5px;
+}
+
+/* HIT FLASH *//* HIT FLASH */
 #hitFlash { position: fixed; inset: 0; z-index: 40; pointer-events: none; background: #fff; opacity: 0; }
 </style>
 </head>
@@ -339,7 +616,11 @@ body { font-family: 'Rajdhani', sans-serif; color: var(--color-text); display: f
   <div class="menu-scroll">
     <h1>🥋 TAEKWONDO FIGHTER</h1>
     <p class="subtitle">Fast Paced 2D Platform Fighter</p>
-    <div class="coins-display" id="coinsDisplay">🪙 <span id="coinsVal">0</span></div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center;">
+      <div class="coins-display" id="coinsDisplay">🪙 <span id="coinsVal">0</span></div>
+      <div class="trophy-display" id="trophyDisplay">🏆 <span id="trophyVal">0</span></div>
+      <button class="profile-open-btn" id="profileOpenBtn">👤</button>
+    </div>
 
     <div class="menu-tabs">
       <button class="menu-tab active" data-menutab="fighter">🥋 Fighter</button>
@@ -351,6 +632,7 @@ body { font-family: 'Rajdhani', sans-serif; color: var(--color-text); display: f
     <div class="menu-panel active" data-panel="fighter">
       <div class="char-select-row" id="charSelectRow"></div>
       <div class="char-desc" id="charDescText"></div>
+      <button class="mastery-open-btn" id="masteryOpenBtn">🎖️ MASTERY</button>
     </div>
 
     <div class="menu-panel" data-panel="match">
@@ -389,6 +671,7 @@ body { font-family: 'Rajdhani', sans-serif; color: var(--color-text); display: f
     <div class="menu-btn-row">
       <button class="start-btn" id="startBtn">FIGHT!</button>
       <button class="shop-open-btn" id="shopOpenBtn">🛒 SHOP</button>
+      <button class="pass-open-btn" id="passOpenBtn">🎫 PASS</button>
     </div>
   </div>
 </div>
@@ -406,7 +689,71 @@ body { font-family: 'Rajdhani', sans-serif; color: var(--color-text); display: f
     <button class="shop-tab" data-tab="powerups">⚡ Power-ups</button>
     <button class="shop-tab" data-tab="boxes">📦 Boxes</button>
   </div>
-  <div class="shop-body" id="shopBody"></div>
+  <div class="shop-body"><div class="shop-featured-banner" id="shopFeaturedBanner"></div><div id="shopBody"></div></div>
+</div>
+
+<!-- MASTERY -->
+<div id="mastery-screen">
+  <div class="mastery-box">
+    <button class="mastery-close-x" id="masteryCloseBtn">✕</button>
+    <div class="mastery-char-icon" id="masteryCharIcon">🥋</div>
+    <div class="mastery-char-name" id="masteryCharName">Striker</div>
+    <div class="mastery-prestige-tag" id="masteryPrestigeTag" style="display:none;"></div>
+    <div class="mastery-level-row">
+      <div class="mastery-level-num" id="masteryLevelNum">Lv 1</div>
+      <div class="mastery-xp-bar-wrap"><div class="mastery-xp-bar" id="masteryXpBar" style="width:0%"></div></div>
+    </div>
+    <div class="mastery-xp-label" id="masteryXpLabel">0 / 120 XP</div>
+    <div class="mastery-prestige-track" id="masteryPrestigeTrack"></div>
+    <button class="mastery-prestige-btn" id="masteryPrestigeBtn" disabled>Reach Lv 10 to Prestige</button>
+  </div>
+</div>
+
+<!-- PROFILE -->
+<div id="profile-screen">
+  <div class="profile-topbar">
+    <h1 class="profile-title">👤 PROFILE</h1>
+    <button class="profile-close-btn" id="profileCloseBtn">✕ Close</button>
+  </div>
+  <div class="profile-body">
+    <div class="profile-avatar-wrap" id="profileAvatar">🥋</div>
+    <input class="profile-name-input" id="profileNameInput" maxlength="14" value="Player">
+    <div class="profile-rank-badge" id="profileRankBadge">🏆 0 Trophies</div>
+    <div class="profile-stats-grid" id="profileStatsGrid"></div>
+  </div>
+</div>
+
+<!-- FIGHT PASS -->
+<div id="pass-screen">
+  <div class="pass-hero">
+    <button class="pass-close-btn" id="passCloseBtn">✕ Close</button>
+    <div class="pass-season-label">SEASON 1</div>
+    <h1 class="pass-title">🎫 FIGHT PASS</h1>
+    <div class="pass-tier-badge">
+      <div class="pass-tier-current-num" id="passTierCurrentNum">0</div>
+      <div class="pass-tier-current-label">TIER</div>
+    </div>
+    <div class="pass-xp-bar-wrap"><div class="pass-xp-bar" id="passXpBar" style="width:0%"></div></div>
+    <div class="pass-tier-label" id="passTierLabel">0 / 4000 XP</div>
+  </div>
+  <div class="pass-upgrade-banner" id="passUpgradeBanner"></div>
+  <div class="pass-track-scroll">
+    <div class="pass-track-title">FREE TRACK</div>
+    <div class="pass-track" id="passTrackFree"></div>
+    <div class="pass-track-title premium">⭐ PREMIUM TRACK</div>
+    <div class="pass-track" id="passTrackPremium"></div>
+  </div>
+</div>
+
+<!-- DAILY STREAK -->
+<div id="daily-streak-overlay">
+  <div class="daily-box">
+    <div class="daily-streak-flame">🔥</div>
+    <div class="daily-title" id="dailyStreakTitle">Day 1 Streak!</div>
+    <div class="daily-subtitle">Come back every day for better rewards!</div>
+    <div class="daily-row" id="dailyStreakRow"></div>
+    <button class="daily-claim-btn" id="dailyClaimBtn">Claim Reward</button>
+  </div>
 </div>
 
 <!-- REWARD POPUP -->
@@ -457,7 +804,7 @@ body { font-family: 'Rajdhani', sans-serif; color: var(--color-text); display: f
 </div>
 
 <!-- DEBUG -->
-<div id="debug">FPS: --</div>
+<div id="debug" style="display:none;">FPS: --</div>
 
 <script>
 // ─── CONFIG ─────────────────────────────────────────────────────────────────
@@ -569,28 +916,52 @@ function PLATFORMS_get() { return getStage().platforms; }
 // ─── CHARACTER ROSTER ────────────────────────────────────────────────────────
 const CHARACTERS = [
   {
-    id: 'striker', name: 'Striker', icon: '🥋', color: '#00d4ff',
+    id: 'striker', name: 'Striker', icon: '🥋', color: '#3f8fa8',
     speedMult: 1.0, jumpMult: 1.0, weightMult: 1.0, dmgMult: 1.0,
     special: 'flyingkick', specialName: 'Flying Kick',
     desc: 'Balanced all-rounder. Flying Kick launches him forward with a long-range kick.',
   },
   {
-    id: 'brawler', name: 'Brawler', icon: '👊', color: '#ff4466',
+    id: 'brawler', name: 'Brawler', icon: '👊', color: '#a8474f',
     speedMult: 0.88, jumpMult: 0.9, weightMult: 1.35, dmgMult: 1.25,
     special: 'dashpunch', specialName: 'Dash Punch',
     desc: 'Slow but hits like a truck. Dash Punch is a multi-hit rushing combo.',
   },
   {
-    id: 'phantom', name: 'Phantom', icon: '👤', color: '#aa44ff',
+    id: 'phantom', name: 'Phantom', icon: '👤', color: '#6f5a94',
     speedMult: 1.22, jumpMult: 1.15, weightMult: 0.72, dmgMult: 0.82,
     special: 'counter', specialName: 'Phantom Counter',
     desc: 'Fast and fragile. Counter stance reflects the next hit with bonus damage.',
   },
   {
-    id: 'monk', name: 'Monk', icon: '🧘', color: '#ffaa00',
+    id: 'monk', name: 'Monk', icon: '🧘', color: '#b8823c',
     speedMult: 0.95, jumpMult: 1.0, weightMult: 1.0, dmgMult: 0.95,
     special: 'fireball', specialName: 'Chi Blast',
     desc: 'Zen fighter with ranged pressure. Chi Blast fires a projectile forward.',
+  },
+  {
+    id: 'ronin', name: 'Ronin', icon: '⚔️', color: '#5a7a5f',
+    speedMult: 1.08, jumpMult: 1.05, weightMult: 0.92, dmgMult: 1.1,
+    special: 'flyingkick', specialName: 'Blade Rush',
+    desc: 'Sharp and precise duelist. Blade Rush is a fast forward-lunging strike.',
+  },
+  {
+    id: 'juggernaut', name: 'Juggernaut', icon: '🛡️', color: '#6a5a3a',
+    speedMult: 0.72, jumpMult: 0.78, weightMult: 1.6, dmgMult: 1.4,
+    special: 'dashpunch', specialName: 'Ground Pound',
+    desc: 'Massive and slow, but nearly unstoppable. Ground Pound crushes anyone nearby.',
+  },
+  {
+    id: 'viper', name: 'Viper', icon: '🐍', color: '#4a7a6a',
+    speedMult: 1.3, jumpMult: 1.2, weightMult: 0.68, dmgMult: 0.78,
+    special: 'counter', specialName: 'Venom Snap',
+    desc: 'Extremely fast and slippery. Venom Snap punishes attackers who overcommit.',
+  },
+  {
+    id: 'sage', name: 'Sage', icon: '🔮', color: '#7a5a8a',
+    speedMult: 0.9, jumpMult: 0.95, weightMult: 0.95, dmgMult: 1.0,
+    special: 'fireball', specialName: 'Arcane Bolt',
+    desc: 'Mystic ranged fighter. Arcane Bolt fires a piercing energy projectile.',
   },
 ];
 let selectedCharIdx = 0;
@@ -606,6 +977,7 @@ document.addEventListener('keydown', e => {
   keys[e.code] = true;
   if (e.code === 'KeyP') togglePause();
   if (e.code === 'Escape') { if (gameState==='playing'||gameState==='paused') goToMenu(); }
+  if (e.code === 'F3') { debugVisible = !debugVisible; document.getElementById('debug').style.display = debugVisible ? 'block' : 'none'; }
 });
 document.addEventListener('keyup', e => { keys[e.code] = false; });
 function clearJustPressed() { Object.keys(justPressed).forEach(k => delete justPressed[k]); }
@@ -635,7 +1007,7 @@ function sw(w) { return w * scaleX(); }
 function sh(h) { return h * scaleY(); }
 
 // ─── FIGHTER CLASS ────────────────────────────────────────────────────────────
-const FIGHTER_COLORS = ['#00d4ff','#ff4466','#ff9900','#aa44ff'];
+const FIGHTER_COLORS = ['#3f8fa8','#a8474f','#b8823c','#6f5a94'];
 const FIGHTER_NAMES  = ['Player','CPU-1','CPU-2','CPU-3'];
 
 class Fighter {
@@ -647,7 +1019,7 @@ class Fighter {
     this.char = charData || CHARACTERS[0];
     this.color = FIGHTER_COLORS[id];
     this.name = isPlayer ? 'YOU' : FIGHTER_NAMES[id];
-    this.w = 58 * (0.9 + this.char.weightMult*0.1); this.h = 98 * (0.9 + this.char.weightMult*0.1);
+    this.w = 50 * (0.9 + this.char.weightMult*0.1); this.h = 116 * (0.9 + this.char.weightMult*0.1);
     this.counterActive = false;
     this.counterTimer = 0;
     this.dashPunchTimer = 0;
@@ -776,11 +1148,11 @@ class Fighter {
     this.vy = -kb * 680;
     this.stunTimer = 0.18 + this.damage * 0.0008;
     this.hitFlash = 0.25;
-    camera.shake = 10 + dmgRoll * 0.55;
+    camera.shake = 6 + dmgRoll * 0.35;
     hitStop = attackType === 'special' ? 0.08 : 0.045;
     const trailColors = getTrailColors(attacker);
-    spawnParticles(this.cx, this.cy, trailColors, 22 + Math.floor(dmgRoll * 1.2));
-    spawnParticles(this.cx, this.cy, '#ffffff', 8);
+    spawnParticles(this.cx, this.cy, trailColors, 12 + Math.floor(dmgRoll * 0.7));
+    spawnParticles(this.cx, this.cy, '#ffffff', 4);
     flashScreen(attackType === 'special' ? 0.18 : 0.08);
     registerComboHit(attacker, this, dmgRoll, attackType);
     playSFX(attackType === 'special' ? 200 : 350, 0.12, 'square');
@@ -1068,14 +1440,14 @@ class Fighter {
     // hip block (pelvis anchor)
     const hipY = y + h*0.62;
     const shoulderY = y + h*0.30;
-    const hipW = w*0.34, shoulderW = w*0.42;
+    const hipW = w*0.36, shoulderW = w*0.40;
 
     // torso as a shaded quad (shoulders wider than hips) instead of a flat rectangle
     const grad = ctx.createLinearGradient(cx - shoulderW/2, shoulderY, cx + shoulderW/2, shoulderY);
     grad.addColorStop(0, shadeColor(this.color, -35));
     grad.addColorStop(0.5, this.color);
     grad.addColorStop(1, shadeColor(this.color, 30));
-    ctx.shadowColor = this.color; ctx.shadowBlur = 14*s;
+    ctx.shadowColor = this.color; ctx.shadowBlur = 4*s;
     ctx.fillStyle = grad;
     ctx.beginPath();
     ctx.moveTo(cx - shoulderW/2, shoulderY);
@@ -1086,7 +1458,7 @@ class Fighter {
     ctx.fill();
     ctx.shadowBlur = 0;
     // torso highlight streak (adds dimensionality, not flat)
-    ctx.fillStyle = 'rgba(255,255,255,0.14)';
+    ctx.fillStyle = 'rgba(255,255,255,0.06)';
     ctx.beginPath();
     ctx.moveTo(cx - shoulderW*0.32, shoulderY + h*0.02);
     ctx.lineTo(cx - shoulderW*0.12, shoulderY + h*0.02);
@@ -1097,7 +1469,7 @@ class Fighter {
 
     // belt (dobok belt with hanging tails)
     const beltProgress = Math.min(this.damage / 200, 1);
-    const beltColor = `hsl(${beltProgress * 28}, 85%, 58%)`;
+    const beltColor = `hsl(${20 - beltProgress * 10}, 35%, ${32 - beltProgress*8}%)`;
     const beltY = hipY - h*0.06;
     ctx.fillStyle = beltColor;
     ctx.fillRect(cx - hipW/2 - w*0.02, beltY, hipW + w*0.04, h*0.075);
@@ -1110,44 +1482,42 @@ class Fighter {
 
     // head with shading + headband instead of a flat circle
     const headY = shoulderY - h*0.13;
-    const headR = w*0.235;
-    const headGrad = ctx.createRadialGradient(cx - headR*0.3, headY - headR*0.3, headR*0.2, cx, headY, headR);
-    headGrad.addColorStop(0, '#ffe0b8');
-    headGrad.addColorStop(1, '#d99a5f');
+    const headR = w*0.205;
+    const headGrad = ctx.createRadialGradient(cx - headR*0.3, headY - headR*0.35, headR*0.2, cx, headY, headR*1.1);
+    headGrad.addColorStop(0, '#e0b48a');
+    headGrad.addColorStop(1, '#b98a5e');
     ctx.fillStyle = headGrad;
     ctx.beginPath();
-    ctx.ellipse(cx, headY, headR, headR*1.02, 0, 0, Math.PI*2);
+    ctx.ellipse(cx, headY, headR*1.06, headR*1.08, 0, 0, Math.PI*2);
     ctx.fill();
 
-    // headband
-    ctx.strokeStyle = this.color;
-    ctx.lineWidth = 4.5 * s;
+    // headband (muted, less saturated than fighter color)
+    ctx.strokeStyle = shadeColor(this.color, -15) + 'cc';
+    ctx.lineWidth = 3.5 * s;
     ctx.beginPath();
-    ctx.moveTo(cx - headR*1.05, headY - headR*0.15);
-    ctx.lineTo(cx + headR*1.05, headY - headR*0.15);
+    ctx.moveTo(cx - headR*1.05, headY - headR*0.22);
+    ctx.lineTo(cx + headR*1.05, headY - headR*0.22);
     ctx.stroke();
     const tailDir = -dir;
     ctx.beginPath();
-    ctx.moveTo(cx + tailDir*headR*1.0, headY - headR*0.15);
+    ctx.moveTo(cx + tailDir*headR*1.0, headY - headR*0.22);
     ctx.quadraticCurveTo(
       cx + tailDir*headR*1.6, headY + Math.sin(this.animTimer*6)*4*s,
       cx + tailDir*headR*2.1, headY - headR*0.3 + Math.sin(this.animTimer*6+1)*5*s
     );
     ctx.stroke();
 
-    // eyes + brow for a face that reads as a character, not a sticker
-    ctx.fillStyle = '#1a1410';
+    // friendly simplified face: soft round eyes + gentle smile, no harsh angled brows
+    ctx.fillStyle = 'rgba(40,28,18,0.75)';
     ctx.beginPath();
-    ctx.ellipse(cx + dir*headR*0.28, headY + headR*0.06, 2.6*s, 3.4*s, 0, 0, Math.PI*2);
-    ctx.ellipse(cx + dir*headR*0.62, headY + headR*0.06, 2.6*s, 3.4*s, 0, 0, Math.PI*2);
+    ctx.ellipse(cx + dir*headR*0.3, headY + headR*0.02, 2.0*s, 2.3*s, 0, 0, Math.PI*2);
+    ctx.ellipse(cx + dir*headR*0.62, headY + headR*0.02, 2.0*s, 2.3*s, 0, 0, Math.PI*2);
     ctx.fill();
-    ctx.strokeStyle = '#1a1410';
-    ctx.lineWidth = 2*s;
+    ctx.strokeStyle = 'rgba(60,40,25,0.35)';
+    ctx.lineWidth = 1.4*s;
+    ctx.lineCap = 'round';
     ctx.beginPath();
-    ctx.moveTo(cx + dir*headR*0.12, headY - headR*0.16);
-    ctx.lineTo(cx + dir*headR*0.42, headY - headR*0.22);
-    ctx.moveTo(cx + dir*headR*0.48, headY - headR*0.16);
-    ctx.lineTo(cx + dir*headR*0.78, headY - headR*0.24);
+    ctx.arc(cx + dir*headR*0.48, headY + headR*0.3, headR*0.18, 0.2*Math.PI, 0.8*Math.PI);
     ctx.stroke();
 
     // ── ARMS: two-segment (shoulder->elbow->fist) for real limb shape instead of straight sticks ──
@@ -1398,10 +1768,10 @@ function drawStage() {
   ctx.fillRect(0, 0, canvas._logicalW, canvas._logicalH);
 
   ctx.fillStyle = 'rgba(255,255,255,0.6)';
-  for (let i = 0; i < 120; i++) {
+  for (let i = 0; i < 60; i++) {
     const sx2 = (i * 97.3) % canvas._logicalW;
     const sy2 = (i * 53.7) % (canvas._logicalH * 0.7);
-    ctx.globalAlpha = 0.35 + (i % 5) * 0.1; ctx.fillRect(sx2, sy2, s * (1 + (i % 3)), s * (1 + (i % 3))); ctx.globalAlpha = 1;
+    ctx.globalAlpha = 0.2 + (i % 5) * 0.06; ctx.fillRect(sx2, sy2, s * (1 + (i % 3)), s * (1 + (i % 3))); ctx.globalAlpha = 1;
   }
 
   // ── HAZARDS (unique per stage, drawn behind platforms) ──
@@ -1570,6 +1940,10 @@ function registerComboHit(attacker, defender, dmgRoll, attackType) {
   attacker.comboHits = (attacker.comboHits || 0) + 1;
   attacker.bestCombo = Math.max(attacker.bestCombo||0, attacker.comboHits);
   attacker.comboResetTimer = 1.1;
+  if (attacker.isPlayer && attacker.comboHits >= 3) {
+    addPassXp(passXpForCombo(attacker.comboHits));
+    addMasteryXp(attacker.char.id, masteryXpForCombo(attacker.comboHits));
+  }
 
   // damage number popup at the hit location
   spawnPopup(defender.cx + (Math.random()*20-10), defender.cy - 20, '-' + Math.round(dmgRoll), {
@@ -1584,14 +1958,14 @@ function registerComboHit(attacker, defender, dmgRoll, attackType) {
     spawnPopup(attacker.cx, attacker.cy - 90, label, {
       color: `hsl(${hue},95%,60%)`, size, vy: -60, life: 1.0, scale: 1.15, startScale: 0.3,
     });
-    camera.shake = Math.max(camera.shake, Math.min(18, 4 + combo * 1.5));
+    camera.shake = Math.max(camera.shake, Math.min(10, 2 + combo * 0.8));
   }
   if (dmgRoll > 18 || attackType === 'special') {
     const callout = HIT_CALLOUTS[Math.min(HIT_CALLOUTS.length-1, Math.floor(dmgRoll/8))];
     spawnPopup(defender.cx, defender.cy - 60, callout, {
       color: '#ff3355', size: 30, vy: -40, life: 0.75, scale: 1.2, startScale: 0.5,
     });
-    zoomPunch(0.06);
+    zoomPunch(0.035);
   }
 }
 
@@ -1714,24 +2088,160 @@ let equipped = { skin: 'default', trail: 'none' };
 let boxCooldowns = {};
 const FREE_BOX_CD = 60 * 1000;
 
+// ─── FIGHT PASS ──────────────────────────────────────────────────────────────
+const PASS_MAX_TIER = 40;
+const XP_PER_TIER = 100;
+let passXp = 0;
+let passTier = 0;
+let passPremiumOwned = false;
+let passClaimedFree = [];
+let passClaimedPremium = [];
+
+// ─── DAILY STREAK ────────────────────────────────────────────────────────────
+let dailyStreak = 0;
+let lastLoginDate = null;
+let dailyClaimedToday = false;
+
+// ─── TROPHIES & PROFILE ──────────────────────────────────────────────────────
+let trophies = 0;
+let highestTrophies = 0;
+let matchesPlayed = 0;
+let matchesWon = 0;
+let bestComboEver = 0;
+let playerUsername = 'Player';
+
+// ─── CHARACTER MASTERY / PRESTIGE ────────────────────────────────────────────
+let mastery = {}; // { charId: { xp: 0, level: 1, prestige: 0 } }
+const MASTERY_MAX_LEVEL = 10;
+const MASTERY_XP_PER_LEVEL = 120;
+const PRESTIGE_NAMES = ['', 'Prestige I', 'Prestige II', 'Prestige III'];
+const PRESTIGE_COLORS = ['', '#c0c0c0', '#ffd700', '#00e0ff'];
+
+function getMastery(charId) {
+  if (!mastery[charId]) mastery[charId] = { xp: 0, level: 1, prestige: 0 };
+  return mastery[charId];
+}
+function masteryXpForWin() { return 25; }
+function masteryXpForLoss() { return 10; }
+function masteryXpForCombo(hits) { return Math.min(15, hits); }
+
+function addMasteryXp(charId, amount) {
+  const m = getMastery(charId);
+  if (m.level >= MASTERY_MAX_LEVEL && m.prestige >= 3) return;
+  m.xp += amount;
+  while (m.xp >= MASTERY_XP_PER_LEVEL && m.level < MASTERY_MAX_LEVEL) {
+    m.xp -= MASTERY_XP_PER_LEVEL;
+    m.level++;
+    showAnnouncer(getCharById(charId).name.toUpperCase() + ' MASTERY LV ' + m.level + '!', '#00e0ff');
+  }
+  if (m.level >= MASTERY_MAX_LEVEL) m.xp = Math.min(m.xp, MASTERY_XP_PER_LEVEL);
+  saveShop();
+}
+function canPrestige(charId) {
+  const m = getMastery(charId);
+  return m.level >= MASTERY_MAX_LEVEL && m.prestige < 3;
+}
+function doPrestige(charId) {
+  const m = getMastery(charId);
+  if (!canPrestige(charId)) return;
+  m.prestige++;
+  m.level = 1;
+  m.xp = 0;
+  saveShop();
+  showAnnouncer(getCharById(charId).name.toUpperCase() + ' — ' + PRESTIGE_NAMES[m.prestige].toUpperCase() + '!', PRESTIGE_COLORS[m.prestige]);
+}
+const TROPHY_MILESTONES = [0, 10, 25, 50, 100, 200, 350, 500, 750, 1000, 1500, 2000];
+function getTrophyRank(t) {
+  for (let i = TROPHY_MILESTONES.length - 1; i >= 0; i--) {
+    if (t >= TROPHY_MILESTONES[i]) return i;
+  }
+  return 0;
+}
+function trophiesForWin() { return 15 + Math.floor(Math.random()*10); }
+function trophiesForLoss() { return -(8 + Math.floor(Math.random()*6)); }
+const DAILY_REWARDS = [
+  { day:1, type:'coins', amount:50,  icon:'🪙' },
+  { day:2, type:'coins', amount:75,  icon:'🪙' },
+  { day:3, type:'xp',    amount:30,  icon:'⭐' },
+  { day:4, type:'coins', amount:100, icon:'🪙' },
+  { day:5, type:'xp',    amount:50,  icon:'⭐' },
+  { day:6, type:'coins', amount:150, icon:'🪙' },
+  { day:7, type:'box',   amount:1,   icon:'📦' },
+];
+function getDailyReward(streakDay) {
+  const idx = ((streakDay - 1) % 7);
+  return DAILY_REWARDS[idx];
+}
+function checkDailyLogin() {
+  const today = new Date().toDateString();
+  if (lastLoginDate === today) { dailyClaimedToday = true; return; }
+  dailyClaimedToday = false;
+  if (lastLoginDate) {
+    const prev = new Date(lastLoginDate);
+    const diffDays = Math.round((new Date(today) - prev) / 86400000);
+    if (diffDays === 1) { /* streak continues, wait for claim */ }
+    else if (diffDays > 1) { dailyStreak = 0; }
+  }
+}
+
+function passXpForWin() { return 40; }
+function passXpForLoss() { return 15; }
+function passXpForCombo(hits) { return Math.min(20, hits * 2); }
+
+function addPassXp(amount) {
+  passXp += amount;
+  while (passXp >= XP_PER_TIER && passTier < PASS_MAX_TIER) {
+    passXp -= XP_PER_TIER;
+    passTier++;
+    showAnnouncer('PASS TIER ' + passTier + '!', '#ff2288');
+  }
+  if (passTier >= PASS_MAX_TIER) passXp = 0;
+  savePassData();
+  updatePassUI();
+}
+
+const PASS_FREE_REWARDS = [];
+const PASS_PREMIUM_REWARDS = [];
+(function buildPassRewards() {
+  for (let t = 1; t <= PASS_MAX_TIER; t++) {
+    if (t % 5 === 0) {
+      PASS_FREE_REWARDS.push({ tier: t, type: 'coins', amount: 150 + t*10, icon: '🪙', name: (150+t*10)+' Coins' });
+    } else {
+      PASS_FREE_REWARDS.push({ tier: t, type: 'coins', amount: 40 + t*3, icon: '🪙', name: (40+t*3)+' Coins' });
+    }
+    let prem;
+    if (t % 10 === 0) {
+      const skinNames = ['Crimson Blaze','Void Walker','Golden Dragon','Neon Ghost'];
+      prem = { tier: t, type: 'skin', id: 'pass_skin_'+t, icon: '🥋', name: skinNames[(t/10-1)%skinNames.length] + ' Skin' };
+    } else if (t % 5 === 0) {
+      const trailNames = ['Comet Trail','Plasma Trail','Aurora Trail','Inferno Trail','Frost Trail','Star Trail','Rainbow Trail'];
+      prem = { tier: t, type: 'trail', id: 'pass_trail_'+t, icon: '✨', name: trailNames[(t/5-1)%trailNames.length] };
+    } else {
+      prem = { tier: t, type: 'coins', amount: 60 + t*8, icon: '🪙', name: (60+t*8)+' Coins' };
+    }
+    PASS_PREMIUM_REWARDS.push(prem);
+  }
+})();
+
 const SKINS = [
-  { id:'default',  name:'Classic',   price:0,    color:'#00d4ff', desc:'The original look' },
-  { id:'crimson',  name:'Crimson',   price:150,  color:'#ff2244', desc:'Bold red fighter' },
-  { id:'emerald',  name:'Emerald',   price:150,  color:'#22ff77', desc:'Sharp green style' },
-  { id:'violet',   name:'Violet',    price:200,  color:'#aa44ff', desc:'Deep purple aura' },
-  { id:'gold',     name:'Golden',    price:400,  color:'#ffd700', desc:'Champion gold' },
-  { id:'shadow',   name:'Shadow',    price:350,  color:'#3a3a4a', desc:'Stealthy dark tone' },
-  { id:'inferno',  name:'Inferno',   price:500,  color:'#ff6600', desc:'Blazing orange' },
-  { id:'frost',    name:'Frost',     price:500,  color:'#88ddff', desc:'Icy cool tone' },
+  { id:'default',  name:'Classic',   price:0,    color:'#00d4ff', desc:'The original look', rarity:'common' },
+  { id:'crimson',  name:'Crimson',   price:150,  color:'#ff2244', desc:'Bold red fighter', rarity:'common' },
+  { id:'emerald',  name:'Emerald',   price:150,  color:'#22ff77', desc:'Sharp green style', rarity:'common' },
+  { id:'violet',   name:'Violet',    price:200,  color:'#aa44ff', desc:'Deep purple aura', rarity:'rare' },
+  { id:'gold',     name:'Golden',    price:400,  color:'#ffd700', desc:'Champion gold', rarity:'epic' },
+  { id:'shadow',   name:'Shadow',    price:350,  color:'#3a3a4a', desc:'Stealthy dark tone', rarity:'rare' },
+  { id:'inferno',  name:'Inferno',   price:500,  color:'#ff6600', desc:'Blazing orange', rarity:'epic' },
+  { id:'frost',    name:'Frost',     price:500,  color:'#88ddff', desc:'Icy cool tone', rarity:'epic' },
+  { id:'mythic_phoenix', name:'Phoenix', price:900, color:'#ff3388', desc:'Rare mythic flame aura', rarity:'legendary' },
 ];
 
 const TRAILS = [
-  { id:'none',    name:'None',      price:0,   grad:'linear-gradient(90deg,#333,#555)' },
-  { id:'spark',   name:'Spark',     price:120, grad:'linear-gradient(90deg,#ffee00,#ff8800)' },
-  { id:'ember',   name:'Ember',     price:180, grad:'linear-gradient(90deg,#ff3300,#ffaa00)' },
-  { id:'aqua',    name:'Aqua',      price:180, grad:'linear-gradient(90deg,#00ccff,#00ffcc)' },
-  { id:'rainbow', name:'Rainbow',   price:450, grad:'linear-gradient(90deg,#f00,#ff8800,#0f0,#00f,#ee82ee)' },
-  { id:'void',    name:'Void',      price:400, grad:'linear-gradient(90deg,#1a0030,#6600aa)' },
+  { id:'none',    name:'None',      price:0,   grad:'linear-gradient(90deg,#333,#555)', rarity:'common' },
+  { id:'spark',   name:'Spark',     price:120, grad:'linear-gradient(90deg,#ffee00,#ff8800)', rarity:'common' },
+  { id:'ember',   name:'Ember',     price:180, grad:'linear-gradient(90deg,#ff3300,#ffaa00)', rarity:'rare' },
+  { id:'aqua',    name:'Aqua',      price:180, grad:'linear-gradient(90deg,#00ccff,#00ffcc)', rarity:'rare' },
+  { id:'rainbow', name:'Rainbow',   price:450, grad:'linear-gradient(90deg,#f00,#ff8800,#0f0,#00f,#ee82ee)', rarity:'legendary' },
+  { id:'void',    name:'Void',      price:400, grad:'linear-gradient(90deg,#1a0030,#6600aa)', rarity:'epic' },
 ];
 
 const POWERUPS = [
@@ -1762,18 +2272,98 @@ function loadShopSave() {
     ownedItems = s.ownedItems || { skins:['default'], trails:['none'], powerups:[] };
     equipped = s.equipped || { skin:'default', trail:'none' };
     boxCooldowns = s.boxCooldowns || {};
+    passXp = s.passXp || 0;
+    passTier = s.passTier || 0;
+    passPremiumOwned = s.passPremiumOwned || false;
+    passClaimedFree = s.passClaimedFree || [];
+    passClaimedPremium = s.passClaimedPremium || [];
+    dailyStreak = s.dailyStreak || 0;
+    lastLoginDate = s.lastLoginDate || null;
+    trophies = s.trophies || 0;
+    highestTrophies = s.highestTrophies || 0;
+    matchesPlayed = s.matchesPlayed || 0;
+    matchesWon = s.matchesWon || 0;
+    bestComboEver = s.bestComboEver || 0;
+    playerUsername = s.playerUsername || 'Player';
+    mastery = s.mastery || {};
   } catch(e) {}
   if (!ownedItems.skins.includes('default')) ownedItems.skins.push('default');
   if (!ownedItems.trails.includes('none')) ownedItems.trails.push('none');
 }
 function saveShop() {
-  try { localStorage.setItem('tf_save', JSON.stringify({ coins, ownedItems, equipped, boxCooldowns })); } catch(e) {}
+  try { localStorage.setItem('tf_save', JSON.stringify({ coins, ownedItems, equipped, boxCooldowns, passXp, passTier, passPremiumOwned, passClaimedFree, passClaimedPremium, dailyStreak, lastLoginDate, trophies, highestTrophies, matchesPlayed, matchesWon, bestComboEver, playerUsername, mastery })); } catch(e) {}
 }
+function savePassData() { saveShop(); }
 loadShopSave();
+checkDailyLogin();
 
 function updateCoinsUI() {
   document.getElementById('coinsVal').textContent = coins.toLocaleString();
   document.getElementById('shopCoinsVal').textContent = coins.toLocaleString();
+  updateTrophyUI();
+
+// ─── MASTERY UI ──────────────────────────────────────────────────────────────
+function openMastery() {
+  document.getElementById('mastery-screen').classList.add('active');
+  renderMastery();
+}
+function closeMastery() {
+  document.getElementById('mastery-screen').classList.remove('active');
+}
+
+function renderMastery() {
+  const char = getChar();
+  const m = getMastery(char.id);
+  document.getElementById('masteryCharIcon').textContent = char.icon;
+  document.getElementById('masteryCharName').textContent = char.name;
+
+  const prestigeTag = document.getElementById('masteryPrestigeTag');
+  if (m.prestige > 0) {
+    prestigeTag.style.display = 'inline-block';
+    prestigeTag.style.color = PRESTIGE_COLORS[m.prestige];
+    prestigeTag.textContent = PRESTIGE_NAMES[m.prestige];
+  } else {
+    prestigeTag.style.display = 'none';
+  }
+
+  const maxedOut = m.level >= MASTERY_MAX_LEVEL && m.prestige >= 3;
+  document.getElementById('masteryLevelNum').textContent = 'Lv ' + m.level;
+  document.getElementById('masteryXpBar').style.width = maxedOut ? '100%' : Math.min(100, (m.xp / MASTERY_XP_PER_LEVEL) * 100) + '%';
+  document.getElementById('masteryXpLabel').textContent = maxedOut ? 'MAX MASTERY REACHED' : (m.xp + ' / ' + MASTERY_XP_PER_LEVEL + ' XP');
+
+  const track = document.getElementById('masteryPrestigeTrack');
+  track.innerHTML = '';
+  for (let p = 1; p <= 3; p++) {
+    const pip = document.createElement('div');
+    const done = m.prestige >= p;
+    pip.className = 'mastery-prestige-pip' + (done ? ' done' : '');
+    pip.style.color = PRESTIGE_COLORS[p];
+    pip.textContent = done ? '★' : p;
+    track.appendChild(pip);
+  }
+
+  const prestigeBtn = document.getElementById('masteryPrestigeBtn');
+  if (m.prestige >= 3) {
+    prestigeBtn.textContent = 'MAX PRESTIGE REACHED';
+    prestigeBtn.disabled = true;
+  } else if (canPrestige(char.id)) {
+    prestigeBtn.textContent = 'Prestige to ' + PRESTIGE_NAMES[m.prestige+1] + '!';
+    prestigeBtn.disabled = false;
+  } else {
+    prestigeBtn.textContent = 'Reach Lv 10 to Prestige';
+    prestigeBtn.disabled = true;
+  }
+}
+
+document.getElementById('masteryOpenBtn').addEventListener('click', openMastery);
+document.getElementById('masteryCloseBtn').addEventListener('click', closeMastery);
+document.getElementById('masteryPrestigeBtn').addEventListener('click', () => {
+  const char = getChar();
+  if (canPrestige(char.id)) {
+    doPrestige(char.id);
+    renderMastery();
+  }
+});
 }
 
 function getEquippedSkinColor() {
@@ -1782,7 +2372,60 @@ function getEquippedSkinColor() {
 }
 
 let activeShopTab = 'skins';
+function getFeaturedOffer() {
+  const dayIdx = Math.floor(Date.now() / (1000*60*60*24));
+  const pool = [...SKINS.filter(s=>s.price>0), ...TRAILS.filter(t=>t.price>0)];
+  const item = pool[dayIdx % pool.length];
+  const isSkin = SKINS.includes(item);
+  return { item, isSkin };
+}
+
+function msUntilNextDay() {
+  const now = new Date();
+  const next = new Date(now); next.setUTCHours(24,0,0,0);
+  return next - now;
+}
+
+function renderFeaturedBanner() {
+  const banner = document.getElementById('shopFeaturedBanner');
+  if (!banner) return;
+  const { item, isSkin } = getFeaturedOffer();
+  const discPrice = Math.round(item.price * 0.7);
+  const swatch = isSkin ? item.color : item.grad;
+  banner.innerHTML = `
+    <div class="shop-featured-icon">${isSkin ? '🥋' : '✨'}</div>
+    <div class="shop-featured-info">
+      <div class="shop-featured-label">⏳ Limited Offer — 30% Off</div>
+      <div class="shop-featured-name">${item.name} ${isSkin?'Skin':'Trail'}</div>
+      <div class="shop-featured-timer" id="shopFeaturedTimer">--:--:--</div>
+    </div>
+    <div class="shop-featured-price" id="shopFeaturedBuyBtn">🪙 ${discPrice} <s style="opacity:0.6;font-size:0.75em">${item.price}</s></div>
+  `;
+  const buyBtn = document.getElementById('shopFeaturedBuyBtn');
+  buyBtn.onclick = () => {
+    const owned = isSkin ? ownedItems.skins.includes(item.id) : ownedItems.trails.includes(item.id);
+    if (owned) { showReward('✅', 'Already owned!'); return; }
+    if (coins < discPrice) { showReward('❌', 'Need ' + (discPrice - coins) + ' more coins!'); return; }
+    coins -= discPrice;
+    if (isSkin) { ownedItems.skins.push(item.id); equipped.skin = item.id; }
+    else { ownedItems.trails.push(item.id); equipped.trail = item.id; }
+    saveShop(); updateCoinsUI(); renderShop();
+    showReward(isSkin?'🥋':'✨', 'Unlocked ' + item.name + '!');
+  };
+  updateFeaturedTimer();
+}
+
+function updateFeaturedTimer() {
+  const el = document.getElementById('shopFeaturedTimer');
+  if (!el) return;
+  const ms = msUntilNextDay();
+  const h = Math.floor(ms/3600000), m = Math.floor((ms%3600000)/60000), sec = Math.floor((ms%60000)/1000);
+  el.textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+}
+setInterval(updateFeaturedTimer, 1000);
+
 function renderShop() {
+  renderFeaturedBanner();
   const body = document.getElementById('shopBody');
   body.innerHTML = '';
   if (activeShopTab === 'skins') {
@@ -1792,9 +2435,11 @@ function renderShop() {
       const owned = ownedItems.skins.includes(item.id);
       const isEq = equipped.skin === item.id;
       const card = document.createElement('div');
-      card.className = 'shop-card' + (owned?' owned':'') + (isEq?' equipped':'');
+      const rarity = item.rarity || 'common';
+      card.className = 'shop-card rarity-'+rarity + (owned?' owned':'') + (isEq?' equipped':'');
       card.innerHTML = `
         <div class="shop-card-swatch" style="background:${item.color}"></div>
+        <div class="shop-rarity-tag rarity-${rarity}">${rarity}</div>
         <div class="shop-card-name">${item.name}</div>
         <div class="shop-card-desc">${item.desc}</div>
         ${isEq?'<div class="shop-card-badge badge-equipped">ON</div>':owned?'<div class="shop-card-badge badge-owned">OWNED</div>':''}
@@ -1814,9 +2459,11 @@ function renderShop() {
       const owned = ownedItems.trails.includes(item.id);
       const isEq = equipped.trail === item.id;
       const card = document.createElement('div');
-      card.className = 'shop-card' + (owned?' owned':'') + (isEq?' equipped':'');
+      const rarity = item.rarity || 'common';
+      card.className = 'shop-card rarity-'+rarity + (owned?' owned':'') + (isEq?' equipped':'');
       card.innerHTML = `
         <div class="shop-card-swatch" style="background:${item.grad}"></div>
+        <div class="shop-rarity-tag rarity-${rarity}">${rarity}</div>
         <div class="shop-card-name">${item.name}</div>
         ${isEq?'<div class="shop-card-badge badge-equipped">ON</div>':owned?'<div class="shop-card-badge badge-owned">OWNED</div>':''}
         <button class="shop-card-btn ${owned?'equip-btn':''}">${isEq?'Equipped':owned?'Equip':'🪙 '+item.price}</button>
@@ -1920,6 +2567,277 @@ function closeShop() {
   document.getElementById('shop-screen').classList.remove('active');
 }
 
+function openPass() {
+  document.getElementById('pass-screen').classList.add('active');
+  updateCoinsUI();
+  updatePassUI();
+}
+function closePass() {
+  document.getElementById('pass-screen').classList.remove('active');
+}
+
+function updatePassUI() {
+  const label = document.getElementById('passTierLabel');
+  const bar = document.getElementById('passXpBar');
+  const badgeNum = document.getElementById('passTierCurrentNum');
+  if (badgeNum) badgeNum.textContent = passTier;
+  if (label) label.textContent = (passTier >= PASS_MAX_TIER ? 'MAX TIER REACHED' : (passXp + ' / ' + XP_PER_TIER + ' XP to Tier ' + (passTier+1)));
+  if (bar) bar.style.width = (passTier >= PASS_MAX_TIER ? 100 : (passXp / XP_PER_TIER) * 100) + '%';
+
+  const banner = document.getElementById('passUpgradeBanner');
+  if (banner) {
+    if (passPremiumOwned) {
+      banner.className = 'pass-upgrade-banner owned';
+      banner.innerHTML = '<div class="pass-upgrade-text">⭐ <b>Premium Pass Active</b> — all premium rewards unlocked as you tier up!</div>';
+    } else {
+      banner.className = 'pass-upgrade-banner';
+      banner.innerHTML = '<div class="pass-upgrade-text">Unlock the <b>⭐ Premium Track</b> for exclusive skins &amp; trails!</div><button class="pass-upgrade-btn" id="passBuyBtn">Unlock for 🪙 500</button>';
+      const buyBtn = document.getElementById('passBuyBtn');
+      if (buyBtn) buyBtn.addEventListener('click', buyPremiumPass);
+    }
+  }
+  renderPassTrack('passTrackFree', PASS_FREE_REWARDS, passClaimedFree, false);
+  renderPassTrack('passTrackPremium', PASS_PREMIUM_REWARDS, passClaimedPremium, true);
+}
+
+function renderPassTrack(elId, rewards, claimedList, isPremium) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  el.innerHTML = '';
+  rewards.forEach((r, i) => {
+    const col = document.createElement('div');
+    col.className = 'pass-tier-col';
+    const line = document.createElement('div');
+    line.className = 'pass-track-line' + (passTier >= r.tier ? ' filled' : '');
+    col.appendChild(line);
+    const numEl = document.createElement('div');
+    numEl.className = 'pass-tier-num' + (passTier >= r.tier ? ' reached' : '');
+    numEl.textContent = 'Tier ' + r.tier;
+    col.appendChild(numEl);
+
+    const card = document.createElement('div');
+    const unlocked = passTier >= r.tier;
+    const needsPremium = isPremium && !passPremiumOwned;
+    const claimed = claimedList.includes(r.tier);
+    let cls = 'pass-reward-card';
+    if (needsPremium) cls += ' locked-premium';
+    else if (claimed) cls += ' unlocked';
+    else if (unlocked) cls += ' claimable';
+    else cls += ' locked';
+    card.className = cls;
+    card.innerHTML = `
+      <div class="pass-reward-icon">${r.icon}</div>
+      <div class="pass-reward-name">${r.name}</div>
+      ${needsPremium ? '<div class="pass-reward-lock">🔒</div>' : ''}
+    `;
+    if (unlocked && !needsPremium && !claimed) {
+      const btn = document.createElement('button');
+      btn.className = 'pass-claim-btn';
+      btn.textContent = 'CLAIM';
+      btn.addEventListener('click', () => claimPassReward(r, isPremium));
+      card.appendChild(btn);
+    } else if (claimed) {
+      const tag = document.createElement('div');
+      tag.className = 'pass-reward-name';
+      tag.style.color = '#00e87a';
+      tag.textContent = '✓ Claimed';
+      card.appendChild(tag);
+    }
+    col.appendChild(card);
+    el.appendChild(col);
+  });
+}
+
+function claimPassReward(r, isPremium) {
+  const claimedList = isPremium ? passClaimedPremium : passClaimedFree;
+  if (claimedList.includes(r.tier)) return;
+  if (r.type === 'coins') {
+    coins += r.amount;
+    showRewardPopup('🪙', '+' + r.amount + ' Coins!');
+  } else if (r.type === 'skin') {
+    if (!ownedItems.skins.includes(r.id)) ownedItems.skins.push(r.id);
+    showRewardPopup(r.icon, 'Unlocked: ' + r.name + '!');
+  } else if (r.type === 'trail') {
+    if (!ownedItems.trails.includes(r.id)) ownedItems.trails.push(r.id);
+    showRewardPopup(r.icon, 'Unlocked: ' + r.name + '!');
+  }
+  claimedList.push(r.tier);
+  savePassData();
+  updateCoinsUI();
+  updatePassUI();
+}
+
+function buyPremiumPass() {
+  if (coins < 500) { showRewardPopup('🪙', 'Not enough coins!'); return; }
+  coins -= 500;
+  passPremiumOwned = true;
+  savePassData();
+  updateCoinsUI();
+  updatePassUI();
+  showRewardPopup('⭐', 'Premium Pass Unlocked!');
+}
+
+function showRewardPopup(icon, title) {
+  document.getElementById('rewardIcon').textContent = icon;
+  document.getElementById('rewardTitle').textContent = title;
+  document.getElementById('rewardPopup').classList.add('active');
+}
+
+// ─── DAILY STREAK LOGIC ──────────────────────────────────────────────────────
+function renderDailyStreak() {
+  const nextDay = dailyStreak + 1;
+  const todaySlot = ((nextDay - 1) % 7) + 1;
+  document.getElementById('dailyStreakTitle').textContent = 'Day ' + nextDay + ' Streak!';
+  const row = document.getElementById('dailyStreakRow');
+  row.innerHTML = '';
+  for (let d = 1; d <= 7; d++) {
+    const reward = getDailyReward(d);
+    const card = document.createElement('div');
+    const isToday = d === todaySlot;
+    const isClaimed = d < todaySlot;
+    card.className = 'daily-day-card' + (isToday ? ' today' : (isClaimed ? ' claimed' : ''));
+    const amountText = reward.type === 'coins' ? reward.amount : reward.type === 'xp' ? reward.amount + ' XP' : 'Box';
+    card.innerHTML = `
+      <div class="daily-day-num">Day ${d}</div>
+      <div class="daily-day-icon">${reward.icon}</div>
+      <div class="daily-day-amount">${amountText}</div>
+    `;
+    row.appendChild(card);
+  }
+}
+
+function showDailyStreakIfNeeded() {
+  if (dailyClaimedToday) return;
+  renderDailyStreak();
+  document.getElementById('daily-streak-overlay').classList.add('active');
+}
+
+function claimDailyStreak() {
+  const today = new Date().toDateString();
+  dailyStreak++;
+  lastLoginDate = today;
+  dailyClaimedToday = true;
+  const reward = getDailyReward(dailyStreak);
+  if (reward.type === 'coins') { coins += reward.amount; updateCoinsUI(); }
+  else if (reward.type === 'xp') { addPassXp(reward.amount); }
+  else if (reward.type === 'box') { coins += 200; updateCoinsUI(); }
+  saveShop();
+  document.getElementById('daily-streak-overlay').classList.remove('active');
+  setTimeout(() => showRewardPopup(reward.icon, 'Day ' + dailyStreak + ' Reward Claimed!'), 300);
+}
+document.getElementById('dailyClaimBtn').addEventListener('click', claimDailyStreak);
+showDailyStreakIfNeeded();
+
+// ─── PROFILE ─────────────────────────────────────────────────────────────────
+const TROPHY_RANK_NAMES = ['Rookie','Bronze','Silver','Gold','Platinum','Diamond','Master','Legend','Mythic','Titan','Cosmic','Champion'];
+const TROPHY_RANK_ICONS = ['🥉','🥉','🥈','🥈','🥇','🥇','💎','💎','👑','👑','🌟','🏆'];
+
+function updateTrophyUI() {
+  const el = document.getElementById('trophyVal');
+  if (el) el.textContent = trophies.toLocaleString();
+}
+
+function openProfile() {
+  document.getElementById('profile-screen').classList.add('active');
+  renderProfile();
+}
+function closeProfile() {
+  document.getElementById('profile-screen').classList.remove('active');
+}
+
+function renderProfile() {
+  const rankIdx = getTrophyRank(trophies);
+  document.getElementById('profileAvatar').style.background =
+    `radial-gradient(circle at 35% 30%, ${getEquippedSkinColor()}, ${shadeColor(getEquippedSkinColor(),-40)} 70%)`;
+  document.getElementById('profileNameInput').value = playerUsername;
+  document.getElementById('profileRankBadge').innerHTML =
+    `${TROPHY_RANK_ICONS[rankIdx]} ${trophies.toLocaleString()} Trophies — ${TROPHY_RANK_NAMES[rankIdx]}`;
+
+  const winRate = matchesPlayed > 0 ? Math.round((matchesWon / matchesPlayed) * 100) : 0;
+  const stats = [
+    { label: 'Matches Played', val: matchesPlayed },
+    { label: 'Matches Won', val: matchesWon },
+    { label: 'Win Rate', val: winRate + '%' },
+    { label: 'Best Combo', val: bestComboEver + 'x' },
+    { label: 'Highest Trophies', val: highestTrophies.toLocaleString() },
+    { label: 'Coins Earned', val: coins.toLocaleString() },
+  ];
+  document.getElementById('profileStatsGrid').innerHTML = stats.map(s =>
+    `<div class="profile-stat-card"><div class="profile-stat-val">${s.val}</div><div class="profile-stat-label">${s.label}</div></div>`
+  ).join('');
+}
+
+document.getElementById('profileOpenBtn').addEventListener('click', openProfile);
+document.getElementById('profileCloseBtn').addEventListener('click', closeProfile);
+document.getElementById('profileNameInput').addEventListener('change', (e) => {
+  playerUsername = e.target.value.trim().slice(0,14) || 'Player';
+  saveShop();
+});
+updateTrophyUI();
+
+// ─── MASTERY UI ──────────────────────────────────────────────────────────────
+function openMastery() {
+  document.getElementById('mastery-screen').classList.add('active');
+  renderMastery();
+}
+function closeMastery() {
+  document.getElementById('mastery-screen').classList.remove('active');
+}
+
+function renderMastery() {
+  const char = getChar();
+  const m = getMastery(char.id);
+  document.getElementById('masteryCharIcon').textContent = char.icon;
+  document.getElementById('masteryCharName').textContent = char.name;
+
+  const prestigeTag = document.getElementById('masteryPrestigeTag');
+  if (m.prestige > 0) {
+    prestigeTag.style.display = 'inline-block';
+    prestigeTag.style.color = PRESTIGE_COLORS[m.prestige];
+    prestigeTag.textContent = PRESTIGE_NAMES[m.prestige];
+  } else {
+    prestigeTag.style.display = 'none';
+  }
+
+  const maxedOut = m.level >= MASTERY_MAX_LEVEL && m.prestige >= 3;
+  document.getElementById('masteryLevelNum').textContent = 'Lv ' + m.level;
+  document.getElementById('masteryXpBar').style.width = maxedOut ? '100%' : Math.min(100, (m.xp / MASTERY_XP_PER_LEVEL) * 100) + '%';
+  document.getElementById('masteryXpLabel').textContent = maxedOut ? 'MAX MASTERY REACHED' : (m.xp + ' / ' + MASTERY_XP_PER_LEVEL + ' XP');
+
+  const track = document.getElementById('masteryPrestigeTrack');
+  track.innerHTML = '';
+  for (let p = 1; p <= 3; p++) {
+    const pip = document.createElement('div');
+    const done = m.prestige >= p;
+    pip.className = 'mastery-prestige-pip' + (done ? ' done' : '');
+    pip.style.color = PRESTIGE_COLORS[p];
+    pip.textContent = done ? '★' : p;
+    track.appendChild(pip);
+  }
+
+  const prestigeBtn = document.getElementById('masteryPrestigeBtn');
+  if (m.prestige >= 3) {
+    prestigeBtn.textContent = 'MAX PRESTIGE REACHED';
+    prestigeBtn.disabled = true;
+  } else if (canPrestige(char.id)) {
+    prestigeBtn.textContent = 'Prestige to ' + PRESTIGE_NAMES[m.prestige+1] + '!';
+    prestigeBtn.disabled = false;
+  } else {
+    prestigeBtn.textContent = 'Reach Lv 10 to Prestige';
+    prestigeBtn.disabled = true;
+  }
+}
+
+document.getElementById('masteryOpenBtn').addEventListener('click', openMastery);
+document.getElementById('masteryCloseBtn').addEventListener('click', closeMastery);
+document.getElementById('masteryPrestigeBtn').addEventListener('click', () => {
+  const char = getChar();
+  if (canPrestige(char.id)) {
+    doPrestige(char.id);
+    renderMastery();
+  }
+});
+
 document.querySelectorAll('.shop-tab').forEach(tab => {
   tab.addEventListener('click', () => {
     document.querySelectorAll('.shop-tab').forEach(t => t.classList.remove('active'));
@@ -1930,6 +2848,8 @@ document.querySelectorAll('.shop-tab').forEach(tab => {
 });
 document.getElementById('shopOpenBtn').addEventListener('click', openShop);
 document.getElementById('shopCloseBtn').addEventListener('click', closeShop);
+document.getElementById('passOpenBtn').addEventListener('click', openPass);
+document.getElementById('passCloseBtn').addEventListener('click', closePass);
 document.getElementById('rewardCloseBtn').addEventListener('click', () => {
   document.getElementById('rewardPopup').classList.remove('active');
 });
@@ -2052,6 +2972,15 @@ function checkGameOver() {
     if (playerWon) earned += 50;
     if (ownedItems.powerups.includes('coinboost')) earned = Math.floor(earned * 1.25);
     coins += earned;
+    addPassXp(playerWon ? passXpForWin() : passXpForLoss());
+    matchesPlayed++;
+    if (playerWon) matchesWon++;
+    const p1 = fighters.find(f => f.isPlayer);
+    if (p1) addMasteryXp(p1.char.id, playerWon ? masteryXpForWin() : masteryXpForLoss());
+    if (p1 && p1.bestCombo) bestComboEver = Math.max(bestComboEver, p1.bestCombo);
+    const trophyChange = playerWon ? trophiesForWin() : (isDraw ? 0 : trophiesForLoss());
+    trophies = Math.max(0, trophies + trophyChange);
+    highestTrophies = Math.max(highestTrophies, trophies);
     saveShop();
     updateCoinsUI();
     document.getElementById('goCoinsVal').textContent = earned;
@@ -2060,15 +2989,16 @@ function checkGameOver() {
     const stocksLeft = player ? Math.max(0, player.stocks) : 0;
     const dmgDealt = Math.round(fighters.filter(f=>!f.isPlayer).reduce((s,f)=>s + (f.totalDamageTaken||0), 0));
     const bestCombo = player ? (player.bestCombo || 0) : 0;
+    const trophyChangeDisplay = (trophyChange >= 0 ? '+' : '') + trophyChange;
     const stats = [
       { label: 'Stocks Left', val: stocksLeft },
       { label: 'Dmg Dealt', val: dmgDealt + '%' },
       { label: 'Best Combo', val: bestCombo + 'x' },
-      { label: 'Time Left', val: Math.max(0,Math.ceil(stageTimer)) + 's' },
+      { label: 'Trophies', val: trophyChangeDisplay, color: trophyChange >= 0 ? '#ffdd44' : '#ff5566' },
     ];
     statsEl.innerHTML = stats.map((s,i) =>
       `<div class="go-stat-card" style="animation-delay:${0.15 + i*0.08}s">
-        <div class="go-stat-val">${s.val}</div>
+        <div class="go-stat-val" style="${s.color?'color:'+s.color:''}">${s.val}</div>
         <div class="go-stat-label">${s.label}</div>
       </div>`
     ).join('');
@@ -2144,6 +3074,7 @@ function confettiLoop(ts) {
 
 // ─── GAME LOOP ────────────────────────────────────────────────────────────────
 let fps = 0, fpsTimer = 0, fpsCount = 0;
+let debugVisible = false;
 
 function gameLoop(timestamp) {
   rafId = requestAnimationFrame(gameLoop);
@@ -2152,7 +3083,7 @@ function gameLoop(timestamp) {
 
   fpsCount++; fpsTimer += dt;
   if (fpsTimer >= 1) { fps = fpsCount; fpsCount = 0; fpsTimer = 0; }
-  document.getElementById('debug').textContent = `FPS: ${fps} | Fighters: ${fighters.filter(f=>!f.dead).length}`;
+  if (debugVisible) document.getElementById('debug').textContent = `FPS: ${fps} | Fighters: ${fighters.filter(f=>!f.dead).length}`;
 
   if (gameState !== 'playing') return;
 
