@@ -607,6 +607,93 @@ body { font-family: 'Rajdhani', sans-serif; color: var(--color-text); display: f
 
 /* HIT FLASH *//* HIT FLASH */
 #hitFlash { position: fixed; inset: 0; z-index: 40; pointer-events: none; background: #fff; opacity: 0; }
+
+/* ═══════════════════ MOBILE TOUCH CONTROLS (IMPROVED) ═══════════════════ */
+#touch-controls { display:block; position:fixed; inset:0; z-index:30; pointer-events:none; }
+@media (max-width: 900px), (hover:none) and (pointer:coarse) {
+  .menu-tab { padding:10px 12px; font-size:0.75rem; }
+  .char-card { width:100px; padding:10px 6px; }
+  .start-btn, .shop-open-btn, .pass-open-btn { padding:14px 22px; font-size:1.3rem; }
+  .menu-btn-row { flex-direction:column; gap:10px; width:100%; }
+  #hud { padding:10px 12px; gap:8px; }
+  .fighter-hud { max-width:130px; padding:6px 8px; }
+  .fighter-name { font-size:0.62rem; }
+  .timer-num { font-size:1.2rem; }
+  .damage-pct { font-size:1rem; }
+}
+
+.tc-joystick {
+  position:absolute; left:28px; bottom:28px; width:150px; height:150px;
+  border-radius:50%; background:radial-gradient(circle at 35% 30%, rgba(255,255,255,0.14), rgba(255,255,255,0.04) 70%);
+  border:3px solid rgba(255,255,255,0.35); pointer-events:auto; touch-action:none;
+  box-shadow: 0 0 0 6px rgba(0,0,0,0.15) inset, 0 8px 24px rgba(0,0,0,0.35);
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+.tc-joystick.dragging {
+  border-color: #00d4ff; box-shadow: 0 0 0 6px rgba(0,212,255,0.15) inset, 0 0 30px rgba(0,212,255,0.35), 0 8px 24px rgba(0,0,0,0.35);
+}
+.tc-stick {
+  position:absolute; width:66px; height:66px; border-radius:50%;
+  background: radial-gradient(circle at 35% 30%, #ffffff, #b8d8ff 60%, #6ab8ff 100%);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.5), 0 0 0 3px rgba(255,255,255,0.4) inset;
+  top:42px; left:42px; transition: transform 60ms linear;
+  pointer-events:none;
+}
+.tc-joystick-label {
+  position:absolute; bottom:-22px; left:0; right:0; text-align:center;
+  font-family:'Rajdhani',sans-serif; font-size:0.62rem; letter-spacing:2px; color:rgba(255,255,255,0.4);
+  text-transform:uppercase; pointer-events:none;
+}
+
+.tc-actions {
+  position:absolute; right:22px; bottom:22px; width:230px; height:230px; pointer-events:none;
+}
+.tc-btn {
+  position:absolute; border-radius:50%;
+  background: radial-gradient(circle at 35% 30%, rgba(255,255,255,0.22), rgba(255,255,255,0.06) 70%);
+  border:3px solid rgba(255,255,255,0.35);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  font-family:'Bangers', cursive; color:#fff;
+  touch-action:none; user-select:none; -webkit-user-select:none; pointer-events:auto;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.4), 0 0 0 4px rgba(0,0,0,0.12) inset;
+  transition: transform 90ms ease, background 90ms ease, border-color 90ms ease, box-shadow 90ms ease;
+}
+.tc-btn .tc-icon { font-size: 1.35rem; line-height:1; margin-bottom:1px; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.5)); }
+.tc-btn .tc-label { font-size: 0.55rem; letter-spacing:1px; opacity:0.85; }
+.tc-btn.active {
+  transform: scale(0.88);
+  background: radial-gradient(circle at 35% 30%, rgba(0,212,255,0.55), rgba(0,212,255,0.2) 70%);
+  border-color: #00d4ff; box-shadow: 0 2px 8px rgba(0,0,0,0.4), 0 0 22px rgba(0,212,255,0.6), 0 0 0 4px rgba(0,0,0,0.1) inset;
+}
+
+#tc-punch  { width:72px; height:72px; right:104px; bottom:82px; border-color: rgba(255,170,0,0.5); }
+#tc-punch.active { background: radial-gradient(circle at 35% 30%, rgba(255,170,0,0.55), rgba(255,170,0,0.2) 70%); border-color:#ffaa00; box-shadow: 0 2px 8px rgba(0,0,0,0.4), 0 0 22px rgba(255,170,0,0.6), 0 0 0 4px rgba(0,0,0,0.1) inset; }
+
+#tc-kick   { width:80px; height:80px; right:16px;  bottom:118px; border-color: rgba(255,68,102,0.5); }
+#tc-kick.active { background: radial-gradient(circle at 35% 30%, rgba(255,68,102,0.55), rgba(255,68,102,0.2) 70%); border-color:#ff4466; box-shadow: 0 2px 8px rgba(0,0,0,0.4), 0 0 22px rgba(255,68,102,0.6), 0 0 0 4px rgba(0,0,0,0.1) inset; }
+
+#tc-special{ width:66px; height:66px; right:78px;  bottom:0px; border-color: rgba(170,68,255,0.5); }
+#tc-special.active { background: radial-gradient(circle at 35% 30%, rgba(170,68,255,0.55), rgba(170,68,255,0.2) 70%); border-color:#aa44ff; box-shadow: 0 2px 8px rgba(0,0,0,0.4), 0 0 22px rgba(170,68,255,0.6), 0 0 0 4px rgba(0,0,0,0.1) inset; }
+
+#tc-jump   { width:60px; height:60px; left:190px; bottom:70px; position:absolute; pointer-events:auto; touch-action:none; border-color: rgba(0,255,150,0.5); }
+#tc-jump.active { background: radial-gradient(circle at 35% 30%, rgba(0,255,150,0.55), rgba(0,255,150,0.2) 70%); border-color:#00ff96; box-shadow: 0 2px 8px rgba(0,0,0,0.4), 0 0 22px rgba(0,255,150,0.6), 0 0 0 4px rgba(0,0,0,0.1) inset; }
+
+#tc-block  { width:60px; height:60px; left:190px; bottom:0px;  position:absolute; pointer-events:auto; touch-action:none; border-color: rgba(255,255,255,0.4); }
+#tc-block.active { background: radial-gradient(circle at 35% 30%, rgba(255,255,255,0.55), rgba(255,255,255,0.2) 70%); border-color:#fff; box-shadow: 0 2px 8px rgba(0,0,0,0.4), 0 0 22px rgba(255,255,255,0.5), 0 0 0 4px rgba(0,0,0,0.1) inset; }
+
+.tc-pause-btn {
+  position:fixed; top:14px; right:14px; z-index:31; width:48px; height:48px; border-radius:50%;
+  background: radial-gradient(circle at 35% 30%, rgba(255,255,255,0.2), rgba(255,255,255,0.06) 70%);
+  border:2px solid rgba(255,255,255,0.35);
+  color:#fff; font-size:1.2rem; pointer-events:auto; touch-action:none;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.4);
+}
+.tc-pause-btn:active { transform: scale(0.9); }
+
+@media (min-width: 901px) and (hover:hover) and (pointer:fine) {
+  .tc-joystick-hint { display:block; }
+}
 </style>
 </head>
 <body>
@@ -775,8 +862,10 @@ body { font-family: 'Rajdhani', sans-serif; color: var(--color-text); display: f
 
 <!-- HIT FLASH -->
 <div id="hitFlash"></div>
-<div id="koText" style="position:fixed;inset:0;z-index:45;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:0;">
-  <span style="font-family:'Bangers',cursive;font-size:clamp(3rem,14vw,9rem);color:#fff;letter-spacing:6px;text-shadow:0 0 40px #ff4466,0 0 90px #ffaa00;">KO!</span>
+<div id="koText" class="ko-text-wrap">
+  <div class="ko-ring"></div>
+  <div class="ko-ring ko-ring2"></div>
+  <span class="ko-text-main">KO!</span>
 </div>
 
 <!-- PAUSE -->
@@ -1595,13 +1684,17 @@ let starKOs = [];
 function showStarKO(fighter) {
   starKOs.push({ x: fighter.cx, y: fighter.cy, color: fighter.color, life: 0.9, maxLife: 0.9, vx: (fighter.cx>STAGE_W/2?-1:1)*260, vy:-380 });
   const koEl = document.getElementById('koText');
+  koEl.classList.remove('firing');
   koEl.style.opacity = 1;
-  koEl.style.transform = 'scale(0.6)';
+  koEl.style.transform = 'scale(0.5) rotate(-6deg)';
   koEl.style.transition = 'none';
+  camera.shake = Math.max(camera.shake, 22);
+  hitStop = Math.max(hitStop, 0.16);
   requestAnimationFrame(()=>{
-    koEl.style.transition = 'transform 0.35s cubic-bezier(.34,1.56,.64,1), opacity 0.6s ease 0.5s';
-    koEl.style.transform = 'scale(1.1)';
-    setTimeout(()=>{ koEl.style.opacity = 0; }, 500);
+    koEl.classList.add('firing');
+    koEl.style.transition = 'transform 0.4s cubic-bezier(.2,1.8,.3,1), opacity 0.55s ease 0.65s';
+    koEl.style.transform = 'scale(1.15) rotate(0deg)';
+    setTimeout(()=>{ koEl.style.opacity = 0; koEl.classList.remove('firing'); }, 650);
   });
 }
 function updateStarKOs(dt) {
@@ -3216,6 +3309,162 @@ document.getElementById('goShopBtn').addEventListener('click', openShop);
 document.getElementById('goMenuBtn').addEventListener('click', goToMenu);
 
 document.addEventListener('click', initAudio, { once: false });
+
+// ═══════════════════ MOBILE TOUCH CONTROLS (IMPROVED) ═══════════════════
+const isTouchDevice = matchMedia('(hover:none) and (pointer:coarse)').matches || navigator.maxTouchPoints > 0;
+
+function vibrate(ms) { if (navigator.vibrate) { try { navigator.vibrate(ms); } catch(e){} } }
+
+function simulateKey(code, isDown) {
+  if (isDown && !keys[code]) { justPressed[code] = true; }
+  keys[code] = isDown;
+}
+
+function bindTouchButton(id, code, vibMs = 12) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  let pointerActive = false;
+  const start = e => {
+    e.preventDefault();
+    if (pointerActive) return;
+    pointerActive = true;
+    simulateKey(code, true);
+    el.classList.add('active');
+    vibrate(vibMs);
+  };
+  const end = e => {
+    if (e && e.preventDefault) e.preventDefault();
+    pointerActive = false;
+    simulateKey(code, false);
+    el.classList.remove('active');
+  };
+  el.addEventListener('pointerdown', start);
+  el.addEventListener('pointerup', end);
+  el.addEventListener('pointerleave', end);
+  el.addEventListener('pointercancel', end);
+  el.addEventListener('touchstart', start, { passive:false });
+  el.addEventListener('touchend', end, { passive:false });
+  el.addEventListener('touchcancel', end, { passive:false });
+  el.addEventListener('contextmenu', e => e.preventDefault());
+}
+
+bindTouchButton('tc-jump', 'KeyW');
+bindTouchButton('tc-block', 'ShiftLeft');
+bindTouchButton('tc-punch', 'KeyJ', 10);
+bindTouchButton('tc-kick', 'KeyK', 10);
+bindTouchButton('tc-special', 'KeyL', 22);
+
+document.getElementById('tcPauseBtn')?.addEventListener('click', e => {
+  e.preventDefault();
+  togglePause();
+});
+document.getElementById('tcPauseBtn')?.addEventListener('touchstart', e => {
+  e.preventDefault();
+  togglePause();
+});
+
+// Virtual joystick (movement + fast-fall) — smoother, larger range, proper dead-zone
+(function setupJoystick() {
+  const joy = document.getElementById('tcJoystick');
+  const stick = document.getElementById('tcStick');
+  if (!joy || !stick) return;
+  let active = false, originX = 0, originY = 0, activePointerId = null;
+  const maxDist = 46;
+  const deadZone = 8;
+  const moveDeadZone = 16;
+  const fastFallThreshold = 26;
+
+  function reset() {
+    simulateKey('KeyA', false);
+    simulateKey('KeyD', false);
+    simulateKey('KeyS', false);
+    stick.style.transform = 'translate(0px,0px)';
+    joy.classList.remove('dragging');
+  }
+
+  function onStart(clientX, clientY) {
+    const rect = joy.getBoundingClientRect();
+    originX = rect.left + rect.width/2;
+    originY = rect.top + rect.height/2;
+    active = true;
+    joy.classList.add('dragging');
+    vibrate(6);
+  }
+
+  function onMove(clientX, clientY) {
+    if (!active) return;
+    let dx = clientX - originX;
+    let dy = clientY - originY;
+    const rawDist = Math.hypot(dx, dy);
+    const dist = Math.min(maxDist, rawDist);
+    const angle = Math.atan2(dy, dx);
+    const clampedX = rawDist < deadZone ? 0 : Math.cos(angle) * dist;
+    const clampedY = rawDist < deadZone ? 0 : Math.sin(angle) * dist;
+    stick.style.transform = `translate(${clampedX}px,${clampedY}px)`;
+
+    simulateKey('KeyA', dx < -moveDeadZone);
+    simulateKey('KeyD', dx > moveDeadZone);
+    simulateKey('KeyS', dy > fastFallThreshold);
+  }
+
+  function onEnd() { active = false; activePointerId = null; reset(); }
+
+  joy.addEventListener('touchstart', e => {
+    e.preventDefault();
+    const t = e.changedTouches[0];
+    onStart(t.clientX, t.clientY);
+  }, { passive:false });
+
+  joy.addEventListener('touchmove', e => {
+    e.preventDefault();
+    const t = e.touches[0];
+    if (t) onMove(t.clientX, t.clientY);
+  }, { passive:false });
+
+  joy.addEventListener('touchend', e => { e.preventDefault(); onEnd(); }, { passive:false });
+  joy.addEventListener('touchcancel', e => { e.preventDefault(); onEnd(); }, { passive:false });
+
+  joy.addEventListener('pointerdown', e => {
+    if (activePointerId !== null) return;
+    activePointerId = e.pointerId;
+    joy.setPointerCapture(e.pointerId);
+    onStart(e.clientX, e.clientY);
+  });
+  joy.addEventListener('pointermove', e => {
+    if (e.pointerId !== activePointerId) return;
+    onMove(e.clientX, e.clientY);
+  });
+  joy.addEventListener('pointerup', e => { if (e.pointerId === activePointerId) onEnd(); });
+  joy.addEventListener('pointercancel', e => { if (e.pointerId === activePointerId) onEnd(); });
+  joy.addEventListener('contextmenu', e => e.preventDefault());
+})();
+
+// Prevent iOS/Android page scroll & double-tap zoom while playing
+document.addEventListener('touchmove', e => {
+  if (gameState === 'playing') e.preventDefault();
+}, { passive:false });
+
+if (isTouchDevice) {
+  const dbg = document.getElementById('debug');
+  if (dbg) dbg.remove();
+}
 </script>
+<!-- TOUCH CONTROLS -->
+<div id="touch-controls">
+  <div class="tc-joystick" id="tcJoystick">
+    <div class="tc-stick" id="tcStick"></div>
+    <div class="tc-joystick-label">MOVE</div>
+  </div>
+  <div class="tc-actions">
+    <button class="tc-btn" id="tc-jump"><span class="tc-icon">⬆️</span><span class="tc-label">JUMP</span></button>
+    <button class="tc-btn" id="tc-block"><span class="tc-icon">🛡️</span><span class="tc-label">BLOCK</span></button>
+    <button class="tc-btn" id="tc-punch"><span class="tc-icon">👊</span><span class="tc-label">PUNCH</span></button>
+    <button class="tc-btn" id="tc-kick"><span class="tc-icon">🦵</span><span class="tc-label">KICK</span></button>
+    <button class="tc-btn" id="tc-special"><span class="tc-icon">✨</span><span class="tc-label">SPECIAL</span></button>
+  </div>
+</div>
+<button class="tc-pause-btn" id="tcPauseBtn">⏸</button>
+
 </body>
+
 </html>
