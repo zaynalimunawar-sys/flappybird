@@ -694,19 +694,187 @@ body { font-family: 'Rajdhani', sans-serif; color: var(--color-text); display: f
 @media (min-width: 901px) and (hover:hover) and (pointer:fine) {
   .tc-joystick-hint { display:block; }
 }
+
+
+/* ═══════════════════ CLEANER HOME SCREEN ═══════════════════ */
+#menu { padding: 0; }
+.menu-topbar {
+  position: sticky; top: 0; z-index: 6; width: 100%;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 20px; background: rgba(10,10,20,0.55); backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.menu-topbar-stats { display: flex; gap: 10px; align-items: center; }
+.menu-topbar .coins-display, .menu-topbar .trophy-display { margin-bottom: 0; padding: 6px 16px; font-size: 1.05rem; }
+.menu-topbar .profile-open-btn { margin-bottom: 0; width: 42px; height: 42px; }
+
+.menu-scroll { padding: 28px 16px 40px; }
+.menu-header { text-align: center; margin-bottom: 22px; }
+.menu-header h1 { margin-bottom: 2px; }
+.menu-header .subtitle { margin-bottom: 0; }
+
+.menu-tabs { margin-bottom: 22px; box-shadow: 0 2px 12px rgba(0,0,0,0.2); }
+
+.menu-panel { min-height: 180px; }
+
+.start-btn {
+  width: min(360px, 90vw); display:block; margin: 6px auto 16px;
+  font-size: 1.65rem; letter-spacing: 4px;
+}
+.menu-btn-row { justify-content: center; gap: 10px; }
+.shop-open-btn, .pass-open-btn { padding: 12px 22px; font-size: 1.1rem; letter-spacing: 1.5px; }
+
+.menu-section, .menu-subsection { max-width: 480px; margin-left: auto; margin-right: auto; }
+
+
+
+/* ═══════════════════ DEVICE SELECT OVERLAY ═══════════════════ */
+.device-select-overlay {
+  position: fixed; inset: 0; z-index: 500; display: flex; align-items: center; justify-content: center;
+  background: radial-gradient(ellipse at center, #1a0a2e 0%, #0d0d1a 70%);
+}
+.device-select-overlay.hidden { display: none; }
+.device-select-box {
+  display: flex; flex-direction: column; align-items: center; gap: 14px;
+  padding: 40px 32px; max-width: 380px; width: 90vw; text-align: center;
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px;
+}
+.device-select-icon { font-size: 3.2rem; }
+.device-select-box h2 {
+  font-family: 'Bangers', cursive; font-size: 1.8rem; color: var(--color-p1);
+  text-shadow: 0 0 20px #00d4ff88; letter-spacing: 1px;
+}
+.device-select-sub { color: var(--color-muted); font-size: 0.95rem; margin-bottom: 6px; }
+.device-select-btns { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+.device-select-btn {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  padding: 16px 20px; border-radius: 14px; border: 2px solid var(--color-border);
+  background: var(--color-surface); color: var(--color-text); cursor: pointer;
+  font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1.05rem; letter-spacing: 0.5px;
+  transition: all 180ms ease;
+}
+.device-select-btn:hover, .device-select-btn:active { border-color: var(--color-p1); color: var(--color-p1); background: rgba(0,212,255,0.1); transform: translateY(-2px); }
+.device-select-btn-icon { font-size: 1.4rem; }
+
+#rotate-prompt {
+  position: fixed; inset: 0; z-index: 600; display: none; flex-direction: column;
+  align-items: center; justify-content: center; gap: 16px; text-align: center;
+  background: rgba(5,5,15,0.96); color: #fff;
+}
+.rotate-prompt-icon { font-size: 3rem; animation: rotateHint 1.6s ease-in-out infinite; }
+@keyframes rotateHint { 0%,100% { transform: rotate(0deg); } 50% { transform: rotate(90deg); } }
+.rotate-prompt-text { font-family: 'Rajdhani', sans-serif; font-size: 1.05rem; line-height: 1.5; color: var(--color-muted); max-width: 260px; }
+@media (max-width: 900px) and (orientation: portrait) {
+  body.is-phone #rotate-prompt.game-active { display: flex; }
+}
+
+/* ═══════════════════ PHONE-SPECIFIC LAYOUT ═══════════════════ */
+body.is-phone .menu-topbar { padding: 10px 14px; }
+body.is-phone .menu-topbar .coins-display, body.is-phone .menu-topbar .trophy-display { padding: 5px 12px; font-size: 0.85rem; }
+body.is-phone .menu-topbar .profile-open-btn { width: 36px; height: 36px; font-size: 1rem; }
+body.is-phone .menu-scroll { padding: 16px 10px 30px; }
+body.is-phone .menu-header h1 { font-size: clamp(1.5rem, 7vw, 2.2rem); letter-spacing: 1.5px; }
+body.is-phone .menu-header .subtitle { font-size: 0.7rem; letter-spacing: 1.5px; }
+body.is-phone .menu-tabs { flex-wrap: wrap; gap: 4px; padding: 4px; margin-bottom: 14px; }
+body.is-phone .menu-tab { padding: 8px 10px; font-size: 0.68rem; }
+body.is-phone .char-select-row { gap: 8px; }
+body.is-phone .char-card { width: 82px; padding: 10px 5px; gap: 4px; }
+body.is-phone .char-card-icon { font-size: 1.8rem; }
+body.is-phone .char-card-name { font-size: 0.72rem; }
+body.is-phone .char-desc { font-size: 0.72rem; max-width: 92vw; }
+body.is-phone .stage-card { width: 84px; height: 62px; }
+body.is-phone .stage-card span { font-size: 0.6rem; }
+body.is-phone .difficulty-btns { gap: 8px; }
+body.is-phone .diff-btn { padding: 8px 16px; font-size: 0.85rem; }
+body.is-phone .cpu-btn { width: 42px; height: 42px; font-size: 1rem; }
+body.is-phone .start-btn { width: 92vw; font-size: 1.35rem; padding: 14px 30px; letter-spacing: 2.5px; }
+body.is-phone .shop-open-btn, body.is-phone .pass-open-btn { padding: 10px 18px; font-size: 0.95rem; }
+body.is-phone .controls-hint { font-size: 0.68rem; }
+body.is-phone .mastery-open-btn { font-size: 0.85rem; padding: 8px 20px; }
+
+/* Phone in-game HUD */
+body.is-phone #hud { padding: 6px 8px; gap: 6px; }
+body.is-phone .fighter-hud { max-width: 96px; padding: 4px 6px; gap: 3px; border-radius: 10px; }
+body.is-phone .fighter-name { font-size: 0.5rem; letter-spacing: 1px; }
+body.is-phone .hp-bar-wrap { height: 10px; }
+body.is-phone .stock-icon { width: 8px; height: 8px; }
+body.is-phone .timer-box { padding: 4px 10px; min-width: 48px; }
+body.is-phone .timer-num { font-size: 1rem; }
+body.is-phone .damage-pct { font-size: 0.75rem; }
+
+/* Phone touch controls - smaller & repositioned for small screens */
+body.is-phone .tc-joystick { left:14px; bottom:14px; width:110px; height:110px; border-width:2px; }
+body.is-phone .tc-stick { width:48px; height:48px; top:31px; left:31px; }
+body.is-phone .tc-joystick-label { font-size: 0.52rem; bottom:-18px; }
+body.is-phone .tc-actions { right:12px; bottom:12px; width:172px; height:172px; }
+body.is-phone .tc-btn { border-width:2px; }
+body.is-phone .tc-btn .tc-icon { font-size: 1.05rem; }
+body.is-phone .tc-btn .tc-label { font-size: 0.45rem; }
+body.is-phone #tc-punch  { width:56px; height:56px; right:78px; bottom:60px; }
+body.is-phone #tc-kick   { width:62px; height:62px; right:12px;  bottom:88px; }
+body.is-phone #tc-special{ width:52px; height:52px; right:58px;  bottom:0px; }
+body.is-phone #tc-jump   { width:46px; height:46px; left:142px; bottom:52px; }
+body.is-phone #tc-block  { width:46px; height:46px; left:142px; bottom:0px; }
+body.is-phone .tc-pause-btn { width:38px; height:38px; font-size:1rem; top:10px; right:10px; }
+
+/* Phone go/shop/pass screens */
+body.is-phone .go-badge { font-size: clamp(2.2rem, 12vw, 3.5rem); }
+body.is-phone #game-over-screen h2 { font-size: clamp(1.7rem, 9vw, 2.8rem); }
+body.is-phone .go-stat-card { padding: 8px 12px; min-width: 72px; }
+body.is-phone .go-stat-val { font-size: 1.2rem; }
+body.is-phone .go-btn { padding: 10px 20px; font-size: 1rem; }
+body.is-phone .shop-title, body.is-phone .profile-title { font-size: 1.3rem; }
+body.is-phone .shop-card { padding: 10px 8px; }
+body.is-phone .shop-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; }
+body.is-phone .pass-reward-card { width: 68px; min-height: 82px; }
+
+/* iPad refinements (kept close to current, slight polish) */
+body.is-ipad .menu-scroll { padding: 30px 24px 44px; }
+body.is-ipad .tc-joystick { left:34px; bottom:34px; }
+body.is-ipad .tc-actions { right:28px; bottom:28px; }
+
 </style>
 </head>
 <body>
 
+<!-- DEVICE SELECT -->
+<div id="device-select-overlay" class="device-select-overlay">
+  <div class="device-select-box">
+    <div class="device-select-icon">🥋</div>
+    <h2>Welcome, Fighter!</h2>
+    <p class="device-select-sub">What are you playing on?</p>
+    <div class="device-select-btns">
+      <button id="deviceIpadBtn" class="device-select-btn">
+        <span class="device-select-btn-icon">📱</span>
+        <span>iPad / Tablet</span>
+      </button>
+      <button id="devicePhoneBtn" class="device-select-btn">
+        <span class="device-select-btn-icon">📲</span>
+        <span>iPhone / Phone</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ROTATE PROMPT -->
+<div id="rotate-prompt">
+  <div class="rotate-prompt-icon">🔄</div>
+  <div class="rotate-prompt-text">Rotate your device<br>to landscape for the best experience</div>
+</div>
+
 <!-- MENU -->
 <div id="menu">
-  <div class="menu-scroll">
-    <h1>🥋 TAEKWONDO FIGHTER</h1>
-    <p class="subtitle">Fast Paced 2D Platform Fighter</p>
-    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center;">
+  <div class="menu-topbar">
+    <div class="menu-topbar-stats">
       <div class="coins-display" id="coinsDisplay">🪙 <span id="coinsVal">0</span></div>
       <div class="trophy-display" id="trophyDisplay">🏆 <span id="trophyVal">0</span></div>
-      <button class="profile-open-btn" id="profileOpenBtn">👤</button>
+    </div>
+    <button class="profile-open-btn" id="profileOpenBtn">👤</button>
+  </div>
+  <div class="menu-scroll">
+    <div class="menu-header">
+      <h1>🥋 TAEKWONDO FIGHTER</h1>
+      <p class="subtitle">Fast Paced 2D Platform Fighter</p>
     </div>
 
     <div class="menu-tabs">
@@ -755,8 +923,8 @@ body { font-family: 'Rajdhani', sans-serif; color: var(--color-text); display: f
       </div>
     </div>
 
+    <button class="start-btn" id="startBtn">FIGHT!</button>
     <div class="menu-btn-row">
-      <button class="start-btn" id="startBtn">FIGHT!</button>
       <button class="shop-open-btn" id="shopOpenBtn">🛒 SHOP</button>
       <button class="pass-open-btn" id="passOpenBtn">🎫 PASS</button>
     </div>
@@ -896,6 +1064,52 @@ body { font-family: 'Rajdhani', sans-serif; color: var(--color-text); display: f
 <div id="debug" style="display:none;">FPS: --</div>
 
 <script>
+// ═══════════════════ DEVICE SELECT (iPad vs iPhone) ═══════════════════
+(function initDeviceSelect() {
+  const overlay = document.getElementById('device-select-overlay');
+  const btnIpad = document.getElementById('deviceIpadBtn');
+  const btnPhone = document.getElementById('devicePhoneBtn');
+  const rotatePrompt = document.getElementById('rotate-prompt');
+
+  function applyDevice(type) {
+    document.body.classList.remove('is-phone', 'is-ipad');
+    document.body.classList.add(type === 'phone' ? 'is-phone' : 'is-ipad');
+    try { localStorage.setItem('tkw_device_type', type); } catch(e) {}
+    overlay.classList.add('hidden');
+    if (typeof resizeCanvas === 'function') setTimeout(resizeCanvas, 50);
+  }
+
+  let saved = null;
+  try { saved = localStorage.getItem('tkw_device_type'); } catch(e) {}
+
+  if (saved === 'phone' || saved === 'ipad') {
+    applyDevice(saved);
+  } else {
+    const guessPhone = Math.min(window.innerWidth, window.innerHeight) < 500;
+    overlay.classList.remove('hidden');
+    if (guessPhone) btnPhone.classList.add('device-select-btn-suggested');
+  }
+
+  btnIpad?.addEventListener('click', () => applyDevice('ipad'));
+  btnPhone?.addEventListener('click', () => applyDevice('phone'));
+
+  window._setDeviceType = applyDevice;
+
+  function checkRotate() {
+    const isPhoneMode = document.body.classList.contains('is-phone');
+    const isPortrait = window.innerHeight > window.innerWidth;
+    const inGame = typeof gameState !== 'undefined' && (gameState === 'playing' || gameState === 'paused');
+    if (isPhoneMode && isPortrait && inGame) {
+      rotatePrompt.classList.add('game-active');
+    } else {
+      rotatePrompt.classList.remove('game-active');
+    }
+  }
+  window.addEventListener('resize', checkRotate);
+  window.addEventListener('orientationchange', checkRotate);
+  setInterval(checkRotate, 500);
+})();
+
 // ─── CONFIG ─────────────────────────────────────────────────────────────────
 const GRAVITY = 1750;
 const PLAYER_SPEED = 420;
@@ -1087,13 +1301,16 @@ function resizeCanvas() {
 window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
 
-function scaleX() { return canvas._logicalW / STAGE_W; }
-function scaleY() { return canvas._logicalH / STAGE_H; }
-function scale() { return Math.min(scaleX(), scaleY()); }
-function sx(x) { return (x + camera.x) * scaleX(); }
-function sy(y) { return (y + camera.y) * scaleY(); }
-function sw(w) { return w * scaleX(); }
-function sh(h) { return h * scaleY(); }
+function scaleX() { return uniformScale(); }
+function scaleY() { return uniformScale(); }
+function uniformScale() { return Math.min(canvas._logicalW / STAGE_W, canvas._logicalH / STAGE_H); }
+function scale() { return uniformScale(); }
+function offsetX() { return (canvas._logicalW - STAGE_W * uniformScale()) / 2; }
+function offsetY() { return (canvas._logicalH - STAGE_H * uniformScale()) / 2; }
+function sx(x) { return (x + camera.x) * uniformScale() + offsetX(); }
+function sy(y) { return (y + camera.y) * uniformScale() + offsetY(); }
+function sw(w) { return w * uniformScale(); }
+function sh(h) { return h * uniformScale(); }
 
 // ─── FIGHTER CLASS ────────────────────────────────────────────────────────────
 const FIGHTER_COLORS = ['#3f8fa8','#a8474f','#b8823c','#6f5a94'];
