@@ -1019,7 +1019,7 @@ body.is-phone .online-code-box { flex-direction:column; align-items:flex-start; 
   <div class="online-layout">
     <div class="online-panel">
       <h3>Host match</h3>
-      <p class="online-sub">Create one code, send it to your friend, then start a 1v1 match.</p>
+      <p class="online-sub">Create a short code, send it to your friend, then start a 1v1 match.</p>
       <div class="online-actions">
         <button class="online-main-btn" id="hostOnlineBtn">Create Code</button>
         <button class="online-secondary-btn" id="disconnectOnlineBtn">Reset</button>
@@ -1039,8 +1039,8 @@ body.is-phone .online-code-box { flex-direction:column; align-items:flex-start; 
     </div>
     <div class="online-panel">
       <h3>Join match</h3>
-      <p class="online-sub">Paste your friend's code and connect to them directly.</p>
-      <input class="online-input" id="joinCodeInput" placeholder="Enter friend code" autocomplete="off" />
+      <p class="online-sub">Paste the short code and connect directly.</p>
+      <input class="online-input" id="joinCodeInput" placeholder="Enter 4-letter code" autocomplete="off" />
       <div class="online-actions">
         <button class="online-main-btn" id="joinOnlineBtn">Join Code</button>
         <button class="online-secondary-btn" id="startOnlineMatchBtn">Start Online Match</button>
@@ -1244,6 +1244,8 @@ let onlineRoomCode = '';
 let onlineLastPayloadAt = 0;
 let onlineSyncInterval = null;
 let remoteKeys = {};
+let remotePrevKeys = {};
+let remoteJustPressed = {};
 let onlineCharacterChoice = 'jin';
 let onlineSelectedRemoteChar = 'jin';
 let onlineConnectedPeerId = '';
@@ -1332,7 +1334,13 @@ function setupOnlineConnection(conn, role) {
       setOnlineStatus('Friend connected. Host can start when ready.', 'good');
     }
     if (data.type === 'inputs' && onlineRole === 'host') {
-      remoteKeys = data.keys || {};
+      const nextKeys = data.keys || {};
+      remoteJustPressed = {};
+      for (const k of Object.keys(nextKeys)) {
+        if (nextKeys[k] && !remotePrevKeys[k]) remoteJustPressed[k] = true;
+      }
+      remotePrevKeys = { ...nextKeys };
+      remoteKeys = nextKeys;
       onlineLastPayloadAt = performance.now();
     }
     if (data.type === 'snapshot' && onlineRole === 'client') {
@@ -1594,6 +1602,7 @@ class Fighter {
     this.char = charData || CHARACTERS[0];
     this.color = FIGHTER_COLORS[id];
     this.name = isPlayer ? 'YOU' : FIGHTER_NAMES[id];
+    this.inputSource = isPlayer ? 'local' : 'ai';
     this.w = 50 * (0.9 + this.char.weightMult*0.1); this.h = 116 * (0.9 + this.char.weightMult*0.1);
     this.counterActive = false;
     this.counterTimer = 0;
@@ -1826,85 +1835,63 @@ class Fighter {
     }
   }
 
-  handlePlayerInput(enemies) {
-    const spd = PLAYER_SPEED * this.char.speedMult;
-    if (keys['KeyA']) { this.vx = -spd; this.facing = -1; }
-    else if (keys['KeyD']) { this.vx = spd; this.facing = 1; }
+  getInputState() {
+    if (this.inputSource === 'remote') {
+      return {
+        left: !!remoteKeys['KeyA'],
+        right: !!remoteKeys['KeyD'],
+        jump: !!remoteJustPressed['KeyW'] || !!remoteJustPressed['Space'],
+        down: !!remoteKeys['KeyS'],
+        block: !!remoteKeys['ShiftLeft'],
+        punch: !!remoteJustPressed['KeyJ'],
+        kick: !!remoteJustPressed['KeyK'],
+        special: !!remoteJustPressed['KeyL']
+      };
+    }
+    return {
+      left: !!keys['KeyA'],
+      right: !!keys['KeyD'],
+      jump: !!justPressed['KeyW'] || !!justPressed['Space'],
+      down: !!keys['KeyS'] || !!keys['ArrowDown'],
+      block: !!keys['ShiftLeft'] || !!keys['ShiftRight'],
+      punch: !!justPressed['KeyJ'],
+      kick: !!justPressed['KeyK'],
+      special: !!justPressed['KeyL']
+    };
+  }
 
-    if (justPressed['KeyW'] || justPressed['Space']) {
+  handlePlayerInput(enemies) {
+    const input = this.getInputState();
+    const spd = PLAYER_SPEED * this.char.speedMult;
+    if (input.left) { this.vx = -spd; this.facing = -1; }
+    else if (input.right) { this.vx = spd; this.facing = 1; }
+
+    if (input.jump) {
       if (this.grounded) { this.vy = JUMP_VEL * this.char.jumpMult; this.grounded = false; this.jumps = 1; playSFX(500, 0.06, 'sine'); }
       else if (this.jumps < 2) { this.vy = DOUBLE_JUMP_VEL * this.char.jumpMult; this.jumps++; playSFX(420, 0.06, 'sine'); }
     }
 
-    if (!this.grounded && (keys['KeyS'] || keys['ArrowDown'])) this.fastFalling = true;
+    if (!this.grounded && input.down) this.fastFalling = true;
     if (this.grounded) this.fastFalling = false;
 
-    const shiftHeld = keys['ShiftLeft'] || keys['ShiftRight'];
+    const shiftHeld = input.block;
+    if (shiftHeld && this.grounded) {
+      this.blocking = true;
+      this.blockTimer = 0.12;
+    }
     if (shiftHeld && !this.grounded && this.airDodgeCooldown <= 0 && !this.airDodging) {
       this.airDodging = true;
-      this.airDodgeTimer = 0.35;
-      this.airDodgeCooldown = 1.0;
-      this.vx *= 0.3; this.vy = Math.min(this.vy, -80);
-      playSFX(600, 0.08, 'sine');
+      this.airDodgeTimer = 0.28;
+      this.airDodgeCooldown = 1.3;
+      this.vx = this.facing * 300;
+      this.vy *= 0.2;
+      spawnParticles(this.cx, this.cy, '#aaddff', 10);
+      playSFX(900, 0.05, 'triangle');
     }
-    this.blocking = shiftHeld && this.grounded;
-    if (this.blocking) this.blockTimer = 0.25;
 
-    if (!this.blocking && this.attackCooldown <= 0) {
-      if (justPressed['KeyJ']) this.doAttack('punch', enemies, 0.14, 0.18);
-      else if (justPressed['KeyK']) this.doAttack('kick', enemies, 0.18, 0.24);
-      else if (justPressed['KeyL'] && this.specialCooldown <= 0) {
-        this.useSpecial(enemies);
-      }
-    }
-  }
-
-  useSpecial(enemies) {
-    const sp = this.char.special;
-    this.specialCooldown = 1.35;
-    if (sp === 'counter') {
-      this.counterActive = true;
-      this.counterTimer = 0.6;
-      this.attackType = 'special'; this.attackTimer = 0.3; this.attackCooldown = 0.1;
-      spawnPopup(this.cx, this.cy - 70, 'READY!', { color:'#ff44ff', size:20, vy:-40, life:0.5, scale:1 });
-      playSFX(500, 0.1, 'sine');
-    } else if (sp === 'fireball') {
-      this.attackType = 'special'; this.attackTimer = 0.22; this.attackCooldown = 0.2;
-      spawnProjectile(this);
-      playSFX(320, 0.14, 'sawtooth');
-    } else if (sp === 'dashpunch') {
-      this.dashPunchTimer = 0.5;
-      this.dashPunchHits = 0;
-      this.attackType = 'special'; this.attackTimer = 0.5; this.attackCooldown = 0.1;
-      this.vx = this.facing * 700;
-      playSFX(220, 0.12, 'square');
-    } else if (sp === 'flyingkick') {
-      this.attackType = 'special'; this.attackTimer = 0.32; this.attackCooldown = 0.15;
-      this.vx = this.facing * 900;
-      this.vy = this.grounded ? -300 : this.vy - 150;
-      this.grounded = false;
-      this.doAttack('special', enemies, 0.32, 0.15);
-      playSFX(260, 0.13, 'triangle');
-    } else {
-      this.doAttack('special', enemies, 0.24, 0.0);
-    }
-  }
-
-  doAttack(type, enemies, duration, cooldown) {
-    this.attackType = type;
-    this.attackTimer = duration;
-    this.attackCooldown = cooldown;
-    this.hasHitThisAttack = false;
-    playSFX(type==='special' ? 180 : type==='kick' ? 280 : 400, 0.08, type==='special' ? 'sawtooth' : 'square');
-    const hb = this.getHitbox(type);
-    for (const e of enemies) {
-      if (e === this || e.dead || !e.visible) continue;
-      if (rectsOverlap(hb, { x: e.x, y: e.y, w: e.w, h: e.h })) {
-        e.hit(type, this);
-        e.facing = -this.facing;
-        this.hasHitThisAttack = true;
-      }
-    }
+    if (input.punch && this.attackCooldown <= 0 && this.dashPunchTimer <= 0) this.attack('punch', enemies);
+    if (input.kick && this.attackCooldown <= 0 && this.dashPunchTimer <= 0) this.attack('kick', enemies);
+    if (input.special && this.specialCooldown <= 0 && this.dashPunchTimer <= 0) this.useSpecial(enemies);
   }
 
   handleAI(dt, enemies) {
@@ -2463,6 +2450,8 @@ function drawAnnouncer() {
 let firstBloodShown = false;
 let finalStockWarned = new Set();
 let comebackShown = false;
+  onlineRemoteReady = false;
+  remoteKeys = {};
 let timeWarnShown = false;
 
 // ─── SATISFYING POPUPS (combo text, damage numbers, hit callouts) ─────────────
@@ -3681,7 +3670,33 @@ function gameLoop(timestamp) {
     camera.y = (Math.random()-0.5) * camera.shake;
   } else { camera.x = 0; camera.y = 0; camera.shake = 0; }
 
+  if (onlineMode && onlineRole === 'client') {
+    if (onlineSnapshotBuffer) {
+      applyOnlineSnapshot(onlineSnapshotBuffer);
+      onlineSnapshotBuffer = null;
+    }
+    ctx.clearRect(0, 0, canvas._logicalW, canvas._logicalH);
+    ctx.save();
+    if (zoomAmount > 0.001) {
+      const cxp = canvas._logicalW/2, cyp = canvas._logicalH/2;
+      ctx.translate(cxp, cyp);
+      ctx.scale(1 + zoomAmount, 1 + zoomAmount);
+      ctx.translate(-cxp, -cyp);
+    }
+    drawStage();
+    drawParticles();
+    drawProjectiles();
+    fighters.forEach(f => f.draw(ctx));
+    drawStarKOs();
+    drawPopups();
+    drawAnnouncer();
+    ctx.restore();
+    clearJustPressed();
+    return;
+  }
+
   applyStageHazards(dt);
+
   fighters.forEach(f => f.update(dt, fighters));
   updateProjectiles(dt, fighters);
   updateParticles(dt);
@@ -3711,7 +3726,9 @@ function gameLoop(timestamp) {
   ctx.restore();
 
   clearJustPressed();
+  remoteJustPressed = {};
 }
+
 
 // ─── UI EVENTS ────────────────────────────────────────────────────────────────
 document.querySelectorAll('.diff-btn').forEach(btn => {
@@ -3802,7 +3819,8 @@ document.getElementById('hostOnlineBtn')?.addEventListener('click', () => {
   if (!window.Peer) { setOnlineStatus('PeerJS failed to load.', 'bad'); return; }
   destroyOnlinePeer();
   setOnlineStatus('Creating friend code…', 'warn');
-  onlinePeer = new Peer();
+  onlineRoomCode = 'TKD-' + Math.random().toString(36).slice(2, 6).toUpperCase();
+  onlinePeer = new Peer(onlineRoomCode);
   onlineRole = 'host';
   updateOnlinePills();
   onlinePeer.on('open', id => {
