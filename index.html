@@ -73,6 +73,9 @@ body { font-family: 'Rajdhani', sans-serif; color: var(--color-text); display: f
 .diff-btn.medium.selected { border-color: #ffaa00; color: #ffaa00; background: rgba(255,170,0,0.1); }
 .diff-btn.hard.selected { border-color: #ff4466; color: #ff4466; background: rgba(255,68,102,0.1); }
 .diff-btn.insane.selected { border-color: #aa44ff; color: #aa44ff; background: rgba(170,68,255,0.1); }
+.diff-btn.nightmare.selected { border-color: #ff2200; color: #ff2200; background: rgba(255,34,0,0.1); }
+.diff-btn.godlike.selected { border-color: #ff0055; color: #ff0055; background: rgba(255,0,85,0.1); }
+.diff-btn.impossible.selected { border-color: #ffffff; color: #ffffff; background: rgba(255,255,255,0.12); box-shadow: 0 0 24px rgba(255,255,255,0.4); }
 
 .cpu-count-btns { display: flex; gap: 12px; justify-content: center; }
 .cpu-btn {
@@ -898,6 +901,9 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
           <button class="diff-btn medium selected" data-diff="medium">Medium</button>
           <button class="diff-btn hard" data-diff="hard">Hard</button>
           <button class="diff-btn insane" data-diff="insane">Insane</button>
+          <button class="diff-btn nightmare" data-diff="nightmare">Nightmare</button>
+          <button class="diff-btn godlike" data-diff="godlike">Godlike</button>
+          <button class="diff-btn impossible" data-diff="impossible">Impossible</button>
         </div>
       </div>
       <div class="menu-subsection">
@@ -1122,10 +1128,13 @@ const STAGE_H = 720;
 const BLAST_ZONE = { left: -60, right: STAGE_W+60, top: -180, bottom: STAGE_H+60 };
 
 const DIFF = {
-  easy:   { react: 0.38, aggro: 0.22, jumpChance: 0.010, specialChance: 0.004, label:'Easy',   color:'#44ff88' },
-  medium: { react: 0.62, aggro: 0.48, jumpChance: 0.017, specialChance: 0.009, label:'Medium', color:'#ffaa00' },
-  hard:   { react: 0.80, aggro: 0.70, jumpChance: 0.024, specialChance: 0.015, label:'Hard',   color:'#ff4466' },
-  insane: { react: 0.94, aggro: 0.92, jumpChance: 0.036, specialChance: 0.026, label:'Insane', color:'#aa44ff' },
+  easy:       { react: 0.38, aggro: 0.22, jumpChance: 0.010, specialChance: 0.004, label:'Easy',       color:'#44ff88' },
+  medium:     { react: 0.62, aggro: 0.48, jumpChance: 0.017, specialChance: 0.009, label:'Medium',     color:'#ffaa00' },
+  hard:       { react: 0.80, aggro: 0.70, jumpChance: 0.024, specialChance: 0.015, label:'Hard',       color:'#ff4466' },
+  insane:     { react: 0.94, aggro: 0.92, jumpChance: 0.036, specialChance: 0.026, label:'Insane',     color:'#aa44ff' },
+  nightmare:  { react: 0.97, aggro: 0.95, jumpChance: 0.050, specialChance: 0.040, label:'Nightmare',  color:'#ff2200' },
+  godlike:    { react: 0.99, aggro: 0.98, jumpChance: 0.070, specialChance: 0.055, label:'Godlike',    color:'#ff0055' },
+  impossible: { react: 1.00, aggro: 1.00, jumpChance: 0.090, specialChance: 0.070, label:'Impossible', color:'#ffffff' },
 };
 
 // ─── STATE ───────────────────────────────────────────────────────────────────
@@ -1209,6 +1218,100 @@ const STAGES = [
       { x: 40,   y: 600, w: 1200, h: 120, main: true  },
     ],
     hazard: 'electric',
+  },
+  {
+    id: 'tundra', name: 'Frozen Tundra', icon: '\u2744\ufe0f',
+    desc: 'Icy platforms with unpredictable gust gusts that shove fighters mid-air.',
+    thumb: 'linear-gradient(160deg,#0a2a4a,#dceeff)',
+    bgTop: '#0a1a2e', bgMid: '#1a3a5a', bgBot: '#dceeff', accent: '#99ddff',
+    platforms: [
+      { x: 200,  y: 620, w: 880,  h: 90,  main: true  },
+      { x: 60,   y: 460, w: 200,  h: 20,  main: false },
+      { x: 1020, y: 460, w: 200,  h: 20,  main: false },
+      { x: 500,  y: 330, w: 280,  h: 20,  main: false },
+    ],
+    hazard: 'ice',
+  },
+  {
+    id: 'swamp', name: 'Toxic Swamp', icon: '\u2620\ufe0f',
+    desc: 'A rising poison mist slowly creeps up from the murky waters below.',
+    thumb: 'linear-gradient(160deg,#1a3a1a,#0a1a0a)',
+    bgTop: '#0a2a0a', bgMid: '#1a4a1a', bgBot: '#051005', accent: '#66ff44',
+    platforms: [
+      { x: 260,  y: 600, w: 760,  h: 60,  main: true  },
+      { x: 40,   y: 440, w: 220,  h: 20,  main: false },
+      { x: 1020, y: 440, w: 220,  h: 20,  main: false },
+      { x: 560,  y: 300, w: 160,  h: 20,  main: false },
+    ],
+    hazard: 'poison',
+  },
+  {
+    id: 'dunes', name: 'Sandstorm Dunes', icon: '\ud83c\udf2a\ufe0f',
+    desc: 'Wide open desert with fierce sandstorm winds that constantly shift direction.',
+    thumb: 'linear-gradient(160deg,#8a6a2a,#3a2a10)',
+    bgTop: '#6a4a1a', bgMid: '#8a6a2a', bgBot: '#2a1a08', accent: '#eecc66',
+    platforms: [
+      { x: -80,  y: 640, w: 480,  h: 60,  main: true },
+      { x: 880,  y: 640, w: 480,  h: 60,  main: true },
+      { x: 460,  y: 480, w: 360,  h: 20,  main: false },
+      { x: 620,  y: 320, w: 160,  h: 20,  main: false },
+    ],
+    hazard: 'wind',
+  },
+  {
+    id: 'rooftop', name: 'Thunderstorm Rooftop', icon: '\u26c8\ufe0f',
+    desc: 'A rain-slicked skyscraper roof struck by rolling lightning at the edges.',
+    thumb: 'linear-gradient(160deg,#2a2a3a,#0a0a14)',
+    bgTop: '#141428', bgMid: '#20203a', bgBot: '#08080f', accent: '#aaccff',
+    platforms: [
+      { x: 120,  y: 610, w: 1040, h: 90,  main: true  },
+      { x: 320,  y: 440, w: 240,  h: 20,  main: false },
+      { x: 720,  y: 440, w: 240,  h: 20,  main: false },
+    ],
+    hazard: 'electric',
+  },
+  {
+    id: 'crater', name: 'Meteor Crater', icon: '\u2604\ufe0f',
+    desc: 'A scarred impact crater under constant bombardment from falling meteors.',
+    thumb: 'linear-gradient(160deg,#3a1a2a,#100a14)',
+    bgTop: '#1a0a1e', bgMid: '#3a1a2a', bgBot: '#0a0510', accent: '#ff8844',
+    platforms: [
+      { x: 300,  y: 630, w: 680,  h: 80,  main: true  },
+      { x: 100,  y: 460, w: 180,  h: 20,  main: false },
+      { x: 1000, y: 460, w: 180,  h: 20,  main: false },
+      { x: 540,  y: 330, w: 200,  h: 20,  main: false },
+    ],
+    hazard: 'meteor',
+  },
+  {
+    id: 'reef', name: 'Underwater Ruins', icon: '\ud83e\udea8',
+    desc: 'Sunken temple ruins with drifting currents and coral-covered stepping platforms.',
+    thumb: 'linear-gradient(160deg,#0a3a4a,#001a2a)',
+    bgTop: '#002838', bgMid: '#0a4a5a', bgBot: '#00131c', accent: '#33ddcc',
+    platforms: [
+      { x: 260,  y: 600, w: 760,  h: 70,  main: true  },
+      { x: 60,   y: 440, w: 200,  h: 18,  main: false },
+      { x: 400,  y: 440, w: 180,  h: 18,  main: false },
+      { x: 700,  y: 440, w: 180,  h: 18,  main: false },
+      { x: 1020, y: 440, w: 200,  h: 18,  main: false },
+      { x: 540,  y: 300, w: 200,  h: 18,  main: false },
+    ],
+    hazard: null,
+  },
+  {
+    id: 'spacestation', name: 'Orbit Station', icon: '\ud83e\udef0',
+    desc: 'A derelict space station with scattered low-gravity platforms floating in the void.',
+    thumb: 'linear-gradient(160deg,#0a0a2a,#000000)',
+    bgTop: '#05051a', bgMid: '#0a0a2a', bgBot: '#000000', accent: '#8888ff',
+    platforms: [
+      { x: 80,   y: 560, w: 260,  h: 20,  main: true },
+      { x: 400,  y: 620, w: 260,  h: 20,  main: true },
+      { x: 720,  y: 560, w: 260,  h: 20,  main: true },
+      { x: 1020, y: 460, w: 200,  h: 20,  main: false },
+      { x: 20,   y: 340, w: 200,  h: 20,  main: false },
+      { x: 540,  y: 300, w: 220,  h: 20,  main: false },
+    ],
+    hazard: null,
   },
 ];
 
@@ -2123,6 +2226,44 @@ function drawStage() {
       }
     });
     ctx.shadowBlur = 0;
+  } else if (stage.hazard === 'ice') {
+    ctx.fillStyle = 'rgba(200,240,255,0.5)';
+    for (let i=0;i<40;i++) {
+      const fx = (i*61.7 + hazardTimer*30) % canvas._logicalW;
+      const fy = (i*41.3 + hazardTimer*80) % canvas._logicalH;
+      ctx.globalAlpha = 0.3 + (i%4)*0.15;
+      ctx.beginPath(); ctx.arc(fx, fy, 2*s, 0, Math.PI*2); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  } else if (stage.hazard === 'poison') {
+    const mistY = canvas._logicalH - (40 + Math.sin(hazardTimer*0.8)*10) * s;
+    ctx.fillStyle = 'rgba(80,255,60,0.18)';
+    ctx.fillRect(0, mistY, canvas._logicalW, canvas._logicalH - mistY);
+    ctx.shadowColor = '#66ff44'; ctx.shadowBlur = 24*s;
+    ctx.fillStyle = 'rgba(120,255,80,0.35)';
+    for (let i=0;i<10;i++) {
+      const bx = (i*130 + hazardTimer*20) % canvas._logicalW;
+      ctx.globalAlpha = 0.3 + Math.sin(hazardTimer*2+i)*0.2;
+      ctx.beginPath(); ctx.arc(bx, mistY - Math.sin(hazardTimer*3+i)*10*s, 6*s, 0, Math.PI*2); ctx.fill();
+    }
+    ctx.globalAlpha = 1; ctx.shadowBlur = 0;
+  } else if (stage.hazard === 'meteor') {
+    for (let i=0;i<5;i++) {
+      const seed = i*137.1;
+      const prog = (hazardTimer*0.6 + i*0.37) % 1;
+      const mx = ((seed*3.1) % canvas._logicalW);
+      const my = prog * canvas._logicalH * 0.9;
+      ctx.save();
+      ctx.translate(mx, my);
+      ctx.rotate(0.4);
+      ctx.shadowColor = '#ff6622'; ctx.shadowBlur = 16*s;
+      ctx.fillStyle = '#ff8844';
+      ctx.beginPath(); ctx.arc(0, 0, 6*s, 0, Math.PI*2); ctx.fill();
+      ctx.strokeStyle = 'rgba(255,140,60,0.5)'; ctx.lineWidth = 3*s;
+      ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(-18*s, -18*s); ctx.stroke();
+      ctx.restore();
+    }
+    ctx.shadowBlur = 0;
   }
 
   for (const p of stage.platforms) {
@@ -2286,6 +2427,8 @@ function updateZoom(dt) { zoomAmount = Math.max(0, zoomAmount - dt * 0.4); }
 
 // ─── STAGE HAZARD LOGIC ────────────────────────────────────────────────────────
 let lavaTickTimer = 0;
+let poisonTickTimer = 0;
+let meteorTickTimer = 0;
 function applyStageHazards(dt) {
   const stage = getStage();
   if (!stage.hazard) return;
@@ -2317,6 +2460,34 @@ function applyStageHazards(dt) {
         playSFX(700, 0.05, 'square');
       }
     });
+  } else if (stage.hazard === 'ice') {
+    fighters.forEach(f => { if (!f.dead && f.grounded) f.vx *= 1.015; });
+  } else if (stage.hazard === 'poison') {
+    poisonTickTimer -= dt;
+    const mistWorldY = STAGE_H - (40 + Math.sin(hazardTimer*0.8)*10);
+    fighters.forEach(f => {
+      if (f.dead || !f.visible) return;
+      if (f.y + f.h > mistWorldY && poisonTickTimer <= 0) {
+        f.damage = Math.min(999, f.damage + 1.5);
+        spawnParticles(f.cx, f.feet, '#66ff44', 4);
+        playSFX(220, 0.06, 'sine');
+      }
+    });
+    if (poisonTickTimer <= 0) poisonTickTimer = 0.6;
+  } else if (stage.hazard === 'meteor') {
+    meteorTickTimer -= dt;
+    if (meteorTickTimer <= 0) {
+      fighters.forEach(f => {
+        if (f.dead || !f.visible) return;
+        if (Math.random() < 0.18) {
+          f.damage = Math.min(999, f.damage + 4);
+          f.vy = -320; f.vx += (Math.random()-0.5) * 300;
+          spawnParticles(f.cx, f.cy, '#ff8844', 10);
+          playSFX(140, 0.1, 'sawtooth');
+        }
+      });
+      meteorTickTimer = 1.2;
+    }
   }
 }
 
@@ -3182,6 +3353,8 @@ function startGame() {
   flashAlpha = 0;
   hazardTimer = 0;
   lavaTickTimer = 0;
+  poisonTickTimer = 0;
+  meteorTickTimer = 0;
   camera.x = 0; camera.y = 0; camera.shake = 0;
   firstBloodShown = false;
   finalStockWarned = new Set();
