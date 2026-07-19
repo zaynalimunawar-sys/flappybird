@@ -102,15 +102,52 @@ body { font-family: 'Rajdhani', sans-serif; color: var(--color-text); display: f
 
 /* GAME OVER */
 #game-over-screen { display: none; }
-#game-over-screen h2 { font-family: 'Bangers', cursive; font-size: clamp(2rem, 6vw, 4rem); letter-spacing: 4px; margin-bottom: 8px; }
-#game-over-screen .winner-text { font-size: 1.2rem; color: var(--color-muted); margin-bottom: 32px; }
+#confettiCanvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+.go-content { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; animation: goSlideIn 0.55s cubic-bezier(.22,1.4,.36,1); }
+@keyframes goSlideIn { 0% { opacity: 0; transform: translateY(40px) scale(0.9); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
+.go-badge {
+  font-size: clamp(3rem, 9vw, 5.5rem); margin-bottom: 4px;
+  animation: goBadgePop 0.6s cubic-bezier(.34,1.56,.64,1) 0.1s both, goBadgeFloat 2.4s ease-in-out 0.7s infinite;
+  filter: drop-shadow(0 0 30px rgba(255,215,0,0.5));
+}
+@keyframes goBadgePop { 0% { transform: scale(0) rotate(-30deg); opacity:0; } 100% { transform: scale(1) rotate(0); opacity:1; } }
+@keyframes goBadgeFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+#game-over-screen h2 {
+  font-family: 'Bangers', cursive; font-size: clamp(2.2rem, 7vw, 4.5rem); letter-spacing: 4px; margin-bottom: 6px;
+  animation: goTitlePulse 1.6s ease-in-out 0.3s infinite;
+}
+@keyframes goTitlePulse { 0%,100% { filter: drop-shadow(0 0 12px currentColor); } 50% { filter: drop-shadow(0 0 28px currentColor); } }
+#game-over-screen .winner-text { font-size: 1.15rem; color: var(--color-muted); margin-bottom: 20px; }
+.go-stats {
+  display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; margin-bottom: 20px;
+  max-width: 520px;
+}
+.go-stat-card {
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); border-radius: 14px;
+  padding: 12px 18px; min-width: 92px; text-align: center;
+  animation: goStatIn 0.45s cubic-bezier(.34,1.56,.64,1) both;
+}
+@keyframes goStatIn { 0% { opacity:0; transform: translateY(14px) scale(0.85); } 100% { opacity:1; transform: translateY(0) scale(1); } }
+.go-stat-val { font-family: 'Bangers', cursive; font-size: 1.5rem; color: var(--color-p1); line-height: 1.1; }
+.go-stat-label { font-size: 0.68rem; color: var(--color-muted); letter-spacing: 1.5px; text-transform: uppercase; margin-top: 2px; }
+.go-coins-earn {
+  margin-bottom: 24px; animation: goCoinsIn 0.5s cubic-bezier(.34,1.56,.64,1) 0.35s both, coinGlow 1.8s ease-in-out 0.9s infinite;
+}
+@keyframes goCoinsIn { 0% { opacity:0; transform: scale(0.6); } 100% { opacity:1; transform: scale(1); } }
+@keyframes coinGlow { 0%,100% { box-shadow: 0 0 0 rgba(255,200,0,0); } 50% { box-shadow: 0 0 24px rgba(255,200,0,0.5); } }
+.go-btn-row { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
 .go-btn {
-  padding: 12px 36px; border-radius: 10px; border: 2px solid var(--color-border);
+  padding: 13px 30px; border-radius: 12px; border: 2px solid var(--color-border);
   background: var(--color-surface); color: var(--color-text); cursor: pointer;
-  font-family: 'Bangers', cursive; font-size: 1.4rem; letter-spacing: 2px; margin: 6px;
+  font-family: 'Bangers', cursive; font-size: 1.25rem; letter-spacing: 1.5px; margin: 4px;
   transition: all 200ms ease;
 }
-.go-btn:hover { border-color: var(--color-p1); color: var(--color-p1); transform: translateY(-2px); }
+.go-btn:hover { border-color: var(--color-p1); color: var(--color-p1); transform: translateY(-3px) scale(1.03); box-shadow: 0 6px 20px rgba(0,212,255,0.25); }
+.go-btn.primary {
+  background: linear-gradient(135deg, #00aacc, #0066aa); border-color: transparent; color: #fff;
+  box-shadow: 0 4px 20px rgba(0,170,204,0.4);
+}
+.go-btn.primary:hover { box-shadow: 0 8px 28px rgba(0,170,204,0.7); color:#fff; }
 
 /* PAUSE */
 #pause-overlay {
@@ -339,13 +376,18 @@ body { font-family: 'Rajdhani', sans-serif; color: var(--color-text); display: f
 
 <!-- GAME OVER -->
 <div id="game-over-screen">
-  <h2 id="go-title"></h2>
-  <p class="winner-text" id="go-sub"></p>
-  <div class="coins-display" id="goCoinsEarned" style="margin-bottom:24px;">🪙 <span id="goCoinsVal">0</span> earned</div>
-  <div>
-    <button class="go-btn" id="rematchBtn">Rematch</button>
-    <button class="go-btn" id="goShopBtn">🛒 Shop</button>
-    <button class="go-btn" id="goMenuBtn">Menu</button>
+  <canvas id="confettiCanvas"></canvas>
+  <div class="go-content">
+    <div class="go-badge" id="go-badge">🏆</div>
+    <h2 id="go-title"></h2>
+    <p class="winner-text" id="go-sub"></p>
+    <div class="go-stats" id="go-stats"></div>
+    <div class="coins-display go-coins-earn" id="goCoinsEarned">🪙 <span id="goCoinsVal">0</span> earned</div>
+    <div class="go-btn-row">
+      <button class="go-btn primary" id="rematchBtn">🔁 Rematch</button>
+      <button class="go-btn" id="goShopBtn">🛒 Shop</button>
+      <button class="go-btn" id="goMenuBtn">🏠 Menu</button>
+    </div>
   </div>
 </div>
 
@@ -541,6 +583,7 @@ class Fighter {
     this.retreatTimer = 0;
     this.landedThisFrame = false;
     this.comboHits = 0;
+    this.comboResetTimer = 0;
     this.hasHitThisAttack = false;
     this.airDodging = false;
     this.airDodgeTimer = 0;
@@ -612,6 +655,7 @@ class Fighter {
     const baseDmg = attackType === 'punch' ? 8 : attackType === 'kick' ? 13 : 22;
     const dmgRoll = baseDmg + Math.random()*4 - 2;
     this.damage = Math.min(999, this.damage + dmgRoll);
+    this.totalDamageTaken = (this.totalDamageTaken||0) + dmgRoll;
     const rage = 1 + Math.min(attacker.damage, 150) * 0.0035;
     const pctFactor = 0.35 + Math.pow(this.damage / 100, 1.6) * 0.9;
     const kb = pctFactor * (attackType === 'special' ? 1.9 : 1) * rage;
@@ -625,6 +669,7 @@ class Fighter {
     spawnParticles(this.cx, this.cy, trailColors, 22 + Math.floor(dmgRoll * 1.2));
     spawnParticles(this.cx, this.cy, '#ffffff', 8);
     flashScreen(attackType === 'special' ? 0.18 : 0.08);
+    registerComboHit(attacker, this, dmgRoll, attackType);
     playSFX(attackType === 'special' ? 200 : 350, 0.12, 'square');
   }
 
@@ -669,6 +714,7 @@ class Fighter {
     if (this.airDodgeTimer > 0) { this.airDodgeTimer -= dt; if (this.airDodgeTimer <= 0) this.airDodging = false; }
     if (this.airDodgeCooldown > 0) { this.airDodgeCooldown -= dt; }
     if (this.grounded) this.airDodgeCooldown = 0;
+    if (this.comboResetTimer > 0) { this.comboResetTimer -= dt; if (this.comboResetTimer <= 0) this.comboHits = 0; }
 
     if (this.stunTimer <= 0) {
       if (this.isPlayer) this.handlePlayerInput(enemies);
@@ -1230,6 +1276,86 @@ function drawStage() {
   }
 }
 
+// ─── SATISFYING POPUPS (combo text, damage numbers, hit callouts) ─────────────
+let popups = [];
+const HIT_CALLOUTS = ['NICE!','SOLID!','CRUSHING!','BRUTAL!','SAVAGE!'];
+function spawnPopup(x, y, text, opts = {}) {
+  popups.push({
+    x, y, text,
+    life: opts.life || 0.9, maxLife: opts.life || 0.9,
+    vy: opts.vy !== undefined ? opts.vy : -90,
+    color: opts.color || '#ffffff',
+    size: opts.size || 22,
+    scale: opts.startScale || 0.4,
+    targetScale: opts.scale || 1,
+    bold: opts.bold !== false,
+    outline: opts.outline || '#000',
+  });
+}
+function updatePopups(dt) {
+  for (let i = popups.length - 1; i >= 0; i--) {
+    const p = popups[i];
+    p.y += p.vy * dt;
+    p.vy *= 0.94;
+    p.life -= dt;
+    p.scale += (p.targetScale - p.scale) * Math.min(1, dt * 14);
+    if (p.life <= 0) popups.splice(i, 1);
+  }
+}
+function drawPopups() {
+  for (const p of popups) {
+    ctx.save();
+    const alpha = Math.min(1, p.life / (p.maxLife * 0.35));
+    ctx.globalAlpha = alpha;
+    ctx.translate(sx(p.x), sy(p.y));
+    ctx.scale(p.scale, p.scale);
+    ctx.font = `${p.bold ? 'bold ' : ''}${p.size * scale()}px 'Bangers', 'Rajdhani', sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.lineWidth = 4 * scale();
+    ctx.strokeStyle = p.outline;
+    ctx.strokeText(p.text, 0, 0);
+    ctx.fillStyle = p.color;
+    ctx.fillText(p.text, 0, 0);
+    ctx.restore();
+  }
+}
+
+// ─── COMBO TRACKER (per attacker, resets when they go a beat without landing a hit) ──
+function registerComboHit(attacker, defender, dmgRoll, attackType) {
+  attacker.comboHits = (attacker.comboHits || 0) + 1;
+  attacker.bestCombo = Math.max(attacker.bestCombo||0, attacker.comboHits);
+  attacker.comboResetTimer = 1.1;
+
+  // damage number popup at the hit location
+  spawnPopup(defender.cx + (Math.random()*20-10), defender.cy - 20, '-' + Math.round(dmgRoll), {
+    color: attackType === 'special' ? '#ff44aa' : '#ffdd44', size: 20, vy: -110, life: 0.7, scale: 1.05,
+  });
+
+  const combo = attacker.comboHits;
+  if (combo >= 2) {
+    const label = combo + ' HIT COMBO!';
+    const size = Math.min(46, 24 + combo * 2.4);
+    const hue = Math.max(0, 50 - combo * 4);
+    spawnPopup(attacker.cx, attacker.cy - 90, label, {
+      color: `hsl(${hue},95%,60%)`, size, vy: -60, life: 1.0, scale: 1.15, startScale: 0.3,
+    });
+    camera.shake = Math.max(camera.shake, Math.min(18, 4 + combo * 1.5));
+  }
+  if (dmgRoll > 18 || attackType === 'special') {
+    const callout = HIT_CALLOUTS[Math.min(HIT_CALLOUTS.length-1, Math.floor(dmgRoll/8))];
+    spawnPopup(defender.cx, defender.cy - 60, callout, {
+      color: '#ff3355', size: 30, vy: -40, life: 0.75, scale: 1.2, startScale: 0.5,
+    });
+    zoomPunch(0.06);
+  }
+}
+
+// ─── SCREEN ZOOM PUNCH (quick camera zoom-in on big hits for extra weight) ───
+let zoomAmount = 0;
+function zoomPunch(amt) { zoomAmount = Math.max(zoomAmount, amt); }
+function updateZoom(dt) { zoomAmount = Math.max(0, zoomAmount - dt * 0.4); }
+
 // ─── STAGE HAZARD LOGIC ────────────────────────────────────────────────────────
 let lavaTickTimer = 0;
 function applyStageHazards(dt) {
@@ -1619,41 +1745,125 @@ function checkGameOver() {
     const screen = document.getElementById('game-over-screen');
     const title = document.getElementById('go-title');
     const sub = document.getElementById('go-sub');
+    const badge = document.getElementById('go-badge');
     const player = fighters[0];
-    let playerWon = false;
+    let playerWon = false, isDraw = false, winner = null;
     if (alive.length === 1) {
-      const w = alive[0];
-      title.textContent = w.isPlayer ? '🏆 YOU WIN!' : `${w.name} WINS!`;
-      title.style.color = w.color;
-      sub.textContent = w.isPlayer ? 'Excellent fighting!' : `${w.name} defeated you`;
+      winner = alive[0];
+      title.textContent = winner.isPlayer ? 'YOU WIN!' : `${winner.name} WINS!`;
+      title.style.color = winner.color;
+      sub.textContent = winner.isPlayer ? 'Excellent fighting!' : `${winner.name} defeated you`;
       playSFX(620, 0.2, 'triangle');
-      playerWon = w.isPlayer;
+      playerWon = winner.isPlayer;
     } else if (alive.length === 0) {
+      isDraw = true;
       title.textContent = 'DRAW!';
       title.style.color = '#fff';
       sub.textContent = 'Everyone got knocked out!';
       playSFX(300, 0.2, 'sawtooth');
     } else {
       const sorted = alive.sort((a,b) => (b.stocks*1000 - b.damage) - (a.stocks*1000 - a.damage));
-      const w = sorted[0];
-      title.textContent = w.isPlayer ? '⏱ TIME! YOU WIN!' : `⏱ TIME! ${w.name} WINS!`;
-      title.style.color = w.color;
+      winner = sorted[0];
+      title.textContent = winner.isPlayer ? 'TIME! YOU WIN!' : `TIME! ${winner.name} WINS!`;
+      title.style.color = winner.color;
       sub.textContent = 'Decided by stocks & damage';
       playSFX(520, 0.18, 'triangle');
-      playerWon = w.isPlayer;
+      playerWon = winner.isPlayer;
     }
-    let earned = 30 + (player ? (MAX_STOCKS - Math.max(0,player.stocks)) * -5 : 0);
-    earned += (MAX_STOCKS - (player ? (MAX_STOCKS - player.stocks) : 0));
-    earned = 30 + Math.floor(Math.random()*20);
+
+    badge.textContent = isDraw ? '🤝' : playerWon ? '🏆' : '💀';
+
+    let earned = 30 + Math.floor(Math.random()*20);
     if (playerWon) earned += 50;
     if (ownedItems.powerups.includes('coinboost')) earned = Math.floor(earned * 1.25);
     coins += earned;
     saveShop();
     updateCoinsUI();
     document.getElementById('goCoinsVal').textContent = earned;
+
+    const statsEl = document.getElementById('go-stats');
+    const stocksLeft = player ? Math.max(0, player.stocks) : 0;
+    const dmgDealt = Math.round(fighters.filter(f=>!f.isPlayer).reduce((s,f)=>s + (f.totalDamageTaken||0), 0));
+    const bestCombo = player ? (player.bestCombo || 0) : 0;
+    const stats = [
+      { label: 'Stocks Left', val: stocksLeft },
+      { label: 'Dmg Dealt', val: dmgDealt + '%' },
+      { label: 'Best Combo', val: bestCombo + 'x' },
+      { label: 'Time Left', val: Math.max(0,Math.ceil(stageTimer)) + 's' },
+    ];
+    statsEl.innerHTML = stats.map((s,i) =>
+      `<div class="go-stat-card" style="animation-delay:${0.15 + i*0.08}s">
+        <div class="go-stat-val">${s.val}</div>
+        <div class="go-stat-label">${s.label}</div>
+      </div>`
+    ).join('');
+
     screen.style.display = 'flex';
     document.getElementById('game-wrap').style.display = 'none';
     document.getElementById('hud').style.display = 'none';
+
+    if (playerWon) launchConfetti(); else if (isDraw) launchConfetti(0.4);
+  }
+}
+
+// ─── CONFETTI (win-screen celebration) ─────────────────────────────────────────
+let confettiPieces = [];
+const confettiCanvas = document.getElementById('confettiCanvas');
+const confettiCtx = confettiCanvas.getContext('2d');
+let confettiRaf = null;
+function resizeConfetti() {
+  confettiCanvas.width = window.innerWidth;
+  confettiCanvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resizeConfetti);
+resizeConfetti();
+
+function launchConfetti(intensity = 1) {
+  confettiPieces = [];
+  const count = Math.floor(140 * intensity);
+  const colors = ['#00d4ff','#ff4466','#ffd700','#44ff88','#aa44ff','#ff9900'];
+  for (let i = 0; i < count; i++) {
+    confettiPieces.push({
+      x: Math.random() * confettiCanvas.width,
+      y: -20 - Math.random() * 200,
+      vx: (Math.random()-0.5) * 160,
+      vy: 220 + Math.random() * 260,
+      size: 5 + Math.random() * 7,
+      rot: Math.random() * Math.PI * 2,
+      vr: (Math.random()-0.5) * 8,
+      color: colors[Math.floor(Math.random()*colors.length)],
+      shape: Math.random() < 0.5 ? 'rect' : 'circle',
+      life: 3.2 + Math.random(),
+    });
+  }
+  if (!confettiRaf) confettiRaf = requestAnimationFrame(confettiLoop);
+}
+let lastConfettiT = 0;
+function confettiLoop(ts) {
+  const dt = Math.min((ts - (lastConfettiT||ts)) / 1000, 0.05);
+  lastConfettiT = ts;
+  confettiCtx.clearRect(0,0,confettiCanvas.width, confettiCanvas.height);
+  let anyAlive = false;
+  for (const p of confettiPieces) {
+    if (p.life <= 0) continue;
+    p.x += p.vx * dt; p.y += p.vy * dt; p.vy += 180*dt; p.rot += p.vr*dt; p.life -= dt;
+    if (p.life <= 0 || p.y > confettiCanvas.height + 30) continue;
+    anyAlive = true;
+    confettiCtx.save();
+    confettiCtx.translate(p.x, p.y);
+    confettiCtx.rotate(p.rot);
+    confettiCtx.globalAlpha = Math.min(1, p.life);
+    confettiCtx.fillStyle = p.color;
+    if (p.shape === 'rect') confettiCtx.fillRect(-p.size/2, -p.size/3, p.size, p.size*0.66);
+    else { confettiCtx.beginPath(); confettiCtx.arc(0,0,p.size/2,0,Math.PI*2); confettiCtx.fill(); }
+    confettiCtx.restore();
+  }
+  if (anyAlive && document.getElementById('game-over-screen').style.display === 'flex') {
+    confettiRaf = requestAnimationFrame(confettiLoop);
+  } else {
+    confettiRaf = null;
+    lastConfettiT = 0;
+    confettiCtx.clearRect(0,0,confettiCanvas.width, confettiCanvas.height);
   }
 }
 
@@ -1686,15 +1896,26 @@ function gameLoop(timestamp) {
   fighters.forEach(f => f.update(dt, fighters));
   updateParticles(dt);
   updateStarKOs(dt);
+  updatePopups(dt);
+  updateZoom(dt);
   updateFlash(dt);
   updateHUD();
   checkGameOver();
 
   ctx.clearRect(0, 0, canvas._logicalW, canvas._logicalH);
+  ctx.save();
+  if (zoomAmount > 0.001) {
+    const cxp = canvas._logicalW/2, cyp = canvas._logicalH/2;
+    ctx.translate(cxp, cyp);
+    ctx.scale(1 + zoomAmount, 1 + zoomAmount);
+    ctx.translate(-cxp, -cyp);
+  }
   drawStage();
   drawParticles();
   fighters.forEach(f => f.draw(ctx));
   drawStarKOs();
+  drawPopups();
+  ctx.restore();
 
   clearJustPressed();
 }
