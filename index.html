@@ -3310,6 +3310,7 @@ document.getElementById('goMenuBtn').addEventListener('click', goToMenu);
 
 document.addEventListener('click', initAudio, { once: false });
 
+window.addEventListener('load', function() {
 // ═══════════════════ MOBILE TOUCH CONTROLS (IMPROVED) ═══════════════════
 const isTouchDevice = matchMedia('(hover:none) and (pointer:coarse)').matches || navigator.maxTouchPoints > 0;
 
@@ -3448,6 +3449,7 @@ if (isTouchDevice) {
   const dbg = document.getElementById('debug');
   if (dbg) dbg.remove();
 }
+});
 </script>
 <!-- TOUCH CONTROLS -->
 <div id="touch-controls">
