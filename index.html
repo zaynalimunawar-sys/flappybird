@@ -1019,9 +1019,10 @@ body.is-phone .online-code-box { flex-direction:column; align-items:flex-start; 
   <div class="online-layout">
     <div class="online-panel">
       <h3>Host match</h3>
-      <p class="online-sub">Create a short code, send it to your friend, then start a 1v1 match.</p>
+      <p class="online-sub">Create a host code, send the real peer ID to your friend, then start a 1v1 match.</p>
       <div class="online-actions">
         <button class="online-main-btn" id="hostOnlineBtn">Create Code</button>
+        <button class="online-main-btn" id="hostStartOnlineBtn">Start</button>
         <button class="online-secondary-btn" id="disconnectOnlineBtn">Reset</button>
       </div>
       <div class="online-code-box">
@@ -1039,15 +1040,15 @@ body.is-phone .online-code-box { flex-direction:column; align-items:flex-start; 
     </div>
     <div class="online-panel">
       <h3>Join match</h3>
-      <p class="online-sub">Paste the short code and connect directly.</p>
-      <input class="online-input" id="joinCodeInput" placeholder="Enter 4-letter code" autocomplete="off" />
+      <p class="online-sub">Paste the host peer ID and connect directly.</p>
+      <input class="online-input" id="joinCodeInput" placeholder="Enter host peer ID" autocomplete="off" />
       <div class="online-actions">
         <button class="online-main-btn" id="joinOnlineBtn">Join Code</button>
-        <button class="online-secondary-btn" id="startOnlineMatchBtn">Start Online Match</button>
+        <button class="online-secondary-btn" id="startOnlineMatchBtn">Join Wait</button>
       </div>
       <label class="online-note" for="onlineCharSelect">Online character</label>
       <select class="online-select" id="onlineCharSelect"></select>
-      <div class="online-status warn" id="onlineStatusBox">Pick Host or Join. After both players connect, the host can start the online match.</div>
+      <div class="online-status warn" id="onlineStatusBox">Host starts from the left panel after both players connect.</div>
       <div class="online-note">If direct connection fails on some networks, PeerJS/WebRTC may need a different relay setup. This is normal for a first-pass peer-to-peer version.</div>
     </div>
   </div>
@@ -1250,6 +1251,8 @@ let onlineCharacterChoice = 'jin';
 let onlineSelectedRemoteChar = 'jin';
 let onlineConnectedPeerId = '';
 let onlineSnapshotBuffer = null;
+let onlineDisplayCode = '';
+const onlineCodeMap = {};
 
 function onlineEl(id){ return document.getElementById(id); }
 function setOnlineStatus(msg, cls='warn') {
@@ -1264,7 +1267,7 @@ function updateOnlinePills() {
   if (role) role.textContent = 'Role: ' + onlineRole;
   if (conn) conn.textContent = 'Peer: ' + (onlineConnectedPeerId || 'not connected');
   const code = onlineEl('onlineCodeVal');
-  if (code) code.textContent = onlineRoomCode || 'NOT CONNECTED';
+  if (code) code.textContent = onlineDisplayCode || onlineRoomCode || 'NOT CONNECTED';
 }
 function destroyOnlinePeer() {
   try { if (onlineConn) onlineConn.close(); } catch(e) {}
@@ -3819,14 +3822,15 @@ document.getElementById('hostOnlineBtn')?.addEventListener('click', () => {
   if (!window.Peer) { setOnlineStatus('PeerJS failed to load.', 'bad'); return; }
   destroyOnlinePeer();
   setOnlineStatus('Creating friend code…', 'warn');
-  onlineRoomCode = 'TKD-' + Math.random().toString(36).slice(2, 6).toUpperCase();
-  onlinePeer = new Peer(onlineRoomCode);
+  onlineDisplayCode = 'TKD-' + Math.random().toString(36).slice(2, 6).toUpperCase();
+  onlinePeer = new Peer();
   onlineRole = 'host';
   updateOnlinePills();
   onlinePeer.on('open', id => {
     onlineRoomCode = id;
+    onlineCodeMap[onlineDisplayCode] = id;
     updateOnlinePills();
-    setOnlineStatus('Code ready. Send it to your friend and wait for them to join.', 'good');
+    setOnlineStatus('Code ready. Real peer ID: ' + id + '. Send that ID to your friend and wait for them to join.', 'good');
   });
   onlinePeer.on('connection', conn => {
     setupOnlineConnection(conn, 'host');
@@ -3834,22 +3838,28 @@ document.getElementById('hostOnlineBtn')?.addEventListener('click', () => {
   onlinePeer.on('error', err => setOnlineStatus('Host error: ' + err.type, 'bad'));
 });
 document.getElementById('joinOnlineBtn')?.addEventListener('click', () => {
-  const code = (document.getElementById('joinCodeInput')?.value || '').trim();
-  if (!code) { setOnlineStatus('Enter a friend code first.', 'bad'); return; }
+  const entered = (document.getElementById('joinCodeInput')?.value || '').trim().toUpperCase();
+  if (!entered) { setOnlineStatus('Enter a friend code first.', 'bad'); return; }
   if (!window.Peer) { setOnlineStatus('PeerJS failed to load.', 'bad'); return; }
   destroyOnlinePeer();
   setOnlineStatus('Joining friend code…', 'warn');
   onlinePeer = new Peer();
   onlineRole = 'client';
+  onlineDisplayCode = entered;
   onlinePeer.on('open', () => {
-    const conn = onlinePeer.connect(code, { reliable: true });
-    onlineRoomCode = code;
+    let targetId = entered;
+    if (entered.startsWith('TKD-')) {
+      setOnlineStatus('Short codes only work inside the same page/session right now. For cross-device testing, use the real peer ID build instead.', 'bad');
+      return;
+    }
+    const conn = onlinePeer.connect(targetId, { reliable: true });
+    onlineRoomCode = targetId;
     setupOnlineConnection(conn, 'client');
   });
   onlinePeer.on('error', err => setOnlineStatus('Join error: ' + err.type, 'bad'));
 });
-document.getElementById('startOnlineMatchBtn')?.addEventListener('click', () => {
-  if (onlineRole !== 'host') { setOnlineStatus('Only the host can start the online match.', 'warn'); return; }
+document.getElementById('hostStartOnlineBtn')?.addEventListener('click', () => {
+  if (onlineRole !== 'host') { setOnlineStatus('Only the host can start the online match from the left panel.', 'warn'); return; }
   if (!onlineConn || !onlineConn.open) { setOnlineStatus('Connect to your friend first.', 'bad'); return; }
   onlineMode = true;
   cpuCount = 0;
