@@ -1074,6 +1074,7 @@ let difficulty = 'medium';
 let cpuCount = 1;
 let fighters = [];
 let particles = [];
+let impactRings = [];
 let camera = { x: 0, y: 0, shake: 0 };
 let stageTimer = 180;
 let timerAccum = 0;
@@ -1505,14 +1506,27 @@ class Fighter {
     // Recoil lean + airborne tumble spin — sells the impact instead of the body staying rigid.
     this.hitLean = -dirAway * Math.min(1.4, 0.6 + kb * 0.5);
     this.tumbleSpin = dirAway * (2.5 + kb * 3);
-    camera.shake = 6 + dmgRoll * 0.35;
-    hitStop = attackType === 'special' ? 0.08 : 0.045;
+
+    // ── Impact tiers: bigger hits get a stronger shake, longer freeze-frame, and a bright shockwave ring ──
+    const isHeavy = attackType === 'special' || dmgRoll > 16;
+    const isKick = attackType === 'kick';
+    camera.shake = isHeavy ? 14 + dmgRoll * 0.4 : 6 + dmgRoll * 0.35;
+    hitStop = attackType === 'special' ? 0.11 : isHeavy ? 0.08 : isKick ? 0.06 : 0.045;
     const trailColors = getTrailColors(attacker);
-    spawnParticles(this.cx, this.cy, trailColors, 12 + Math.floor(dmgRoll * 0.7));
-    spawnParticles(this.cx, this.cy, '#ffffff', 4);
-    flashScreen(attackType === 'special' ? 0.18 : 0.08);
+    spawnParticles(this.cx, this.cy, trailColors, 12 + Math.floor(dmgRoll * 0.7) + (isHeavy ? 10 : 0));
+    spawnParticles(this.cx, this.cy, '#ffffff', isHeavy ? 10 : 4);
+    spawnImpactRing(this.cx, this.cy, isHeavy ? '#ffdd33' : '#ffffff', {
+      maxRadius: isHeavy ? 105 : 62,
+      lineWidth: isHeavy ? 9 : 5,
+      life: isHeavy ? 0.42 : 0.28,
+    });
+    if (attackType === 'special') {
+      spawnImpactRing(this.cx, this.cy, '#ff44aa', { maxRadius: 145, lineWidth: 5, life: 0.5 });
+    }
+    flashScreen(attackType === 'special' ? 0.22 : isHeavy ? 0.14 : 0.08);
     registerComboHit(attacker, this, dmgRoll, attackType);
-    playSFX(attackType === 'special' ? 200 : 350, 0.12, 'square');
+    playSFX(attackType === 'special' ? 180 : isKick ? 300 : 350, attackType === 'special' ? 0.16 : 0.12, 'square');
+    if (isHeavy) playSFX(90, 0.1, 'sawtooth');
   }
 
   checkBlastZone() {
@@ -2196,6 +2210,36 @@ function drawParticles() {
   }
 }
 
+// ─── IMPACT RINGS (expanding shockwave ring on strong hits) ─────────────────
+function spawnImpactRing(x, y, color, opts = {}) {
+  impactRings.push({
+    x, y, color,
+    life: opts.life || 0.35, maxLife: opts.life || 0.35,
+    maxRadius: opts.maxRadius || 70,
+    lineWidth: opts.lineWidth || 6,
+  });
+}
+function updateImpactRings(dt) {
+  for (let i = impactRings.length - 1; i >= 0; i--) {
+    impactRings[i].life -= dt;
+    if (impactRings[i].life <= 0) impactRings.splice(i, 1);
+  }
+}
+function drawImpactRings() {
+  for (const r of impactRings) {
+    const p = 1 - r.life / r.maxLife;
+    ctx.save();
+    ctx.globalAlpha = Math.max(0, 1 - p) * 0.85;
+    ctx.strokeStyle = r.color;
+    ctx.lineWidth = sw(r.lineWidth * (1 - p * 0.6));
+    ctx.shadowColor = r.color; ctx.shadowBlur = 16;
+    ctx.beginPath();
+    ctx.arc(sx(r.x), sy(r.y), sw(r.maxRadius * p), 0, Math.PI*2);
+    ctx.stroke();
+    ctx.restore();
+  }
+}
+
 // ─── SCREEN FLASH ─────────────────────────────────────────────────────────────
 let flashAlpha = 0;
 function flashScreen(amount) { flashAlpha = Math.max(flashAlpha, amount); }
@@ -2410,7 +2454,7 @@ let timeWarnShown = false;
 
 // ─── SATISFYING POPUPS (combo text, damage numbers, hit callouts) ─────────────
 let popups = [];
-const HIT_CALLOUTS = ['NICE!','SOLID!','CRUSHING!','BRUTAL!','SAVAGE!'];
+const HIT_CALLOUTS = ['NICE!','SOLID!','CRUSHING!','BRUTAL!','SAVAGE!','DEVASTATING!'];
 function spawnPopup(x, y, text, opts = {}) {
   popups.push({
     x, y, text,
@@ -2481,6 +2525,16 @@ function registerComboHit(attacker, defender, dmgRoll, attackType) {
       color: `hsl(${hue},95%,60%)`, size, vy: -60, life: 1.0, scale: 1.15, startScale: 0.3,
     });
     camera.shake = Math.max(camera.shake, Math.min(10, 2 + combo * 0.8));
+    // Milestone combo callouts hit harder visually — bigger text and a burst of particles at 3x/5x/10x.
+    if (combo === 3 || combo === 5 || combo === 10 || (combo > 10 && combo % 5 === 0)) {
+      const milestoneText = combo >= 10 ? `${combo}x UNSTOPPABLE!` : combo === 5 ? '5x ON FIRE!' : '3x COMBO!';
+      spawnPopup(attacker.cx, attacker.cy - 130, milestoneText, {
+        color: '#ffdd33', size: Math.min(52, 30 + combo), vy: -30, life: 1.1, scale: 1.3, startScale: 0.2,
+      });
+      spawnParticles(attacker.cx, attacker.cy - 40, ['#ffdd33','#ff8800','#ffffff'], 18);
+      spawnImpactRing(attacker.cx, attacker.cy - 20, '#ffdd33', { maxRadius: 90, lineWidth: 6, life: 0.4 });
+      zoomPunch(0.04);
+    }
   }
   if (dmgRoll > 18 || attackType === 'special') {
     const callout = HIT_CALLOUTS[Math.min(HIT_CALLOUTS.length-1, Math.floor(dmgRoll/8))];
@@ -2488,6 +2542,11 @@ function registerComboHit(attacker, defender, dmgRoll, attackType) {
       color: '#ff3355', size: 30, vy: -40, life: 0.75, scale: 1.2, startScale: 0.5,
     });
     zoomPunch(0.035);
+  }
+  if (attackType === 'special') {
+    spawnPopup(defender.cx, defender.cy - 100, 'HEAVY HIT!', {
+      color: '#ff44aa', size: 26, vy: -50, life: 0.7, scale: 1.15, startScale: 0.4,
+    });
   }
 }
 
@@ -3741,6 +3800,7 @@ function gameLoop(timestamp) {
   fighters.forEach(f => f.update(dt, fighters));
   updateProjectiles(dt, fighters);
   updateParticles(dt);
+  updateImpactRings(dt);
   updateStarKOs(dt);
   updatePopups(dt);
   updateZoom(dt);
@@ -3759,6 +3819,7 @@ function gameLoop(timestamp) {
   }
   drawStage();
   drawParticles();
+  drawImpactRings();
   drawProjectiles();
   fighters.forEach(f => f.draw(ctx));
   drawStarKOs();
