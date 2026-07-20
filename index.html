@@ -194,7 +194,7 @@ body { font-family: 'Rajdhani', sans-serif; color: var(--color-text); display: f
 /* DEBUG */
 #debug { position: fixed; bottom: 0; left: 0; z-index: 99; background: rgba(0,0,0,.75); color: #0f0; font: 11px/1.5 monospace; padding: 4px 8px; pointer-events: none; }
 
-/* â”€â”€â”€ STAGE SELECT â”€â”€â”€ */
+/* ─── STAGE SELECT ─── */
 .stage-select-btns { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; max-width: 620px; }
 .stage-card {
   width: 108px; height: 78px; border-radius: 12px; border: 2px solid var(--color-border);
@@ -209,7 +209,7 @@ body { font-family: 'Rajdhani', sans-serif; color: var(--color-text); display: f
 .stage-card.selected::after { background: rgba(0,212,255,0.08); }
 .stage-desc { margin-top: 10px; font-size: 0.8rem; color: var(--color-muted); text-align: center; max-width: 500px; min-height: 20px; }
 
-/* â”€â”€â”€ CHARACTER SELECT â”€â”€â”€ */
+/* ─── CHARACTER SELECT ─── */
 .char-select-row { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
 .char-card {
   width: 118px; padding: 14px 8px; border-radius: 16px; border: 2px solid var(--color-border);
@@ -231,7 +231,7 @@ body { font-family: 'Rajdhani', sans-serif; color: var(--color-text); display: f
 }
 .mastery-open-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,224,255,0.3); border-color: #66e0ff; }
 
-/* â”€â”€â”€ MASTERY SCREEN â”€â”€â”€ */
+/* ─── MASTERY SCREEN ─── */
 #mastery-screen {
   position: fixed; inset: 0; z-index: 113; display: none; align-items: center; justify-content: center;
   background: rgba(0,0,0,0.78); backdrop-filter: blur(6px);
@@ -275,7 +275,7 @@ body { font-family: 'Rajdhani', sans-serif; color: var(--color-text); display: f
 .mastery-prestige-btn:disabled { opacity: 0.35; cursor: not-allowed; box-shadow: none; }
 .mastery-maxed-text { font-size: 0.85rem; color: #ffd700; text-align: center; font-weight: 700; }
 
-/* â”€â”€â”€ COINS + SHOP BUTTON â”€â”€â”€ */
+/* ─── COINS + SHOP BUTTON ─── */
 .coins-display {
   display: flex; align-items: center; gap: 8px; background: rgba(255,200,0,0.12);
   border: 2px solid rgba(255,200,0,0.4); border-radius: 30px; padding: 8px 20px;
@@ -318,7 +318,7 @@ body { font-family: 'Rajdhani', sans-serif; color: var(--color-text); display: f
 }
 .profile-open-btn:hover { border-color: var(--color-p1); transform: scale(1.08); }
 
-/* â”€â”€â”€ ADMIN PANEL â”€â”€â”€ */
+/* ─── ADMIN PANEL ─── */
 #admin-login-screen, #admin-panel-screen {
   position: fixed; inset: 0; z-index: 700; display: none; align-items: center; justify-content: center;
   background: rgba(5,5,15,0.92); backdrop-filter: blur(6px);
@@ -365,7 +365,7 @@ body { font-family: 'Rajdhani', sans-serif; color: var(--color-text); display: f
 }
 .admin-status { font-size: 0.85rem; color: #44ff88; min-height: 1.2em; margin: 0; }
 
-/* â”€â”€â”€ PROFILE SCREEN â”€â”€â”€ */
+/* ─── PROFILE SCREEN ─── */
 #profile-screen {
   position: fixed; inset: 0; z-index: 112; display: none; flex-direction: column;
   background: radial-gradient(ellipse at 50% 0%, #1a1a3e 0%, #0d0d1a 70%);
@@ -402,7 +402,7 @@ body { font-family: 'Rajdhani', sans-serif; color: var(--color-text); display: f
 .profile-stat-val { font-family: 'Bangers', cursive; font-size: 1.6rem; color: var(--color-p1); }
 .profile-stat-label { font-size: 0.7rem; color: var(--color-muted); letter-spacing: 1.5px; text-transform: uppercase; margin-top: 4px; }
 
-/* â”€â”€â”€ SHOP SCREEN â”€â”€â”€ */
+/* ─── SHOP SCREEN ─── */
 #shop-screen {
   position: fixed; inset: 0; z-index: 110; display: none; flex-direction: column;
   background: radial-gradient(ellipse at 50% 0%, #1a0a2e 0%, #0d0d1a 70%);
@@ -439,7 +439,7 @@ body { font-family: 'Rajdhani', sans-serif; color: var(--color-text); display: f
 .shop-body { padding: 24px 20px 60px; }
 .shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; max-width: 900px; margin: 0 auto; }
 
-/* â”€â”€â”€ BRAWL STARS STYLE: FEATURED OFFER + RARITY â”€â”€â”€ */
+/* ─── BRAWL STARS STYLE: FEATURED OFFER + RARITY ─── */
 .shop-featured-banner {
   max-width: 900px; margin: 0 auto 24px; border-radius: 20px; padding: 18px 22px;
   background: linear-gradient(120deg, #ff8800 0%, #ff2288 50%, #aa00ff 100%);
@@ -506,7 +506,7 @@ body { font-family: 'Rajdhani', sans-serif; color: var(--color-text); display: f
 .box-icon-anim { animation: boxFloat 2.2s ease-in-out infinite; }
 @keyframes boxFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
 
-/* â”€â”€â”€ REWARD POPUP â”€â”€â”€ */
+/* ─── REWARD POPUP ─── */
 #rewardPopup {
   position: fixed; inset: 0; z-index: 200; display: none; align-items: center; justify-content: center;
   background: rgba(0,0,0,0.75); backdrop-filter: blur(4px);
@@ -526,7 +526,7 @@ body { font-family: 'Rajdhani', sans-serif; color: var(--color-text); display: f
 }
 .reward-close-btn:hover { transform: scale(1.05); }
 
-/* â”€â”€â”€ DAILY STREAK â”€â”€â”€ */
+/* ─── DAILY STREAK ─── */
 #daily-streak-overlay {
   position: fixed; inset: 0; z-index: 210; display: none; align-items: center; justify-content: center;
   background: rgba(0,0,0,0.8); backdrop-filter: blur(6px);
@@ -559,7 +559,7 @@ body { font-family: 'Rajdhani', sans-serif; color: var(--color-text); display: f
 .daily-claim-btn:hover { transform: scale(1.05); }
 .daily-streak-flame { font-size: 2.2rem; }
 
-/* â”€â”€â”€ FIGHT PASS SCREEN (Brawl Stars style) â”€â”€â”€ */
+/* ─── FIGHT PASS SCREEN (Brawl Stars style) ─── */
 #pass-screen {
   position: fixed; inset: 0; z-index: 115; display: none; flex-direction: column;
   background: linear-gradient(180deg, #1a0a30 0%, #0d0d1a 100%);
@@ -660,7 +660,7 @@ body { font-family: 'Rajdhani', sans-serif; color: var(--color-text); display: f
 /* HIT FLASH *//* HIT FLASH */
 #hitFlash { position: fixed; inset: 0; z-index: 40; pointer-events: none; background: #fff; opacity: 0; }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• MOBILE TOUCH CONTROLS (IMPROVED) â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* ═══════════════════ MOBILE TOUCH CONTROLS (IMPROVED) ═══════════════════ */
 #touch-controls { display:block; position:fixed; inset:0; z-index:30; pointer-events:none; }
 @media (max-width: 900px), (hover:none) and (pointer:coarse) {
   .menu-tab { padding:10px 12px; font-size:0.75rem; }
@@ -748,7 +748,7 @@ body { font-family: 'Rajdhani', sans-serif; color: var(--color-text); display: f
 }
 
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• CLEANER HOME SCREEN â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* ═══════════════════ CLEANER HOME SCREEN ═══════════════════ */
 #menu { padding: 0; }
 .menu-topbar {
   position: fixed; top: 0; left: 0; right: 0; z-index: 101; width: 100%;
@@ -794,29 +794,29 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
 <div id="menu">
   <div class="menu-topbar">
     <div class="menu-topbar-stats">
-      <div class="coins-display" id="coinsDisplay">ðŸª™ <span id="coinsVal">0</span></div>
-      <div class="trophy-display" id="trophyDisplay">ðŸ† <span id="trophyVal">0</span></div>
+      <div class="coins-display" id="coinsDisplay">🪙 <span id="coinsVal">0</span></div>
+      <div class="trophy-display" id="trophyDisplay">🏆 <span id="trophyVal">0</span></div>
     </div>
-    <button class="profile-open-btn" id="profileOpenBtn">ðŸ‘¤</button>
+    <button class="profile-open-btn" id="profileOpenBtn">👤</button>
   </div>
   <button id="adminTriggerBtn" style="position:fixed; top:8px; left:8px; width:14px; height:14px; opacity:0; border:none; background:transparent; z-index:200; cursor:default;" aria-hidden="true"></button>
   <div class="menu-scroll">
     <div class="menu-header">
-      <h1>ðŸ¥‹ STICKMAN WARS</h1>
+      <h1>🥋 STICKMAN WARS</h1>
       <p class="subtitle">Fast Paced 2D Platform Fighter</p>
     </div>
 
     <div class="menu-tabs">
-      <button class="menu-tab active" data-menutab="fighter">ðŸ¥‹ Fighter</button>
-      <button class="menu-tab" data-menutab="match">âš”ï¸ Match</button>
-      <button class="menu-tab" data-menutab="stage">ðŸ—ºï¸ Stage</button>
-      <button class="menu-tab" data-menutab="help">â” Controls</button>
+      <button class="menu-tab active" data-menutab="fighter">🥋 Fighter</button>
+      <button class="menu-tab" data-menutab="match">⚔️ Match</button>
+      <button class="menu-tab" data-menutab="stage">🗺️ Stage</button>
+      <button class="menu-tab" data-menutab="help">❔ Controls</button>
     </div>
 
     <div class="menu-panel active" data-panel="fighter">
       <div class="char-select-row" id="charSelectRow"></div>
       <div class="char-desc" id="charDescText"></div>
-      <button class="mastery-open-btn" id="masteryOpenBtn">ðŸŽ–ï¸ MASTERY</button>
+      <button class="mastery-open-btn" id="masteryOpenBtn">🎖️ MASTERY</button>
     </div>
 
     <div class="menu-panel" data-panel="match">
@@ -857,8 +857,8 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
 
     <button class="start-btn" id="startBtn">FIGHT!</button>
     <div class="menu-btn-row">
-      <button class="shop-open-btn" id="shopOpenBtn">ðŸ›’ SHOP</button>
-      <button class="pass-open-btn" id="passOpenBtn">ðŸŽ« PASS</button>
+      <button class="shop-open-btn" id="shopOpenBtn">🛒 SHOP</button>
+      <button class="pass-open-btn" id="passOpenBtn">🎫 PASS</button>
     </div>
   </div>
 </div>
@@ -866,15 +866,15 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
 <!-- SHOP -->
 <div id="shop-screen">
   <div class="shop-topbar">
-    <h1 class="shop-title">ðŸ›’ SHOP</h1>
-    <div class="shop-coins">ðŸª™ <span id="shopCoinsVal">0</span></div>
-    <button class="shop-close-btn" id="shopCloseBtn">âœ• Close</button>
+    <h1 class="shop-title">🛒 SHOP</h1>
+    <div class="shop-coins">🪙 <span id="shopCoinsVal">0</span></div>
+    <button class="shop-close-btn" id="shopCloseBtn">✕ Close</button>
   </div>
   <div class="shop-tabs">
-    <button class="shop-tab active" data-tab="skins">ðŸ¥‹ Skins</button>
-    <button class="shop-tab" data-tab="trails">âœ¨ Trails</button>
-    <button class="shop-tab" data-tab="powerups">âš¡ Power-ups</button>
-    <button class="shop-tab" data-tab="boxes">ðŸ“¦ Boxes</button>
+    <button class="shop-tab active" data-tab="skins">🥋 Skins</button>
+    <button class="shop-tab" data-tab="trails">✨ Trails</button>
+    <button class="shop-tab" data-tab="powerups">⚡ Power-ups</button>
+    <button class="shop-tab" data-tab="boxes">📦 Boxes</button>
   </div>
   <div class="shop-body"><div class="shop-featured-banner" id="shopFeaturedBanner"></div><div id="shopBody"></div></div>
 </div>
@@ -882,8 +882,8 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
 <!-- MASTERY -->
 <div id="mastery-screen">
   <div class="mastery-box">
-    <button class="mastery-close-x" id="masteryCloseBtn">âœ•</button>
-    <div class="mastery-char-icon" id="masteryCharIcon">ðŸ¥‹</div>
+    <button class="mastery-close-x" id="masteryCloseBtn">✕</button>
+    <div class="mastery-char-icon" id="masteryCharIcon">🥋</div>
     <div class="mastery-char-name" id="masteryCharName">Striker</div>
     <div class="mastery-prestige-tag" id="masteryPrestigeTag" style="display:none;"></div>
     <div class="mastery-level-row">
@@ -899,13 +899,13 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
 <!-- PROFILE -->
 <div id="profile-screen">
   <div class="profile-topbar">
-    <h1 class="profile-title">ðŸ‘¤ PROFILE</h1>
-    <button class="profile-close-btn" id="profileCloseBtn">âœ• Close</button>
+    <h1 class="profile-title">👤 PROFILE</h1>
+    <button class="profile-close-btn" id="profileCloseBtn">✕ Close</button>
   </div>
   <div class="profile-body">
-    <div class="profile-avatar-wrap" id="profileAvatar">ðŸ¥‹</div>
+    <div class="profile-avatar-wrap" id="profileAvatar">🥋</div>
     <input class="profile-name-input" id="profileNameInput" maxlength="14" value="Player">
-    <div class="profile-rank-badge" id="profileRankBadge">ðŸ† 0 Trophies</div>
+    <div class="profile-rank-badge" id="profileRankBadge">🏆 0 Trophies</div>
     <div class="profile-stats-grid" id="profileStatsGrid"></div>
   </div>
 </div>
@@ -913,7 +913,7 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
 <!-- ADMIN PANEL -->
 <div id="admin-login-screen">
   <div class="admin-box">
-    <div class="admin-icon">ðŸ”</div>
+    <div class="admin-icon">🔐</div>
     <h2>Admin Access</h2>
     <p class="admin-sub">Enter password to continue</p>
     <input type="password" id="adminPasswordInput" class="admin-password-input" placeholder="Password" autocomplete="off">
@@ -927,10 +927,10 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
 
 <div id="admin-panel-screen">
   <div class="admin-box admin-panel-box">
-    <button class="admin-panel-close" id="adminPanelClose">âœ•</button>
-    <div class="admin-icon">ðŸ› ï¸</div>
+    <button class="admin-panel-close" id="adminPanelClose">✕</button>
+    <div class="admin-icon">🛠️</div>
     <h2>Admin Panel</h2>
-    <p class="admin-sub">Current: <span id="adminCurrentCoins">0</span> ðŸª™ &nbsp;|&nbsp; <span id="adminCurrentTrophies">0</span> ðŸ†</p>
+    <p class="admin-sub">Current: <span id="adminCurrentCoins">0</span> 🪙 &nbsp;|&nbsp; <span id="adminCurrentTrophies">0</span> 🏆</p>
 
     <div class="admin-field-row">
       <label>Coins to add</label>
@@ -955,9 +955,9 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
 <!-- FIGHT PASS -->
 <div id="pass-screen">
   <div class="pass-hero">
-    <button class="pass-close-btn" id="passCloseBtn">âœ• Close</button>
+    <button class="pass-close-btn" id="passCloseBtn">✕ Close</button>
     <div class="pass-season-label">SEASON 1</div>
-    <h1 class="pass-title">ðŸŽ« FIGHT PASS</h1>
+    <h1 class="pass-title">🎫 FIGHT PASS</h1>
     <div class="pass-tier-badge">
       <div class="pass-tier-current-num" id="passTierCurrentNum">0</div>
       <div class="pass-tier-current-label">TIER</div>
@@ -969,7 +969,7 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
   <div class="pass-track-scroll">
     <div class="pass-track-title">FREE TRACK</div>
     <div class="pass-track" id="passTrackFree"></div>
-    <div class="pass-track-title premium">â­ PREMIUM TRACK</div>
+    <div class="pass-track-title premium">⭐ PREMIUM TRACK</div>
     <div class="pass-track" id="passTrackPremium"></div>
   </div>
 </div>
@@ -977,7 +977,7 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
 <!-- DAILY STREAK -->
 <div id="daily-streak-overlay">
   <div class="daily-box">
-    <div class="daily-streak-flame">ðŸ”¥</div>
+    <div class="daily-streak-flame">🔥</div>
     <div class="daily-title" id="dailyStreakTitle">Day 1 Streak!</div>
     <div class="daily-subtitle">Come back every day for better rewards!</div>
     <div class="daily-row" id="dailyStreakRow"></div>
@@ -988,7 +988,7 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
 <!-- REWARD POPUP -->
 <div id="rewardPopup">
   <div class="reward-box">
-    <div class="reward-icon" id="rewardIcon">ðŸŽ</div>
+    <div class="reward-icon" id="rewardIcon">🎁</div>
     <div class="reward-title" id="rewardTitle">You got something!</div>
     <button class="reward-close-btn" id="rewardCloseBtn">Nice!</button>
   </div>
@@ -1021,15 +1021,15 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
 <div id="game-over-screen">
   <canvas id="confettiCanvas"></canvas>
   <div class="go-content">
-    <div class="go-badge" id="go-badge">ðŸ†</div>
+    <div class="go-badge" id="go-badge">🏆</div>
     <h2 id="go-title"></h2>
     <p class="winner-text" id="go-sub"></p>
     <div class="go-stats" id="go-stats"></div>
-    <div class="coins-display go-coins-earn" id="goCoinsEarned">ðŸª™ <span id="goCoinsVal">0</span> earned</div>
+    <div class="coins-display go-coins-earn" id="goCoinsEarned">🪙 <span id="goCoinsVal">0</span> earned</div>
     <div class="go-btn-row">
-      <button class="go-btn primary" id="rematchBtn">ðŸ” Rematch</button>
-      <button class="go-btn" id="goShopBtn">ðŸ›’ Shop</button>
-      <button class="go-btn" id="goMenuBtn">ðŸ  Menu</button>
+      <button class="go-btn primary" id="rematchBtn">🔁 Rematch</button>
+      <button class="go-btn" id="goShopBtn">🛒 Shop</button>
+      <button class="go-btn" id="goMenuBtn">🏠 Menu</button>
     </div>
   </div>
 </div>
@@ -1038,7 +1038,7 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
 <div id="debug" style="display:none;">FPS: --</div>
 
 <script>
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• DEVICE MODE (iPad-only â€” phone mode removed for stability) â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════ DEVICE MODE (iPad-only — phone mode removed for stability) ═══════════════════
 (function initDeviceMode() {
   // Phone mode caused persistent touch/orientation glitches, so the game now always runs
   // in the more stable iPad/tablet layout regardless of the actual device.
@@ -1047,7 +1047,7 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
   try { localStorage.setItem('tkw_device_type', 'ipad'); } catch(e) {}
 })();
 
-// â”€â”€â”€ CONFIG â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── CONFIG ─────────────────────────────────────────────────────────────────
 const GRAVITY = 1850;
 const PLAYER_SPEED = 590;
 const JUMP_VEL = -820;
@@ -1068,7 +1068,7 @@ const DIFF = {
   impossible: { react: 1.00, aggro: 1.00, jumpChance: 0.090, specialChance: 0.070, label:'Impossible', color:'#ffffff' },
 };
 
-// â”€â”€â”€ STATE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── STATE ───────────────────────────────────────────────────────────────────
 let gameState = 'menu';
 let difficulty = 'medium';
 let cpuCount = 1;
@@ -1082,11 +1082,11 @@ let lastTime = 0;
 let rafId = null;
 let hitStop = 0;
 
-// â”€â”€â”€ STAGES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── STAGES ──────────────────────────────────────────────────────────────────
 const STAGES = [
   {
-    id: 'dojo', name: 'Grand Dojo', icon: 'ðŸ¯',
-    desc: 'Balanced classic layout â€” great for beginners.',
+    id: 'dojo', name: 'Grand Dojo', icon: '🏯',
+    desc: 'Balanced classic layout — great for beginners.',
     thumb: 'linear-gradient(160deg,#2a2a5a,#0d0d1a)',
     bgTop: '#1a0a3e', bgMid: '#0d0d2e', bgBot: '#0a0a1a', accent: '#6666ff',
     platforms: [
@@ -1100,7 +1100,7 @@ const STAGES = [
     hazard: null,
   },
   {
-    id: 'volcano', name: 'Volcano Peak', icon: 'ðŸŒ‹',
+    id: 'volcano', name: 'Volcano Peak', icon: '🌋',
     desc: 'Narrow floating platforms with rising lava hazard near the bottom.',
     thumb: 'linear-gradient(160deg,#4a1000,#1a0500)',
     bgTop: '#3a0800', bgMid: '#5a1800', bgBot: '#1a0500', accent: '#ff5500',
@@ -1113,8 +1113,8 @@ const STAGES = [
     hazard: 'lava',
   },
   {
-    id: 'skyisland', name: 'Sky Islands', icon: 'â˜ï¸',
-    desc: 'Wide-open stage with no walls â€” easy to send opponents flying off either side.',
+    id: 'skyisland', name: 'Sky Islands', icon: '☁️',
+    desc: 'Wide-open stage with no walls — easy to send opponents flying off either side.',
     thumb: 'linear-gradient(160deg,#1a3a5a,#0a1a2e)',
     bgTop: '#0a2a4a', bgMid: '#1a4a6a', bgBot: '#0a1a2e', accent: '#44aaff',
     platforms: [
@@ -1127,8 +1127,8 @@ const STAGES = [
     hazard: 'wind',
   },
   {
-    id: 'temple', name: 'Ancient Temple', icon: 'ðŸ›•',
-    desc: 'Tall vertical layout with tight stacked platforms â€” favors juggling and aerial combat.',
+    id: 'temple', name: 'Ancient Temple', icon: '🛕',
+    desc: 'Tall vertical layout with tight stacked platforms — favors juggling and aerial combat.',
     thumb: 'linear-gradient(160deg,#3a2a10,#100a05)',
     bgTop: '#2a1a08', bgMid: '#3a2a10', bgBot: '#100a05', accent: '#ddaa44',
     platforms: [
@@ -1142,8 +1142,8 @@ const STAGES = [
     hazard: null,
   },
   {
-    id: 'arena', name: 'Neon Arena', icon: 'âš¡',
-    desc: 'Flat single platform, no gaps â€” pure fundamentals with electric hazard zaps at the edges.',
+    id: 'arena', name: 'Neon Arena', icon: '⚡',
+    desc: 'Flat single platform, no gaps — pure fundamentals with electric hazard zaps at the edges.',
     thumb: 'linear-gradient(160deg,#2a0a3a,#0a001a)',
     bgTop: '#1a0030', bgMid: '#2a0050', bgBot: '#0a001a', accent: '#ff00cc',
     platforms: [
@@ -1251,52 +1251,52 @@ let currentStageIdx = 0;
 function getStage() { return STAGES[currentStageIdx]; }
 function PLATFORMS_get() { return getStage().platforms; }
 
-// â”€â”€â”€ CHARACTER ROSTER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── CHARACTER ROSTER ────────────────────────────────────────────────────────
 const CHARACTERS = [
   {
-    id: 'striker', name: 'Striker', icon: 'ðŸ¥‹', color: '#3f8fa8',
+    id: 'striker', name: 'Striker', icon: '🥋', color: '#3f8fa8',
     speedMult: 1.0, jumpMult: 1.0, weightMult: 1.0, dmgMult: 1.0,
     special: 'flyingkick', specialName: 'Flying Kick',
     desc: 'Balanced all-rounder. Flying Kick launches him forward with a long-range kick.',
   },
   {
-    id: 'brawler', name: 'Brawler', icon: 'ðŸ‘Š', color: '#a8474f',
+    id: 'brawler', name: 'Brawler', icon: '👊', color: '#a8474f',
     speedMult: 0.88, jumpMult: 0.9, weightMult: 1.35, dmgMult: 1.25,
     special: 'dashpunch', specialName: 'Dash Punch',
     desc: 'Slow but hits like a truck. Dash Punch is a multi-hit rushing combo.',
   },
   {
-    id: 'phantom', name: 'Phantom', icon: 'ðŸ‘¤', color: '#6f5a94',
+    id: 'phantom', name: 'Phantom', icon: '👤', color: '#6f5a94',
     speedMult: 1.22, jumpMult: 1.15, weightMult: 0.72, dmgMult: 0.82,
     special: 'counter', specialName: 'Phantom Counter',
     desc: 'Fast and fragile. Counter stance reflects the next hit with bonus damage.',
   },
   {
-    id: 'monk', name: 'Monk', icon: 'ðŸ§˜', color: '#b8823c',
+    id: 'monk', name: 'Monk', icon: '🧘', color: '#b8823c',
     speedMult: 0.95, jumpMult: 1.0, weightMult: 1.0, dmgMult: 0.95,
     special: 'fireball', specialName: 'Chi Blast',
     desc: 'Zen fighter with ranged pressure. Chi Blast fires a projectile forward.',
   },
   {
-    id: 'ronin', name: 'Ronin', icon: 'âš”ï¸', color: '#5a7a5f',
+    id: 'ronin', name: 'Ronin', icon: '⚔️', color: '#5a7a5f',
     speedMult: 1.08, jumpMult: 1.05, weightMult: 0.92, dmgMult: 1.1,
     special: 'flyingkick', specialName: 'Blade Rush',
     desc: 'Sharp and precise duelist. Blade Rush is a fast forward-lunging strike.',
   },
   {
-    id: 'juggernaut', name: 'Juggernaut', icon: 'ðŸ›¡ï¸', color: '#6a5a3a',
+    id: 'juggernaut', name: 'Juggernaut', icon: '🛡️', color: '#6a5a3a',
     speedMult: 0.72, jumpMult: 0.78, weightMult: 1.6, dmgMult: 1.4,
     special: 'dashpunch', specialName: 'Ground Pound',
     desc: 'Massive and slow, but nearly unstoppable. Ground Pound crushes anyone nearby.',
   },
   {
-    id: 'viper', name: 'Viper', icon: 'ðŸ', color: '#4a7a6a',
+    id: 'viper', name: 'Viper', icon: '🐍', color: '#4a7a6a',
     speedMult: 1.3, jumpMult: 1.2, weightMult: 0.68, dmgMult: 0.78,
     special: 'counter', specialName: 'Venom Snap',
     desc: 'Extremely fast and slippery. Venom Snap punishes attackers who overcommit.',
   },
   {
-    id: 'sage', name: 'Sage', icon: 'ðŸ”®', color: '#7a5a8a',
+    id: 'sage', name: 'Sage', icon: '🔮', color: '#7a5a8a',
     speedMult: 0.9, jumpMult: 0.95, weightMult: 0.95, dmgMult: 1.0,
     special: 'fireball', specialName: 'Arcane Bolt',
     desc: 'Mystic ranged fighter. Arcane Bolt fires a piercing energy projectile.',
@@ -1307,7 +1307,7 @@ function getChar() { return CHARACTERS[selectedCharIdx]; }
 function getCharById(id) { return CHARACTERS.find(c => c.id === id) || CHARACTERS[0]; }
 
 
-// â”€â”€â”€ INPUT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── INPUT ───────────────────────────────────────────────────────────────────
 const keys = {};
 const justPressed = {};
 document.addEventListener('keydown', e => {
@@ -1320,7 +1320,7 @@ document.addEventListener('keydown', e => {
 document.addEventListener('keyup', e => { keys[e.code] = false; });
 function clearJustPressed() { Object.keys(justPressed).forEach(k => delete justPressed[k]); }
 
-// â”€â”€â”€ CANVAS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── CANVAS ──────────────────────────────────────────────────────────────────
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
@@ -1347,7 +1347,7 @@ function sy(y) { return (y + camera.y) * uniformScale() + offsetY(); }
 function sw(w) { return w * uniformScale(); }
 function sh(h) { return h * uniformScale(); }
 
-// â”€â”€â”€ FIGHTER CLASS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── FIGHTER CLASS ────────────────────────────────────────────────────────────
 const FIGHTER_COLORS = ['#3f8fa8','#a8474f','#b8823c','#6f5a94'];
 const FIGHTER_NAMES  = ['Player','CPU-1','CPU-2','CPU-3'];
 
@@ -1360,7 +1360,7 @@ class Fighter {
     this.char = charData || CHARACTERS[0];
     this.color = FIGHTER_COLORS[id];
     this.name = isPlayer ? 'YOU' : FIGHTER_NAMES[id];
-    this.w = 50 * (0.9 + this.char.weightMult*0.1); this.h = 116 * (0.9 + this.char.weightMult*0.1);
+    this.w = 65 * (0.9 + this.char.weightMult*0.1); this.h = 151 * (0.9 + this.char.weightMult*0.1);
     this.counterActive = false;
     this.counterTimer = 0;
     this.dashPunchTimer = 0;
@@ -1503,11 +1503,11 @@ class Fighter {
     this.vy = -kb * 680;
     this.stunTimer = 0.18 + this.damage * 0.0008;
     this.hitFlash = 0.25;
-    // Recoil lean + airborne tumble spin â€” sells the impact instead of the body staying rigid.
+    // Recoil lean + airborne tumble spin — sells the impact instead of the body staying rigid.
     this.hitLean = -dirAway * Math.min(1.4, 0.6 + kb * 0.5);
     this.tumbleSpin = dirAway * (2.5 + kb * 3);
 
-    // â”€â”€ Impact tiers: bigger hits get a stronger shake, longer freeze-frame, and a bright shockwave ring â”€â”€
+    // ── Impact tiers: bigger hits get a stronger shake, longer freeze-frame, and a bright shockwave ring ──
     const isHeavy = attackType === 'special' || dmgRoll > 16;
     const isKick = attackType === 'kick';
     camera.shake = isHeavy ? 14 + dmgRoll * 0.4 : 6 + dmgRoll * 0.35;
@@ -1623,7 +1623,7 @@ class Fighter {
     this.animTimer += dt;
     this.breathPhase += dt;
 
-    // â”€â”€ Squash & stretch: landing = squash, jumping/knockback = stretch â”€â”€
+    // ── Squash & stretch: landing = squash, jumping/knockback = stretch ──
     let targetSquashX = 1, targetSquashY = 1;
     if (this.landSquashTimer > 0) {
       const t = this.landSquashTimer / 0.16;
@@ -1646,7 +1646,7 @@ class Fighter {
     this.squashX += (targetSquashX - this.squashX) * Math.min(1, dt * 16);
     this.squashY += (targetSquashY - this.squashY) * Math.min(1, dt * 16);
 
-    // â”€â”€ Walk/sprint cycle: faster legs at higher speed, with a punchier stride amplitude for a snappy run feel â”€â”€
+    // ── Walk/sprint cycle: faster legs at higher speed, with a punchier stride amplitude for a snappy run feel ──
     if (this.stunTimer > 0 && !this.grounded) {
       // ragdoll flail while tumbling from a knockback hit, instead of a frozen pose
       this.walkCycle += dt * 22;
@@ -1667,7 +1667,7 @@ class Fighter {
       this.strideBounce = 0;
     }
 
-    // â”€â”€ Kick: proper 3-phase motion â€” chamber (knee pulls up/back), thrust (fast snap extension), retract (settle) â”€â”€
+    // ── Kick: proper 3-phase motion — chamber (knee pulls up/back), thrust (fast snap extension), retract (settle) ──
     if (this.attackType === 'kick' && this.attackTimer > 0 && this.attackDuration > 0) {
       const p = 1 - (this.attackTimer / this.attackDuration);
       if (p < 0.28) {
@@ -1689,7 +1689,7 @@ class Fighter {
       this.kickChamber = (this.kickChamber || 0) * 0.55;
     }
 
-    // â”€â”€ Afterimage trail: threshold scaled to the new higher top speed, plus punches/kicks now trail too for snappier feedback â”€â”€
+    // ── Afterimage trail: threshold scaled to the new higher top speed, plus punches/kicks now trail too for snappier feedback ──
     if (Math.abs(this.vx) > PLAYER_SPEED * 1.05 || (this.attackType && this.attackTimer > 0)) {
       this.afterimages.push({ x: this.x, y: this.y, facing: this.facing, life: 0.16 });
     }
@@ -1698,7 +1698,7 @@ class Fighter {
       if (this.afterimages[i].life <= 0) this.afterimages.splice(i, 1);
     }
 
-    // â”€â”€ Hit-reaction: recoil lean snaps back to neutral, airborne tumble spin decays with drag â”€â”€
+    // ── Hit-reaction: recoil lean snaps back to neutral, airborne tumble spin decays with drag ──
     this.hitLean += (0 - this.hitLean) * Math.min(1, dt * 10);
     if (!this.grounded && this.stunTimer > 0) {
       this.tumbleAngle += this.tumbleSpin * dt;
@@ -1855,7 +1855,7 @@ class Fighter {
     const cx = x + w/2, cy = y + h/2;
     const dir = this.facing;
 
-    // â”€â”€ Afterimages (rendered before the fighter for a speed-trail effect) â”€â”€
+    // ── Afterimages (rendered before the fighter for a speed-trail effect) ──
     for (const ai of this.afterimages) {
       const ax = sx(ai.x), ay = sy(ai.y);
       const acx = ax + w/2;
@@ -1874,7 +1874,7 @@ class Fighter {
     }
     if (this.airDodging) ctx.globalAlpha *= 0.55;
 
-    // â”€â”€ Squash & stretch applied about the character's feet â”€â”€
+    // ── Squash & stretch applied about the character's feet ──
     ctx.translate(cx, y + h);
     ctx.scale(this.squashX, this.squashY);
     ctx.translate(-cx, -(y + h));
@@ -1918,7 +1918,7 @@ class Fighter {
     ctx.rotate(lean);
     ctx.translate(-cx, -(y + h*0.62));
 
-    // â•â•â•â•â•â•â•â•â•â•â•â•â•â• STICKMAN SILHOUETTE (bold flat color, thick round-cap strokes â€” no face/shading) â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+    // ══════════════ STICKMAN SILHOUETTE (bold flat color, thick round-cap strokes — no face/shading) ══════════════
     const strideBob = (this.strideBounce || 0) * h*0.025;
     const hipY = y + h*0.60 - strideBob;
     const shoulderY = y + h*0.24 - strideBob*0.6;
@@ -1940,8 +1940,8 @@ class Fighter {
     ctx.lineTo(cx, hipY);
     ctx.stroke();
 
-    // â”€â”€ ARMS: two-segment thick stick limbs, no gradients/joints â€” flat silhouette like a stick figure â”€â”€
-    // â”€â”€ Punch: wind-up (arm cocks back) â†’ snap thrust (fast extension) â†’ retract, instead of a single ease-out â”€â”€
+    // ── ARMS: two-segment thick stick limbs, no gradients/joints — flat silhouette like a stick figure ──
+    // ── Punch: wind-up (arm cocks back) → snap thrust (fast extension) → retract, instead of a single ease-out ──
     let armSwing = this.limbAngle;
     let leadArmExtra = 0, backArmExtra = 0;
     const isPunching = this.attackType === 'punch' && this.attackTimer > 0;
@@ -1962,7 +1962,7 @@ class Fighter {
     }
     const isSpecialPose = this.attackType === 'special' && this.attackTimer > 0;
     if (isSpecialPose && this.attackDuration > 0) {
-      // both arms thrust forward together for specials â€” visually distinct from a one-armed punch
+      // both arms thrust forward together for specials — visually distinct from a one-armed punch
       const sp = 1 - (this.attackTimer / this.attackDuration);
       const thrust = Math.sin(Math.min(1, sp * 1.6) * Math.PI * 0.5);
       drawStickLimb(ctx, cx, shoulderY, dir * (0.3 + thrust*1.5), -dir*0.2, h*0.19, h*0.18, limbW*0.64, this.color, true);
@@ -1972,7 +1972,7 @@ class Fighter {
       drawStickLimb(ctx, cx, shoulderY, -armSwing*0.9 - 0.4, armSwing*0.55 + backArmExtra, h*0.185, h*0.17, limbW*0.62, this.color, isPunching);
     }
 
-    // â”€â”€ LEGS: kicking leg chambers (knee bends back) then thrusts straight; planted leg gets a slight bend for balance â”€â”€
+    // ── LEGS: kicking leg chambers (knee bends back) then thrusts straight; planted leg gets a slight bend for balance ──
     const isKicking = this.attackType === 'kick' && this.attackTimer > 0;
     const kickPower = isKicking ? -dir * this.kickAngle : 0;
     const chamberBend = isKicking ? (this.kickChamber || 0) : 0;
@@ -1984,13 +1984,13 @@ class Fighter {
     drawStickLimb(ctx, cx, hipY, this.limbAngle*0.7 + kickL*0.7 - chamberL*0.2, -this.limbAngle*0.45 + kickL*1.2 + chamberL*1.3, h*0.2, h*0.18, limbW*0.7, this.color, false);
     drawStickLimb(ctx, cx, hipY, -this.limbAngle*0.7 + kickR*0.7 - chamberR*0.2, this.limbAngle*0.45 + kickR*1.2 + chamberR*1.3, h*0.2, h*0.18, limbW*0.7, this.color, false);
 
-    // head: plain filled circle, no face â€” pure stickman silhouette
+    // head: plain filled circle, no face — pure stickman silhouette
     ctx.beginPath();
     ctx.arc(cx, headY, headR, 0, Math.PI*2);
     ctx.fill();
     ctx.shadowBlur = 0;
 
-    // special-move charge ring â€” an expanding glow around the whole body so specials read
+    // special-move charge ring — an expanding glow around the whole body so specials read
     // as visually distinct and powerful, not just a faster punch
     if (this.attackType === 'special' && this.attackTimer > 0 && this.attackDuration > 0) {
       const sp = 1 - (this.attackTimer / this.attackDuration);
@@ -2048,7 +2048,7 @@ function drawStickLimb(ctx, baseX, baseY, upperAngle, lowerAngle, upperLen, lowe
   ctx.restore();
 }
 
-// Jagged spike burst for hit impacts â€” the classic stickman-fighter "star" flash.
+// Jagged spike burst for hit impacts — the classic stickman-fighter "star" flash.
 function drawImpactSpikes(ctx, x, y, color, alpha, s, dir) {
   ctx.save();
   ctx.globalAlpha = alpha;
@@ -2084,7 +2084,7 @@ function shadeColor(hex, percent) {
   return `rgb(${r},${g},${b})`;
 }
 
-// â”€â”€â”€ STAR KO â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── STAR KO ──────────────────────────────────────────────────────────────────
 let starKOs = [];
 function showStarKO(fighter) {
   starKOs.push({ x: fighter.cx, y: fighter.cy, color: fighter.color, life: 0.9, maxLife: 0.9, vx: (fighter.cx>STAGE_W/2?-1:1)*260, vy:-380 });
@@ -2119,12 +2119,12 @@ function drawStarKOs() {
     ctx.font = `${40*scale()}px sans-serif`;
     ctx.textAlign='center'; ctx.textBaseline='middle';
     ctx.shadowColor='#ffdd00'; ctx.shadowBlur=20*scale();
-    ctx.fillText('â­', 0, 0);
+    ctx.fillText('⭐', 0, 0);
     ctx.restore();
   }
 }
 
-// â”€â”€â”€ PROJECTILES (Chi Blast) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── PROJECTILES (Chi Blast) ───────────────────────────────────────────────────
 let projectiles = [];
 function spawnProjectile(owner) {
   projectiles.push({
@@ -2164,7 +2164,7 @@ function rectsOverlapSimple(a, b) {
   return a.x - a.w/2 < b.x + b.w && a.x + a.w/2 > b.x && a.y - a.h/2 < b.y + b.h && a.y + a.h/2 > b.y;
 }
 
-// â”€â”€â”€ PARTICLES â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── PARTICLES ────────────────────────────────────────────────────────────────
 const TRAIL_HIT_COLORS = {
   none:['#ffffff'], spark:['#ffee00','#ff8800'], ember:['#ff3300','#ffaa00'],
   aqua:['#00ccff','#00ffcc'], rainbow:['#f00','#ff8800','#0f0','#00f','#ee82ee'], void:['#6600aa','#1a0030'],
@@ -2210,7 +2210,7 @@ function drawParticles() {
   }
 }
 
-// â”€â”€â”€ IMPACT RINGS (expanding shockwave ring on strong hits) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── IMPACT RINGS (expanding shockwave ring on strong hits) ─────────────────
 function spawnImpactRing(x, y, color, opts = {}) {
   impactRings.push({
     x, y, color,
@@ -2240,7 +2240,7 @@ function drawImpactRings() {
   }
 }
 
-// â”€â”€â”€ SCREEN FLASH â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── SCREEN FLASH ─────────────────────────────────────────────────────────────
 let flashAlpha = 0;
 function flashScreen(amount) { flashAlpha = Math.max(flashAlpha, amount); }
 function updateFlash(dt) {
@@ -2250,7 +2250,7 @@ function updateFlash(dt) {
   }
 }
 
-// â”€â”€â”€ AUDIO â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── AUDIO ────────────────────────────────────────────────────────────────────
 let audioCtx = null;
 function initAudio() {
   if (!audioCtx) audioCtx = new AudioContext();
@@ -2268,14 +2268,14 @@ function playSFX(freq, dur, type='square') {
   } catch(e) {}
 }
 
-// â”€â”€â”€ COLLISION UTIL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── COLLISION UTIL ───────────────────────────────────────────────────────────
 function rectsOverlap(a, b) {
   if (!a || !b) return false;
   const ax = a.dir > 0 ? a.x : a.x - a.w;
   return ax < b.x + b.w && ax + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
 }
 
-// â”€â”€â”€ STAGE DRAW â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── STAGE DRAW ───────────────────────────────────────────────────────────────
 let hazardTimer = 0;
 function drawStage() {
   const s = scale();
@@ -2302,7 +2302,7 @@ function drawStage() {
     ctx.globalAlpha = 0.2 + (i % 5) * 0.06; ctx.fillRect(sx2, sy2, s * (1 + (i % 3)), s * (1 + (i % 3))); ctx.globalAlpha = 1;
   }
 
-  // â”€â”€ HAZARDS (unique per stage, drawn behind platforms) â”€â”€
+  // ── HAZARDS (unique per stage, drawn behind platforms) ──
   if (stage.hazard === 'lava') {
     const lavaY = canvas._logicalH - 26*s + Math.sin(hazardTimer*2)*6*s;
     const lg = ctx.createLinearGradient(0, lavaY-30*s, 0, canvas._logicalH);
@@ -2419,7 +2419,7 @@ function drawStage() {
   }
 }
 
-// â”€â”€â”€ ANNOUNCER BANNERS (big dramatic screen-wide text moments) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── ANNOUNCER BANNERS (big dramatic screen-wide text moments) ────────────────
 let announcerBanner = null;
 function showAnnouncer(text, color) {
   announcerBanner = { text, color: color || '#fff', life: 1.6, maxLife: 1.6 };
@@ -2452,7 +2452,7 @@ let finalStockWarned = new Set();
 let comebackShown = false;
 let timeWarnShown = false;
 
-// â”€â”€â”€ SATISFYING POPUPS (combo text, damage numbers, hit callouts) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── SATISFYING POPUPS (combo text, damage numbers, hit callouts) ─────────────
 let popups = [];
 const HIT_CALLOUTS = ['NICE!','SOLID!','CRUSHING!','BRUTAL!','SAVAGE!','DEVASTATING!'];
 function spawnPopup(x, y, text, opts = {}) {
@@ -2497,7 +2497,7 @@ function drawPopups() {
   }
 }
 
-// â”€â”€â”€ COMBO TRACKER (per attacker, resets when they go a beat without landing a hit) â”€â”€
+// ─── COMBO TRACKER (per attacker, resets when they go a beat without landing a hit) ──
 function registerComboHit(attacker, defender, dmgRoll, attackType) {
   if (!firstBloodShown) {
     firstBloodShown = true;
@@ -2525,7 +2525,7 @@ function registerComboHit(attacker, defender, dmgRoll, attackType) {
       color: `hsl(${hue},95%,60%)`, size, vy: -60, life: 1.0, scale: 1.15, startScale: 0.3,
     });
     camera.shake = Math.max(camera.shake, Math.min(10, 2 + combo * 0.8));
-    // Milestone combo callouts hit harder visually â€” bigger text and a burst of particles at 3x/5x/10x.
+    // Milestone combo callouts hit harder visually — bigger text and a burst of particles at 3x/5x/10x.
     if (combo === 3 || combo === 5 || combo === 10 || (combo > 10 && combo % 5 === 0)) {
       const milestoneText = combo >= 10 ? `${combo}x UNSTOPPABLE!` : combo === 5 ? '5x ON FIRE!' : '3x COMBO!';
       spawnPopup(attacker.cx, attacker.cy - 130, milestoneText, {
@@ -2550,12 +2550,12 @@ function registerComboHit(attacker, defender, dmgRoll, attackType) {
   }
 }
 
-// â”€â”€â”€ SCREEN ZOOM PUNCH (quick camera zoom-in on big hits for extra weight) â”€â”€â”€
+// ─── SCREEN ZOOM PUNCH (quick camera zoom-in on big hits for extra weight) ───
 let zoomAmount = 0;
 function zoomPunch(amt) { zoomAmount = Math.max(zoomAmount, amt); }
 function updateZoom(dt) { zoomAmount = Math.max(0, zoomAmount - dt * 0.4); }
 
-// â”€â”€â”€ STAGE HAZARD LOGIC â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── STAGE HAZARD LOGIC ────────────────────────────────────────────────────────
 let lavaTickTimer = 0;
 let poisonTickTimer = 0;
 let meteorTickTimer = 0;
@@ -2621,7 +2621,7 @@ function applyStageHazards(dt) {
   }
 }
 
-// â”€â”€â”€ HUD UPDATE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── HUD UPDATE ───────────────────────────────────────────────────────────────
 function buildHUD() {
   const hud = document.getElementById('hud');
   hud.innerHTML = '';
@@ -2692,14 +2692,14 @@ function updateHUD() {
   }
 }
 
-// â”€â”€â”€ SHOP DATA & CURRENCY â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── SHOP DATA & CURRENCY ──────────────────────────────────────────────────────
 let coins = 0;
 let ownedItems = { skins: ['default'], trails: ['none'], powerups: [] };
 let equipped = { skin: 'default', trail: 'none' };
 let boxCooldowns = {};
 const FREE_BOX_CD = 60 * 1000;
 
-// â”€â”€â”€ FIGHT PASS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── FIGHT PASS ──────────────────────────────────────────────────────────────
 const PASS_MAX_TIER = 40;
 const XP_PER_TIER = 100;
 let passXp = 0;
@@ -2708,12 +2708,12 @@ let passPremiumOwned = false;
 let passClaimedFree = [];
 let passClaimedPremium = [];
 
-// â”€â”€â”€ DAILY STREAK â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── DAILY STREAK ────────────────────────────────────────────────────────────
 let dailyStreak = 0;
 let lastLoginDate = null;
 let dailyClaimedToday = false;
 
-// â”€â”€â”€ TROPHIES & PROFILE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── TROPHIES & PROFILE ──────────────────────────────────────────────────────
 let trophies = 0;
 let highestTrophies = 0;
 let matchesPlayed = 0;
@@ -2721,7 +2721,7 @@ let matchesWon = 0;
 let bestComboEver = 0;
 let playerUsername = 'Player';
 
-// â”€â”€â”€ CHARACTER MASTERY / PRESTIGE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── CHARACTER MASTERY / PRESTIGE ────────────────────────────────────────────
 let mastery = {}; // { charId: { xp: 0, level: 1, prestige: 0 } }
 const MASTERY_MAX_LEVEL = 10;
 const MASTERY_XP_PER_LEVEL = 120;
@@ -2759,7 +2759,7 @@ function doPrestige(charId) {
   m.level = 1;
   m.xp = 0;
   saveShop();
-  showAnnouncer(getCharById(charId).name.toUpperCase() + ' â€” ' + PRESTIGE_NAMES[m.prestige].toUpperCase() + '!', PRESTIGE_COLORS[m.prestige]);
+  showAnnouncer(getCharById(charId).name.toUpperCase() + ' — ' + PRESTIGE_NAMES[m.prestige].toUpperCase() + '!', PRESTIGE_COLORS[m.prestige]);
 }
 const TROPHY_MILESTONES = [0, 10, 25, 50, 100, 200, 350, 500, 750, 1000, 1500, 2000];
 function getTrophyRank(t) {
@@ -2771,13 +2771,13 @@ function getTrophyRank(t) {
 function trophiesForWin() { return 15 + Math.floor(Math.random()*10); }
 function trophiesForLoss() { return -(8 + Math.floor(Math.random()*6)); }
 const DAILY_REWARDS = [
-  { day:1, type:'coins', amount:50,  icon:'ðŸª™' },
-  { day:2, type:'coins', amount:75,  icon:'ðŸª™' },
-  { day:3, type:'xp',    amount:30,  icon:'â­' },
-  { day:4, type:'coins', amount:100, icon:'ðŸª™' },
-  { day:5, type:'xp',    amount:50,  icon:'â­' },
-  { day:6, type:'coins', amount:150, icon:'ðŸª™' },
-  { day:7, type:'box',   amount:1,   icon:'ðŸ“¦' },
+  { day:1, type:'coins', amount:50,  icon:'🪙' },
+  { day:2, type:'coins', amount:75,  icon:'🪙' },
+  { day:3, type:'xp',    amount:30,  icon:'⭐' },
+  { day:4, type:'coins', amount:100, icon:'🪙' },
+  { day:5, type:'xp',    amount:50,  icon:'⭐' },
+  { day:6, type:'coins', amount:150, icon:'🪙' },
+  { day:7, type:'box',   amount:1,   icon:'📦' },
 ];
 function getDailyReward(streakDay) {
   const idx = ((streakDay - 1) % 7);
@@ -2816,19 +2816,19 @@ const PASS_PREMIUM_REWARDS = [];
 (function buildPassRewards() {
   for (let t = 1; t <= PASS_MAX_TIER; t++) {
     if (t % 5 === 0) {
-      PASS_FREE_REWARDS.push({ tier: t, type: 'coins', amount: 150 + t*10, icon: 'ðŸª™', name: (150+t*10)+' Coins' });
+      PASS_FREE_REWARDS.push({ tier: t, type: 'coins', amount: 150 + t*10, icon: '🪙', name: (150+t*10)+' Coins' });
     } else {
-      PASS_FREE_REWARDS.push({ tier: t, type: 'coins', amount: 40 + t*3, icon: 'ðŸª™', name: (40+t*3)+' Coins' });
+      PASS_FREE_REWARDS.push({ tier: t, type: 'coins', amount: 40 + t*3, icon: '🪙', name: (40+t*3)+' Coins' });
     }
     let prem;
     if (t % 10 === 0) {
       const skinNames = ['Crimson Blaze','Void Walker','Golden Dragon','Neon Ghost'];
-      prem = { tier: t, type: 'skin', id: 'pass_skin_'+t, icon: 'ðŸ¥‹', name: skinNames[(t/10-1)%skinNames.length] + ' Skin' };
+      prem = { tier: t, type: 'skin', id: 'pass_skin_'+t, icon: '🥋', name: skinNames[(t/10-1)%skinNames.length] + ' Skin' };
     } else if (t % 5 === 0) {
       const trailNames = ['Comet Trail','Plasma Trail','Aurora Trail','Inferno Trail','Frost Trail','Star Trail','Rainbow Trail'];
-      prem = { tier: t, type: 'trail', id: 'pass_trail_'+t, icon: 'âœ¨', name: trailNames[(t/5-1)%trailNames.length] };
+      prem = { tier: t, type: 'trail', id: 'pass_trail_'+t, icon: '✨', name: trailNames[(t/5-1)%trailNames.length] };
     } else {
-      prem = { tier: t, type: 'coins', amount: 60 + t*8, icon: 'ðŸª™', name: (60+t*8)+' Coins' };
+      prem = { tier: t, type: 'coins', amount: 60 + t*8, icon: '🪙', name: (60+t*8)+' Coins' };
     }
     PASS_PREMIUM_REWARDS.push(prem);
   }
@@ -2856,21 +2856,21 @@ const TRAILS = [
 ];
 
 const POWERUPS = [
-  { id:'coinboost',  name:'Coin Boost',   price:600,  icon:'ðŸª™', desc:'+25% coins earned per match, forever', max:1 },
-  { id:'ragestart',  name:'Rage Starter', price:800,  icon:'ðŸ”¥', desc:'Start every match with +20% rage', max:1 },
-  { id:'extralife',  name:'Extra Stock',  price:1000, icon:'â¤ï¸', desc:'Start with 4 stocks instead of 3', max:1 },
+  { id:'coinboost',  name:'Coin Boost',   price:600,  icon:'🪙', desc:'+25% coins earned per match, forever', max:1 },
+  { id:'ragestart',  name:'Rage Starter', price:800,  icon:'🔥', desc:'Start every match with +20% rage', max:1 },
+  { id:'extralife',  name:'Extra Stock',  price:1000, icon:'❤️', desc:'Start with 4 stocks instead of 3', max:1 },
 ];
 
 const BOXES = [
-  { id:'common', name:'Common Box', rarity:'common', icon:'ðŸ“¦', coinCost:0,
+  { id:'common', name:'Common Box', rarity:'common', icon:'📦', coinCost:0,
     contains:'50-150 coins or a common skin/trail',
     pool:[{type:'coins',val:50,w:30},{type:'coins',val:100,w:25},{type:'coins',val:150,w:15},
           {type:'skin',val:'crimson',w:10},{type:'skin',val:'emerald',w:10},{type:'trail',val:'spark',w:10}] },
-  { id:'rare', name:'Rare Box', rarity:'rare', icon:'ðŸ’™', coinCost:250,
+  { id:'rare', name:'Rare Box', rarity:'rare', icon:'💙', coinCost:250,
     contains:'150-400 coins or a rare skin/trail',
     pool:[{type:'coins',val:150,w:20},{type:'coins',val:250,w:15},{type:'coins',val:400,w:10},
           {type:'skin',val:'violet',w:12},{type:'skin',val:'shadow',w:12},{type:'trail',val:'ember',w:12},{type:'trail',val:'aqua',w:12}] },
-  { id:'epic', name:'Epic Box', rarity:'epic', icon:'ðŸ’œ', coinCost:600,
+  { id:'epic', name:'Epic Box', rarity:'epic', icon:'💜', coinCost:600,
     contains:'400-1000 coins or an epic skin/trail',
     pool:[{type:'coins',val:400,w:15},{type:'coins',val:700,w:10},{type:'coins',val:1000,w:5},
           {type:'skin',val:'gold',w:12},{type:'skin',val:'inferno',w:12},{type:'skin',val:'frost',w:12},{type:'trail',val:'rainbow',w:10},{type:'trail',val:'void',w:10}] },
@@ -2913,7 +2913,7 @@ function updateCoinsUI() {
   document.getElementById('shopCoinsVal').textContent = coins.toLocaleString();
   updateTrophyUI();
 
-// â”€â”€â”€ MASTERY UI â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── MASTERY UI ──────────────────────────────────────────────────────────────
 function openMastery() {
   document.getElementById('mastery-screen').classList.add('active');
   renderMastery();
@@ -2949,7 +2949,7 @@ function renderMastery() {
     const done = m.prestige >= p;
     pip.className = 'mastery-prestige-pip' + (done ? ' done' : '');
     pip.style.color = PRESTIGE_COLORS[p];
-    pip.textContent = done ? 'â˜…' : p;
+    pip.textContent = done ? '★' : p;
     track.appendChild(pip);
   }
 
@@ -3004,24 +3004,24 @@ function renderFeaturedBanner() {
   const discPrice = Math.round(item.price * 0.7);
   const swatch = isSkin ? item.color : item.grad;
   banner.innerHTML = `
-    <div class="shop-featured-icon">${isSkin ? 'ðŸ¥‹' : 'âœ¨'}</div>
+    <div class="shop-featured-icon">${isSkin ? '🥋' : '✨'}</div>
     <div class="shop-featured-info">
-      <div class="shop-featured-label">â³ Limited Offer â€” 30% Off</div>
+      <div class="shop-featured-label">⏳ Limited Offer — 30% Off</div>
       <div class="shop-featured-name">${item.name} ${isSkin?'Skin':'Trail'}</div>
       <div class="shop-featured-timer" id="shopFeaturedTimer">--:--:--</div>
     </div>
-    <div class="shop-featured-price" id="shopFeaturedBuyBtn">ðŸª™ ${discPrice} <s style="opacity:0.6;font-size:0.75em">${item.price}</s></div>
+    <div class="shop-featured-price" id="shopFeaturedBuyBtn">🪙 ${discPrice} <s style="opacity:0.6;font-size:0.75em">${item.price}</s></div>
   `;
   const buyBtn = document.getElementById('shopFeaturedBuyBtn');
   buyBtn.onclick = () => {
     const owned = isSkin ? ownedItems.skins.includes(item.id) : ownedItems.trails.includes(item.id);
-    if (owned) { showReward('âœ…', 'Already owned!'); return; }
-    if (coins < discPrice) { showReward('âŒ', 'Need ' + (discPrice - coins) + ' more coins!'); return; }
+    if (owned) { showReward('✅', 'Already owned!'); return; }
+    if (coins < discPrice) { showReward('❌', 'Need ' + (discPrice - coins) + ' more coins!'); return; }
     coins -= discPrice;
     if (isSkin) { ownedItems.skins.push(item.id); equipped.skin = item.id; }
     else { ownedItems.trails.push(item.id); equipped.trail = item.id; }
     saveShop(); updateCoinsUI(); renderShop();
-    showReward(isSkin?'ðŸ¥‹':'âœ¨', 'Unlocked ' + item.name + '!');
+    showReward(isSkin?'🥋':'✨', 'Unlocked ' + item.name + '!');
   };
   updateFeaturedTimer();
 }
@@ -3054,12 +3054,12 @@ function renderShop() {
         <div class="shop-card-name">${item.name}</div>
         <div class="shop-card-desc">${item.desc}</div>
         ${isEq?'<div class="shop-card-badge badge-equipped">ON</div>':owned?'<div class="shop-card-badge badge-owned">OWNED</div>':''}
-        <button class="shop-card-btn ${owned?'equip-btn':''}">${isEq?'Equipped':owned?'Equip':'ðŸª™ '+item.price}</button>
+        <button class="shop-card-btn ${owned?'equip-btn':''}">${isEq?'Equipped':owned?'Equip':'🪙 '+item.price}</button>
       `;
       card.querySelector('button').onclick = () => {
         if (owned) { equipped.skin = item.id; saveShop(); renderShop(); }
         else if (coins >= item.price) { coins -= item.price; ownedItems.skins.push(item.id); equipped.skin = item.id; saveShop(); updateCoinsUI(); renderShop(); }
-        else showReward('âŒ', 'Need ' + (item.price - coins) + ' more coins!');
+        else showReward('❌', 'Need ' + (item.price - coins) + ' more coins!');
       };
       grid.appendChild(card);
     });
@@ -3077,12 +3077,12 @@ function renderShop() {
         <div class="shop-rarity-tag rarity-${rarity}">${rarity}</div>
         <div class="shop-card-name">${item.name}</div>
         ${isEq?'<div class="shop-card-badge badge-equipped">ON</div>':owned?'<div class="shop-card-badge badge-owned">OWNED</div>':''}
-        <button class="shop-card-btn ${owned?'equip-btn':''}">${isEq?'Equipped':owned?'Equip':'ðŸª™ '+item.price}</button>
+        <button class="shop-card-btn ${owned?'equip-btn':''}">${isEq?'Equipped':owned?'Equip':'🪙 '+item.price}</button>
       `;
       card.querySelector('button').onclick = () => {
         if (owned) { equipped.trail = item.id; saveShop(); renderShop(); }
         else if (coins >= item.price) { coins -= item.price; ownedItems.trails.push(item.id); equipped.trail = item.id; saveShop(); updateCoinsUI(); renderShop(); }
-        else showReward('âŒ', 'Need ' + (item.price - coins) + ' more coins!');
+        else showReward('❌', 'Need ' + (item.price - coins) + ' more coins!');
       };
       grid.appendChild(card);
     });
@@ -3098,12 +3098,12 @@ function renderShop() {
         <div class="shop-card-name">${item.name}</div>
         <div class="shop-card-desc">${item.desc}</div>
         ${owned?'<div class="shop-card-badge badge-owned">OWNED</div>':''}
-        <button class="shop-card-btn" ${owned?'disabled':''}>${owned?'Owned':'ðŸª™ '+item.price}</button>
+        <button class="shop-card-btn" ${owned?'disabled':''}>${owned?'Owned':'🪙 '+item.price}</button>
       `;
       card.querySelector('button').onclick = () => {
         if (owned) return;
         if (coins >= item.price) { coins -= item.price; ownedItems.powerups.push(item.id); saveShop(); updateCoinsUI(); renderShop(); showReward(item.icon, item.name + ' unlocked!'); }
-        else showReward('âŒ', 'Need ' + (item.price - coins) + ' more coins!');
+        else showReward('❌', 'Need ' + (item.price - coins) + ' more coins!');
       };
       grid.appendChild(card);
     });
@@ -3118,8 +3118,8 @@ function renderShop() {
         <div class="shop-card-icon box-icon-anim">${box.icon}</div>
         <div class="shop-card-name">${box.name}</div>
         <div class="shop-card-desc">${box.contains}</div>
-        <button class="shop-card-btn free-btn" ${cdLeft>0?'disabled':''}>${cdLeft>0?Math.ceil(cdLeft/1000)+'s':'ðŸŽ FREE'}</button>
-        ${box.coinCost>0?`<button class="shop-card-btn buy-btn">ðŸª™ ${box.coinCost}</button>`:''}
+        <button class="shop-card-btn free-btn" ${cdLeft>0?'disabled':''}>${cdLeft>0?Math.ceil(cdLeft/1000)+'s':'🎁 FREE'}</button>
+        ${box.coinCost>0?`<button class="shop-card-btn buy-btn">🪙 ${box.coinCost}</button>`:''}
       `;
       card.querySelector('.free-btn').onclick = () => { if (cdLeft<=0) openBox(box, false); };
       const buyBtn = card.querySelector('.buy-btn');
@@ -3138,24 +3138,24 @@ function weightedPick(pool) {
 
 function openBox(box, paid) {
   if (paid) {
-    if (coins < box.coinCost) { showReward('âŒ', 'Need ' + (box.coinCost - coins) + ' more coins!'); return; }
+    if (coins < box.coinCost) { showReward('❌', 'Need ' + (box.coinCost - coins) + ' more coins!'); return; }
     coins -= box.coinCost;
   } else {
     boxCooldowns[box.id] = Date.now();
   }
   const result = weightedPick(box.pool);
-  let icon = 'ðŸŽ', title = '';
+  let icon = '🎁', title = '';
   if (result.type === 'coins') {
     coins += result.val;
-    icon = 'ðŸª™'; title = '+' + result.val + ' coins!';
+    icon = '🪙'; title = '+' + result.val + ' coins!';
   } else if (result.type === 'skin') {
     if (!ownedItems.skins.includes(result.val)) ownedItems.skins.push(result.val);
     const s = SKINS.find(x=>x.id===result.val);
-    icon = 'ðŸ¥‹'; title = (s?s.name:result.val) + ' skin unlocked!';
+    icon = '🥋'; title = (s?s.name:result.val) + ' skin unlocked!';
   } else if (result.type === 'trail') {
     if (!ownedItems.trails.includes(result.val)) ownedItems.trails.push(result.val);
     const t = TRAILS.find(x=>x.id===result.val);
-    icon = 'âœ¨'; title = (t?t.name:result.val) + ' trail unlocked!';
+    icon = '✨'; title = (t?t.name:result.val) + ' trail unlocked!';
   }
   saveShop();
   updateCoinsUI();
@@ -3199,10 +3199,10 @@ function updatePassUI() {
   if (banner) {
     if (passPremiumOwned) {
       banner.className = 'pass-upgrade-banner owned';
-      banner.innerHTML = '<div class="pass-upgrade-text">â­ <b>Premium Pass Active</b> â€” all premium rewards unlocked as you tier up!</div>';
+      banner.innerHTML = '<div class="pass-upgrade-text">⭐ <b>Premium Pass Active</b> — all premium rewards unlocked as you tier up!</div>';
     } else {
       banner.className = 'pass-upgrade-banner';
-      banner.innerHTML = '<div class="pass-upgrade-text">Unlock the <b>â­ Premium Track</b> for exclusive skins &amp; trails!</div><button class="pass-upgrade-btn" id="passBuyBtn">Unlock for ðŸª™ 5000</button>';
+      banner.innerHTML = '<div class="pass-upgrade-text">Unlock the <b>⭐ Premium Track</b> for exclusive skins &amp; trails!</div><button class="pass-upgrade-btn" id="passBuyBtn">Unlock for 🪙 5000</button>';
       const buyBtn = document.getElementById('passBuyBtn');
       if (buyBtn) buyBtn.addEventListener('click', buyPremiumPass);
     }
@@ -3239,7 +3239,7 @@ function renderPassTrack(elId, rewards, claimedList, isPremium) {
     card.innerHTML = `
       <div class="pass-reward-icon">${r.icon}</div>
       <div class="pass-reward-name">${r.name}</div>
-      ${needsPremium ? '<div class="pass-reward-lock">ðŸ”’</div>' : ''}
+      ${needsPremium ? '<div class="pass-reward-lock">🔒</div>' : ''}
     `;
     if (unlocked && !needsPremium && !claimed) {
       const btn = document.createElement('button');
@@ -3251,7 +3251,7 @@ function renderPassTrack(elId, rewards, claimedList, isPremium) {
       const tag = document.createElement('div');
       tag.className = 'pass-reward-name';
       tag.style.color = '#00e87a';
-      tag.textContent = 'âœ“ Claimed';
+      tag.textContent = '✓ Claimed';
       card.appendChild(tag);
     }
     col.appendChild(card);
@@ -3264,7 +3264,7 @@ function claimPassReward(r, isPremium) {
   if (claimedList.includes(r.tier)) return;
   if (r.type === 'coins') {
     coins += r.amount;
-    showRewardPopup('ðŸª™', '+' + r.amount + ' Coins!');
+    showRewardPopup('🪙', '+' + r.amount + ' Coins!');
   } else if (r.type === 'skin') {
     if (!ownedItems.skins.includes(r.id)) ownedItems.skins.push(r.id);
     showRewardPopup(r.icon, 'Unlocked: ' + r.name + '!');
@@ -3279,13 +3279,13 @@ function claimPassReward(r, isPremium) {
 }
 
 function buyPremiumPass() {
-  if (coins < 5000) { showRewardPopup('ðŸª™', 'Not enough coins!'); return; }
+  if (coins < 5000) { showRewardPopup('🪙', 'Not enough coins!'); return; }
   coins -= 5000;
   passPremiumOwned = true;
   savePassData();
   updateCoinsUI();
   updatePassUI();
-  showRewardPopup('â­', 'Premium Pass Unlocked!');
+  showRewardPopup('⭐', 'Premium Pass Unlocked!');
 }
 
 function showRewardPopup(icon, title) {
@@ -3294,7 +3294,7 @@ function showRewardPopup(icon, title) {
   document.getElementById('rewardPopup').classList.add('active');
 }
 
-// â”€â”€â”€ DAILY STREAK LOGIC â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── DAILY STREAK LOGIC ──────────────────────────────────────────────────────
 function renderDailyStreak() {
   const nextDay = dailyStreak + 1;
   const todaySlot = ((nextDay - 1) % 7) + 1;
@@ -3339,16 +3339,16 @@ function claimDailyStreak() {
 document.getElementById('dailyClaimBtn').addEventListener('click', claimDailyStreak);
 showDailyStreakIfNeeded();
 
-// â”€â”€â”€ PROFILE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── PROFILE ─────────────────────────────────────────────────────────────────
 const TROPHY_RANK_NAMES = ['Rookie','Bronze','Silver','Gold','Platinum','Diamond','Master','Legend','Mythic','Titan','Cosmic','Champion'];
-const TROPHY_RANK_ICONS = ['ðŸ¥‰','ðŸ¥‰','ðŸ¥ˆ','ðŸ¥ˆ','ðŸ¥‡','ðŸ¥‡','ðŸ’Ž','ðŸ’Ž','ðŸ‘‘','ðŸ‘‘','ðŸŒŸ','ðŸ†'];
+const TROPHY_RANK_ICONS = ['🥉','🥉','🥈','🥈','🥇','🥇','💎','💎','👑','👑','🌟','🏆'];
 
 function updateTrophyUI() {
   const el = document.getElementById('trophyVal');
   if (el) el.textContent = trophies.toLocaleString();
 }
 
-// â”€â”€â”€ ADMIN PANEL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── ADMIN PANEL ──────────────────────────────────────────────────────────────
 const ADMIN_PASSWORD = 'ZAYN2015';
 let adminUnlocked = false;
 let adminTapCount = 0;
@@ -3443,7 +3443,7 @@ function renderProfile() {
     `radial-gradient(circle at 35% 30%, ${getEquippedSkinColor()}, ${shadeColor(getEquippedSkinColor(),-40)} 70%)`;
   document.getElementById('profileNameInput').value = playerUsername;
   document.getElementById('profileRankBadge').innerHTML =
-    `${TROPHY_RANK_ICONS[rankIdx]} ${trophies.toLocaleString()} Trophies â€” ${TROPHY_RANK_NAMES[rankIdx]}`;
+    `${TROPHY_RANK_ICONS[rankIdx]} ${trophies.toLocaleString()} Trophies — ${TROPHY_RANK_NAMES[rankIdx]}`;
 
   const winRate = matchesPlayed > 0 ? Math.round((matchesWon / matchesPlayed) * 100) : 0;
   const stats = [
@@ -3467,7 +3467,7 @@ document.getElementById('profileNameInput').addEventListener('change', (e) => {
 });
 updateTrophyUI();
 
-// â”€â”€â”€ MASTERY UI â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── MASTERY UI ──────────────────────────────────────────────────────────────
 function openMastery() {
   document.getElementById('mastery-screen').classList.add('active');
   renderMastery();
@@ -3503,7 +3503,7 @@ function renderMastery() {
     const done = m.prestige >= p;
     pip.className = 'mastery-prestige-pip' + (done ? ' done' : '');
     pip.style.color = PRESTIGE_COLORS[p];
-    pip.textContent = done ? 'â˜…' : p;
+    pip.textContent = done ? '★' : p;
     track.appendChild(pip);
   }
 
@@ -3552,7 +3552,7 @@ setInterval(() => {
   if (document.getElementById('shop-screen').classList.contains('active') && activeShopTab === 'boxes') renderShop();
 }, 1000);
 
-// â”€â”€â”€ GAME INIT â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── GAME INIT ────────────────────────────────────────────────────────────────
 function startGame() {
   initAudio();
   fighters = [];
@@ -3651,7 +3651,7 @@ function checkGameOver() {
       playerWon = winner.isPlayer;
     }
 
-    badge.textContent = isDraw ? 'ðŸ¤' : playerWon ? 'ðŸ†' : 'ðŸ’€';
+    badge.textContent = isDraw ? '🤝' : playerWon ? '🏆' : '💀';
     if (winner && winner.damage < 5 && winner.totalDamageTaken === undefined) {
       setTimeout(() => showAnnouncer('PERFECT VICTORY!', '#ffd700'), 250);
     }
@@ -3705,7 +3705,7 @@ function checkGameOver() {
   }
 }
 
-// â”€â”€â”€ CONFETTI (win-screen celebration) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── CONFETTI (win-screen celebration) ─────────────────────────────────────────
 let confettiPieces = [];
 const confettiCanvas = document.getElementById('confettiCanvas');
 const confettiCtx = confettiCanvas.getContext('2d');
@@ -3766,7 +3766,7 @@ function confettiLoop(ts) {
   }
 }
 
-// â”€â”€â”€ GAME LOOP â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── GAME LOOP ────────────────────────────────────────────────────────────────
 let fps = 0, fpsTimer = 0, fpsCount = 0;
 let debugVisible = false;
 
@@ -3830,7 +3830,7 @@ function gameLoop(timestamp) {
   clearJustPressed();
 }
 
-// â”€â”€â”€ UI EVENTS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─── UI EVENTS ────────────────────────────────────────────────────────────────
 document.querySelectorAll('.diff-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('selected'));
@@ -3914,7 +3914,7 @@ document.getElementById('goMenuBtn').addEventListener('click', goToMenu);
 document.addEventListener('click', initAudio, { once: false });
 
 window.addEventListener('load', function() {
-// â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• MOBILE TOUCH CONTROLS (IMPROVED) â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+// ═══════════════════ MOBILE TOUCH CONTROLS (IMPROVED) ═══════════════════
 const isTouchDevice = matchMedia('(hover:none) and (pointer:coarse)').matches || navigator.maxTouchPoints > 0;
 
 function vibrate(ms) { if (navigator.vibrate) { try { navigator.vibrate(ms); } catch(e){} } }
@@ -3987,7 +3987,7 @@ document.getElementById('tcPauseBtn')?.addEventListener('touchstart', e => {
   togglePause();
 });
 
-// Virtual joystick (movement + fast-fall) â€” smoother, larger range, proper dead-zone
+// Virtual joystick (movement + fast-fall) — smoother, larger range, proper dead-zone
 (function setupJoystick() {
   const joy = document.getElementById('tcJoystick');
   const stick = document.getElementById('tcStick');
@@ -4086,14 +4086,14 @@ if (isTouchDevice) {
     <div class="tc-joystick-label">MOVE</div>
   </div>
   <div class="tc-actions">
-    <button class="tc-btn" id="tc-jump"><span class="tc-icon">â¬†ï¸</span><span class="tc-label">JUMP</span></button>
-    <button class="tc-btn" id="tc-block"><span class="tc-icon">ðŸ›¡ï¸</span><span class="tc-label">BLOCK</span></button>
-    <button class="tc-btn" id="tc-punch"><span class="tc-icon">ðŸ‘Š</span><span class="tc-label">PUNCH</span></button>
-    <button class="tc-btn" id="tc-kick"><span class="tc-icon">ðŸ¦µ</span><span class="tc-label">KICK</span></button>
-    <button class="tc-btn" id="tc-special"><span class="tc-icon">âœ¨</span><span class="tc-label">SPECIAL</span></button>
+    <button class="tc-btn" id="tc-jump"><span class="tc-icon">⬆️</span><span class="tc-label">JUMP</span></button>
+    <button class="tc-btn" id="tc-block"><span class="tc-icon">🛡️</span><span class="tc-label">BLOCK</span></button>
+    <button class="tc-btn" id="tc-punch"><span class="tc-icon">👊</span><span class="tc-label">PUNCH</span></button>
+    <button class="tc-btn" id="tc-kick"><span class="tc-icon">🦵</span><span class="tc-label">KICK</span></button>
+    <button class="tc-btn" id="tc-special"><span class="tc-icon">✨</span><span class="tc-label">SPECIAL</span></button>
   </div>
 </div>
-<button class="tc-pause-btn" id="tcPauseBtn">â¸</button>
+<button class="tc-pause-btn" id="tcPauseBtn">⏸</button>
 
 </body>
 
