@@ -1338,7 +1338,11 @@ resizeCanvas();
 
 function scaleX() { return uniformScale(); }
 function scaleY() { return uniformScale(); }
-function uniformScale() { return Math.min(canvas._logicalW / STAGE_W, canvas._logicalH / STAGE_H); }
+function uniformScale() {
+  const base = Math.min(canvas._logicalW / STAGE_W, canvas._logicalH / STAGE_H);
+  const isPortrait = canvas._logicalH > canvas._logicalW;
+  return isPortrait ? base * 1.45 : base;
+}
 function scale() { return uniformScale(); }
 function offsetX() { return (canvas._logicalW - STAGE_W * uniformScale()) / 2; }
 function offsetY() { return (canvas._logicalH - STAGE_H * uniformScale()) / 2; }
@@ -1360,7 +1364,7 @@ class Fighter {
     this.char = charData || CHARACTERS[0];
     this.color = FIGHTER_COLORS[id];
     this.name = isPlayer ? 'YOU' : FIGHTER_NAMES[id];
-    this.w = 50 * (0.9 + this.char.weightMult*0.1); this.h = 116 * (0.9 + this.char.weightMult*0.1);
+    this.w = 65 * (0.9 + this.char.weightMult*0.1); this.h = 151 * (0.9 + this.char.weightMult*0.1);
     this.counterActive = false;
     this.counterTimer = 0;
     this.dashPunchTimer = 0;
