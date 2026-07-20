@@ -3202,7 +3202,7 @@ function updatePassUI() {
       banner.innerHTML = '<div class="pass-upgrade-text">⭐ <b>Premium Pass Active</b> — all premium rewards unlocked as you tier up!</div>';
     } else {
       banner.className = 'pass-upgrade-banner';
-      banner.innerHTML = '<div class="pass-upgrade-text">Unlock the <b>⭐ Premium Track</b> for exclusive skins &amp; trails!</div><button class="pass-upgrade-btn" id="passBuyBtn">Unlock for 🪙 500</button>';
+      banner.innerHTML = '<div class="pass-upgrade-text">Unlock the <b>⭐ Premium Track</b> for exclusive skins &amp; trails!</div><button class="pass-upgrade-btn" id="passBuyBtn">Unlock for 🪙 5000</button>';
       const buyBtn = document.getElementById('passBuyBtn');
       if (buyBtn) buyBtn.addEventListener('click', buyPremiumPass);
     }
@@ -3279,8 +3279,8 @@ function claimPassReward(r, isPremium) {
 }
 
 function buyPremiumPass() {
-  if (coins < 500) { showRewardPopup('🪙', 'Not enough coins!'); return; }
-  coins -= 500;
+  if (coins < 5000) { showRewardPopup('🪙', 'Not enough coins!'); return; }
+  coins -= 5000;
   passPremiumOwned = true;
   savePassData();
   updateCoinsUI();
