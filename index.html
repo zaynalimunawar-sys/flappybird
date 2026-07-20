@@ -33,8 +33,10 @@ body { font-family: 'Rajdhani', sans-serif; color: var(--color-text); display: f
   background: radial-gradient(ellipse at center, #1a0a2e 0%, #0d0d1a 70%);
   z-index: 100;
 }
-#menu { overflow-y: auto; padding: 24px 16px; }
-.menu-scroll { display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 640px; }
+/* #menu switches to block layout (not flex-centered) so the topbar can truly pin to the
+   viewport top on mobile instead of drifting with flex-centered scroll content. */
+#menu { display: block; overflow-y: auto; padding: 0; }
+.menu-scroll { display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 640px; margin: 0 auto; }
 .menu-tabs { display: flex; gap: 6px; margin-bottom: 18px; background: rgba(255,255,255,0.04); border-radius: 12px; padding: 5px; }
 .menu-tab {
   padding: 9px 16px; border-radius: 9px; border: none; background: transparent; cursor: pointer;
@@ -702,16 +704,17 @@ body { font-family: 'Rajdhani', sans-serif; color: var(--color-text); display: f
 /* ═══════════════════ CLEANER HOME SCREEN ═══════════════════ */
 #menu { padding: 0; }
 .menu-topbar {
-  position: sticky; top: 0; z-index: 6; width: 100%;
+  position: fixed; top: 0; left: 0; right: 0; z-index: 101; width: 100%;
   display: flex; align-items: center; justify-content: space-between;
-  padding: 14px 20px; background: rgba(10,10,20,0.55); backdrop-filter: blur(12px);
+  padding: 14px 20px; background: rgba(10,10,20,0.75); backdrop-filter: blur(12px);
   border-bottom: 1px solid rgba(255,255,255,0.06);
 }
+/* Push scrollable menu content below the now-fixed topbar so nothing hides behind it. */
 .menu-topbar-stats { display: flex; gap: 10px; align-items: center; }
 .menu-topbar .coins-display, .menu-topbar .trophy-display { margin-bottom: 0; padding: 6px 16px; font-size: 1.05rem; }
 .menu-topbar .profile-open-btn { margin-bottom: 0; width: 42px; height: 42px; }
 
-.menu-scroll { padding: 28px 16px 40px; }
+.menu-scroll { padding: 92px 16px 40px; }
 .menu-header { text-align: center; margin-bottom: 22px; }
 .menu-header h1 { margin-bottom: 2px; }
 .menu-header .subtitle { margin-bottom: 0; }
@@ -775,7 +778,7 @@ body { font-family: 'Rajdhani', sans-serif; color: var(--color-text); display: f
 body.is-phone .menu-topbar { padding: 10px 14px; }
 body.is-phone .menu-topbar .coins-display, body.is-phone .menu-topbar .trophy-display { padding: 5px 12px; font-size: 0.85rem; }
 body.is-phone .menu-topbar .profile-open-btn { width: 36px; height: 36px; font-size: 1rem; }
-body.is-phone .menu-scroll { padding: 16px 10px 30px; }
+body.is-phone .menu-scroll { padding: 84px 10px 30px; }
 body.is-phone .menu-header h1 { font-size: clamp(1.5rem, 7vw, 2.2rem); letter-spacing: 1.5px; }
 body.is-phone .menu-header .subtitle { font-size: 0.7rem; letter-spacing: 1.5px; }
 body.is-phone .menu-tabs { flex-wrap: wrap; gap: 4px; padding: 4px; margin-bottom: 14px; }
@@ -790,7 +793,16 @@ body.is-phone .stage-card span { font-size: 0.6rem; }
 body.is-phone .difficulty-btns { gap: 8px; }
 body.is-phone .diff-btn { padding: 8px 16px; font-size: 0.85rem; }
 body.is-phone .cpu-btn { width: 42px; height: 42px; font-size: 1rem; }
-body.is-phone .start-btn { width: 92vw; font-size: 1.35rem; padding: 14px 30px; letter-spacing: 2.5px; }
+body.is-phone .start-btn {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 101;
+  width: 100%; margin: 0; border-radius: 0;
+  font-size: 1.35rem; padding: 16px 30px; letter-spacing: 2.5px;
+  box-shadow: 0 -4px 24px rgba(0,0,0,0.5);
+}
+/* Extra bottom padding so scrollable content never hides behind the fixed FIGHT! bar,
+   and push the shop/pass row up so it isn't covered either. */
+body.is-phone .menu-scroll { padding-bottom: 96px; }
+body.is-phone .menu-btn-row { margin-bottom: 90px; }
 body.is-phone .shop-open-btn, body.is-phone .pass-open-btn { padding: 10px 18px; font-size: 0.95rem; }
 body.is-phone .controls-hint { font-size: 0.68rem; }
 body.is-phone .mastery-open-btn { font-size: 0.85rem; padding: 8px 20px; }
@@ -832,7 +844,7 @@ body.is-phone .shop-grid { grid-template-columns: repeat(auto-fill, minmax(110px
 body.is-phone .pass-reward-card { width: 68px; min-height: 82px; }
 
 /* iPad refinements (kept close to current, slight polish) */
-body.is-ipad .menu-scroll { padding: 30px 24px 44px; }
+body.is-ipad .menu-scroll { padding: 96px 24px 44px; }
 body.is-ipad .tc-joystick { left:34px; bottom:34px; }
 body.is-ipad .tc-actions { right:28px; bottom:28px; }
 
@@ -1117,11 +1129,11 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
 })();
 
 // ─── CONFIG ─────────────────────────────────────────────────────────────────
-const GRAVITY = 1750;
-const PLAYER_SPEED = 420;
-const JUMP_VEL = -780;
-const DOUBLE_JUMP_VEL = -680;
-const FASTFALL_MULT = 2.4;
+const GRAVITY = 1850;
+const PLAYER_SPEED = 590;
+const JUMP_VEL = -820;
+const DOUBLE_JUMP_VEL = -720;
+const FASTFALL_MULT = 2.6;
 const MAX_STOCKS = 3;
 const STAGE_W = 1280;
 const STAGE_H = 720;
@@ -1473,6 +1485,15 @@ class Fighter {
     this.airDodgeCooldown = 0;
     this.starKO = false;
     this.fastFalling = false;
+    this.squashX = 1; this.squashY = 1;
+    this.walkCycle = 0;
+    this.breathPhase = Math.random() * 10;
+    this.attackProgress = 0;
+    this.attackDuration = 0;
+    this.prevGrounded = false;
+    this.landSquashTimer = 0;
+    this.jumpStretchTimer = 0;
+    this.afterimages = [];
   }
 
   get cx() { return this.x + this.w/2; }
@@ -1619,6 +1640,8 @@ class Fighter {
     if (this.grounded) this.airDodgeCooldown = 0;
     if (this.comboResetTimer > 0) { this.comboResetTimer -= dt; if (this.comboResetTimer <= 0) this.comboHits = 0; }
     if (this.counterTimer > 0) { this.counterTimer -= dt; if (this.counterTimer <= 0) this.counterActive = false; }
+    if (this.landSquashTimer > 0) this.landSquashTimer -= dt;
+    if (this.jumpStretchTimer > 0) this.jumpStretchTimer -= dt;
     if (this.dashPunchTimer > 0) {
       this.dashPunchTimer -= dt;
       this.vx = this.facing * 620 * (this.dashPunchTimer/0.5 + 0.3);
@@ -1632,6 +1655,8 @@ class Fighter {
       if (this.dashPunchTimer <= 0) this.dashPunchHits = 0;
     }
 
+    this.prevGrounded = this.grounded;
+
     if (this.stunTimer <= 0) {
       if (this.isPlayer) this.handlePlayerInput(enemies);
       else this.handleAI(dt, enemies);
@@ -1644,19 +1669,71 @@ class Fighter {
     this.applyGravity(dt);
     this.move(dt);
     this.collide();
-    if (this.landedThisFrame) playSFX(150, 0.05, 'sine');
+    if (this.landedThisFrame) {
+      playSFX(150, 0.05, 'sine');
+      this.landSquashTimer = 0.16;
+      spawnParticles(this.cx, this.feet, 'rgba(255,255,255,0.5)', 4);
+    }
+    if (this.prevGrounded && !this.grounded && this.vy < -50) {
+      this.jumpStretchTimer = 0.18;
+    }
     this.checkBlastZone();
 
     this.animTimer += dt;
-    if (Math.abs(this.vx) > 20) {
-      this.limbAngle = Math.sin(this.animTimer * 9) * 0.45;
-    } else {
-      this.limbAngle = Math.sin(this.animTimer * 2) * 0.08;
+    this.breathPhase += dt;
+
+    // ── Squash & stretch: landing = squash, jumping/knockback = stretch ──
+    let targetSquashX = 1, targetSquashY = 1;
+    if (this.landSquashTimer > 0) {
+      const t = this.landSquashTimer / 0.16;
+      targetSquashX = 1 + 0.22 * t;
+      targetSquashY = 1 - 0.22 * t;
+    } else if (this.jumpStretchTimer > 0) {
+      const t = this.jumpStretchTimer / 0.18;
+      targetSquashX = 1 - 0.16 * t;
+      targetSquashY = 1 + 0.16 * t;
+    } else if (!this.grounded) {
+      const vyN = Math.max(-1, Math.min(1, this.vy / 900));
+      targetSquashX = 1 - vyN * 0.06;
+      targetSquashY = 1 + vyN * 0.06;
+    } else if (this.attackTimer > 0 && this.attackDuration > 0) {
+      const p = 1 - (this.attackTimer / this.attackDuration);
+      const punch = Math.sin(p * Math.PI);
+      targetSquashX = 1 + punch * 0.10;
+      targetSquashY = 1 - punch * 0.06;
     }
-    if (this.attackType === 'kick' && this.attackTimer > 0) {
-      this.kickAngle = Math.sin((1 - this.attackTimer / 0.25) * Math.PI) * 1.5 * this.facing;
+    this.squashX += (targetSquashX - this.squashX) * Math.min(1, dt * 16);
+    this.squashY += (targetSquashY - this.squashY) * Math.min(1, dt * 16);
+
+    // ── Walk/sprint cycle: faster legs at higher speed, with a punchier stride amplitude for a snappy run feel ──
+    if (this.grounded && Math.abs(this.vx) > 20) {
+      const speedRatio = Math.abs(this.vx) / PLAYER_SPEED;
+      this.walkCycle += dt * (9 + speedRatio * 9);
+      this.limbAngle = Math.sin(this.walkCycle) * (0.55 + speedRatio * 0.2);
+    } else if (this.grounded) {
+      this.walkCycle += dt * 1.4;
+      this.limbAngle = Math.sin(this.breathPhase * 1.6) * 0.05;
     } else {
-      this.kickAngle *= 0.7;
+      this.walkCycle += dt * 10;
+      this.limbAngle = Math.sin(this.walkCycle) * 0.3 + (this.vy > 0 ? 0.18 : -0.12);
+    }
+
+    // sharp snap-out with a slight overshoot/recoil on kicks, instead of a plain half-sine
+    if (this.attackType === 'kick' && this.attackTimer > 0 && this.attackDuration > 0) {
+      const p = 1 - (this.attackTimer / this.attackDuration);
+      const snap = p < 0.55 ? Math.sin((p/0.55) * Math.PI*0.5) : 1 - (p-0.55)/0.45 * 0.25;
+      this.kickAngle = snap * 1.85;
+    } else {
+      this.kickAngle *= 0.55;
+    }
+
+    // ── Afterimage trail: threshold scaled to the new higher top speed, plus punches/kicks now trail too for snappier feedback ──
+    if (Math.abs(this.vx) > PLAYER_SPEED * 1.05 || (this.attackType && this.attackTimer > 0)) {
+      this.afterimages.push({ x: this.x, y: this.y, facing: this.facing, life: 0.16 });
+    }
+    for (let i = this.afterimages.length - 1; i >= 0; i--) {
+      this.afterimages[i].life -= dt;
+      if (this.afterimages[i].life <= 0) this.afterimages.splice(i, 1);
     }
   }
 
@@ -1685,8 +1762,8 @@ class Fighter {
     if (this.blocking) this.blockTimer = 0.25;
 
     if (!this.blocking && this.attackCooldown <= 0) {
-      if (justPressed['KeyJ']) this.doAttack('punch', enemies, 0.14, 0.18);
-      else if (justPressed['KeyK']) this.doAttack('kick', enemies, 0.18, 0.24);
+      if (justPressed['KeyJ']) this.doAttack('punch', enemies, 0.10, 0.12);
+      else if (justPressed['KeyK']) this.doAttack('kick', enemies, 0.13, 0.16);
       else if (justPressed['KeyL'] && this.specialCooldown <= 0) {
         this.useSpecial(enemies);
       }
@@ -1699,21 +1776,21 @@ class Fighter {
     if (sp === 'counter') {
       this.counterActive = true;
       this.counterTimer = 0.6;
-      this.attackType = 'special'; this.attackTimer = 0.3; this.attackCooldown = 0.1;
+      this.attackType = 'special'; this.attackTimer = 0.3; this.attackDuration = 0.3; this.attackCooldown = 0.1;
       spawnPopup(this.cx, this.cy - 70, 'READY!', { color:'#ff44ff', size:20, vy:-40, life:0.5, scale:1 });
       playSFX(500, 0.1, 'sine');
     } else if (sp === 'fireball') {
-      this.attackType = 'special'; this.attackTimer = 0.22; this.attackCooldown = 0.2;
+      this.attackType = 'special'; this.attackTimer = 0.22; this.attackDuration = 0.22; this.attackCooldown = 0.2;
       spawnProjectile(this);
       playSFX(320, 0.14, 'sawtooth');
     } else if (sp === 'dashpunch') {
       this.dashPunchTimer = 0.5;
       this.dashPunchHits = 0;
-      this.attackType = 'special'; this.attackTimer = 0.5; this.attackCooldown = 0.1;
+      this.attackType = 'special'; this.attackTimer = 0.5; this.attackDuration = 0.5; this.attackCooldown = 0.1;
       this.vx = this.facing * 700;
       playSFX(220, 0.12, 'square');
     } else if (sp === 'flyingkick') {
-      this.attackType = 'special'; this.attackTimer = 0.32; this.attackCooldown = 0.15;
+      this.attackType = 'special'; this.attackTimer = 0.32; this.attackDuration = 0.32; this.attackCooldown = 0.15;
       this.vx = this.facing * 900;
       this.vy = this.grounded ? -300 : this.vy - 150;
       this.grounded = false;
@@ -1727,6 +1804,7 @@ class Fighter {
   doAttack(type, enemies, duration, cooldown) {
     this.attackType = type;
     this.attackTimer = duration;
+    this.attackDuration = duration;
     this.attackCooldown = cooldown;
     this.hasHitThisAttack = false;
     playSFX(type==='special' ? 180 : type==='kick' ? 280 : 400, 0.08, type==='special' ? 'sawtooth' : 'square');
@@ -1785,11 +1863,11 @@ class Fighter {
       const r = Math.random();
       if (r < d.specialChance && this.specialCooldown <= 0) {
         this.useSpecial(enemies);
-        this.specialCooldown = 1.5 / Math.max(0.6, d.react);
-      } else if (r < d.aggro * 0.12) {
-        this.doAttack('kick', enemies, 0.18, 0.26);
-      } else if (r < d.aggro * 0.22) {
-        this.doAttack('punch', enemies, 0.14, 0.18);
+        this.specialCooldown = 1.1 / Math.max(0.6, d.react);
+      } else if (r < d.aggro * 0.16) {
+        this.doAttack('kick', enemies, 0.13, 0.16);
+      } else if (r < d.aggro * 0.30) {
+        this.doAttack('punch', enemies, 0.10, 0.12);
       }
     }
 
@@ -1805,17 +1883,39 @@ class Fighter {
     const cx = x + w/2, cy = y + h/2;
     const dir = this.facing;
 
+    // ── Afterimages (rendered before the fighter for a speed-trail effect) ──
+    for (const ai of this.afterimages) {
+      const ax = sx(ai.x), ay = sy(ai.y);
+      const acx = ax + w/2;
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, ai.life / 0.16) * 0.32;
+      ctx.fillStyle = this.color;
+      ctx.beginPath();
+      ctx.ellipse(acx, ay + h*0.5, w*0.3, h*0.42, 0, 0, Math.PI*2);
+      ctx.fill();
+      ctx.restore();
+    }
+
     ctx.save();
     if (this.hitFlash > 0 && Math.floor(this.hitFlash * 20) % 2 === 0) {
       ctx.globalAlpha = 0.55;
     }
     if (this.airDodging) ctx.globalAlpha *= 0.55;
 
+    // ── Squash & stretch applied about the character's feet ──
+    ctx.translate(cx, y + h);
+    ctx.scale(this.squashX, this.squashY);
+    ctx.translate(-cx, -(y + h));
+
     // ground shadow
+    ctx.save();
+    ctx.translate(cx, y + h + 6*s);
+    ctx.scale(1/this.squashX, 1/this.squashY);
     ctx.beginPath();
-    ctx.ellipse(cx, y + h + 6*s, w*0.44, h*0.055, 0, 0, Math.PI*2);
-    ctx.fillStyle = 'rgba(0,0,0,0.38)';
+    ctx.ellipse(0, 0, w*0.4, h*0.05, 0, 0, Math.PI*2);
+    ctx.fillStyle = 'rgba(0,0,0,0.4)';
     ctx.fill();
+    ctx.restore();
 
     if (this.blocking) {
       ctx.beginPath();
@@ -1836,7 +1936,7 @@ class Fighter {
       ctx.setLineDash([]);
     }
 
-    // lean based on movement / attack, for a livelier silhouette than a straight rect
+    // lean based on movement / attack
     const moveLean = Math.max(-1, Math.min(1, this.vx / PLAYER_SPEED)) * 0.09;
     const atkLean = (this.attackType === 'punch' && this.attackTimer > 0) ? dir * 0.14 : 0;
     const lean = moveLean + atkLean;
@@ -1846,112 +1946,60 @@ class Fighter {
     ctx.rotate(lean);
     ctx.translate(-cx, -(y + h*0.62));
 
-    // hip block (pelvis anchor)
-    const hipY = y + h*0.62;
-    const shoulderY = y + h*0.30;
-    const hipW = w*0.36, shoulderW = w*0.40;
+    // ══════════════ STICKMAN SILHOUETTE (bold flat color, thick round-cap strokes — no face/shading) ══════════════
+    const hipY = y + h*0.60;
+    const shoulderY = y + h*0.24;
+    const headY = shoulderY - h*0.13;
+    const headR = w*0.24;
+    const limbW = w*0.30;
 
-    // torso as a shaded quad (shoulders wider than hips) instead of a flat rectangle
-    const grad = ctx.createLinearGradient(cx - shoulderW/2, shoulderY, cx + shoulderW/2, shoulderY);
-    grad.addColorStop(0, shadeColor(this.color, -35));
-    grad.addColorStop(0.5, this.color);
-    grad.addColorStop(1, shadeColor(this.color, 30));
-    ctx.shadowColor = this.color; ctx.shadowBlur = 4*s;
-    ctx.fillStyle = grad;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.strokeStyle = this.color;
+    ctx.fillStyle = this.color;
+    ctx.shadowColor = this.color;
+    ctx.shadowBlur = 10*s;
+
+    // torso: single bold line from neck to hip
+    ctx.lineWidth = limbW;
     ctx.beginPath();
-    ctx.moveTo(cx - shoulderW/2, shoulderY);
-    ctx.lineTo(cx + shoulderW/2, shoulderY);
-    ctx.lineTo(cx + hipW/2, hipY);
-    ctx.lineTo(cx - hipW/2, hipY);
-    ctx.closePath();
+    ctx.moveTo(cx, headY + headR*0.85);
+    ctx.lineTo(cx, hipY);
+    ctx.stroke();
+
+    // ── ARMS: two-segment thick stick limbs, no gradients/joints — flat silhouette like a stick figure ──
+    let armSwing = this.limbAngle;
+    if (this.attackType === 'punch' && this.attackTimer > 0 && this.attackDuration > 0) {
+      const pp = 1 - (this.attackTimer / this.attackDuration);
+      const snapOut = pp < 0.5 ? Math.sin((pp/0.5) * Math.PI*0.5) : 1;
+      armSwing = dir * 1.4 * snapOut;
+    }
+    drawStickLimb(ctx, cx, shoulderY, armSwing*0.9 + 0.4, -armSwing*0.55, h*0.185, h*0.17, limbW*0.62, this.color, this.attackType==='punch'&&this.attackTimer>0);
+    drawStickLimb(ctx, cx, shoulderY, -armSwing*0.9 - 0.4, armSwing*0.55, h*0.185, h*0.17, limbW*0.62, this.color, this.attackType==='punch'&&this.attackTimer>0);
+
+    // ── LEGS: two-segment thick stick limbs ──
+    const kickPower = (this.attackType==='kick' && this.attackTimer > 0) ? -dir * this.kickAngle : 0;
+    const kickL = dir===-1 ? kickPower : 0;
+    const kickR = dir===1 ? kickPower : 0;
+    drawStickLimb(ctx, cx, hipY, this.limbAngle*0.7 + kickL*0.7, -this.limbAngle*0.45 + kickL*1.2, h*0.2, h*0.18, limbW*0.7, this.color, false);
+    drawStickLimb(ctx, cx, hipY, -this.limbAngle*0.7 + kickR*0.7, this.limbAngle*0.45 + kickR*1.2, h*0.2, h*0.18, limbW*0.7, this.color, false);
+
+    // head: plain filled circle, no face — pure stickman silhouette
+    ctx.beginPath();
+    ctx.arc(cx, headY, headR, 0, Math.PI*2);
     ctx.fill();
     ctx.shadowBlur = 0;
-    // torso highlight streak (adds dimensionality, not flat)
-    ctx.fillStyle = 'rgba(255,255,255,0.06)';
-    ctx.beginPath();
-    ctx.moveTo(cx - shoulderW*0.32, shoulderY + h*0.02);
-    ctx.lineTo(cx - shoulderW*0.12, shoulderY + h*0.02);
-    ctx.lineTo(cx - hipW*0.14, hipY - h*0.02);
-    ctx.lineTo(cx - hipW*0.32, hipY - h*0.02);
-    ctx.closePath();
-    ctx.fill();
-
-    // belt (dobok belt with hanging tails)
-    const beltProgress = Math.min(this.damage / 200, 1);
-    const beltColor = `hsl(${20 - beltProgress * 10}, 35%, ${32 - beltProgress*8}%)`;
-    const beltY = hipY - h*0.06;
-    ctx.fillStyle = beltColor;
-    ctx.fillRect(cx - hipW/2 - w*0.02, beltY, hipW + w*0.04, h*0.075);
-    ctx.save();
-    ctx.translate(cx + dir*hipW*0.28, beltY + h*0.07);
-    ctx.rotate(-dir*0.25 + Math.sin(this.animTimer*5)*0.15);
-    ctx.fillStyle = shadeColor(beltColor, -15);
-    ctx.fillRect(-w*0.035, 0, w*0.07, h*0.17);
-    ctx.restore();
-
-    // head with shading + headband instead of a flat circle
-    const headY = shoulderY - h*0.13;
-    const headR = w*0.205;
-    const headGrad = ctx.createRadialGradient(cx - headR*0.3, headY - headR*0.35, headR*0.2, cx, headY, headR*1.1);
-    headGrad.addColorStop(0, '#e0b48a');
-    headGrad.addColorStop(1, '#b98a5e');
-    ctx.fillStyle = headGrad;
-    ctx.beginPath();
-    ctx.ellipse(cx, headY, headR*1.06, headR*1.08, 0, 0, Math.PI*2);
-    ctx.fill();
-
-    // headband (muted, less saturated than fighter color)
-    ctx.strokeStyle = shadeColor(this.color, -15) + 'cc';
-    ctx.lineWidth = 3.5 * s;
-    ctx.beginPath();
-    ctx.moveTo(cx - headR*1.05, headY - headR*0.22);
-    ctx.lineTo(cx + headR*1.05, headY - headR*0.22);
-    ctx.stroke();
-    const tailDir = -dir;
-    ctx.beginPath();
-    ctx.moveTo(cx + tailDir*headR*1.0, headY - headR*0.22);
-    ctx.quadraticCurveTo(
-      cx + tailDir*headR*1.6, headY + Math.sin(this.animTimer*6)*4*s,
-      cx + tailDir*headR*2.1, headY - headR*0.3 + Math.sin(this.animTimer*6+1)*5*s
-    );
-    ctx.stroke();
-
-    // friendly simplified face: soft round eyes + gentle smile, no harsh angled brows
-    ctx.fillStyle = 'rgba(40,28,18,0.75)';
-    ctx.beginPath();
-    ctx.ellipse(cx + dir*headR*0.3, headY + headR*0.02, 2.0*s, 2.3*s, 0, 0, Math.PI*2);
-    ctx.ellipse(cx + dir*headR*0.62, headY + headR*0.02, 2.0*s, 2.3*s, 0, 0, Math.PI*2);
-    ctx.fill();
-    ctx.strokeStyle = 'rgba(60,40,25,0.35)';
-    ctx.lineWidth = 1.4*s;
-    ctx.lineCap = 'round';
-    ctx.beginPath();
-    ctx.arc(cx + dir*headR*0.48, headY + headR*0.3, headR*0.18, 0.2*Math.PI, 0.8*Math.PI);
-    ctx.stroke();
-
-    // ── ARMS: two-segment (shoulder->elbow->fist) for real limb shape instead of straight sticks ──
-    const armSwing = this.attackType === 'punch' && this.attackTimer > 0 ? dir * 1.3 : this.limbAngle;
-    drawLimb(ctx, cx - shoulderW*0.42, shoulderY + h*0.02, armSwing*0.9 + 0.35, -armSwing*0.5, h*0.145, h*0.135, 9.5*s, shadeColor(this.color,-20), this.attackType==='punch'&&this.attackTimer>0, '#fff');
-    drawLimb(ctx, cx + shoulderW*0.42, shoulderY + h*0.02, -armSwing*0.9 - 0.35, armSwing*0.5, h*0.145, h*0.135, 9.5*s, shadeColor(this.color,-20), this.attackType==='punch'&&this.attackTimer>0, '#fff');
-
-    // ── LEGS: two-segment (hip->knee->foot) ──
-    const kickL = (this.attackType==='kick' && dir===-1) ? this.kickAngle : 0;
-    const kickR = (this.attackType==='kick' && dir===1) ? this.kickAngle : 0;
-    drawLimb(ctx, cx - hipW*0.42, hipY, this.limbAngle*0.65 + kickL*0.6, -this.limbAngle*0.4 + kickL*1.1, h*0.16, h*0.145, 11*s, shadeColor('#2a2a3a',10), false);
-    drawLimb(ctx, cx + hipW*0.42, hipY, -this.limbAngle*0.65 + kickR*0.6, this.limbAngle*0.4 + kickR*1.1, h*0.16, h*0.145, 11*s, shadeColor('#2a2a3a',10), false);
 
     ctx.restore(); // undo lean
 
-    // kick/special impact arc
-    if ((this.attackType === 'kick' || this.attackType === 'special') && this.attackTimer > 0) {
-      const alpha = this.attackTimer / 0.3;
-      ctx.globalAlpha = alpha * 0.85;
-      ctx.shadowColor = this.attackType === 'special' ? '#ffaa00' : this.color; ctx.shadowBlur = 22*s; ctx.fillStyle = this.attackType === 'special' ? '#ffaa00' : this.color;
-      const kickX = dir > 0 ? cx + w*0.3 : cx - w*1.3;
-      ctx.beginPath();
-      ctx.ellipse(kickX + sw(45), cy + sh(15), sw(55), sh(22), dir * 0.4, 0, Math.PI*2);
-      ctx.fill();
-      ctx.shadowBlur = 0;
+    // impact arcs / spike burst on hit (matches the jagged "hit star" look of classic stickman fighters)
+    if (this.attackType && this.attackTimer > 0 && this.attackDuration > 0) {
+      const p = 1 - (this.attackTimer / this.attackDuration);
+      const alpha = Math.sin(Math.min(1, p * 1.4) * Math.PI);
+      const arcColor = this.attackType === 'special' ? '#ffdd00' : '#ffffff';
+      const tipX = dir > 0 ? cx + w*0.75 : cx - w*0.75;
+      const tipY = this.attackType === 'kick' ? cy + h*0.12 : cy - h*0.05;
+      drawImpactSpikes(ctx, tipX, tipY, arcColor, alpha, s, dir);
     }
 
     ctx.globalAlpha = 1;
@@ -1964,10 +2012,10 @@ class Fighter {
   }
 }
 
-// Two-segment limb renderer (upper + lower segment with a joint) — gives arms/legs real shape.
-function drawLimb(ctx, baseX, baseY, upperAngle, lowerAngle, upperLen, lowerLen, thickness, color, showFist, fistColor) {
+function drawStickLimb(ctx, baseX, baseY, upperAngle, lowerAngle, upperLen, lowerLen, thickness, color, showFist) {
   ctx.save();
   ctx.strokeStyle = color;
+  ctx.fillStyle = color;
   ctx.lineWidth = thickness;
   ctx.lineCap = 'round';
   ctx.translate(baseX, baseY);
@@ -1975,16 +2023,37 @@ function drawLimb(ctx, baseX, baseY, upperAngle, lowerAngle, upperLen, lowerLen,
   ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(0, upperLen); ctx.stroke();
   ctx.translate(0, upperLen);
   ctx.rotate(lowerAngle);
-  ctx.lineWidth = thickness * 0.88;
   ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(0, lowerLen); ctx.stroke();
   if (showFist) {
     ctx.beginPath();
-    ctx.arc(0, lowerLen, thickness*0.62, 0, Math.PI*2);
-    ctx.fillStyle = fistColor || '#fff';
+    ctx.arc(0, lowerLen, thickness*0.72, 0, Math.PI*2);
     ctx.fill();
   }
   ctx.restore();
 }
+
+// Jagged spike burst for hit impacts — the classic stickman-fighter "star" flash.
+function drawImpactSpikes(ctx, x, y, color, alpha, s, dir) {
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.translate(x, y);
+  ctx.fillStyle = color;
+  ctx.shadowColor = color; ctx.shadowBlur = 14*s;
+  const spikes = 8;
+  const outerR = 26*s, innerR = 9*s;
+  ctx.beginPath();
+  for (let i = 0; i < spikes*2; i++) {
+    const r = i % 2 === 0 ? outerR : innerR;
+    const a = (i / (spikes*2)) * Math.PI*2;
+    const px = Math.cos(a)*r, py = Math.sin(a)*r*0.7;
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.closePath();
+  ctx.fill();
+  ctx.shadowBlur = 0;
+  ctx.restore();
+}
+
 
 // Lighten/darken a hex color by percent (-100..100) for shading gradients.
 function shadeColor(hex, percent) {
