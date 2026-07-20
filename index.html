@@ -3780,14 +3780,31 @@ function simulateKey(code, isDown) {
   keys[code] = isDown;
 }
 
+// All bound touch controls register a reset callback here so rotation/backgrounding can
+// force-clear any control stuck "active" when the OS eats the touchend/pointerup event.
+const touchResetCallbacks = [];
+function resetAllTouchInputs() {
+  touchResetCallbacks.forEach(fn => { try { fn(); } catch(e) {} });
+}
+['orientationchange', 'resize'].forEach(evt => window.addEventListener(evt, () => {
+  resetAllTouchInputs();
+  // Re-run once more after the browser finishes its layout/reflow from the rotation,
+  // since some mobile browsers deliver a stray/late touch event during that reflow.
+  setTimeout(resetAllTouchInputs, 350);
+}));
+document.addEventListener('visibilitychange', () => { if (document.hidden) resetAllTouchInputs(); });
+window.addEventListener('blur', resetAllTouchInputs);
+
 function bindTouchButton(id, code, vibMs = 12) {
   const el = document.getElementById(id);
   if (!el) return;
   let pointerActive = false;
+  let activePointerId = null;
   const start = e => {
     e.preventDefault();
     if (pointerActive) return;
     pointerActive = true;
+    if (e.pointerId !== undefined) activePointerId = e.pointerId;
     simulateKey(code, true);
     el.classList.add('active');
     vibrate(vibMs);
@@ -3795,6 +3812,7 @@ function bindTouchButton(id, code, vibMs = 12) {
   const end = e => {
     if (e && e.preventDefault) e.preventDefault();
     pointerActive = false;
+    activePointerId = null;
     simulateKey(code, false);
     el.classList.remove('active');
   };
@@ -3806,6 +3824,8 @@ function bindTouchButton(id, code, vibMs = 12) {
   el.addEventListener('touchend', end, { passive:false });
   el.addEventListener('touchcancel', end, { passive:false });
   el.addEventListener('contextmenu', e => e.preventDefault());
+  // Force-clear this button whenever a global reset fires (orientation change, tab blur, etc.)
+  touchResetCallbacks.push(() => { if (pointerActive) end({}); });
 }
 
 bindTouchButton('tc-jump', 'KeyW');
@@ -3835,12 +3855,17 @@ document.getElementById('tcPauseBtn')?.addEventListener('touchstart', e => {
   const fastFallThreshold = 26;
 
   function reset() {
+    active = false;
+    activePointerId = null;
     simulateKey('KeyA', false);
     simulateKey('KeyD', false);
     simulateKey('KeyS', false);
     stick.style.transform = 'translate(0px,0px)';
     joy.classList.remove('dragging');
   }
+  // Register with the global reset system so a phone rotation mid-drag can never leave
+  // movement keys stuck "held down" if the OS swallows the touchend/pointerup event.
+  touchResetCallbacks.push(reset);
 
   function onStart(clientX, clientY) {
     const rect = joy.getBoundingClientRect();
