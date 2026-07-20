@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Taekwondo Fighter</title>
+<title>Stickman Wars</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
@@ -754,7 +754,7 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
   </div>
   <div class="menu-scroll">
     <div class="menu-header">
-      <h1>🥋 TAEKWONDO FIGHTER</h1>
+      <h1>🥋 STICKMAN WARS</h1>
       <p class="subtitle">Fast Paced 2D Platform Fighter</p>
     </div>
 
@@ -1326,6 +1326,8 @@ class Fighter {
     this.tumbleAngle = 0;
     this.hitLean = 0;
     this.tumbleSpin = 0;
+    this.strideBounce = 0;
+    this.kickChamber = 0;
   }
 
   get cx() { return this.x + this.w/2; }
@@ -1549,21 +1551,38 @@ class Fighter {
       const speedRatio = Math.abs(this.vx) / PLAYER_SPEED;
       this.walkCycle += dt * (9 + speedRatio * 9);
       this.limbAngle = Math.sin(this.walkCycle) * (0.55 + speedRatio * 0.2);
+      // hips/shoulders bounce twice per stride (once per footfall) for a real weight-shift feel
+      this.strideBounce = Math.abs(Math.sin(this.walkCycle)) * (0.4 + speedRatio * 0.5);
     } else if (this.grounded) {
       this.walkCycle += dt * 1.4;
       this.limbAngle = Math.sin(this.breathPhase * 1.6) * 0.05;
+      this.strideBounce = 0;
     } else {
       this.walkCycle += dt * 10;
       this.limbAngle = Math.sin(this.walkCycle) * 0.3 + (this.vy > 0 ? 0.18 : -0.12);
+      this.strideBounce = 0;
     }
 
-    // sharp snap-out with a slight overshoot/recoil on kicks, instead of a plain half-sine
+    // ── Kick: proper 3-phase motion — chamber (knee pulls up/back), thrust (fast snap extension), retract (settle) ──
     if (this.attackType === 'kick' && this.attackTimer > 0 && this.attackDuration > 0) {
       const p = 1 - (this.attackTimer / this.attackDuration);
-      const snap = p < 0.55 ? Math.sin((p/0.55) * Math.PI*0.5) : 1 - (p-0.55)/0.45 * 0.25;
-      this.kickAngle = snap * 1.85;
+      if (p < 0.28) {
+        const cp = p / 0.28;
+        this.kickChamber = Math.sin(cp * Math.PI*0.5) * 0.9;
+        this.kickAngle = this.kickChamber * 0.3;
+      } else if (p < 0.62) {
+        const tp = (p - 0.28) / 0.34;
+        const snap = Math.sin(tp * Math.PI*0.5);
+        this.kickAngle = 0.27 + snap * 1.35;
+        this.kickChamber = (1 - tp) * 0.9;
+      } else {
+        const rp = (p - 0.62) / 0.38;
+        this.kickAngle = 1.62 * (1 - rp*0.85);
+        this.kickChamber = 0;
+      }
     } else {
       this.kickAngle *= 0.55;
+      this.kickChamber = (this.kickChamber || 0) * 0.55;
     }
 
     // ── Afterimage trail: threshold scaled to the new higher top speed, plus punches/kicks now trail too for snappier feedback ──
@@ -1796,8 +1815,9 @@ class Fighter {
     ctx.translate(-cx, -(y + h*0.62));
 
     // ══════════════ STICKMAN SILHOUETTE (bold flat color, thick round-cap strokes — no face/shading) ══════════════
-    const hipY = y + h*0.60;
-    const shoulderY = y + h*0.24;
+    const strideBob = (this.strideBounce || 0) * h*0.025;
+    const hipY = y + h*0.60 - strideBob;
+    const shoulderY = y + h*0.24 - strideBob*0.6;
     const headY = shoulderY - h*0.13;
     const headR = w*0.24;
     const limbW = w*0.30;
@@ -1817,27 +1837,70 @@ class Fighter {
     ctx.stroke();
 
     // ── ARMS: two-segment thick stick limbs, no gradients/joints — flat silhouette like a stick figure ──
+    // ── Punch: wind-up (arm cocks back) → snap thrust (fast extension) → retract, instead of a single ease-out ──
     let armSwing = this.limbAngle;
-    if (this.attackType === 'punch' && this.attackTimer > 0 && this.attackDuration > 0) {
+    let leadArmExtra = 0, backArmExtra = 0;
+    const isPunching = this.attackType === 'punch' && this.attackTimer > 0;
+    if (isPunching && this.attackDuration > 0) {
       const pp = 1 - (this.attackTimer / this.attackDuration);
-      const snapOut = pp < 0.5 ? Math.sin((pp/0.5) * Math.PI*0.5) : 1;
-      armSwing = dir * 1.4 * snapOut;
+      if (pp < 0.22) {
+        const wp = pp / 0.22;
+        armSwing = dir * (-0.5 * Math.sin(wp * Math.PI*0.5));
+      } else if (pp < 0.55) {
+        const tp = (pp - 0.22) / 0.33;
+        const snap = Math.sin(tp * Math.PI*0.5);
+        armSwing = dir * (-0.5 + snap * 1.9);
+        leadArmExtra = snap * 0.25;
+      } else {
+        const rp = (pp - 0.55) / 0.45;
+        armSwing = dir * 1.4 * (1 - rp*0.7);
+      }
     }
-    drawStickLimb(ctx, cx, shoulderY, armSwing*0.9 + 0.4, -armSwing*0.55, h*0.185, h*0.17, limbW*0.62, this.color, this.attackType==='punch'&&this.attackTimer>0);
-    drawStickLimb(ctx, cx, shoulderY, -armSwing*0.9 - 0.4, armSwing*0.55, h*0.185, h*0.17, limbW*0.62, this.color, this.attackType==='punch'&&this.attackTimer>0);
+    const isSpecialPose = this.attackType === 'special' && this.attackTimer > 0;
+    if (isSpecialPose && this.attackDuration > 0) {
+      // both arms thrust forward together for specials — visually distinct from a one-armed punch
+      const sp = 1 - (this.attackTimer / this.attackDuration);
+      const thrust = Math.sin(Math.min(1, sp * 1.6) * Math.PI * 0.5);
+      drawStickLimb(ctx, cx, shoulderY, dir * (0.3 + thrust*1.5), -dir*0.2, h*0.19, h*0.18, limbW*0.64, this.color, true);
+      drawStickLimb(ctx, cx, shoulderY, dir * (0.3 + thrust*1.5) - dir*0.15, -dir*0.2, h*0.19, h*0.18, limbW*0.64, this.color, true);
+    } else {
+      drawStickLimb(ctx, cx, shoulderY, armSwing*0.9 + 0.4 + leadArmExtra*dir, -armSwing*0.55, h*(0.185+leadArmExtra*0.06), h*0.17, limbW*0.62, this.color, isPunching);
+      drawStickLimb(ctx, cx, shoulderY, -armSwing*0.9 - 0.4, armSwing*0.55 + backArmExtra, h*0.185, h*0.17, limbW*0.62, this.color, isPunching);
+    }
 
-    // ── LEGS: two-segment thick stick limbs ──
-    const kickPower = (this.attackType==='kick' && this.attackTimer > 0) ? -dir * this.kickAngle : 0;
+    // ── LEGS: kicking leg chambers (knee bends back) then thrusts straight; planted leg gets a slight bend for balance ──
+    const isKicking = this.attackType === 'kick' && this.attackTimer > 0;
+    const kickPower = isKicking ? -dir * this.kickAngle : 0;
+    const chamberBend = isKicking ? (this.kickChamber || 0) : 0;
     const kickL = dir===-1 ? kickPower : 0;
     const kickR = dir===1 ? kickPower : 0;
-    drawStickLimb(ctx, cx, hipY, this.limbAngle*0.7 + kickL*0.7, -this.limbAngle*0.45 + kickL*1.2, h*0.2, h*0.18, limbW*0.7, this.color, false);
-    drawStickLimb(ctx, cx, hipY, -this.limbAngle*0.7 + kickR*0.7, this.limbAngle*0.45 + kickR*1.2, h*0.2, h*0.18, limbW*0.7, this.color, false);
+    const chamberL = dir===-1 ? chamberBend : 0;
+    const chamberR = dir===1 ? chamberBend : 0;
+    const plantBend = isKicking ? 0.18 : 0;
+    drawStickLimb(ctx, cx, hipY, this.limbAngle*0.7 + kickL*0.7 - chamberL*0.2, -this.limbAngle*0.45 + kickL*1.2 + chamberL*1.3, h*0.2, h*0.18, limbW*0.7, this.color, false);
+    drawStickLimb(ctx, cx, hipY, -this.limbAngle*0.7 + kickR*0.7 - chamberR*0.2, this.limbAngle*0.45 + kickR*1.2 + chamberR*1.3, h*0.2, h*0.18, limbW*0.7, this.color, false);
 
     // head: plain filled circle, no face — pure stickman silhouette
     ctx.beginPath();
     ctx.arc(cx, headY, headR, 0, Math.PI*2);
     ctx.fill();
     ctx.shadowBlur = 0;
+
+    // special-move charge ring — an expanding glow around the whole body so specials read
+    // as visually distinct and powerful, not just a faster punch
+    if (this.attackType === 'special' && this.attackTimer > 0 && this.attackDuration > 0) {
+      const sp = 1 - (this.attackTimer / this.attackDuration);
+      const ringAlpha = Math.sin(Math.min(1, sp * 1.3) * Math.PI) * 0.7;
+      ctx.save();
+      ctx.globalAlpha = ringAlpha;
+      ctx.strokeStyle = '#ffdd00';
+      ctx.lineWidth = 3*s;
+      ctx.shadowColor = '#ffdd00'; ctx.shadowBlur = 20*s;
+      ctx.beginPath();
+      ctx.arc(cx, cy, w*(0.55 + sp*0.35), 0, Math.PI*2);
+      ctx.stroke();
+      ctx.restore();
+    }
 
     ctx.restore(); // undo lean
 
