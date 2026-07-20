@@ -318,6 +318,53 @@ body { font-family: 'Rajdhani', sans-serif; color: var(--color-text); display: f
 }
 .profile-open-btn:hover { border-color: var(--color-p1); transform: scale(1.08); }
 
+/* ─── ADMIN PANEL ─── */
+#admin-login-screen, #admin-panel-screen {
+  position: fixed; inset: 0; z-index: 700; display: none; align-items: center; justify-content: center;
+  background: rgba(5,5,15,0.92); backdrop-filter: blur(6px);
+}
+#admin-login-screen.active, #admin-panel-screen.active { display: flex; }
+.admin-box {
+  display: flex; flex-direction: column; align-items: center; gap: 12px;
+  padding: 36px 32px; max-width: 380px; width: 90vw; text-align: center;
+  background: rgba(20,20,35,0.95); border: 2px solid #ff2244; border-radius: 20px;
+  box-shadow: 0 0 40px rgba(255,34,68,0.35);
+  position: relative;
+}
+.admin-icon { font-size: 2.6rem; }
+.admin-box h2 {
+  font-family: 'Bangers', cursive; font-size: 1.6rem; color: #ff4466;
+  text-shadow: 0 0 16px #ff224488; letter-spacing: 1px;
+}
+.admin-sub { color: var(--color-muted); font-size: 0.9rem; margin-bottom: 4px; }
+.admin-password-input, .admin-num-input {
+  width: 100%; padding: 12px 16px; border-radius: 10px; border: 2px solid var(--color-border);
+  background: rgba(255,255,255,0.06); color: var(--color-text); font-size: 1rem;
+  font-family: 'Rajdhani', sans-serif; text-align: center;
+}
+.admin-password-input:focus, .admin-num-input:focus { outline: none; border-color: #ff4466; }
+.admin-error { color: #ff4466; font-size: 0.85rem; margin: 0; }
+.admin-btn-row { display: flex; gap: 10px; width: 100%; margin-top: 6px; }
+.admin-btn {
+  flex: 1; padding: 12px 16px; border-radius: 10px; border: 2px solid var(--color-border);
+  background: var(--color-surface); color: var(--color-text); cursor: pointer;
+  font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 0.95rem;
+  transition: all 180ms ease;
+}
+.admin-btn:hover { transform: translateY(-2px); }
+.admin-btn.primary { background: linear-gradient(135deg, #ff4466, #cc0033); border-color: #ff4466; color: #fff; }
+.admin-btn.danger { background: linear-gradient(135deg, #661111, #330808); border-color: #ff4466; color: #ff8899; }
+.admin-field-row {
+  display: flex; flex-direction: column; gap: 8px; width: 100%; padding: 10px 0;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+.admin-field-row label { font-size: 0.8rem; color: var(--color-muted); text-align: left; }
+.admin-panel-close {
+  position: absolute; top: 12px; right: 12px; width: 32px; height: 32px; border-radius: 50%;
+  border: none; background: rgba(255,255,255,0.08); color: #fff; cursor: pointer; font-size: 1rem;
+}
+.admin-status { font-size: 0.85rem; color: #44ff88; min-height: 1.2em; margin: 0; }
+
 /* ─── PROFILE SCREEN ─── */
 #profile-screen {
   position: fixed; inset: 0; z-index: 112; display: none; flex-direction: column;
@@ -752,6 +799,7 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
     </div>
     <button class="profile-open-btn" id="profileOpenBtn">👤</button>
   </div>
+  <button id="adminTriggerBtn" style="position:fixed; top:8px; left:8px; width:14px; height:14px; opacity:0; border:none; background:transparent; z-index:200; cursor:default;" aria-hidden="true"></button>
   <div class="menu-scroll">
     <div class="menu-header">
       <h1>🥋 STICKMAN WARS</h1>
@@ -859,6 +907,48 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
     <input class="profile-name-input" id="profileNameInput" maxlength="14" value="Player">
     <div class="profile-rank-badge" id="profileRankBadge">🏆 0 Trophies</div>
     <div class="profile-stats-grid" id="profileStatsGrid"></div>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div id="admin-login-screen">
+  <div class="admin-box">
+    <div class="admin-icon">🔐</div>
+    <h2>Admin Access</h2>
+    <p class="admin-sub">Enter password to continue</p>
+    <input type="password" id="adminPasswordInput" class="admin-password-input" placeholder="Password" autocomplete="off">
+    <p class="admin-error" id="adminLoginError" style="display:none;">Incorrect password</p>
+    <div class="admin-btn-row">
+      <button class="admin-btn primary" id="adminLoginSubmit">Unlock</button>
+      <button class="admin-btn" id="adminLoginCancel">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div id="admin-panel-screen">
+  <div class="admin-box admin-panel-box">
+    <button class="admin-panel-close" id="adminPanelClose">✕</button>
+    <div class="admin-icon">🛠️</div>
+    <h2>Admin Panel</h2>
+    <p class="admin-sub">Current: <span id="adminCurrentCoins">0</span> 🪙 &nbsp;|&nbsp; <span id="adminCurrentTrophies">0</span> 🏆</p>
+
+    <div class="admin-field-row">
+      <label>Coins to add</label>
+      <input type="number" id="adminCoinsInput" class="admin-num-input" value="1000" min="0">
+      <button class="admin-btn primary" id="adminGiveCoinsBtn">Give Coins</button>
+    </div>
+
+    <div class="admin-field-row">
+      <label>Trophies to add</label>
+      <input type="number" id="adminTrophiesInput" class="admin-num-input" value="100" min="0">
+      <button class="admin-btn primary" id="adminGiveTrophiesBtn">Give Trophies</button>
+    </div>
+
+    <div class="admin-btn-row">
+      <button class="admin-btn danger" id="adminResetBtn">Reset Progress</button>
+      <button class="admin-btn" id="adminLogoutBtn">Lock Panel</button>
+    </div>
+    <p class="admin-status" id="adminStatusMsg"></p>
   </div>
 </div>
 
@@ -3198,6 +3288,87 @@ function updateTrophyUI() {
   const el = document.getElementById('trophyVal');
   if (el) el.textContent = trophies.toLocaleString();
 }
+
+// ─── ADMIN PANEL ──────────────────────────────────────────────────────────────
+const ADMIN_PASSWORD = 'ZAYN2015';
+let adminUnlocked = false;
+let adminTapCount = 0;
+let adminTapTimer = null;
+
+function openAdminLogin() {
+  document.getElementById('adminPasswordInput').value = '';
+  document.getElementById('adminLoginError').style.display = 'none';
+  document.getElementById('admin-login-screen').classList.add('active');
+  setTimeout(() => document.getElementById('adminPasswordInput')?.focus(), 50);
+}
+function closeAdminLogin() {
+  document.getElementById('admin-login-screen').classList.remove('active');
+}
+function tryAdminLogin() {
+  const val = document.getElementById('adminPasswordInput').value;
+  if (val === ADMIN_PASSWORD) {
+    adminUnlocked = true;
+    closeAdminLogin();
+    openAdminPanel();
+  } else {
+    document.getElementById('adminLoginError').style.display = 'block';
+  }
+}
+function openAdminPanel() {
+  document.getElementById('adminCurrentCoins').textContent = coins.toLocaleString();
+  document.getElementById('adminCurrentTrophies').textContent = trophies.toLocaleString();
+  document.getElementById('adminStatusMsg').textContent = '';
+  document.getElementById('admin-panel-screen').classList.add('active');
+}
+function closeAdminPanel() {
+  document.getElementById('admin-panel-screen').classList.remove('active');
+}
+function adminGiveCoins() {
+  const amt = Math.max(0, Math.floor(Number(document.getElementById('adminCoinsInput').value) || 0));
+  coins += amt;
+  updateCoinsUI();
+  saveShop();
+  document.getElementById('adminCurrentCoins').textContent = coins.toLocaleString();
+  document.getElementById('adminStatusMsg').textContent = `Added ${amt.toLocaleString()} coins!`;
+}
+function adminGiveTrophies() {
+  const amt = Math.max(0, Math.floor(Number(document.getElementById('adminTrophiesInput').value) || 0));
+  trophies += amt;
+  highestTrophies = Math.max(highestTrophies, trophies);
+  updateTrophyUI();
+  saveShop();
+  document.getElementById('adminCurrentTrophies').textContent = trophies.toLocaleString();
+  document.getElementById('adminStatusMsg').textContent = `Added ${amt.toLocaleString()} trophies!`;
+}
+function adminResetProgress() {
+  if (!confirm('Reset ALL saved progress (coins, trophies, mastery, pass)? This cannot be undone.')) return;
+  try { localStorage.removeItem('tf_save'); } catch(e) {}
+  location.reload();
+}
+
+// Hidden trigger: tap the invisible corner button 5 times within 2s to open the admin login.
+document.getElementById('adminTriggerBtn')?.addEventListener('click', () => {
+  adminTapCount++;
+  clearTimeout(adminTapTimer);
+  adminTapTimer = setTimeout(() => { adminTapCount = 0; }, 2000);
+  if (adminTapCount >= 5) {
+    adminTapCount = 0;
+    openAdminLogin();
+  }
+});
+document.getElementById('adminLoginSubmit')?.addEventListener('click', tryAdminLogin);
+document.getElementById('adminLoginCancel')?.addEventListener('click', closeAdminLogin);
+document.getElementById('adminPasswordInput')?.addEventListener('keydown', e => { if (e.key === 'Enter') tryAdminLogin(); });
+document.getElementById('adminPanelClose')?.addEventListener('click', closeAdminPanel);
+document.getElementById('adminLogoutBtn')?.addEventListener('click', () => { adminUnlocked = false; closeAdminPanel(); });
+document.getElementById('adminGiveCoinsBtn')?.addEventListener('click', adminGiveCoins);
+document.getElementById('adminGiveTrophiesBtn')?.addEventListener('click', adminGiveTrophies);
+document.getElementById('adminResetBtn')?.addEventListener('click', adminResetProgress);
+
+// Keyboard shortcut: Ctrl+Shift+A also opens the admin login (handy on desktop).
+window.addEventListener('keydown', e => {
+  if (e.ctrlKey && e.shiftKey && e.code === 'KeyA') openAdminLogin();
+});
 
 function openProfile() {
   document.getElementById('profile-screen').classList.add('active');
