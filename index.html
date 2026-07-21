@@ -1089,11 +1089,21 @@ function careerDifficultyForLevel(lvl) {
 
 function startCareerLevel(lvl) {
   if (lvl > careerProgress.unlockedLevel) return;
-  careerPrevSelection = { difficulty, cpuCount };
+  careerPrevSelection = { difficulty, cpuCount, stageIdx: currentStageIdx };
   careerActive = true;
   careerLevel = lvl;
   difficulty = careerDifficultyForLevel(lvl);
   cpuCount = 1;
+  // ── Each career level gets its own stage: boss levels always fight on the Grand Dojo (index 0)
+  // for a consistent "arena" feel, while regular levels cycle through the rest of the roster so no
+  // two nearby levels repeat a map back-to-back. ──
+  if (isBossLevel(lvl)) {
+    currentStageIdx = 0;
+  } else {
+    const nonBossStages = STAGES.length > 1 ? STAGES.length - 1 : STAGES.length;
+    currentStageIdx = 1 + ((lvl - 1) % nonBossStages);
+    if (currentStageIdx >= STAGES.length) currentStageIdx = 0;
+  }
   startGame();
 
   const cpu = fighters.find(f => !f.isPlayer);
@@ -1129,6 +1139,7 @@ function onCareerLevelComplete(playerWon) {
   if (careerPrevSelection) {
     difficulty = careerPrevSelection.difficulty;
     cpuCount = careerPrevSelection.cpuCount;
+    currentStageIdx = careerPrevSelection.stageIdx;
     careerPrevSelection = null;
   }
   renderCareerMap();
