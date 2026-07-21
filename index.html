@@ -786,6 +786,19 @@ body.is-ipad .menu-scroll { padding: 96px 24px 44px; }
 body.is-ipad .tc-joystick { left:34px; bottom:34px; }
 body.is-ipad .tc-actions { right:28px; bottom:28px; }
 
+
+/* ─── CAREER MODE ─── */
+.career-level-btn {
+  width:52px; height:52px; border-radius:12px; border:2px solid var(--color-border);
+  background: var(--color-surface); color:#fff; cursor:pointer;
+  font-family:'Bangers', cursive; font-size:1rem; transition: all 200ms ease;
+}
+.career-level-btn:hover:not(:disabled) { transform: translateY(-2px); border-color: var(--color-p1); box-shadow: 0 0 14px rgba(0,212,255,0.4); }
+.career-level-btn.boss { border-color:#ffdd00; background:rgba(255,220,0,0.12); color:#ffdd44; box-shadow: 0 0 12px rgba(255,220,0,0.3); }
+.career-level-btn.locked { opacity:0.3; cursor:not-allowed; }
+.career-level-btn.done { border-color: rgba(0,255,150,0.5); background: rgba(0,255,150,0.08); }
+.career-map-wrap { display:flex; flex-wrap:wrap; gap:10px; justify-content:center; max-width:560px; margin: 0 auto 12px; }
+.career-progress-label { font-size:0.85rem; color: var(--color-muted); text-align:center; margin-bottom: 14px; }
 </style>
 </head>
 <body>
@@ -810,6 +823,7 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
       <button class="menu-tab active" data-menutab="fighter">🥋 Fighter</button>
       <button class="menu-tab" data-menutab="match">⚔️ Match</button>
       <button class="menu-tab" data-menutab="stage">🗺️ Stage</button>
+      <button class="menu-tab" data-menutab="career">🏆 Career</button>
       <button class="menu-tab" data-menutab="help">❔ Controls</button>
     </div>
 
@@ -845,6 +859,11 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
     <div class="menu-panel" data-panel="stage">
       <div class="stage-select-btns" id="stageSelectBtns"></div>
       <div class="stage-desc" id="stageDescText"></div>
+    </div>
+
+    <div class="menu-panel" data-panel="career">
+      <div class="career-progress-label" id="careerProgressLabel">Level 1 / 30</div>
+      <div class="career-map-wrap" id="careerMapBtns"></div>
     </div>
 
     <div class="menu-panel" data-panel="help">
@@ -1038,6 +1057,103 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
 <div id="debug" style="display:none;">FPS: --</div>
 
 <script>
+// ═══════════════════ CAREER MODE ═══════════════════
+const CAREER_TOTAL_LEVELS = 30;
+const CAREER_BOSS_INTERVAL = 5;
+const BOSS_NAMES = ['Iron Fang','Void Reaper','Crimson Titan','Storm Widow','Obsidian King','The Ascendant'];
+const BOSS_COLORS = ['#ff2244','#8800ff','#ff5500','#00ccff','#33aaff','#ffdd00'];
+const CAREER_DIFF_TIERS = ['easy','medium','hard','insane','nightmare','godlike','impossible'];
+
+function loadCareerProgress() {
+  try {
+    const saved = JSON.parse(localStorage.getItem('careerProgress'));
+    if (saved && typeof saved.unlockedLevel === 'number') return saved;
+  } catch(e) {}
+  return { unlockedLevel: 1, stars: {} };
+}
+function saveCareerProgress() {
+  try { localStorage.setItem('careerProgress', JSON.stringify(careerProgress)); } catch(e) {}
+}
+let careerProgress = loadCareerProgress();
+let careerActive = false;
+let careerLevel = 1;
+let careerPrevSelection = null;
+
+function isBossLevel(lvl) { return lvl % CAREER_BOSS_INTERVAL === 0; }
+function getBossIndex(lvl) { return Math.floor(lvl / CAREER_BOSS_INTERVAL) - 1; }
+
+function careerDifficultyForLevel(lvl) {
+  const idx = Math.min(CAREER_DIFF_TIERS.length - 1, Math.floor((lvl - 1) / (CAREER_TOTAL_LEVELS / CAREER_DIFF_TIERS.length)));
+  return CAREER_DIFF_TIERS[idx];
+}
+
+function startCareerLevel(lvl) {
+  if (lvl > careerProgress.unlockedLevel) return;
+  careerPrevSelection = { difficulty, cpuCount };
+  careerActive = true;
+  careerLevel = lvl;
+  difficulty = careerDifficultyForLevel(lvl);
+  cpuCount = 1;
+  startGame();
+
+  const cpu = fighters.find(f => !f.isPlayer);
+  if (cpu) {
+    const levelScale = 1 + (lvl / CAREER_TOTAL_LEVELS) * 0.8;
+    cpu.char = Object.assign({}, cpu.char, { dmgMult: (cpu.char.dmgMult || 1) * levelScale });
+    if (isBossLevel(lvl)) {
+      const bi = getBossIndex(lvl);
+      cpu.name = BOSS_NAMES[bi] || ('Boss ' + (bi + 1));
+      cpu.color = BOSS_COLORS[bi] || '#ff0000';
+      cpu.stocks = (cpu.stocks || 3) + 2;
+      cpu.startStocks = cpu.stocks;
+      cpu.char.dmgMult *= 1.25;
+      setTimeout(() => showAnnouncer('BOSS: ' + cpu.name, cpu.color), 200);
+    }
+    buildHUD();
+  }
+}
+
+function onCareerLevelComplete(playerWon) {
+  if (!careerActive) return;
+  if (playerWon) {
+    const nextLevel = careerLevel + 1;
+    careerProgress.unlockedLevel = Math.max(careerProgress.unlockedLevel, Math.min(nextLevel, CAREER_TOTAL_LEVELS));
+    const bonus = isBossLevel(careerLevel) ? 150 : 40 + careerLevel * 3;
+    coins += bonus;
+    careerProgress.stars[careerLevel] = 3;
+    saveCareerProgress();
+    saveShop();
+    updateCoinsUI();
+  }
+  careerActive = false;
+  if (careerPrevSelection) {
+    difficulty = careerPrevSelection.difficulty;
+    cpuCount = careerPrevSelection.cpuCount;
+    careerPrevSelection = null;
+  }
+  renderCareerMap();
+}
+
+function renderCareerMap() {
+  const wrap = document.getElementById('careerMapBtns');
+  const label = document.getElementById('careerProgressLabel');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  if (label) label.textContent = 'Unlocked: Level ' + Math.min(careerProgress.unlockedLevel, CAREER_TOTAL_LEVELS) + ' / ' + CAREER_TOTAL_LEVELS;
+  for (let lvl = 1; lvl <= CAREER_TOTAL_LEVELS; lvl++) {
+    const locked = lvl > careerProgress.unlockedLevel;
+    const boss = isBossLevel(lvl);
+    const done = !!careerProgress.stars[lvl];
+    const btn = document.createElement('button');
+    btn.className = 'career-level-btn' + (locked ? ' locked' : '') + (boss ? ' boss' : '') + (done ? ' done' : '');
+    btn.textContent = boss ? ('👑' + lvl) : lvl;
+    btn.disabled = locked;
+    btn.title = boss ? ('Boss: ' + BOSS_NAMES[getBossIndex(lvl)]) : ('Level ' + lvl);
+    btn.addEventListener('click', () => { if (!locked) startCareerLevel(lvl); });
+    wrap.appendChild(btn);
+  }
+}
+
 // ═══════════════════ DEVICE MODE (iPad-only — phone mode removed for stability) ═══════════════════
 (function initDeviceMode() {
   // Phone mode caused persistent touch/orientation glitches, so the game now always runs
@@ -3546,6 +3662,7 @@ document.getElementById('rewardCloseBtn').addEventListener('click', () => {
   document.getElementById('rewardPopup').classList.remove('active');
 });
 updateCoinsUI();
+renderCareerMap();
 
 // refresh box cooldown countdown while shop open
 setInterval(() => {
@@ -3669,6 +3786,7 @@ function checkGameOver() {
     addPassXp(playerWon ? passXpForWin() : passXpForLoss());
     matchesPlayed++;
     if (playerWon) matchesWon++;
+    onCareerLevelComplete(playerWon);
     const p1 = fighters.find(f => f.isPlayer);
     if (p1) addMasteryXp(p1.char.id, playerWon ? masteryXpForWin() : masteryXpForLoss());
     if (p1 && p1.bestCombo) bestComboEver = Math.max(bestComboEver, p1.bestCombo);
@@ -3895,6 +4013,7 @@ document.querySelectorAll('.menu-tab').forEach(tab => {
     document.querySelectorAll('.menu-panel').forEach(p => p.classList.remove('active'));
     tab.classList.add('active');
     document.querySelector(`.menu-panel[data-panel="${tab.dataset.menutab}"]`).classList.add('active');
+    if (tab.dataset.menutab === 'career') renderCareerMap();
   });
 });
 document.querySelectorAll('.cpu-btn').forEach(btn => {
