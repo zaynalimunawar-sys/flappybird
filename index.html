@@ -567,7 +567,7 @@ body { font-family: 'Rajdhani', sans-serif; color: var(--color-text); display: f
 }
 #pass-screen.active { display: flex; }
 .pass-hero {
-  position: relative; padding: 50px 20px 90px; text-align: center; overflow: hidden;
+  position: relative; padding: 50px 20px 40px; text-align: center; overflow: hidden;
   background: linear-gradient(160deg, #ff2288 0%, #aa00e0 55%, #4400aa 100%);
 }
 .pass-hero::before {
@@ -605,7 +605,7 @@ body { font-family: 'Rajdhani', sans-serif; color: var(--color-text); display: f
   position: relative; z-index: 1; margin-top: 8px; font-size: 0.82rem; color: rgba(255,255,255,0.9); font-weight: 700; letter-spacing: 0.5px;
 }
 .pass-upgrade-banner {
-  position: relative; z-index: 1; margin: 20px auto -46px; max-width: 480px; padding: 14px 20px; border-radius: 18px;
+  position: relative; z-index: 1; margin: 20px auto 14px; max-width: 480px; padding: 14px 20px; border-radius: 18px;
   background: rgba(10,5,20,0.85); backdrop-filter: blur(10px);
   border: 1px solid rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: space-between;
   gap: 14px; flex-wrap: wrap; box-shadow: 0 12px 30px rgba(0,0,0,0.4);
@@ -621,6 +621,36 @@ body { font-family: 'Rajdhani', sans-serif; color: var(--color-text); display: f
   box-shadow: 0 4px 16px rgba(255,180,0,0.4); transition: transform 150ms ease; white-space: nowrap;
 }
 .pass-upgrade-btn:hover { transform: scale(1.05); }
+
+.pass-giveaway-banner {
+  position: relative; z-index: 2; margin: 16px auto 0; max-width: 480px; padding: 18px 22px; border-radius: 18px;
+  background: rgba(18,10,30,0.92); backdrop-filter: blur(10px);
+  border: 2px solid rgba(255,120,190,0.4); text-align: center; box-shadow: 0 10px 26px rgba(0,0,0,0.35);
+}
+.pass-giveaway-label {
+  font-family: 'Bangers', cursive; font-size: 1.15rem; letter-spacing: 1.5px; color: #ff8fc7;
+  text-shadow: 0 0 10px rgba(255,90,160,0.4);
+}
+.pass-giveaway-sub { font-size: 0.78rem; color: rgba(255,255,255,0.6); margin-top: 4px; margin-bottom: 14px; }
+.pass-giveaway-row { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.pass-giveaway-input {
+  flex: 1; min-width: 160px; max-width: 220px; padding: 11px 14px; border-radius: 10px;
+  border: 2px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.06); color: #fff;
+  font-family: 'Rajdhani', sans-serif; font-weight: 700; letter-spacing: 1.5px; text-align: center;
+  text-transform: uppercase;
+}
+.pass-giveaway-input::placeholder { color: rgba(255,255,255,0.35); }
+.pass-giveaway-input:focus { outline: none; border-color: #ff8fc7; }
+.pass-giveaway-btn {
+  padding: 11px 22px; border-radius: 10px; border: none; cursor: pointer;
+  font-family: 'Bangers', cursive; font-size: 0.95rem; letter-spacing: 1px;
+  background: linear-gradient(135deg,#ff5aa8,#c23fff); color: #fff;
+  box-shadow: 0 4px 14px rgba(200,50,200,0.35); transition: transform 150ms ease; white-space: nowrap;
+}
+.pass-giveaway-btn:hover { transform: scale(1.04); }
+.pass-giveaway-msg { font-size: 0.8rem; margin-top: 10px; min-height: 1.2em; font-weight: 700; }
+.pass-giveaway-msg.success { color: #44ffaa; }
+.pass-giveaway-msg.error { color: #ff5566; }
 
 .pass-track-scroll { padding: 70px 20px 60px; overflow-x: auto; }
 .pass-track-title { text-align: center; font-size: 0.78rem; letter-spacing: 3px; text-transform: uppercase; color: var(--color-muted); margin: 26px 0 14px; }
@@ -985,6 +1015,15 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
     <div class="pass-tier-label" id="passTierLabel">0 / 4000 XP</div>
   </div>
   <div class="pass-upgrade-banner" id="passUpgradeBanner"></div>
+  <div class="pass-giveaway-banner" id="passGiveawayBanner">
+    <div class="pass-giveaway-label">🎁 GIVEAWAY!!!</div>
+    <div class="pass-giveaway-sub">Got a code? Redeem it here for a free Premium Pass!</div>
+    <div class="pass-giveaway-row">
+      <input type="text" id="passGiveawayInput" class="pass-giveaway-input" placeholder="ENTER CODE" maxlength="20" autocomplete="off" autocapitalize="characters">
+      <button class="pass-giveaway-btn" id="passGiveawayBtn">Redeem</button>
+    </div>
+    <div class="pass-giveaway-msg" id="passGiveawayMsg"></div>
+  </div>
   <div class="pass-track-scroll">
     <div class="pass-track-title">FREE TRACK</div>
     <div class="pass-track" id="passTrackFree"></div>
@@ -3405,6 +3444,31 @@ function claimPassReward(r, isPremium) {
   updatePassUI();
 }
 
+
+function redeemGiveawayCode() {
+  const input = document.getElementById('passGiveawayInput');
+  const msg = document.getElementById('passGiveawayMsg');
+  if (!input || !msg) return;
+  const code = input.value.trim().toUpperCase();
+  if (code === 'FREEPASS2015') {
+    if (passPremiumOwned) {
+      msg.className = 'pass-giveaway-msg error';
+      msg.textContent = 'You already have the Premium Pass!';
+      return;
+    }
+    passPremiumOwned = true;
+    savePassData();
+    updatePassUI();
+    showRewardPopup('⭐', 'Premium Pass Unlocked via Giveaway!');
+    msg.className = 'pass-giveaway-msg success';
+    msg.textContent = 'Code redeemed! Enjoy your free Premium Pass!';
+    input.value = '';
+  } else {
+    msg.className = 'pass-giveaway-msg error';
+    msg.textContent = 'Invalid code. Try again!';
+  }
+}
+
 function buyPremiumPass() {
   if (coins < 5000) { showRewardPopup('🪙', 'Not enough coins!'); return; }
   coins -= 5000;
@@ -3669,6 +3733,8 @@ document.getElementById('shopOpenBtn').addEventListener('click', openShop);
 document.getElementById('shopCloseBtn').addEventListener('click', closeShop);
 document.getElementById('passOpenBtn').addEventListener('click', openPass);
 document.getElementById('passCloseBtn').addEventListener('click', closePass);
+document.getElementById('passGiveawayBtn').addEventListener('click', redeemGiveawayCode);
+document.getElementById('passGiveawayInput').addEventListener('keypress', e => { if (e.key === 'Enter') redeemGiveawayCode(); });
 document.getElementById('rewardCloseBtn').addEventListener('click', () => {
   document.getElementById('rewardPopup').classList.remove('active');
 });
