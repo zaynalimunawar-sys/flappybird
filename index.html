@@ -1588,6 +1588,7 @@ class Fighter {
     this.hasGun = false;
     this.gunAmmo = 0;
     this.gunCooldown = 0;
+    this.gunTimer = 0;
   }
 
   get cx() { return this.x + this.w/2; }
@@ -1740,6 +1741,10 @@ class Fighter {
     }
 
     if (this.hitFlash > 0) this.hitFlash -= dt;
+    if (this.hasGun) {
+      this.gunTimer -= dt;
+      if (this.gunTimer <= 0) { this.hasGun = false; this.gunAmmo = 0; }
+    }
     if (this.stunTimer > 0) { this.stunTimer -= dt; }
     if (this.blockTimer > 0) { this.blockTimer -= dt; this.blocking = this.blockTimer > 0; }
     if (this.attackTimer > 0) { this.attackTimer -= dt; }
@@ -2342,6 +2347,7 @@ function updateGuns(dt) {
       if (g.landed && Math.abs(f.cx - g.x) < (f.w/2 + g.w/2) && Math.abs(f.cy - g.y) < (f.h/2 + g.h) ) {
         f.hasGun = true;
         f.gunAmmo = 6;
+        f.gunTimer = 17;
         g.pickedUp = true;
         spawnPopup(f.cx, f.cy - 70, 'GUN ACQUIRED!', { color: '#dddddd' });
         playSFX(500, 0.1, 'triangle');
