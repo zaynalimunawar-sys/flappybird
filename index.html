@@ -3073,12 +3073,8 @@ const PASS_PREMIUM_REWARDS = [];
       PASS_FREE_REWARDS.push({ tier: t, type: 'coins', amount: 40 + t*3, icon: '🪙', name: (40+t*3)+' Coins' });
     }
     let prem;
-    if (t % 10 === 0) {
-      const skinNames = ['Crimson Blaze','Void Walker','Golden Dragon','Neon Ghost'];
-      prem = { tier: t, type: 'skin', id: 'pass_skin_'+t, icon: '🥋', name: skinNames[(t/10-1)%skinNames.length] + ' Skin' };
-    } else if (t % 5 === 0) {
-      const trailNames = ['Comet Trail','Plasma Trail','Aurora Trail','Inferno Trail','Frost Trail','Star Trail','Rainbow Trail'];
-      prem = { tier: t, type: 'trail', id: 'pass_trail_'+t, icon: '✨', name: trailNames[(t/5-1)%trailNames.length] };
+    if (t % 10 === 0 || t % 5 === 0) {
+      prem = { tier: t, type: 'coins', amount: 1000, icon: '🪙', name: '1000 Coins' };
     } else {
       prem = { tier: t, type: 'coins', amount: 60 + t*8, icon: '🪙', name: (60+t*8)+' Coins' };
     }
