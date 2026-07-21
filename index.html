@@ -1585,6 +1585,9 @@ class Fighter {
     this.tumbleSpin = 0;
     this.strideBounce = 0;
     this.kickChamber = 0;
+    this.hasGun = false;
+    this.gunAmmo = 0;
+    this.gunCooldown = 0;
   }
 
   get cx() { return this.x + this.w/2; }
@@ -1900,7 +1903,13 @@ class Fighter {
     if (this.blocking) this.blockTimer = 0.25;
 
     if (!this.blocking && this.attackCooldown <= 0) {
-      if (justPressed['KeyJ']) this.doAttack('punch', enemies, 0.10, 0.12);
+      if (this.hasGun && justPressed['KeyJ']) {
+        spawnGunBullet(this);
+        this.gunAmmo--;
+        this.attackCooldown = 0.22;
+        if (this.gunAmmo <= 0) this.hasGun = false;
+      }
+      else if (justPressed['KeyJ']) this.doAttack('punch', enemies, 0.10, 0.12);
       else if (justPressed['KeyK']) this.doAttack('kick', enemies, 0.13, 0.16);
       else if (justPressed['KeyL'] && this.specialCooldown <= 0) {
         this.useSpecial(enemies);
@@ -2002,6 +2011,11 @@ class Fighter {
       if (r < d.specialChance && this.specialCooldown <= 0) {
         this.useSpecial(enemies);
         this.specialCooldown = 1.1 / Math.max(0.6, d.react);
+      } else if (this.hasGun && r < d.aggro * 0.5) {
+        spawnGunBullet(this);
+        this.gunAmmo--;
+        this.attackCooldown = 0.3;
+        if (this.gunAmmo <= 0) this.hasGun = false;
       } else if (r < d.aggro * 0.16) {
         this.doAttack('kick', enemies, 0.13, 0.16);
       } else if (r < d.aggro * 0.30) {
@@ -2290,6 +2304,74 @@ function drawStarKOs() {
   }
 }
 
+// ─── GUN PICKUPS (fall from sky every 10s, grant ranged attack) ───────────────
+let guns = [];
+let gunSpawnTimer = 10;
+const GUN_W = 46, GUN_H = 22;
+function spawnGunDrop() {
+  const margin = 120;
+  const x = margin + Math.random() * (STAGE_W - margin*2);
+  guns.push({ x, y: -40, vx: 0, vy: 0, w: GUN_W, h: GUN_H, landed: false, bobPhase: Math.random()*10, pickedUp: false });
+}
+function updateGuns(dt) {
+  gunSpawnTimer -= dt;
+  if (gunSpawnTimer <= 0) { spawnGunDrop(); gunSpawnTimer = 10; }
+  const stage = getStage();
+  for (let i = guns.length - 1; i >= 0; i--) {
+    const g = guns[i];
+    if (g.pickedUp) { guns.splice(i, 1); continue; }
+    if (!g.landed) {
+      g.vy += GRAVITY * dt;
+      g.y += g.vy * dt;
+      for (const p of stage.platforms) {
+        if (g.x + g.w/2 > p.x && g.x - g.w/2 < p.x + p.w && g.y + g.h/2 >= p.y && g.y + g.h/2 - g.vy*dt <= p.y) {
+          g.y = p.y - g.h/2;
+          g.vy = 0;
+          g.landed = true;
+          spawnParticles(g.x, g.y + g.h/2, '#cccccc', 8);
+          playSFX(200, 0.08, 'square');
+          break;
+        }
+      }
+      if (g.y > STAGE_H + 60) { guns.splice(i, 1); continue; }
+    } else {
+      g.bobPhase += dt * 2.4;
+    }
+    for (const f of fighters) {
+      if (f.dead || !f.visible || f.hasGun) continue;
+      if (g.landed && Math.abs(f.cx - g.x) < (f.w/2 + g.w/2) && Math.abs(f.cy - g.y) < (f.h/2 + g.h) ) {
+        f.hasGun = true;
+        f.gunAmmo = 6;
+        g.pickedUp = true;
+        spawnPopup(f.cx, f.cy - 70, 'GUN ACQUIRED!', { color: '#dddddd' });
+        playSFX(500, 0.1, 'triangle');
+        break;
+      }
+    }
+  }
+}
+function drawGuns() {
+  for (const g of guns) {
+    ctx.save();
+    const bob = g.landed ? Math.sin(g.bobPhase) * 4 : 0;
+    ctx.translate(sx(g.x), sy(g.y) - sh(bob));
+    ctx.rotate(g.landed ? -0.15 : 0);
+    ctx.fillStyle = '#dddddd';
+    ctx.shadowColor = '#ffffff'; ctx.shadowBlur = 10*scale();
+    ctx.fillRect(-sw(g.w/2), -sh(g.h/4), sw(g.w*0.75), sh(g.h/2));
+    ctx.fillRect(-sw(g.w/2)+sw(6), sh(g.h*0.1), sw(g.w*0.22), sh(g.h*0.5));
+    ctx.shadowBlur = 0;
+    ctx.restore();
+  }
+}
+function spawnGunBullet(owner) {
+  projectiles.push({
+    x: owner.cx + owner.facing*30, y: owner.cy - 10, vx: owner.facing * 900, vy: 0,
+    dir: owner.facing, owner, life: 0.9, w: 20, h: 8, color: '#ffee44', isBullet: true,
+  });
+  playSFX(900, 0.05, 'square');
+}
+
 // ─── PROJECTILES (Chi Blast) ───────────────────────────────────────────────────
 let projectiles = [];
 function spawnProjectile(owner) {
@@ -2319,9 +2401,13 @@ function drawProjectiles() {
     ctx.save();
     ctx.shadowColor = p.color; ctx.shadowBlur = 18*scale();
     ctx.fillStyle = p.color;
-    ctx.beginPath();
-    ctx.ellipse(sx(p.x), sy(p.y), sw(p.w/2), sh(p.h/2), 0, 0, Math.PI*2);
-    ctx.fill();
+    if (p.isBullet) {
+      ctx.fillRect(sx(p.x) - sw(p.w/2), sy(p.y) - sh(p.h/2), sw(p.w), sh(p.h));
+    } else {
+      ctx.beginPath();
+      ctx.ellipse(sx(p.x), sy(p.y), sw(p.w/2), sh(p.h/2), 0, 0, Math.PI*2);
+      ctx.fill();
+    }
     ctx.shadowBlur = 0;
     ctx.restore();
   }
@@ -3761,6 +3847,8 @@ function startGame() {
   poisonTickTimer = 0;
   meteorTickTimer = 0;
   camera.x = 0; camera.y = 0; camera.shake = 0;
+  guns = [];
+  gunSpawnTimer = 10;
   firstBloodShown = false;
   finalStockWarned = new Set();
   comebackShown = false;
@@ -3992,6 +4080,7 @@ function gameLoop(timestamp) {
   } else { camera.x = 0; camera.y = 0; camera.shake = 0; }
 
   applyStageHazards(dt);
+  updateGuns(dt);
   fighters.forEach(f => f.update(dt, fighters));
   updateProjectiles(dt, fighters);
   updateParticles(dt);
@@ -4013,6 +4102,7 @@ function gameLoop(timestamp) {
     ctx.translate(-cxp, -cyp);
   }
   drawStage();
+  drawGuns();
   drawParticles();
   drawImpactRings();
   drawProjectiles();
