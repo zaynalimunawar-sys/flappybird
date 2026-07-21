@@ -1908,10 +1908,10 @@ class Fighter {
     if (this.blocking) this.blockTimer = 0.25;
 
     if (!this.blocking && this.attackCooldown <= 0) {
-      if (this.hasGun && justPressed['KeyJ']) {
+      if (this.hasGun && keys['KeyJ']) {
         spawnGunBullet(this);
         this.gunAmmo--;
-        this.attackCooldown = 0.22;
+        this.attackCooldown = 0.07;
         if (this.gunAmmo <= 0) this.hasGun = false;
       }
       else if (justPressed['KeyJ']) this.doAttack('punch', enemies, 0.10, 0.12);
@@ -2019,7 +2019,7 @@ class Fighter {
       } else if (this.hasGun && r < d.aggro * 0.5) {
         spawnGunBullet(this);
         this.gunAmmo--;
-        this.attackCooldown = 0.3;
+        this.attackCooldown = 0.09;
         if (this.gunAmmo <= 0) this.hasGun = false;
       } else if (r < d.aggro * 0.16) {
         this.doAttack('kick', enemies, 0.13, 0.16);
@@ -2346,7 +2346,7 @@ function updateGuns(dt) {
       if (f.dead || !f.visible || f.hasGun) continue;
       if (g.landed && Math.abs(f.cx - g.x) < (f.w/2 + g.w/2) && Math.abs(f.cy - g.y) < (f.h/2 + g.h) ) {
         f.hasGun = true;
-        f.gunAmmo = 6;
+        f.gunAmmo = 24;
         f.gunTimer = 17;
         g.pickedUp = true;
         spawnPopup(f.cx, f.cy - 70, 'GUN ACQUIRED!', { color: '#dddddd' });
@@ -2371,11 +2371,13 @@ function drawGuns() {
   }
 }
 function spawnGunBullet(owner) {
+  const spread = (Math.random()-0.5) * 30;
   projectiles.push({
-    x: owner.cx + owner.facing*30, y: owner.cy - 10, vx: owner.facing * 900, vy: 0,
-    dir: owner.facing, owner, life: 0.9, w: 20, h: 8, color: '#ffee44', isBullet: true,
+    x: owner.cx + owner.facing*30, y: owner.cy - 10 + spread, vx: owner.facing * 1300, vy: 0,
+    dir: owner.facing, owner, life: 0.6, w: 18, h: 6, color: '#ffee44', isBullet: true,
   });
-  playSFX(900, 0.05, 'square');
+  spawnParticles(owner.cx + owner.facing*30, owner.cy - 10, '#ffcc00', 2);
+  playSFX(1200, 0.03, 'square');
 }
 
 // ─── PROJECTILES (Chi Blast) ───────────────────────────────────────────────────
