@@ -702,6 +702,22 @@ body { font-family: 'Rajdhani', sans-serif; color: var(--color-text); display: f
   .fighter-name { font-size:0.62rem; }
   .timer-num { font-size:1.2rem; }
   .damage-pct { font-size:1rem; }
+  /* MODS TAB — mobile-friendly tap targets & layout */
+  .mods-toggle-row { gap:10px; flex-wrap:wrap; }
+  .mods-toggle-label { font-size:0.92rem; }
+  .mods-switch { width:60px; height:34px; touch-action: manipulation; }
+  .mods-switch-slider:before { width:26px; height:26px; }
+  .mods-switch input:checked + .mods-switch-slider:before { transform: translateX(26px); }
+  .mods-toggle-desc { font-size:0.72rem; max-width:90%; }
+  #extraModsContainer { width:100%; }
+}
+/* Prevent double-tap-zoom / ghost-click / 300ms delay issues on all interactive
+   menu controls so mods (and every other toggle/button) respond instantly on mobile. */
+.menu-tab, .diff-btn, .cpu-btn, .stage-card, .char-card, .shop-tab, .shop-card-btn,
+.mods-switch, .mods-switch-slider, .start-btn, .shop-open-btn, .pass-open-btn,
+.go-btn, .admin-btn, .profile-close-btn, .shop-close-btn {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .tc-joystick {
@@ -867,8 +883,7 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
       <button class="menu-tab" data-menutab="stage">🗺️ Stage</button>
       <button class="menu-tab" data-menutab="career">🏆 Career</button>
       <button class="menu-tab" data-menutab="mods">🔧 Mods</button>
-      <button class="menu-tab" data-menutab="help">❔ Controls</button>
-    </div>
+      </div>
 
     <div class="menu-panel active" data-panel="fighter">
       <div class="char-select-row" id="charSelectRow"></div>
@@ -922,16 +937,8 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
         <div class="mods-toggle-desc" id="gunsToggleDesc">Guns are ON — pickups will drop during matches.</div>
       </div>
       <div class="menu-subsection">
-        <h3>Coming Soon</h3>
-        <div class="mods-coming-soon">🔧 New mods coming soon!</div>
-      </div>
-    </div>
-
-    <div class="menu-panel" data-panel="help">
-      <div class="controls-hint">
-        <span>A/D</span> Move &nbsp;|&nbsp; <span>W</span> Jump (double-jump in air!) &nbsp;|&nbsp; <span>S</span> Fast-Fall<br>
-        <span>J</span> Punch &nbsp;|&nbsp; <span>K</span> Kick &nbsp;|&nbsp; <span>L</span> Special<br>
-        <span>Shift</span> Block (ground) / Air Dodge (air, gives i-frames!) &nbsp;|&nbsp; <span>P</span> Pause &nbsp;|&nbsp; <span>Esc</span> Menu
+        <h3>Fun Mods</h3>
+        <div id="extraModsContainer"></div>
       </div>
     </div>
 
@@ -1921,7 +1928,7 @@ class Fighter {
 
     if (justPressed['KeyW'] || justPressed['Space']) {
       if (this.grounded) { this.vy = JUMP_VEL * this.char.jumpMult; this.grounded = false; this.jumps = 1; playSFX(500, 0.06, 'sine'); }
-      else if (this.jumps < 2) { this.vy = DOUBLE_JUMP_VEL * this.char.jumpMult; this.jumps++; playSFX(420, 0.06, 'sine'); }
+      else if (MODS.infiniteJump || this.jumps < 2) { this.vy = DOUBLE_JUMP_VEL * this.char.jumpMult; if (!MODS.infiniteJump) this.jumps++; playSFX(420, 0.06, 'sine'); }
     }
 
     if (!this.grounded && (keys['KeyS'] || keys['ArrowDown'])) this.fastFalling = true;
@@ -1935,7 +1942,7 @@ class Fighter {
       this.vx *= 0.3; this.vy = Math.min(this.vy, -80);
       playSFX(600, 0.08, 'sine');
     }
-    this.blocking = shiftHeld && this.grounded;
+    this.blocking = shiftHeld && this.grounded && !MODS.noBlocking;
     if (this.blocking) this.blockTimer = 0.25;
 
     if (!this.blocking && this.attackCooldown <= 0) {
@@ -1955,7 +1962,7 @@ class Fighter {
 
   useSpecial(enemies) {
     const sp = this.char.special;
-    this.specialCooldown = 1.35;
+    this.specialCooldown = MODS.noUltCooldown ? 0 : 1.35;
     if (sp === 'counter') {
       this.counterActive = true;
       this.counterTimer = 0.6;
@@ -2035,18 +2042,18 @@ class Fighter {
       this.vy = JUMP_VEL * this.char.jumpMult; this.grounded = false; this.jumps = 1;
     } else if (Math.random() < d.jumpChance) {
       if (this.grounded) { this.vy = JUMP_VEL * this.char.jumpMult; this.grounded = false; this.jumps = 1; }
-      else if (this.jumps < 2) { this.vy = DOUBLE_JUMP_VEL * this.char.jumpMult; this.jumps++; }
+      else if (MODS.infiniteJump || this.jumps < 2) { this.vy = DOUBLE_JUMP_VEL * this.char.jumpMult; if (!MODS.infiniteJump) this.jumps++; }
     }
 
     if (target.attackType && target.attackTimer > 0 && absDist < 140 && Math.random() < d.react * 0.5) {
-      this.blocking = true; this.blockTimer = 0.2;
+      if (!MODS.noBlocking) { this.blocking = true; this.blockTimer = 0.2; }
     }
 
     if (absDist < 125 && this.attackCooldown <= 0 && !this.blocking) {
       const r = Math.random();
       if (r < d.specialChance && this.specialCooldown <= 0) {
         this.useSpecial(enemies);
-        this.specialCooldown = 1.1 / Math.max(0.6, d.react);
+        this.specialCooldown = MODS.noUltCooldown ? 0 : 1.1 / Math.max(0.6, d.react);
       } else if (this.hasGun && r < d.aggro * 0.5) {
         spawnGunBullet(this);
         this.gunAmmo--;
@@ -2061,7 +2068,7 @@ class Fighter {
 
     if (this.x < 100) this.vx = PLAYER_SPEED;
     if (this.x + this.w > STAGE_W - 100) this.vx = -PLAYER_SPEED;
-    if (this.y > 400 && !this.grounded && this.jumps < 2) { this.vy = DOUBLE_JUMP_VEL; this.jumps++; }
+    if (this.y > 400 && !this.grounded && (MODS.infiniteJump || this.jumps < 2)) { this.vy = DOUBLE_JUMP_VEL; if (!MODS.infiniteJump) this.jumps++; }
   }
 
   draw(ctx) {
@@ -2351,6 +2358,30 @@ function saveGunsModSetting(val) {
   try { localStorage.setItem('gunsModEnabled', String(val)); } catch(e) {}
 }
 let gunsModEnabled = loadGunsModSetting();
+
+// ─── EXTRA MODS (persisted) ─────────────────────────────────────────────────
+const MOD_DEFS = [
+  { key: 'noUltCooldown', label: 'No Ultimate Cooldown', desc: 'Specials have zero cooldown — spam your ultimate freely.', def: false },
+  { key: 'noBlocking',    label: 'Disable Blocking',      desc: 'Blocking is completely disabled for everyone (player & CPU).', def: false },
+  { key: 'infiniteJump',  label: 'Infinite Jumps',        desc: 'Jump as many times as you want in the air — no double-jump limit.', def: false },
+];
+function loadMods() {
+  try {
+    const saved = JSON.parse(localStorage.getItem('tkwMods') || '{}');
+    const out = {};
+    MOD_DEFS.forEach(m => { out[m.key] = typeof saved[m.key] === 'boolean' ? saved[m.key] : m.def; });
+    return out;
+  } catch(e) {
+    const out = {};
+    MOD_DEFS.forEach(m => { out[m.key] = m.def; });
+    return out;
+  }
+}
+function saveMods() {
+  try { localStorage.setItem('tkwMods', JSON.stringify(MODS)); } catch(e) {}
+}
+let MODS = loadMods();
+
 
 let guns = [];
 let gunSpawnTimer = 10;
@@ -4243,19 +4274,74 @@ function refreshGunsToggleDesc() {
     ? 'Guns are ON — pickups will drop during matches.'
     : 'Guns are OFF — no gun pickups will spawn.';
 }
+function applyGunsModState() {
+  gunsModEnabled = gunsToggleEl.checked;
+  saveGunsModSetting(gunsModEnabled);
+  refreshGunsToggleDesc();
+  if (!gunsModEnabled) {
+    guns.length = 0;
+    fighters.forEach(f => { if (f.hasGun) { f.hasGun = false; f.gunAmmo = 0; } });
+  }
+}
 if (gunsToggleEl) {
   gunsToggleEl.checked = gunsModEnabled;
   refreshGunsToggleDesc();
-  gunsToggleEl.addEventListener('change', () => {
-    gunsModEnabled = gunsToggleEl.checked;
-    saveGunsModSetting(gunsModEnabled);
-    refreshGunsToggleDesc();
-    if (!gunsModEnabled) {
-      guns.length = 0;
-      fighters.forEach(f => { if (f.hasGun) { f.hasGun = false; f.gunAmmo = 0; } });
+  gunsToggleEl.addEventListener('change', applyGunsModState);
+  // Mobile fallback: some touch browsers can swallow the native 'change' event
+  // when the tap lands on the visual slider instead of the raw input, so we
+  // mirror the same manual-toggle safety net used for the Fun Mods switches.
+  const gunsSliderEl = gunsToggleEl.parentElement?.querySelector('.mods-switch-slider');
+  if (gunsSliderEl) {
+    gunsSliderEl.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      gunsToggleEl.checked = !gunsToggleEl.checked;
+      applyGunsModState();
+    }, { passive: false });
+  }
+}
+
+// EXTRA MODS TAB LOGIC — build toggle rows dynamically for MOD_DEFS
+const extraModsContainer = document.getElementById('extraModsContainer');
+if (extraModsContainer) {
+  MOD_DEFS.forEach(m => {
+    const row = document.createElement('div');
+    row.className = 'mods-toggle-row';
+    row.innerHTML = `
+      <span class="mods-toggle-label">${m.label}</span>
+      <label class="mods-switch">
+        <input type="checkbox" id="mod_${m.key}" ${MODS[m.key] ? 'checked' : ''}>
+        <span class="mods-switch-slider"></span>
+      </label>
+    `;
+    const descEl = document.createElement('div');
+    descEl.className = 'mods-toggle-desc';
+    descEl.id = `mod_${m.key}_desc`;
+    descEl.textContent = m.desc;
+    extraModsContainer.appendChild(row);
+    extraModsContainer.appendChild(descEl);
+
+    const checkboxEl = row.querySelector(`#mod_${m.key}`);
+    const applyModState = () => {
+      MODS[m.key] = checkboxEl.checked;
+      saveMods();
+    };
+    // 'change' covers desktop clicks + most mobile taps. Some mobile browsers
+    // (notably iOS Safari when the label/slider sits on top of the input) can
+    // eat the native change event on a fast tap, so we also listen for
+    // touchend directly on the slider and flip the checkbox manually as a
+    // fallback — this guarantees mods toggle reliably on phones/tablets too.
+    checkboxEl.addEventListener('change', applyModState);
+    const sliderEl = row.querySelector('.mods-switch-slider');
+    if (sliderEl) {
+      sliderEl.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        checkboxEl.checked = !checkboxEl.checked;
+        applyModState();
+      }, { passive: false });
     }
   });
 }
+
 
 document.querySelectorAll('.cpu-btn').forEach(btn => {
   btn.addEventListener('click', () => {
