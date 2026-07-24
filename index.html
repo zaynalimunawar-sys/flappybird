@@ -78,6 +78,9 @@ body { font-family: 'Rajdhani', sans-serif; color: var(--color-text); display: f
 .diff-btn.nightmare.selected { border-color: #ff2200; color: #ff2200; background: rgba(255,34,0,0.1); }
 .diff-btn.godlike.selected { border-color: #ff0055; color: #ff0055; background: rgba(255,0,85,0.1); }
 .diff-btn.impossible.selected { border-color: #ffffff; color: #ffffff; background: rgba(255,255,255,0.12); box-shadow: 0 0 24px rgba(255,255,255,0.4); }
+.diff-btn.pro { border-color: #ffcc00; }
+.diff-btn.pro.selected { border-color: #ffcc00; color: #ffcc00; background: rgba(255,204,0,0.15); box-shadow: 0 0 30px rgba(255,204,0,0.6), 0 0 60px rgba(255,0,0,0.3); animation: proPulse 1s ease-in-out infinite; }
+@keyframes proPulse { 0%,100% { box-shadow: 0 0 30px rgba(255,204,0,0.6), 0 0 60px rgba(255,0,0,0.3); } 50% { box-shadow: 0 0 45px rgba(255,204,0,0.9), 0 0 90px rgba(255,0,0,0.5); } }
 
 .cpu-count-btns { display: flex; gap: 12px; justify-content: center; }
 .cpu-btn {
@@ -397,6 +400,14 @@ body { font-family: 'Rajdhani', sans-serif; color: var(--color-text); display: f
 }
 .profile-name-input:focus { outline: none; border-color: var(--color-p1); }
 .profile-rank-badge { display: flex; align-items: center; gap: 8px; background: rgba(255,150,0,0.12); border: 2px solid rgba(255,150,0,0.4); border-radius: 30px; padding: 8px 22px; font-family:'Bangers',cursive; font-size: 1.2rem; color: #ffaa33; }
+.profile-title-badge {
+  display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.06);
+  border: 2px solid rgba(255,255,255,0.25); border-radius: 24px; padding: 5px 16px;
+  font-family: 'Bangers', cursive; font-size: 0.95rem; letter-spacing: 0.5px;
+  text-shadow: 0 0 10px currentColor; box-shadow: 0 0 14px rgba(255,255,255,0.15);
+  animation: titleBadgeGlow 2.4s ease-in-out infinite;
+}
+@keyframes titleBadgeGlow { 0%,100% { box-shadow: 0 0 10px rgba(255,255,255,0.15); } 50% { box-shadow: 0 0 20px currentColor; } }
 .profile-stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; max-width: 460px; width: 100%; }
 .profile-stat-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 16px; text-align: center; }
 .profile-stat-val { font-family: 'Bangers', cursive; font-size: 1.6rem; color: var(--color-p1); }
@@ -902,6 +913,7 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
           <button class="diff-btn nightmare" data-diff="nightmare">Nightmare</button>
           <button class="diff-btn godlike" data-diff="godlike">Godlike</button>
           <button class="diff-btn impossible" data-diff="impossible">Impossible</button>
+          <button class="diff-btn pro" data-diff="pro">🔥 PRO — Are You a Pro?</button>
         </div>
       </div>
       <div class="menu-subsection">
@@ -961,6 +973,7 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
     <button class="shop-tab active" data-tab="skins">🥋 Skins</button>
     <button class="shop-tab" data-tab="trails">✨ Trails</button>
     <button class="shop-tab" data-tab="powerups">⚡ Power-ups</button>
+    <button class="shop-tab" data-tab="titles">🏅 Titles</button>
     <button class="shop-tab" data-tab="boxes">📦 Boxes</button>
   </div>
   <div class="shop-body"><div class="shop-featured-banner" id="shopFeaturedBanner"></div><div id="shopBody"></div></div>
@@ -992,6 +1005,7 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
   <div class="profile-body">
     <div class="profile-avatar-wrap" id="profileAvatar">🥋</div>
     <input class="profile-name-input" id="profileNameInput" maxlength="14" value="Player">
+    <div class="profile-title-badge" id="profileTitleBadge"></div>
     <div class="profile-rank-badge" id="profileRankBadge">🏆 0 Trophies</div>
     <div class="profile-stats-grid" id="profileStatsGrid"></div>
   </div>
@@ -1270,6 +1284,7 @@ const DIFF = {
   nightmare:  { react: 0.97, aggro: 0.95, jumpChance: 0.050, specialChance: 0.040, label:'Nightmare',  color:'#ff2200' },
   godlike:    { react: 0.99, aggro: 0.98, jumpChance: 0.070, specialChance: 0.055, label:'Godlike',    color:'#ff0055' },
   impossible: { react: 1.00, aggro: 1.00, jumpChance: 0.090, specialChance: 0.070, label:'Impossible', color:'#ffffff' },
+  pro:        { react: 1.05, aggro: 1.35, jumpChance: 0.130, specialChance: 0.110, label:'PRO',        color:'#ffcc00' },
 };
 
 // ─── STATE ───────────────────────────────────────────────────────────────────
@@ -1562,6 +1577,14 @@ class Fighter {
     this.diffKey = diff;
     this.diff = DIFF[diff];
     this.char = charData || CHARACTERS[0];
+    // PRO difficulty: CPUs hit harder, move faster, and jump higher — a true "are you a pro?" test.
+    if (diff === 'pro' && !isPlayer) {
+      this.char = Object.assign({}, this.char, {
+        dmgMult: (this.char.dmgMult || 1) * 1.45,
+        speedMult: (this.char.speedMult || 1) * 1.22,
+        jumpMult: (this.char.jumpMult || 1) * 1.12,
+      });
+    }
     this.color = FIGHTER_COLORS[id];
     this.name = isPlayer ? 'YOU' : FIGHTER_NAMES[id];
     this.w = 65 * (0.9 + this.char.weightMult*0.1); this.h = 151 * (0.9 + this.char.weightMult*0.1);
@@ -2011,6 +2034,7 @@ class Fighter {
 
   handleAI(dt, enemies) {
     const d = this.diff;
+    const isPro = this.diffKey === 'pro';
     if (Math.random() > d.react) return;
 
     let target = null, minDist = Infinity;
@@ -2031,7 +2055,7 @@ class Fighter {
       this.vx = -this.facing * aiSpd * 0.85;
     } else if (absDist > 150) {
       this.vx = this.facing * aiSpd * (0.82 + d.aggro * 0.32);
-    } else if (absDist < 70 && Math.random() < 0.02 * (1 + d.aggro)) {
+    } else if (!isPro && absDist < 70 && Math.random() < 0.02 * (1 + d.aggro)) {
       this.retreatTimer = 0.3 + Math.random() * 0.25;
       this.vx = -this.facing * aiSpd * 0.85;
     } else {
@@ -2045,15 +2069,15 @@ class Fighter {
       else if (MODS.infiniteJump || this.jumps < 2) { this.vy = DOUBLE_JUMP_VEL * this.char.jumpMult; if (!MODS.infiniteJump) this.jumps++; }
     }
 
-    if (target.attackType && target.attackTimer > 0 && absDist < 140 && Math.random() < d.react * 0.5) {
+    if (target.attackType && target.attackTimer > 0 && absDist < (isPro ? 190 : 140) && Math.random() < d.react * (isPro ? 0.9 : 0.5)) {
       if (!MODS.noBlocking) { this.blocking = true; this.blockTimer = 0.2; }
     }
 
-    if (absDist < 125 && this.attackCooldown <= 0 && !this.blocking) {
+    if (absDist < (isPro ? 165 : 125) && this.attackCooldown <= 0 && !this.blocking) {
       const r = Math.random();
       if (r < d.specialChance && this.specialCooldown <= 0) {
         this.useSpecial(enemies);
-        this.specialCooldown = MODS.noUltCooldown ? 0 : 1.1 / Math.max(0.6, d.react);
+        this.specialCooldown = MODS.noUltCooldown ? 0 : (isPro ? 0.55 : 1.1) / Math.max(0.6, d.react);
       } else if (this.hasGun && r < d.aggro * 0.5) {
         spawnGunBullet(this);
         this.gunAmmo--;
@@ -3033,6 +3057,39 @@ function updateHUD() {
 let coins = 0;
 let ownedItems = { skins: ['default'], trails: ['none'], powerups: [] };
 let equipped = { skin: 'default', trail: 'none' };
+
+// ─── TITLES ──────────────────────────────────────────────────────────────────
+const TITLES = [
+  { id:'none',        name:'—',                 icon:'',   color:'#8888aa', desc:'No title equipped', rarity:'common',    price:0,    source:'default' },
+  { id:'rookie',      name:'Rookie',             icon:'🔰', color:'#88ff88', desc:'Everyone starts somewhere', rarity:'common',    price:0,    source:'shop' },
+  { id:'brawler',     name:'Brawler',            icon:'👊', color:'#ffaa00', desc:'You throw hands with style', rarity:'common',    price:250,  source:'shop' },
+  { id:'ironwill',    name:'Iron Will',          icon:'🛡️', color:'#8899ff', desc:'Never backs down from a fight', rarity:'rare',      price:500,  source:'shop' },
+  { id:'combomaster', name:'Combo Master',       icon:'🔗', color:'#ff66cc', desc:'Strings hits together like a pro', rarity:'rare',      price:650,  source:'shop' },
+  { id:'stormbringer',name:'Stormbringer',       icon:'⛈️', color:'#66ccff', desc:'Brings chaos wherever they land', rarity:'epic',      price:1200, source:'shop' },
+  { id:'reaper',      name:'The Reaper',         icon:'💀', color:'#cc4444', desc:'Collector of stocks and souls', rarity:'epic',      price:1500, source:'shop' },
+  { id:'legend',      name:'Living Legend',      icon:'🌟', color:'#ffd700', desc:'Whispered about in the lobby', rarity:'legendary', price:3000, source:'shop' },
+  { id:'godslayer',   name:'Godslayer',          icon:'⚔️', color:'#ff2255', desc:'Felled the unbeatable', rarity:'legendary', price:4500, source:'shop' },
+  { id:'pro',         name:'PRO',                icon:'🔥', color:'#ffcc00', desc:'Proved it on PRO difficulty. Are you a pro? Yes.', rarity:'legendary', price:0, source:'pro_win' },
+  { id:'admin',       name:'Administrator',      icon:'🔐', color:'#ff4466', desc:'Behind the curtain. Knows things.', rarity:'legendary', price:0, source:'admin' },
+  { id:'paytowin',    name:'Pay To Win',          icon:'💳', color:'#00ff88', desc:'Maxed the Premium Pass. Wallet: empty. Ego: full.', rarity:'legendary', price:0, source:'pass_premium' },
+  { id:'brokeboi',    name:"Doesn't Have Money",  icon:'🥲', color:'#aaaaaa', desc:'Grinded the Free Pass to the very end. Respect.', rarity:'legendary', price:0, source:'pass_free' },
+];
+let ownedTitles = ['none'];
+let equippedTitle = 'none';
+
+function getTitle(id) { return TITLES.find(t => t.id === id) || TITLES[0]; }
+function unlockTitle(id, announce) {
+  if (!ownedTitles.includes(id)) {
+    ownedTitles.push(id);
+    saveShop();
+    if (announce) {
+      const t = getTitle(id);
+      setTimeout(() => showReward(t.icon || '🏅', `New Title Unlocked: ${t.name}!`), 400);
+    }
+    return true;
+  }
+  return false;
+}
 let boxCooldowns = {};
 const FREE_BOX_CD = 60 * 1000;
 
@@ -3152,13 +3209,17 @@ const PASS_FREE_REWARDS = [];
 const PASS_PREMIUM_REWARDS = [];
 (function buildPassRewards() {
   for (let t = 1; t <= PASS_MAX_TIER; t++) {
-    if (t % 5 === 0) {
+    if (t === PASS_MAX_TIER) {
+      PASS_FREE_REWARDS.push({ tier: t, type: 'title', id: 'brokeboi', icon: '🥲', name: "Doesn't Have Money" });
+    } else if (t % 5 === 0) {
       PASS_FREE_REWARDS.push({ tier: t, type: 'coins', amount: 150 + t*10, icon: '🪙', name: (150+t*10)+' Coins' });
     } else {
       PASS_FREE_REWARDS.push({ tier: t, type: 'coins', amount: 40 + t*3, icon: '🪙', name: (40+t*3)+' Coins' });
     }
     let prem;
-    if (t % 10 === 0 || t % 5 === 0) {
+    if (t === PASS_MAX_TIER) {
+      prem = { tier: t, type: 'title', id: 'paytowin', icon: '💳', name: 'Pay To Win' };
+    } else if (t % 10 === 0 || t % 5 === 0) {
       prem = { tier: t, type: 'coins', amount: 1000, icon: '🪙', name: '1000 Coins' };
     } else {
       prem = { tier: t, type: 'coins', amount: 60 + t*8, icon: '🪙', name: (60+t*8)+' Coins' };
@@ -3230,12 +3291,15 @@ function loadShopSave() {
     bestComboEver = s.bestComboEver || 0;
     playerUsername = s.playerUsername || 'Player';
     mastery = s.mastery || {};
+    ownedTitles = s.ownedTitles || ['none'];
+    equippedTitle = s.equippedTitle || 'none';
   } catch(e) {}
   if (!ownedItems.skins.includes('default')) ownedItems.skins.push('default');
   if (!ownedItems.trails.includes('none')) ownedItems.trails.push('none');
+  if (!ownedTitles.includes('none')) ownedTitles.push('none');
 }
 function saveShop() {
-  try { localStorage.setItem('tf_save', JSON.stringify({ coins, ownedItems, equipped, boxCooldowns, passXp, passTier, passPremiumOwned, passClaimedFree, passClaimedPremium, dailyStreak, lastLoginDate, trophies, highestTrophies, matchesPlayed, matchesWon, bestComboEver, playerUsername, mastery })); } catch(e) {}
+  try { localStorage.setItem('tf_save', JSON.stringify({ coins, ownedItems, equipped, boxCooldowns, passXp, passTier, passPremiumOwned, passClaimedFree, passClaimedPremium, dailyStreak, lastLoginDate, trophies, highestTrophies, matchesPlayed, matchesWon, bestComboEver, playerUsername, mastery, ownedTitles, equippedTitle })); } catch(e) {}
 }
 function savePassData() { saveShop(); }
 loadShopSave();
@@ -3440,6 +3504,36 @@ function renderShop() {
       };
       grid.appendChild(card);
     });
+  } else if (activeShopTab === 'titles') {
+    body.innerHTML = '<div class="shop-section-label">EQUIP A TITLE — SHOWN UNDER YOUR NAME</div><div class="shop-grid" id="shopGrid"></div>';
+    const grid = document.getElementById('shopGrid');
+    TITLES.filter(t => t.id !== 'none').forEach(item => {
+      const owned = ownedTitles.includes(item.id);
+      const isEq = equippedTitle === item.id;
+      const locked = !owned && item.source !== 'shop';
+      const card = document.createElement('div');
+      const rarity = item.rarity || 'common';
+      card.className = 'shop-card rarity-'+rarity + (owned?' owned':'') + (isEq?' equipped':'');
+      let btnLabel = isEq ? 'Equipped' : owned ? 'Equip' : locked ? (item.source === 'pro_win' ? '🔒 Win on PRO' : '🔒 Admin Only') : '🪙 ' + item.price;
+      card.innerHTML = `
+        <div class="shop-card-icon" style="color:${item.color}">${item.icon}</div>
+        <div class="shop-rarity-tag rarity-${rarity}">${rarity}</div>
+        <div class="shop-card-name" style="color:${item.color}">${item.name}</div>
+        <div class="shop-card-desc">${item.desc}</div>
+        ${isEq?'<div class="shop-card-badge badge-equipped">ON</div>':owned?'<div class="shop-card-badge badge-owned">OWNED</div>':''}
+        <button class="shop-card-btn ${owned?'equip-btn':''}" ${locked?'disabled':''}>${btnLabel}</button>
+      `;
+      card.querySelector('button').onclick = () => {
+        if (locked) return;
+        if (owned) { equippedTitle = item.id; saveShop(); renderShop(); renderProfile(); }
+        else if (item.source === 'shop' && coins >= item.price) {
+          coins -= item.price; ownedTitles.push(item.id); equippedTitle = item.id; saveShop(); updateCoinsUI(); renderShop(); renderProfile();
+        } else if (item.source === 'shop') {
+          showReward('❌', 'Need ' + (item.price - coins) + ' more coins!');
+        }
+      };
+      grid.appendChild(card);
+    });
   } else if (activeShopTab === 'boxes') {
     body.innerHTML = '<div class="shop-section-label">OPEN A FREE BOX EVERY MINUTE, OR BUY ONE INSTANTLY</div><div class="shop-grid" id="shopGrid"></div>';
     const grid = document.getElementById('shopGrid');
@@ -3604,6 +3698,9 @@ function claimPassReward(r, isPremium) {
   } else if (r.type === 'trail') {
     if (!ownedItems.trails.includes(r.id)) ownedItems.trails.push(r.id);
     showRewardPopup(r.icon, 'Unlocked: ' + r.name + '!');
+  } else if (r.type === 'title') {
+    unlockTitle(r.id, false);
+    showRewardPopup(r.icon, 'Title Unlocked: ' + r.name + '!');
   }
   claimedList.push(r.tier);
   savePassData();
@@ -3725,6 +3822,7 @@ function tryAdminLogin() {
   const val = document.getElementById('adminPasswordInput').value;
   if (val === ADMIN_PASSWORD) {
     adminUnlocked = true;
+    unlockTitle('admin', true);
     closeAdminLogin();
     openAdminPanel();
   } else {
@@ -3800,6 +3898,16 @@ function renderProfile() {
   document.getElementById('profileAvatar').style.background =
     `radial-gradient(circle at 35% 30%, ${getEquippedSkinColor()}, ${shadeColor(getEquippedSkinColor(),-40)} 70%)`;
   document.getElementById('profileNameInput').value = playerUsername;
+  const eqTitle = getTitle(equippedTitle);
+  const titleBadgeEl = document.getElementById('profileTitleBadge');
+  if (eqTitle.id === 'none') {
+    titleBadgeEl.style.display = 'none';
+  } else {
+    titleBadgeEl.style.display = 'inline-flex';
+    titleBadgeEl.style.color = eqTitle.color;
+    titleBadgeEl.style.borderColor = eqTitle.color;
+    titleBadgeEl.innerHTML = `${eqTitle.icon} ${eqTitle.name}`;
+  }
   document.getElementById('profileRankBadge').innerHTML =
     `${TROPHY_RANK_ICONS[rankIdx]} ${trophies.toLocaleString()} Trophies — ${TROPHY_RANK_NAMES[rankIdx]}`;
 
@@ -4024,6 +4132,8 @@ function checkGameOver() {
       setTimeout(() => showAnnouncer('EPIC COMEBACK!', '#00ffaa'), 600);
     }
     window._playerWasLowStock = false;
+
+    if (playerWon && difficulty === 'pro') unlockTitle('pro', true);
 
     let earned = 30 + Math.floor(Math.random()*20);
     if (playerWon) earned += 50;
