@@ -1067,6 +1067,7 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
   <div class="intro-vignette"></div>
   <div class="intro-streak intro-streak-left"></div>
   <div class="intro-streak intro-streak-right"></div>
+  <canvas id="introFightCanvas" style="position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none;"></canvas>
   <div class="intro-impact-ring"></div>
   <div class="intro-impact-ring ring2"></div>
   <div class="intro-flash"></div>
@@ -3066,6 +3067,28 @@ function drawPopups() {
   }
 }
 
+
+// ─── COMBO EXPLOSION (triggers every 3 consecutive hits landed by an attacker) ───
+function spawnExplosion(x, y, color) {
+  // BIG layered blast: dense multi-color particle showers, five expanding shockwave rings,
+  // a strong camera kick, a longer hit-stop freeze, and a heavy screen flash.
+  spawnParticles(x, y, [color, '#ffffff', '#ffdd33', '#ff8800'], 90);
+  spawnParticles(x, y, '#ffffff', 40);
+  spawnParticles(x, y, color, 30);
+  spawnImpactRing(x, y, color, { maxRadius: 260, lineWidth: 14, life: 0.75 });
+  spawnImpactRing(x, y, '#ffffff', { maxRadius: 200, lineWidth: 10, life: 0.62 });
+  spawnImpactRing(x, y, '#ffdd33', { maxRadius: 330, lineWidth: 8, life: 0.9 });
+  spawnImpactRing(x, y, '#ff8800', { maxRadius: 400, lineWidth: 6, life: 1.05 });
+  spawnImpactRing(x, y, '#ffffff', { maxRadius: 150, lineWidth: 16, life: 0.35 });
+  camera.shake = Math.max(camera.shake, 34);
+  hitStop = Math.max(hitStop, 0.18);
+  flashScreen(0.55);
+  zoomPunch(0.11);
+  playSFX(90, 0.24, 'sawtooth');
+  playSFX(60, 0.32, 'square');
+  playSFX(150, 0.14, 'triangle');
+}
+
 // ─── COMBO TRACKER (per attacker, resets when they go a beat without landing a hit) ──
 function registerComboHit(attacker, defender, dmgRoll, attackType) {
   if (!firstBloodShown) {
@@ -3094,6 +3117,13 @@ function registerComboHit(attacker, defender, dmgRoll, attackType) {
       color: `hsl(${hue},95%,60%)`, size, vy: -60, life: 1.0, scale: 1.15, startScale: 0.3,
     });
     camera.shake = Math.max(camera.shake, Math.min(10, 2 + combo * 0.8));
+    // Every 3 consecutive hits landed in a row triggers a full explosion at the defender.
+    if (combo % 3 === 0) {
+      spawnExplosion(defender.cx, defender.cy, attacker.color);
+      spawnPopup(defender.cx, defender.cy - 180, 'BOOM!', {
+        color: '#ffaa00', size: 68, vy: -55, life: 1.0, scale: 1.8, startScale: 0.2, bold: true,
+      });
+    }
     // Milestone combo callouts hit harder visually — bigger text and a burst of particles at 3x/5x/10x.
     if (combo === 3 || combo === 5 || combo === 10 || (combo > 10 && combo % 5 === 0)) {
       const milestoneText = combo >= 10 ? `${combo}x UNSTOPPABLE!` : combo === 5 ? '5x ON FIRE!' : '3x COMBO!';
@@ -4875,6 +4905,270 @@ if (isTouchDevice) {
 
 
 <script>
+
+/* =========================================================================
+   STICKMAN FIGHT INTRO ANIMATION
+   Rendering style matches the in-game Fighter.draw() method:
+   bold flat-color silhouette, thick round-cap strokes, glow, punch/kick
+   pose curves, and jagged impact-spike hit effects.
+   ========================================================================= */
+function runIntroFight(){
+  var canvas = document.getElementById('introFightCanvas');
+  if(!canvas) return;
+  var ctx = canvas.getContext('2d');
+
+  function resize(){
+    var dpr = window.devicePixelRatio || 1;
+    canvas.width = window.innerWidth * dpr;
+    canvas.height = window.innerHeight * dpr;
+    canvas.style.width = window.innerWidth + 'px';
+    canvas.style.height = window.innerHeight + 'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  var W = function(){ return window.innerWidth; };
+  var H = function(){ return window.innerHeight; };
+  var startTime = performance.now();
+
+  var CLASH_T = 400;
+  var POSE_T  = 90;
+  var KNOCK_T = 300;
+  var TOTAL_T = CLASH_T + POSE_T + KNOCK_T + 200;
+
+  function drawStickLimb(ctx, baseX, baseY, upperAngle, lowerAngle, upperLen, lowerLen, thickness, color, showFist){
+    ctx.save();
+    ctx.strokeStyle = color;
+    ctx.fillStyle = color;
+    ctx.lineWidth = thickness;
+    ctx.lineCap = 'round';
+    ctx.translate(baseX, baseY);
+    ctx.rotate(upperAngle);
+    ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(0, upperLen); ctx.stroke();
+    ctx.translate(0, upperLen);
+    ctx.rotate(lowerAngle);
+    ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(0, lowerLen); ctx.stroke();
+    if(showFist){
+      ctx.beginPath(); ctx.arc(0, lowerLen, thickness*0.72, 0, Math.PI*2); ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  function drawImpactSpikes(ctx, x, y, color, alpha, s){
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.translate(x, y);
+    ctx.fillStyle = color;
+    ctx.shadowColor = color;
+    ctx.shadowBlur = 14*s;
+    var spikes = 8, outerR = 26*s, innerR = 9*s;
+    ctx.beginPath();
+    for(var i=0;i<spikes*2;i++){
+      var r = i%2===0 ? outerR : innerR;
+      var a = (i/(spikes*2))*Math.PI*2;
+      var px = Math.cos(a)*r, py = Math.sin(a)*r*0.7;
+      if(i===0) ctx.moveTo(px,py); else ctx.lineTo(px,py);
+    }
+    ctx.closePath(); ctx.fill();
+    ctx.shadowBlur = 0;
+    ctx.restore();
+  }
+
+  function makeStickman(x, facing, color, role){
+    return {
+      x: x, facing: facing, color: color, role: role,
+      w: 62, h: 150,
+      walkCycle: Math.random()*10,
+      limbAngle: 0,
+      strideBounce: 0,
+      squashX: 1, squashY: 1,
+      attackType: null,
+      attackTimer: 0,
+      attackDuration: 0,
+      armSnap: 0,
+      kickAngle: 0,
+      kickChamber: 0,
+      hitLean: 0,
+      tumbleAngle: 0,
+      tumbleSpin: 0
+    };
+  }
+
+  function updateStickman(f, dt, phase){
+    if(phase === 'run'){
+      f.walkCycle += dt*9;
+      f.limbAngle = Math.sin(f.walkCycle)*0.55;
+      f.strideBounce = Math.abs(Math.sin(f.walkCycle))*0.4;
+      f.attackType = null;
+      f.squashX += (1 - f.squashX)*Math.min(1, dt*16);
+      f.squashY += (1 - f.squashY)*Math.min(1, dt*16);
+    } else if(phase === 'strike'){
+      f.attackDuration = (CLASH_T*0.18)/1000;
+      f.attackTimer = Math.max(0, f.attackTimer - dt);
+      var p = 1 - (f.attackTimer / (f.attackDuration || 1));
+      if(f.role === 'punch'){
+        f.attackType = 'punch';
+        f.armSnap = p < 0.55 ? (p/0.55) : 1;
+      } else {
+        f.attackType = 'kick';
+        var cp = Math.min(1, p/0.6);
+        f.kickChamber = Math.sin(cp*Math.PI*0.5)*0.9;
+        f.kickAngle = f.kickChamber*1.35;
+      }
+      f.strideBounce *= 0.9;
+    } else if(phase === 'pose'){
+      // hold pose
+    } else if(phase === 'knockback'){
+      f.attackType = null;
+      f.tumbleSpin = f.facing * -2.2;
+      f.tumbleAngle += f.tumbleSpin*dt;
+      f.hitLean = f.facing * -0.5;
+    }
+  }
+
+  function drawStickman(ctx, f, cx, cy){
+    var w = f.w, h = f.h, dir = f.facing, color = f.color;
+    ctx.save();
+    ctx.translate(cx, cy);
+
+    ctx.translate(0, h/2);
+    ctx.scale(f.squashX, f.squashY);
+    ctx.translate(0, -h/2);
+
+    ctx.save();
+    ctx.translate(0, h/2 + 6);
+    ctx.scale(1/f.squashX, 1/f.squashY);
+    ctx.beginPath();
+    ctx.ellipse(0,0, w*0.4, h*0.05, 0, 0, Math.PI*2);
+    ctx.fillStyle = 'rgba(0,0,0,0.4)';
+    ctx.fill();
+    ctx.restore();
+
+    var lean = (f.hitLean||0) + (f.tumbleAngle||0);
+    ctx.rotate(lean);
+
+    var strideBob = (f.strideBounce||0) * h*0.025;
+    var hipY = h*0.10 - strideBob;
+    var shoulderY = -h*0.26 - strideBob*0.6;
+    var headY = shoulderY - h*0.13;
+    var headR = w*0.24;
+    var limbW = w*0.30;
+
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.strokeStyle = color;
+    ctx.fillStyle = color;
+    ctx.shadowColor = color;
+    ctx.shadowBlur = 10;
+
+    ctx.lineWidth = limbW;
+    ctx.beginPath();
+    ctx.moveTo(0, headY + headR*0.85);
+    ctx.lineTo(0, hipY);
+    ctx.stroke();
+
+    var armSwing = f.limbAngle;
+    var leadArmExtra = 0, backArmExtra = 0;
+    var isPunching = f.attackType === 'punch';
+    if(isPunching){
+      var snap = f.armSnap||0;
+      armSwing = dir * (-0.5 + snap*1.9);
+      leadArmExtra = snap*0.25;
+    }
+    drawStickLimb(ctx, 0, shoulderY, armSwing*0.9 + 0.4*leadArmExtra*dir, -armSwing*0.55, h*0.185+leadArmExtra*0.06, h*0.17, limbW*0.62, color, isPunching);
+    drawStickLimb(ctx, 0, shoulderY, -armSwing*0.9 - 0.4, armSwing*0.55 + backArmExtra, h*0.185, h*0.17, limbW*0.62, color, isPunching);
+
+    var isKicking = f.attackType === 'kick';
+    var kickPower = isKicking ? -dir*f.kickAngle : 0;
+    var chamberBend = isKicking ? f.kickChamber : 0;
+    var kickL = dir===-1 ? kickPower : 0;
+    var kickR = dir===1 ? kickPower : 0;
+    var chamberL = dir===-1 ? chamberBend : 0;
+    var chamberR = dir===1 ? chamberBend : 0;
+    drawStickLimb(ctx, 0, hipY, f.limbAngle*0.7 + kickL*0.7 - chamberL*0.2, -f.limbAngle*0.45 + kickL*1.2 + chamberL*1.3, h*0.2, h*0.18, limbW*0.7, color, false);
+    drawStickLimb(ctx, 0, hipY, -f.limbAngle*0.7 + kickR*0.7 - chamberR*0.2, f.limbAngle*0.45 + kickR*1.2 + chamberR*1.3, h*0.2, h*0.18, limbW*0.7, color, false);
+
+    ctx.beginPath();
+    ctx.arc(0, headY, headR, 0, Math.PI*2);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    ctx.restore();
+  }
+
+  var left = makeStickman(-120, 1, '#00e5ff', 'punch');
+  var right = makeStickman(W()+120, -1, '#ff3366', 'kick');
+  var lastT = startTime;
+
+  function frame(now){
+    var dt = Math.min(0.05, (now-lastT)/1000);
+    lastT = now;
+    var elapsed = now - startTime;
+    ctx.clearRect(0,0,W(),H());
+
+    if(elapsed > TOTAL_T){
+      canvas.style.opacity = Math.max(0, 1 - (elapsed-TOTAL_T)/250);
+      if(elapsed > TOTAL_T + 300){ canvas.style.opacity = 0; return; }
+      requestAnimationFrame(frame);
+      return;
+    }
+
+    var midY = H()*0.52;
+    var startXL = -120, startXR = W()+120;
+    var meetOffset = 95;
+    var leftX, rightX;
+
+    if(elapsed < CLASH_T){
+      var p = Math.min(1, elapsed/CLASH_T);
+      var ease = 1 - Math.pow(1-p, 3);
+      leftX  = startXL + (W()/2 - meetOffset - startXL) * ease;
+      rightX = startXR + (W()/2 + meetOffset - startXR) * ease;
+      if(p > 0.78){
+        left.attackTimer = left.attackTimer || (CLASH_T*0.22)/1000;
+        right.attackTimer = right.attackTimer || (CLASH_T*0.22)/1000;
+        updateStickman(left, dt, 'strike');
+        updateStickman(right, dt, 'strike');
+      } else {
+        updateStickman(left, dt, 'run');
+        updateStickman(right, dt, 'run');
+      }
+    } else if(elapsed < CLASH_T + POSE_T){
+      leftX = W()/2 - meetOffset; rightX = W()/2 + meetOffset;
+      updateStickman(left, dt, 'pose');
+      updateStickman(right, dt, 'pose');
+
+      var pp = (elapsed-CLASH_T)/POSE_T;
+      drawImpactSpikes(ctx, W()/2, midY - 20, '#ffffff', 1-pp, 1.4);
+      ctx.save();
+      ctx.fillStyle = '#ffffff';
+      for(var i=0;i<14;i++){
+        var a = (i/14)*Math.PI*2;
+        var r = 20 + pp*70;
+        ctx.globalAlpha = 1 - pp;
+        ctx.beginPath();
+        ctx.arc(W()/2 + Math.cos(a)*r, midY + Math.sin(a)*r*0.6, 3, 0, Math.PI*2);
+        ctx.fill();
+      }
+      ctx.restore();
+    } else {
+      var kp = Math.min(1, (elapsed-CLASH_T-POSE_T)/KNOCK_T);
+      var kEase = kp*kp;
+      leftX  = (W()/2 - meetOffset) - kEase*150;
+      rightX = (W()/2 + meetOffset) + kEase*150;
+      updateStickman(left, dt, 'knockback');
+      updateStickman(right, dt, 'knockback');
+    }
+
+    drawStickman(ctx, left, leftX, midY);
+    drawStickman(ctx, right, rightX, midY);
+
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+}
+runIntroFight();
+
 (function(){
   var introEl = document.getElementById('intro-screen');
   if (!introEl) return;
