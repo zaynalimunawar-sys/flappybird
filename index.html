@@ -868,9 +868,127 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
 .mods-switch input:checked + .mods-switch-slider:before { transform: translateX(24px); background: var(--color-p1); }
 .mods-toggle-desc { font-size:0.78rem; color: var(--color-muted); text-align:center; max-width:420px; margin: 0 auto 4px; }
 .mods-coming-soon { font-family: 'Bangers', cursive; font-size:1.15rem; letter-spacing:1.5px; color: #ffdd44; text-align:center; padding: 18px 12px; background: rgba(255,220,0,0.06); border: 2px dashed rgba(255,220,0,0.3); border-radius:14px; }
+
+
+/* ═══════════════════ INTRO SPLASH (Smash-Bros-style title animation) ═══════════════════ */
+#intro-screen {
+  position: fixed; inset: 0; z-index: 1000; overflow: hidden;
+  background: #000;
+  display: flex; align-items: center; justify-content: center;
+  animation: introBgPulse 2.6s ease forwards;
+}
+#intro-screen.fade-out { animation: introFadeOut 0.6s ease forwards; pointer-events: none; }
+@keyframes introFadeOut { 0% { opacity: 1; } 100% { opacity: 0; } }
+
+.intro-bg-rays {
+  position: absolute; inset: -50%; width: 200%; height: 200%;
+  background: repeating-conic-gradient(from 0deg, rgba(0,212,255,0.10) 0deg 6deg, transparent 6deg 12deg);
+  animation: introRaysSpin 8s linear infinite;
+  opacity: 0;
+  animation: introRaysSpin 8s linear infinite, introRaysFadeIn 0.5s ease 0.15s forwards;
+}
+@keyframes introRaysSpin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+@keyframes introRaysFadeIn { to { opacity: 1; } }
+
+@keyframes introBgPulse {
+  0% { background: #000; }
+  8% { background: radial-gradient(ellipse at center, #1a0a2e 0%, #000 70%); }
+  100% { background: radial-gradient(ellipse at center, #1a0a2e 0%, #0d0d1a 70%); }
+}
+
+.intro-slash {
+  position: absolute; top: 50%; left: -60%; width: 220%; height: 10px;
+  background: linear-gradient(90deg, transparent 0%, #00e5ff 45%, #ffffff 50%, #00e5ff 55%, transparent 100%);
+  transform: translateY(-50%) rotate(-8deg) scaleX(0);
+  box-shadow: 0 0 30px 6px rgba(0,212,255,0.8);
+  animation: introSlashSweep 0.45s cubic-bezier(.2,.9,.3,1) 0.05s forwards;
+  opacity: 0;
+}
+@keyframes introSlashSweep {
+  0% { transform: translateY(-50%) rotate(-8deg) scaleX(0); opacity: 1; }
+  55% { transform: translateY(-50%) rotate(-8deg) scaleX(1); opacity: 1; }
+  100% { transform: translateY(-50%) rotate(-8deg) scaleX(1); opacity: 0; }
+}
+
+.intro-flash {
+  position: absolute; inset: 0; background: #fff; opacity: 0; z-index: 5;
+  animation: introFlashHit 0.55s ease-out 0.05s forwards;
+}
+@keyframes introFlashHit {
+  0% { opacity: 0; }
+  8% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.intro-logo-wrap {
+  position: relative; z-index: 3; display: flex; flex-direction: column; align-items: center; gap: 10px;
+}
+
+.intro-logo {
+  font-family: 'Bangers', cursive; letter-spacing: 5px; text-align: center;
+  font-size: clamp(2.4rem, 9vw, 5.2rem); color: var(--color-p1);
+  text-shadow: 0 0 26px #00d4ffcc, 0 0 60px #00d4ff66, 4px 4px 0 #003344;
+  opacity: 0; transform: scale(4) rotate(-14deg);
+  animation: introLogoSlam 0.5s cubic-bezier(.2,1.4,.4,1) 0.32s forwards, introLogoShake 0.35s ease 0.78s, introLogoGlow 1.6s ease-in-out 1.15s infinite;
+}
+@keyframes introLogoSlam {
+  0% { opacity: 0; transform: scale(4) rotate(-14deg); }
+  60% { opacity: 1; transform: scale(0.92) rotate(2deg); }
+  80% { transform: scale(1.06) rotate(-1deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+@keyframes introLogoShake {
+  0%, 100% { transform: translate(0,0) scale(1) rotate(0deg); }
+  20% { transform: translate(-6px, 0) scale(1) rotate(-1deg); }
+  40% { transform: translate(5px, 0) scale(1) rotate(1deg); }
+  60% { transform: translate(-3px, 0) scale(1) rotate(-0.5deg); }
+  80% { transform: translate(2px, 0) scale(1) rotate(0.5deg); }
+}
+@keyframes introLogoGlow {
+  0%, 100% { text-shadow: 0 0 26px #00d4ffcc, 0 0 60px #00d4ff66, 4px 4px 0 #003344; }
+  50% { text-shadow: 0 0 44px #00d4ffee, 0 0 90px #00d4ff99, 4px 4px 0 #003344; }
+}
+
+.intro-subtitle {
+  font-family: 'Rajdhani', sans-serif; font-weight: 700; letter-spacing: 4px; text-transform: uppercase;
+  font-size: clamp(0.7rem, 2vw, 1rem); color: var(--color-muted);
+  opacity: 0; transform: translateY(10px);
+  animation: introSubIn 0.5s ease 0.85s forwards;
+}
+@keyframes introSubIn { to { opacity: 1; transform: translateY(0); } }
+
+.intro-skip-hint {
+  position: absolute; bottom: 30px; left: 0; right: 0; text-align: center;
+  font-family: 'Rajdhani', sans-serif; font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase;
+  color: rgba(255,255,255,0.35); opacity: 0;
+  animation: introSubIn 0.5s ease 1.3s forwards;
+  z-index: 3; cursor: pointer;
+}
+
+.intro-particle {
+  position: absolute; border-radius: 50%; background: #00d4ff; opacity: 0; z-index: 2;
+  animation: introParticleBurst 0.9s ease-out 0.32s forwards;
+}
+@keyframes introParticleBurst {
+  0% { opacity: 1; transform: translate(0,0) scale(1); }
+  100% { opacity: 0; transform: translate(var(--px), var(--py)) scale(0.2); }
+}
 </style>
 </head>
 <body>
+<!-- INTRO SPLASH -->
+<div id="intro-screen">
+  <div class="intro-bg-rays"></div>
+  <div class="intro-slash"></div>
+  <div class="intro-flash"></div>
+  <div id="introParticles"></div>
+  <div class="intro-logo-wrap">
+    <h1 class="intro-logo">🥋 STICKMAN WARS</h1>
+    <div class="intro-subtitle">Fast Paced 2D Platform Fighter</div>
+  </div>
+  <div class="intro-skip-hint" id="introSkipHint">Tap to skip</div>
+</div>
+
 
 <!-- MENU -->
 <div id="menu">
@@ -4651,6 +4769,44 @@ if (isTouchDevice) {
 </div>
 <button class="tc-pause-btn" id="tcPauseBtn">⏸</button>
 
+
+<script>
+(function(){
+  var introEl = document.getElementById('intro-screen');
+  if (!introEl) return;
+
+  var particleWrap = document.getElementById('introParticles');
+  var count = 22;
+  for (var i = 0; i < count; i++) {
+    var p = document.createElement('div');
+    p.className = 'intro-particle';
+    var size = 3 + Math.random()*6;
+    var angle = (Math.PI * 2 * i) / count + Math.random()*0.3;
+    var dist = 120 + Math.random()*220;
+    var px = Math.cos(angle) * dist;
+    var py = Math.sin(angle) * dist;
+    p.style.width = size + 'px';
+    p.style.height = size + 'px';
+    p.style.left = '50%';
+    p.style.top = '50%';
+    p.style.setProperty('--px', px + 'px');
+    p.style.setProperty('--py', py + 'px');
+    particleWrap.appendChild(p);
+  }
+
+  var finished = false;
+  function endIntro() {
+    if (finished) return;
+    finished = true;
+    introEl.classList.add('fade-out');
+    setTimeout(function(){ introEl.remove(); }, 650);
+  }
+
+  introEl.addEventListener('click', endIntro);
+  introEl.addEventListener('touchstart', endIntro, { passive: true });
+  setTimeout(endIntro, 2700);
+})();
+</script>
 </body>
 
 </html>
