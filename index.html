@@ -4304,7 +4304,7 @@ function claimDailyStreak() {
   setTimeout(() => showRewardPopup(reward.icon, 'Day ' + dailyStreak + ' Reward Claimed!'), 300);
 }
 // ─── STARTER OFFER LOGIC (randomized bundle — free the very first time, coins to reroll after) ───
-const STARTER_PACK_COST = 300;
+// Price is now randomized per-offer and scales with the pack's value (see generateStarterPack)
 
 function generateStarterPack() {
   const items = [];
@@ -4339,7 +4339,14 @@ function generateStarterPack() {
     }
   }
 
-  return { items, totalValue };
+  // ── Price is randomized each time and scales up with the pack's total value, always
+  // pricier than the flat 300-coin cost we used to charge — roughly 60-95% of the pack's
+  // value, with an extra random multiplier so no two offers cost the same. ──
+  const priceFactor = 0.6 + Math.random() * 0.35;
+  const priceVariance = 0.85 + Math.random() * 0.5;
+  const price = Math.max(400, Math.round(totalValue * priceFactor * priceVariance / 10) * 10);
+
+  return { items, totalValue, price };
 }
 
 let currentStarterPack = null;
@@ -4376,9 +4383,9 @@ function renderStarterOffer() {
     if (ribbon) ribbon.textContent = 'RESTOCKED';
     if (subtitle) subtitle.textContent = 'Your free pack is used up — grab a new randomized bundle with coins!';
     if (priceLabel) priceLabel.textContent = 'Bundle value: ' + currentStarterPack.totalValue.toLocaleString() + ' 🪙';
-    const canAfford = coins >= STARTER_PACK_COST;
+    const canAfford = coins >= currentStarterPack.price;
     if (claimBtn) {
-      claimBtn.textContent = 'OPEN FOR ' + STARTER_PACK_COST + ' 🪙';
+      claimBtn.textContent = 'OPEN FOR ' + currentStarterPack.price.toLocaleString() + ' 🪙';
       claimBtn.disabled = !canAfford;
       claimBtn.classList.toggle('disabled', !canAfford);
     }
@@ -4388,8 +4395,8 @@ function renderStarterOffer() {
 function claimStarterPack() {
   if (!currentStarterPack) return;
   const isFree = !starterPackClaimed;
-  if (!isFree && coins < STARTER_PACK_COST) { showRewardPopup('❌', 'Not enough coins!'); return; }
-  if (!isFree) coins -= STARTER_PACK_COST;
+  if (!isFree && coins < currentStarterPack.price) { showRewardPopup('❌', 'Not enough coins!'); return; }
+  if (!isFree) coins -= currentStarterPack.price;
   currentStarterPack.items.forEach(item => {
     if (item.type === 'coins') { coins += item.amt; }
     else if (item.type === 'skin') { if (!ownedItems.skins.includes(item.refId)) ownedItems.skins.push(item.refId); }
