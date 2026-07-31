@@ -657,6 +657,8 @@ body { font-family: 'Rajdhani', sans-serif; color: var(--color-text); display: f
   position: relative; overflow: hidden;
 }
 .starter-claim-btn:hover { transform: scale(1.05); }
+.starter-claim-btn.disabled, .starter-claim-btn:disabled { opacity: 0.4; cursor: not-allowed; filter: grayscale(0.6); }
+.starter-claim-btn.disabled:hover, .starter-claim-btn:disabled:hover { transform: none; }
 .starter-claim-btn::after {
   content: ''; position: absolute; inset: 0; background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.5) 50%, transparent 70%);
   transform: translateX(-100%); animation: passShine 2.2s ease-in-out infinite;
@@ -1382,7 +1384,7 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
     <div class="starter-subtitle">A fresh random bundle, every time you play!</div>
     <div class="starter-items" id="starterItemsRow"></div>
     <div class="starter-price-row">
-      <div class="starter-price-old">Value: <span id="starterValueText">0</span> 🪙</div>
+      <div class="starter-price-old" id="starterValueLabel">Value: 0 🪙</div>
       <button class="starter-claim-btn" id="starterClaimBtn">CLAIM FREE!</button>
     </div>
     <button class="starter-skip-btn" id="starterSkipBtn">No thanks</button>
@@ -3614,6 +3616,7 @@ let passClaimedPremium = [];
 let dailyStreak = 0;
 let lastLoginDate = null;
 let dailyClaimedToday = false;
+let starterPackClaimed = false;
 
 // ─── TROPHIES & PROFILE ──────────────────────────────────────────────────────
 let trophies = 0;
@@ -3801,13 +3804,14 @@ function loadShopSave() {
     mastery = s.mastery || {};
     ownedTitles = s.ownedTitles || ['none'];
     equippedTitle = s.equippedTitle || 'none';
+    starterPackClaimed = s.starterPackClaimed || false;
   } catch(e) {}
   if (!ownedItems.skins.includes('default')) ownedItems.skins.push('default');
   if (!ownedItems.trails.includes('none')) ownedItems.trails.push('none');
   if (!ownedTitles.includes('none')) ownedTitles.push('none');
 }
 function saveShop() {
-  try { localStorage.setItem('tf_save', JSON.stringify({ coins, ownedItems, equipped, boxCooldowns, passXp, passTier, passPremiumOwned, passClaimedFree, passClaimedPremium, dailyStreak, lastLoginDate, trophies, highestTrophies, matchesPlayed, matchesWon, bestComboEver, playerUsername, mastery, ownedTitles, equippedTitle })); } catch(e) {}
+  try { localStorage.setItem('tf_save', JSON.stringify({ coins, ownedItems, equipped, boxCooldowns, passXp, passTier, passPremiumOwned, passClaimedFree, passClaimedPremium, dailyStreak, lastLoginDate, trophies, highestTrophies, matchesPlayed, matchesWon, bestComboEver, playerUsername, mastery, ownedTitles, equippedTitle, starterPackClaimed })); } catch(e) {}
 }
 function savePassData() { saveShop(); }
 loadShopSave();
@@ -4299,7 +4303,9 @@ function claimDailyStreak() {
   document.getElementById('daily-streak-overlay').classList.remove('active');
   setTimeout(() => showRewardPopup(reward.icon, 'Day ' + dailyStreak + ' Reward Claimed!'), 300);
 }
-// ─── STARTER OFFER LOGIC (randomized welcome bundle, shown every time the game opens) ───
+// ─── STARTER OFFER LOGIC (randomized bundle — free the very first time, coins to reroll after) ───
+const STARTER_PACK_COST = 300;
+
 function generateStarterPack() {
   const items = [];
   let totalValue = 0;
@@ -4341,7 +4347,10 @@ let currentStarterPack = null;
 function renderStarterOffer() {
   currentStarterPack = generateStarterPack();
   const row = document.getElementById('starterItemsRow');
-  const valEl = document.getElementById('starterValueText');
+  const priceLabel = document.getElementById('starterValueLabel');
+  const claimBtn = document.getElementById('starterClaimBtn');
+  const ribbon = document.querySelector('.starter-ribbon');
+  const subtitle = document.querySelector('.starter-subtitle');
   if (!row) return;
   row.innerHTML = '';
   currentStarterPack.items.forEach(item => {
@@ -4355,21 +4364,43 @@ function renderStarterOffer() {
     `;
     row.appendChild(card);
   });
-  if (valEl) valEl.textContent = currentStarterPack.totalValue.toLocaleString();
+
+  if (!starterPackClaimed) {
+    // First-ever visit: the pack is completely free, one-time only.
+    if (ribbon) ribbon.textContent = 'FIRST-TIME OFFER';
+    if (subtitle) subtitle.textContent = 'A one-time free bundle — welcome to Stickman Wars!';
+    if (priceLabel) priceLabel.textContent = 'Value: ' + currentStarterPack.totalValue.toLocaleString() + ' 🪙';
+    if (claimBtn) { claimBtn.textContent = 'CLAIM FREE!'; claimBtn.disabled = false; claimBtn.classList.remove('disabled'); }
+  } else {
+    // Already claimed the free one — every future visit offers a fresh random pack for coins instead.
+    if (ribbon) ribbon.textContent = 'RESTOCKED';
+    if (subtitle) subtitle.textContent = 'Your free pack is used up — grab a new randomized bundle with coins!';
+    if (priceLabel) priceLabel.textContent = 'Bundle value: ' + currentStarterPack.totalValue.toLocaleString() + ' 🪙';
+    const canAfford = coins >= STARTER_PACK_COST;
+    if (claimBtn) {
+      claimBtn.textContent = 'OPEN FOR ' + STARTER_PACK_COST + ' 🪙';
+      claimBtn.disabled = !canAfford;
+      claimBtn.classList.toggle('disabled', !canAfford);
+    }
+  }
 }
 
 function claimStarterPack() {
   if (!currentStarterPack) return;
+  const isFree = !starterPackClaimed;
+  if (!isFree && coins < STARTER_PACK_COST) { showRewardPopup('❌', 'Not enough coins!'); return; }
+  if (!isFree) coins -= STARTER_PACK_COST;
   currentStarterPack.items.forEach(item => {
     if (item.type === 'coins') { coins += item.amt; }
     else if (item.type === 'skin') { if (!ownedItems.skins.includes(item.refId)) ownedItems.skins.push(item.refId); }
     else if (item.type === 'trail') { if (!ownedItems.trails.includes(item.refId)) ownedItems.trails.push(item.refId); }
     else if (item.type === 'powerup') { if (!ownedItems.powerups.includes(item.refId)) ownedItems.powerups.push(item.refId); }
   });
+  starterPackClaimed = true;
   saveShop();
   updateCoinsUI();
   document.getElementById('starter-offer-overlay').classList.remove('active');
-  setTimeout(() => showRewardPopup('🎁', 'Starter Pack Claimed!'), 250);
+  setTimeout(() => showRewardPopup('🎁', isFree ? 'Starter Pack Claimed!' : 'Bundle Opened!'), 250);
   setTimeout(showDailyStreakIfNeeded, 900);
 }
 
