@@ -1677,7 +1677,37 @@ const STAGES = [
 ];
 
 let currentStageIdx = 0;
-function getStage() { return STAGES[currentStageIdx]; }
+
+// ─── PORTRAIT / VERTICAL PHONE LAYOUT ────────────────────────────────────────
+// When the device is in portrait orientation (taller than wide — typical phone-in-hand),
+// the play area gets visually squeezed horizontally, so we inject extra platforms near
+// the top of the stage to give fighters more places to jump, land, and juggle up there.
+function isPortraitMode() {
+  return window.innerHeight > window.innerWidth;
+}
+function getPortraitExtraPlatforms() {
+  return [
+    { x: STAGE_W*0.08, y: 130, w: STAGE_W*0.28, h: 20, main: false },
+    { x: STAGE_W*0.62, y: 130, w: STAGE_W*0.30, h: 20, main: false },
+    { x: STAGE_W*0.33, y: 40,  w: STAGE_W*0.34, h: 20, main: false },
+    { x: STAGE_W*0.05, y: 260, w: STAGE_W*0.22, h: 18, main: false },
+    { x: STAGE_W*0.73, y: 260, w: STAGE_W*0.22, h: 18, main: false },
+  ];
+}
+function getStage() {
+  const base = STAGES[currentStageIdx];
+  const portrait = isPortraitMode();
+  if (!portrait) return base;
+  if (base._portraitStage && base._portraitCacheKey === base.platforms.length) {
+    return base._portraitStage;
+  }
+  const merged = Object.assign({}, base, {
+    platforms: base.platforms.concat(getPortraitExtraPlatforms()),
+  });
+  base._portraitStage = merged;
+  base._portraitCacheKey = base.platforms.length;
+  return merged;
+}
 function PLATFORMS_get() { return getStage().platforms; }
 
 // ─── CHARACTER ROSTER ────────────────────────────────────────────────────────
