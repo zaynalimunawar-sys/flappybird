@@ -669,6 +669,72 @@ body { font-family: 'Rajdhani', sans-serif; color: var(--color-text); display: f
 }
 .starter-skip-btn:hover { color: #fff; }
 
+/* ─── CUSTOM CHARACTERS BUILDER ─── */
+.customchar-wrap {
+  display: grid; grid-template-columns: minmax(200px, 240px) minmax(260px, 1fr);
+  gap: 20px; align-items: stretch; margin-top: 4px;
+}
+@media (max-width: 640px) { .customchar-wrap { grid-template-columns: 1fr; } }
+.customchar-preview-panel {
+  position: relative; display:flex; flex-direction:column; align-items:center; justify-content:center; gap: 12px;
+  padding: 22px 16px; border-radius: 24px; overflow: hidden;
+  background: radial-gradient(circle at 50% 20%, rgba(120,60,220,0.25), rgba(10,8,20,0.9) 70%);
+  border: 1px solid rgba(255,255,255,0.10);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.06), 0 14px 30px rgba(0,0,0,0.35);
+}
+.customchar-preview-panel::before {
+  content: ''; position: absolute; inset: 0; z-index: 0;
+  background: repeating-linear-gradient(-45deg, rgba(255,255,255,0.035) 0 12px, transparent 12px 24px);
+  pointer-events: none;
+}
+.customchar-preview-title {
+  position: relative; z-index: 1;
+  font-family: 'Bangers', cursive; font-size: 1.3rem; letter-spacing: 1.5px; color: #ffdd44;
+  text-shadow: 0 0 16px rgba(255,180,0,0.4);
+}
+#customCharPreviewSvg { position: relative; z-index: 1; width: 100%; max-width: 170px; height: auto; }
+.customchar-preview-note { position: relative; z-index: 1; font-size: 0.78rem; color: var(--color-muted); text-align:center; max-width: 200px; }
+.customchar-editor-panel {
+  display:flex; flex-direction:column; gap: 12px; padding: 18px;
+  border-radius: 24px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.10);
+}
+.customchar-controls { display:flex; flex-direction:column; gap: 10px; }
+.custom-part-row {
+  display:flex; align-items:center; justify-content:space-between; gap: 14px;
+  padding: 12px 14px; border-radius: 14px; background: rgba(255,255,255,0.045);
+  border: 1px solid rgba(255,255,255,0.08); transition: border-color 150ms ease, background 150ms ease;
+}
+.custom-part-row:hover { border-color: rgba(255,255,255,0.2); background: rgba(255,255,255,0.07); }
+.custom-part-label { font-size: 0.82rem; font-weight: 700; color: var(--color-text); letter-spacing: 0.3px; }
+.custom-color-pill {
+  display:flex; align-items:center; gap: 10px; padding: 5px 12px 5px 5px; border-radius: 999px;
+  background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.12);
+}
+.custom-part-color {
+  width: 32px; height: 32px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.5);
+  background: none; padding: 0; cursor:pointer; -webkit-appearance: none; appearance: none;
+  box-shadow: 0 0 10px rgba(0,0,0,0.4);
+}
+.custom-part-color::-webkit-color-swatch-wrapper { padding: 0; border-radius: 50%; }
+.custom-part-color::-webkit-color-swatch { border: none; border-radius: 50%; }
+.custom-color-value { font-size: 0.7rem; color: var(--color-muted); font-family: monospace; letter-spacing: 0.5px; min-width: 58px; }
+.custom-name-row { flex-wrap: wrap; }
+.custom-name-input {
+  border-radius: 12px; border: 1px solid rgba(255,255,255,0.14); background: rgba(0,0,0,0.32);
+  color: #fff; padding: 9px 14px; outline: none; font-family: 'Rajdhani', sans-serif; font-weight: 700;
+  letter-spacing: 0.5px; min-width: 140px;
+}
+.custom-name-input:focus { border-color: #00d4ff; box-shadow: 0 0 0 3px rgba(0,212,255,0.15); }
+.customchar-actions {
+  margin-top: 4px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.08);
+  display:flex; flex-direction:column; gap: 10px;
+}
+.customchar-cost {
+  font-size: 0.85rem; color: #ffdd44; font-weight: 800; text-align:center;
+  letter-spacing: 0.5px; text-shadow: 0 0 12px rgba(255,180,0,0.35);
+}
+
+
 
 /* ─── FIGHT PASS SCREEN (Brawl Stars style) ─── */
 #pass-screen {
@@ -1265,7 +1331,8 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
     <button class="shop-tab" data-tab="trails">✨ Trails</button>
     <button class="shop-tab" data-tab="powerups">⚡ Power-ups</button>
     <button class="shop-tab" data-tab="titles">🏅 Titles</button>
-    <button class="shop-tab" data-tab="boxes">📦 Boxes</button>
+    <button class="shop-tab" data-tab="customchars">🎨 Custom Characters</button>
+        <button class="shop-tab" data-tab="boxes">📦 Boxes</button>
   </div>
   <div class="shop-body"><div class="shop-featured-banner" id="shopFeaturedBanner"></div><div id="shopBody"></div></div>
 </div>
@@ -1873,8 +1940,19 @@ const CHARACTERS = [
   },
 ];
 let selectedCharIdx = 0;
-function getChar() { return CHARACTERS[selectedCharIdx]; }
+function getChar() { return (customCharacterOwned && selectedCharIdx === CHARACTERS.length) ? getCustomCharacterCharData() : CHARACTERS[selectedCharIdx]; }
 function getCharById(id) { return CHARACTERS.find(c => c.id === id) || CHARACTERS[0]; }
+function getCustomCharacterCharData() {
+  ensureCustomCharacter();
+  return {
+    id: 'custom', name: customCharacter.name || 'My Fighter', icon: '🎨', color: customCharacter.colors.body,
+    speedMult: 1.0, jumpMult: 1.0, weightMult: 1.0, dmgMult: 1.0,
+    special: 'flyingkick', specialName: 'Custom Strike',
+    desc: 'A fighter built by you with custom colors.',
+    customColors: JSON.parse(JSON.stringify(customCharacter.colors)),
+  };
+}
+
 
 
 // ─── INPUT ───────────────────────────────────────────────────────────────────
@@ -2648,11 +2726,17 @@ class Fighter {
     const headR = w*0.24;
     const limbW = w*0.30;
 
+    const cData = this.customData && this.customData.colors;
+    const bodyColor = cData ? cData.body : this.color;
+    const armsColor = cData ? cData.arms : this.color;
+    const legsColor = cData ? cData.legs : this.color;
+    const headColor = cData ? cData.head : this.color;
+
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
-    ctx.strokeStyle = this.color;
-    ctx.fillStyle = this.color;
-    ctx.shadowColor = this.color;
+    ctx.strokeStyle = bodyColor;
+    ctx.fillStyle = bodyColor;
+    ctx.shadowColor = bodyColor;
     ctx.shadowBlur = 10*s;
 
     // torso: single bold line from neck to hip
@@ -2687,11 +2771,11 @@ class Fighter {
       // both arms thrust forward together for specials — visually distinct from a one-armed punch
       const sp = 1 - (this.attackTimer / this.attackDuration);
       const thrust = Math.sin(Math.min(1, sp * 1.6) * Math.PI * 0.5);
-      drawStickLimb(ctx, cx, shoulderY, dir * (0.3 + thrust*1.5), -dir*0.2, h*0.19, h*0.18, limbW*0.64, this.color, true);
-      drawStickLimb(ctx, cx, shoulderY, dir * (0.3 + thrust*1.5) - dir*0.15, -dir*0.2, h*0.19, h*0.18, limbW*0.64, this.color, true);
+      drawStickLimb(ctx, cx, shoulderY, dir * (0.3 + thrust*1.5), -dir*0.2, h*0.19, h*0.18, limbW*0.64, armsColor, true);
+      drawStickLimb(ctx, cx, shoulderY, dir * (0.3 + thrust*1.5) - dir*0.15, -dir*0.2, h*0.19, h*0.18, limbW*0.64, armsColor, true);
     } else {
-      drawStickLimb(ctx, cx, shoulderY, armSwing*0.9 + 0.4 + leadArmExtra*dir, -armSwing*0.55, h*(0.185+leadArmExtra*0.06), h*0.17, limbW*0.62, this.color, isPunching);
-      drawStickLimb(ctx, cx, shoulderY, -armSwing*0.9 - 0.4, armSwing*0.55 + backArmExtra, h*0.185, h*0.17, limbW*0.62, this.color, isPunching);
+      drawStickLimb(ctx, cx, shoulderY, armSwing*0.9 + 0.4 + leadArmExtra*dir, -armSwing*0.55, h*(0.185+leadArmExtra*0.06), h*0.17, limbW*0.62, armsColor, isPunching);
+      drawStickLimb(ctx, cx, shoulderY, -armSwing*0.9 - 0.4, armSwing*0.55 + backArmExtra, h*0.185, h*0.17, limbW*0.62, armsColor, isPunching);
     }
 
     // ── LEGS: kicking leg chambers (knee bends back) then thrusts straight; planted leg gets a slight bend for balance ──
@@ -2703,10 +2787,12 @@ class Fighter {
     const chamberL = dir===-1 ? chamberBend : 0;
     const chamberR = dir===1 ? chamberBend : 0;
     const plantBend = isKicking ? 0.18 : 0;
-    drawStickLimb(ctx, cx, hipY, this.limbAngle*0.7 + kickL*0.7 - chamberL*0.2, -this.limbAngle*0.45 + kickL*1.2 + chamberL*1.3, h*0.2, h*0.18, limbW*0.7, this.color, false);
-    drawStickLimb(ctx, cx, hipY, -this.limbAngle*0.7 + kickR*0.7 - chamberR*0.2, this.limbAngle*0.45 + kickR*1.2 + chamberR*1.3, h*0.2, h*0.18, limbW*0.7, this.color, false);
+    drawStickLimb(ctx, cx, hipY, this.limbAngle*0.7 + kickL*0.7 - chamberL*0.2, -this.limbAngle*0.45 + kickL*1.2 + chamberL*1.3, h*0.2, h*0.18, limbW*0.7, legsColor, false);
+    drawStickLimb(ctx, cx, hipY, -this.limbAngle*0.7 + kickR*0.7 - chamberR*0.2, this.limbAngle*0.45 + kickR*1.2 + chamberR*1.3, h*0.2, h*0.18, limbW*0.7, legsColor, false);
 
     // head: plain filled circle, no face — pure stickman silhouette
+    ctx.fillStyle = headColor;
+    ctx.shadowColor = headColor;
     ctx.beginPath();
     ctx.arc(cx, headY, headR, 0, Math.PI*2);
     ctx.fill();
@@ -2809,19 +2895,24 @@ function shadeColor(hex, percent) {
 // ─── STAR KO ──────────────────────────────────────────────────────────────────
 let starKOs = [];
 function showStarKO(fighter) {
-  starKOs.push({ x: fighter.cx, y: fighter.cy, color: fighter.color, life: 0.9, maxLife: 0.9, vx: (fighter.cx>STAGE_W/2?-1:1)*260, vy:-380 });
+  starKOs.push({ x: fighter.cx, y: fighter.cy, color: fighter.color, life: 1.05, maxLife: 1.05, vx: (fighter.cx>STAGE_W/2?-1:1)*340, vy:-470 });
   const koEl = document.getElementById('koText');
   koEl.classList.remove('firing');
   koEl.style.opacity = 1;
-  koEl.style.transform = 'scale(0.5) rotate(-6deg)';
+  koEl.style.transform = 'scale(0.35) rotate(-10deg)';
   koEl.style.transition = 'none';
-  camera.shake = Math.max(camera.shake, 22);
-  hitStop = Math.max(hitStop, 0.16);
+  camera.shake = Math.max(camera.shake, 30);
+  flashScreen(0.28);
+  spawnImpactRing(fighter.cx, fighter.cy, '#ffdd33', { maxRadius: 180, lineWidth: 12, life: 0.45 });
+  spawnParticles(fighter.cx, fighter.cy, '#ffffff', 22);
+  spawnParticles(fighter.cx, fighter.cy, fighter.color, 26);
+  hitStop = Math.max(hitStop, 0.22);
+  playSFX(120, 0.22, 'sawtooth');
   requestAnimationFrame(()=>{
     koEl.classList.add('firing');
-    koEl.style.transition = 'transform 0.4s cubic-bezier(.2,1.8,.3,1), opacity 0.55s ease 0.65s';
-    koEl.style.transform = 'scale(1.15) rotate(0deg)';
-    setTimeout(()=>{ koEl.style.opacity = 0; koEl.classList.remove('firing'); }, 650);
+    koEl.style.transition = 'transform 0.48s cubic-bezier(.16,1.6,.28,1), opacity 0.62s ease 0.72s';
+    koEl.style.transform = 'scale(1.28) rotate(0deg)';
+    setTimeout(()=>{ koEl.style.opacity = 0; koEl.classList.remove('firing'); }, 720);
   });
 }
 function updateStarKOs(dt) {
@@ -3618,6 +3709,8 @@ let lastLoginDate = null;
 let dailyClaimedToday = false;
 let starterPackClaimed = false;
 let lastStarterOfferDate = null;
+let customCharacterOwned = false;
+let customCharacter = null;
 
 // ─── TROPHIES & PROFILE ──────────────────────────────────────────────────────
 let trophies = 0;
@@ -3807,13 +3900,15 @@ function loadShopSave() {
     equippedTitle = s.equippedTitle || 'none';
     starterPackClaimed = s.starterPackClaimed || false;
     lastStarterOfferDate = s.lastStarterOfferDate || null;
+    customCharacterOwned = s.customCharacterOwned || false;
+    customCharacter = s.customCharacter || null;
   } catch(e) {}
   if (!ownedItems.skins.includes('default')) ownedItems.skins.push('default');
   if (!ownedItems.trails.includes('none')) ownedItems.trails.push('none');
   if (!ownedTitles.includes('none')) ownedTitles.push('none');
 }
 function saveShop() {
-  try { localStorage.setItem('tf_save', JSON.stringify({ coins, ownedItems, equipped, boxCooldowns, passXp, passTier, passPremiumOwned, passClaimedFree, passClaimedPremium, dailyStreak, lastLoginDate, trophies, highestTrophies, matchesPlayed, matchesWon, bestComboEver, playerUsername, mastery, ownedTitles, equippedTitle, starterPackClaimed, lastStarterOfferDate })); } catch(e) {}
+  try { localStorage.setItem('tf_save', JSON.stringify({ coins, ownedItems, equipped, boxCooldowns, passXp, passTier, passPremiumOwned, passClaimedFree, passClaimedPremium, dailyStreak, lastLoginDate, trophies, highestTrophies, matchesPlayed, matchesWon, bestComboEver, playerUsername, mastery, ownedTitles, equippedTitle, starterPackClaimed, lastStarterOfferDate, customCharacterOwned, customCharacter })); } catch(e) {}
 }
 function savePassData() { saveShop(); }
 loadShopSave();
@@ -4048,6 +4143,26 @@ function renderShop() {
       };
       grid.appendChild(card);
     });
+  } else if (activeShopTab === 'customchars') {
+    body.innerHTML = `
+      <div class="shop-section-label">CUSTOM CHARACTER BUILDER</div>
+      <div class="customchar-wrap">
+        <div class="customchar-preview-panel">
+          <div class="customchar-preview-title">Your Fighter</div>
+          <svg id="customCharPreviewSvg" viewBox="0 0 160 220" width="160" height="220"></svg>
+          <div class="customchar-preview-note">Pick body-part colors, then save your design.</div>
+        </div>
+        <div class="customchar-editor-panel">
+          <div class="customchar-controls" id="customCharControls"></div>
+          <div class="customchar-actions">
+            <div class="customchar-cost">Unlock for 🪙 2000</div>
+            <button class="shop-card-btn buy-btn" id="customCharBuyBtn">Unlock Custom Characters</button>
+            <button class="shop-card-btn equip-btn" id="customCharSaveBtn" ${customCharacterOwned ? '' : 'disabled'}>Save Design</button>
+          </div>
+        </div>
+      </div>
+    `;
+    renderCustomCharacterShop();
   } else if (activeShopTab === 'boxes') {
     body.innerHTML = '<div class="shop-section-label">OPEN A FREE BOX EVERY MINUTE, OR BUY ONE INSTANTLY</div><div class="shop-grid" id="shopGrid"></div>';
     const grid = document.getElementById('shopGrid');
@@ -4070,6 +4185,141 @@ function renderShop() {
   }
 }
 
+
+
+const CUSTOM_CHARACTER_COST = 2000;
+const CUSTOM_PARTS = [
+  { key:'head', label:'Head Color', value:'#3f8fa8' },
+  { key:'body', label:'Body Color', value:'#a8474f' },
+  { key:'arms', label:'Arms Color', value:'#b8823c' },
+  { key:'legs', label:'Legs Color', value:'#6f5a94' },
+];
+
+function defaultCustomCharacter() {
+  return {
+    name: 'My Fighter',
+    colors: { head:'#3f8fa8', body:'#a8474f', arms:'#b8823c', legs:'#6f5a94' },
+  };
+}
+
+function ensureCustomCharacter() {
+  if (!customCharacter) customCharacter = defaultCustomCharacter();
+  if (!customCharacter.colors) customCharacter.colors = defaultCustomCharacter().colors;
+  for (const p of CUSTOM_PARTS) {
+    if (!customCharacter.colors[p.key]) customCharacter.colors[p.key] = p.value;
+  }
+  if (!customCharacter.name) customCharacter.name = 'My Fighter';
+}
+
+function buildCustomCharControls() {
+  const wrap = document.getElementById('customCharControls');
+  if (!wrap) return;
+  ensureCustomCharacter();
+  wrap.innerHTML = '';
+  CUSTOM_PARTS.forEach(part => {
+    const row = document.createElement('label');
+    row.className = 'custom-part-row';
+    row.innerHTML = `
+      <span class="custom-part-label">${part.label}</span>
+      <span class="custom-color-pill">
+        <input type="color" class="custom-part-color" id="cc_${part.key}" value="${customCharacter.colors[part.key]}">
+        <span class="custom-color-value" id="cc_${part.key}_val">${customCharacter.colors[part.key]}</span>
+      </span>
+    `;
+    wrap.appendChild(row);
+    row.querySelector('input').addEventListener('input', e => {
+      customCharacter.colors[part.key] = e.target.value;
+      const val = row.querySelector('.custom-color-value');
+      if (val) val.textContent = e.target.value;
+      renderCustomCharacterPreview();
+    });
+  });
+  const nameRow = document.createElement('label');
+  nameRow.className = 'custom-part-row custom-name-row';
+  nameRow.innerHTML = `
+    <span class="custom-part-label">Character Name</span>
+    <input type="text" class="custom-name-input" id="cc_name" maxlength="12" value="${customCharacter.name}">
+  `;
+  wrap.appendChild(nameRow);
+  nameRow.querySelector('input').addEventListener('input', e => {
+    customCharacter.name = e.target.value || 'My Fighter';
+    renderCustomCharacterPreview();
+  });
+}
+
+function renderCustomCharacterPreview() {
+  ensureCustomCharacter();
+  const svg = document.getElementById('customCharPreviewSvg');
+  if (!svg) return;
+  const c = customCharacter.colors;
+  // Mirrors the real in-game Fighter.draw() silhouette exactly: thick round-capped stick
+  // limbs, a single bold torso line, and a plain filled head circle with NO face.
+  svg.innerHTML = `
+    <defs>
+      <filter id="ccGlow" x="-60%" y="-60%" width="220%" height="220%">
+        <feGaussianBlur stdDeviation="4" result="blur"></feGaussianBlur>
+        <feMerge>
+          <feMergeNode in="blur"></feMergeNode>
+          <feMergeNode in="SourceGraphic"></feMergeNode>
+        </feMerge>
+      </filter>
+    </defs>
+    <ellipse cx="80" cy="200" rx="34" ry="8" fill="rgba(0,0,0,0.35)"></ellipse>
+    <g filter="url(#ccGlow)">
+      <!-- back leg -->
+      <line x1="80" y1="140" x2="94" y2="196" stroke="${c.legs}" stroke-width="14" stroke-linecap="round"></line>
+      <!-- back arm -->
+      <line x1="80" y1="78" x2="102" y2="120" stroke="${c.arms}" stroke-width="12" stroke-linecap="round"></line>
+      <!-- torso -->
+      <line x1="80" y1="62" x2="80" y2="140" stroke="${c.body}" stroke-width="17" stroke-linecap="round"></line>
+      <!-- front leg -->
+      <line x1="80" y1="140" x2="66" y2="196" stroke="${c.legs}" stroke-width="14" stroke-linecap="round"></line>
+      <!-- front arm -->
+      <line x1="80" y1="78" x2="58" y2="120" stroke="${c.arms}" stroke-width="12" stroke-linecap="round"></line>
+      <!-- head: plain filled circle, no face -->
+      <circle cx="80" cy="44" r="17" fill="${c.head}"></circle>
+    </g>
+  `;
+}
+
+function saveCustomCharacterDesign() {
+  ensureCustomCharacter();
+  customCharacterOwned = true;
+  saveShop();
+  showReward('🎨', 'Custom Character Saved!');
+  renderShop();
+  buildCharSelect();
+}
+
+function purchaseCustomCharacter() {
+  if (customCharacterOwned) return;
+  if (coins < CUSTOM_CHARACTER_COST) { showReward('❌', 'Need ' + (CUSTOM_CHARACTER_COST - coins) + ' more coins!'); return; }
+  coins -= CUSTOM_CHARACTER_COST;
+  customCharacterOwned = true;
+  ensureCustomCharacter();
+  saveShop();
+  updateCoinsUI();
+  renderShop();
+  buildCharSelect();
+  showReward('🎨', 'Custom Characters Unlocked!');
+}
+
+function renderCustomCharacterShop() {
+  ensureCustomCharacter();
+  buildCustomCharControls();
+  renderCustomCharacterPreview();
+  const buyBtn = document.getElementById('customCharBuyBtn');
+  const saveBtn = document.getElementById('customCharSaveBtn');
+  if (buyBtn) {
+    buyBtn.textContent = customCharacterOwned ? 'Unlocked' : 'Unlock for 🪙 2000';
+    buyBtn.disabled = customCharacterOwned;
+    buyBtn.onclick = purchaseCustomCharacter;
+  }
+  if (saveBtn) {
+    saveBtn.disabled = !customCharacterOwned;
+    saveBtn.onclick = saveCustomCharacterDesign;
+  }
+}
 function weightedPick(pool) {
   const total = pool.reduce((s,p) => s+p.w, 0);
   let r = Math.random() * total;
@@ -4705,11 +4955,16 @@ function startGame() {
   const spawnLeftX = leftMain.x + leftMain.w*0.22;
   const spawnRightX = rightMain.x + rightMain.w*0.78 - 58;
   fighters.push(new Fighter(0, spawnLeftX, true, difficulty, getChar()));
+  fighters[0].customData = (customCharacterOwned && selectedCharIdx === CHARACTERS.length) ? JSON.parse(JSON.stringify(customCharacter)) : null;
   for (let i = 0; i < cpuCount; i++) {
     const cpuChar = CHARACTERS[Math.floor(Math.random()*CHARACTERS.length)];
     fighters.push(new Fighter(i+1, spawnRightX - i*90, false, difficulty, cpuChar));
   }
-  fighters[0].color = getEquippedSkinColor();
+  if (fighters[0].customData) {
+    fighters[0].color = fighters[0].customData.colors.body;
+  } else {
+    fighters[0].color = getEquippedSkinColor();
+  }
   if (ownedItems.powerups.includes('extralife')) { fighters[0].stocks = MAX_STOCKS + 1; fighters[0].startStocks = MAX_STOCKS + 1; }
   if (ownedItems.powerups.includes('ragestart')) fighters[0].damage = 40;
 
@@ -4991,9 +5246,12 @@ buildStageSelect();
 function buildCharSelect() {
   const wrap = document.getElementById('charSelectRow');
   wrap.innerHTML = '';
-  CHARACTERS.forEach((ch, i) => {
+  const roster = [...CHARACTERS];
+  if (customCharacterOwned) roster.push(getCustomCharacterCharData());
+  roster.forEach((ch, i) => {
     const card = document.createElement('div');
-    card.className = 'char-card' + (i===selectedCharIdx?' selected':'');
+    const isSelected = (customCharacterOwned ? (i===selectedCharIdx && selectedCharIdx < CHARACTERS.length) || (selectedCharIdx === CHARACTERS.length && ch.id === 'custom') : i===selectedCharIdx);
+    card.className = 'char-card' + (isSelected ? ' selected' : '');
     card.style.color = ch.color;
     const pips = (mult, max=5) => {
       const filled = Math.round((mult) * 3);
@@ -5007,14 +5265,16 @@ function buildCharSelect() {
       <div class="char-card-stats">${pips(ch.speedMult)}</div>
     `;
     card.addEventListener('click', () => {
-      selectedCharIdx = i;
+      if (ch.id === 'custom') selectedCharIdx = CHARACTERS.length;
+      else selectedCharIdx = i;
       document.querySelectorAll('.char-card').forEach(c => c.classList.remove('selected'));
       card.classList.add('selected');
       document.getElementById('charDescText').textContent = `${ch.specialName} (L key): ${ch.desc}`;
     });
     wrap.appendChild(card);
   });
-  document.getElementById('charDescText').textContent = `${CHARACTERS[selectedCharIdx].specialName} (L key): ${CHARACTERS[selectedCharIdx].desc}`;
+  const cur = (customCharacterOwned && selectedCharIdx === CHARACTERS.length) ? getCustomCharacterCharData() : CHARACTERS[selectedCharIdx];
+  document.getElementById('charDescText').textContent = `${cur.specialName} (L key): ${cur.desc}`;
 }
 buildCharSelect();
 
