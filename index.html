@@ -50,6 +50,34 @@ body { font-family: 'Rajdhani', sans-serif; color: var(--color-text); display: f
 @keyframes menuPanelIn { 0% { opacity: 0; transform: translateY(6px); } 100% { opacity: 1; transform: translateY(0); } }
 .menu-subsection { margin-bottom: 18px; text-align: center; width: 100%; }
 .menu-subsection h3 { font-size: 0.85rem; color: var(--color-muted); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
+
+/* ─── MODS SECTION (polished pill-style toggle switches) ─── */
+.mods-toggle-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  max-width: 380px; margin: 0 auto 8px; padding: 12px 18px;
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px;
+}
+.mods-toggle-label { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1rem; letter-spacing: 0.5px; color: var(--color-text); }
+.mods-switch { position: relative; display: inline-block; width: 54px; height: 30px; flex-shrink: 0; }
+.mods-switch input { opacity: 0; width: 0; height: 0; position: absolute; }
+.mods-switch-slider {
+  position: absolute; cursor: pointer; inset: 0; background: rgba(255,255,255,0.12);
+  border: 2px solid rgba(255,255,255,0.18); border-radius: 30px; transition: all 220ms ease;
+}
+.mods-switch-slider:before {
+  content: ""; position: absolute; width: 20px; height: 20px; left: 3px; top: 2px;
+  background: linear-gradient(160deg,#fff,#ccd); border-radius: 50%; transition: all 220ms cubic-bezier(.34,1.56,.64,1);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+}
+.mods-switch input:checked + .mods-switch-slider {
+  background: linear-gradient(135deg, rgba(0,212,255,0.5), rgba(0,120,180,0.5)); border-color: var(--color-p1);
+  box-shadow: 0 0 14px rgba(0,212,255,0.45);
+}
+.mods-switch input:checked + .mods-switch-slider:before { transform: translateX(24px); background: #fff; box-shadow: 0 2px 8px rgba(0,212,255,0.6); }
+.mods-toggle-desc { font-size: 0.78rem; color: var(--color-muted); text-align: center; max-width: 380px; margin: 0 auto 14px; line-height: 1.4; }
+.mods-coming-soon { font-family: 'Bangers', cursive; font-size: 1.15rem; letter-spacing: 1.5px; color: #ffdd44; text-align: center; padding: 18px 12px; background: rgba(255,220,0,0.06); border: 2px dashed rgba(255,220,0,0.3); border-radius: 14px; }
+
+
 #menu h1 {
   font-family: 'Bangers', cursive; font-size: clamp(2rem, 6vw, 3.6rem);
   letter-spacing: 3px; color: var(--color-p1);
@@ -136,6 +164,10 @@ body { font-family: 'Rajdhani', sans-serif; color: var(--color-text); display: f
 .timer-num.low-time { color: #ff4466; animation: timerPulse 0.6s ease-in-out infinite; }
 @keyframes timerPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.15); } }
 .damage-pct { font-family: 'Bangers', cursive; font-size: 1.25rem; text-shadow: 0 1px 8px rgba(0,0,0,0.6); }
+.ult-bar-wrap { width: 100%; height: 8px; background: rgba(255,255,255,0.08); border-radius: 6px; overflow: hidden; border: 1px solid rgba(255,255,255,0.15); margin-top: 2px; }
+.ult-bar { height: 100%; background: linear-gradient(90deg,#8844ff,#ff44aa); border-radius: 6px; transition: width 0.15s ease; }
+.ult-bar.ult-ready { background: linear-gradient(90deg,#ffdd33,#ffaa00); animation: ultReadyPulse 0.7s ease-in-out infinite; box-shadow: 0 0 12px #ffdd33; }
+@keyframes ultReadyPulse { 0%,100% { filter: brightness(1); } 50% { filter: brightness(1.6); } }
 
 /* GAME OVER */
 #game-over-screen { display: none; }
@@ -577,6 +609,65 @@ body { font-family: 'Rajdhani', sans-serif; color: var(--color-text); display: f
 .daily-claim-btn:hover { transform: scale(1.05); }
 .daily-streak-flame { font-size: 2.2rem; }
 
+/* ─── STARTER OFFER (Brawl-Stars-style randomized welcome bundle) ─── */
+#starter-offer-overlay {
+  position: fixed; inset: 0; z-index: 220; display: none; align-items: center; justify-content: center;
+  background: rgba(0,0,0,0.82); backdrop-filter: blur(8px);
+}
+#starter-offer-overlay.active { display: flex; }
+.starter-box {
+  position: relative; display: flex; flex-direction: column; align-items: center; gap: 14px;
+  padding: 34px 28px 26px; max-width: 480px; width: 92vw; text-align: center;
+  background: linear-gradient(160deg, #2a0a3a 0%, #0d0d1a 100%);
+  border: 2px solid rgba(255,200,0,0.5); border-radius: 26px;
+  box-shadow: 0 20px 70px rgba(0,0,0,0.7), 0 0 40px rgba(255,180,0,0.25);
+  animation: rewardPop 0.4s cubic-bezier(.34,1.56,.64,1);
+}
+.starter-ribbon {
+  position: absolute; top: 16px; left: -34px; transform: rotate(-40deg);
+  background: linear-gradient(135deg,#ff2288,#aa00ff); color: #fff; font-family: 'Bangers', cursive;
+  font-size: 0.75rem; letter-spacing: 1.5px; padding: 4px 40px; box-shadow: 0 3px 10px rgba(0,0,0,0.4);
+}
+.starter-title {
+  font-family: 'Bangers', cursive; font-size: clamp(1.6rem, 5vw, 2.3rem); color: #ffdd44;
+  text-shadow: 0 0 20px rgba(255,180,0,0.6); letter-spacing: 2px; margin-top: 6px;
+}
+.starter-subtitle { font-size: 0.85rem; color: var(--color-muted); margin-top: -8px; }
+.starter-items { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; max-width: 420px; }
+.starter-item-card {
+  width: 96px; padding: 12px 8px; border-radius: 14px; border: 2px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.05); display: flex; flex-direction: column; align-items: center; gap: 4px;
+  animation: goStatIn 0.4s cubic-bezier(.34,1.56,.64,1) both;
+}
+.starter-item-card.rarity-common { border-color: rgba(180,180,190,0.4); }
+.starter-item-card.rarity-rare { border-color: rgba(60,160,255,0.6); box-shadow: 0 0 14px rgba(60,160,255,0.2); }
+.starter-item-card.rarity-epic { border-color: rgba(190,60,255,0.65); box-shadow: 0 0 16px rgba(190,60,255,0.25); }
+.starter-item-card.rarity-legendary { border-color: rgba(255,190,40,0.75); box-shadow: 0 0 20px rgba(255,190,40,0.3); }
+.starter-item-icon { font-size: 30px; }
+.starter-item-swatch { width: 100%; height: 26px; border-radius: 8px; }
+.starter-item-name { font-size: 0.68rem; font-weight: 700; line-height: 1.2; }
+.starter-item-amt { font-size: 0.7rem; color: #ffdd44; font-weight: 700; }
+.starter-price-row { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 6px; }
+.starter-price-old { font-size: 0.75rem; color: var(--color-muted); text-decoration: line-through; }
+.starter-claim-btn {
+  padding: 14px 44px; border-radius: 16px; border: none; cursor: pointer;
+  font-family: 'Bangers', cursive; font-size: 1.3rem; letter-spacing: 1.5px;
+  background: linear-gradient(135deg,#ffdd00,#ff9900); color: #3a1a00;
+  box-shadow: 0 6px 24px rgba(255,180,0,0.5); transition: transform 150ms ease;
+  position: relative; overflow: hidden;
+}
+.starter-claim-btn:hover { transform: scale(1.05); }
+.starter-claim-btn::after {
+  content: ''; position: absolute; inset: 0; background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.5) 50%, transparent 70%);
+  transform: translateX(-100%); animation: passShine 2.2s ease-in-out infinite;
+}
+.starter-skip-btn {
+  background: none; border: none; color: var(--color-muted); font-size: 0.8rem; cursor: pointer;
+  text-decoration: underline; margin-top: -4px;
+}
+.starter-skip-btn:hover { color: #fff; }
+
+
 /* ─── FIGHT PASS SCREEN (Brawl Stars style) ─── */
 #pass-screen {
   position: fixed; inset: 0; z-index: 115; display: none; flex-direction: column;
@@ -727,7 +818,6 @@ body { font-family: 'Rajdhani', sans-serif; color: var(--color-text); display: f
   .mods-switch-slider:before { width:26px; height:26px; }
   .mods-switch input:checked + .mods-switch-slider:before { transform: translateX(26px); }
   .mods-toggle-desc { font-size:0.72rem; max-width:90%; }
-  #extraModsContainer { width:100%; }
 }
 /* Prevent double-tap-zoom / ghost-click / 300ms delay issues on all interactive
    menu controls so mods (and every other toggle/button) respond instantly on mobile. */
@@ -864,17 +954,7 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
 .career-map-wrap { display:flex; flex-wrap:wrap; gap:10px; justify-content:center; max-width:560px; margin: 0 auto 12px; }
 .career-progress-label { font-size:0.85rem; color: var(--color-muted); text-align:center; margin-bottom: 14px; }
 
-/* MODS SECTION */
-.mods-toggle-row { display:flex; align-items:center; justify-content:center; gap:16px; margin-bottom: 10px; }
-.mods-toggle-label { font-family: 'Rajdhani', sans-serif; font-weight:700; font-size:1rem; letter-spacing:1px; color: var(--color-text); }
-.mods-switch { position:relative; display:inline-block; width:56px; height:30px; }
-.mods-switch input { opacity:0; width:0; height:0; }
-.mods-switch-slider { position:absolute; cursor:pointer; inset:0; background: rgba(255,255,255,0.15); border:2px solid var(--color-border); border-radius:30px; transition: all 200ms ease; }
-.mods-switch-slider:before { content:""; position:absolute; width:22px; height:22px; left:2px; top:2px; background:#fff; border-radius:50%; transition: all 200ms ease; box-shadow: 0 2px 6px rgba(0,0,0,0.4); }
-.mods-switch input:checked + .mods-switch-slider { background: rgba(0,212,255,0.35); border-color: var(--color-p1); }
-.mods-switch input:checked + .mods-switch-slider:before { transform: translateX(24px); background: var(--color-p1); }
-.mods-toggle-desc { font-size:0.78rem; color: var(--color-muted); text-align:center; max-width:420px; margin: 0 auto 4px; }
-.mods-coming-soon { font-family: 'Bangers', cursive; font-size:1.15rem; letter-spacing:1.5px; color: #ffdd44; text-align:center; padding: 18px 12px; background: rgba(255,220,0,0.06); border: 2px dashed rgba(255,220,0,0.3); border-radius:14px; }
+
 
 
 /* ═══════════════════ INTRO SPLASH (Smash-Bros-style title animation) ═══════════════════ */
@@ -1294,6 +1374,21 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
   </div>
 </div>
 
+<!-- STARTER OFFER (randomized pack shown each time the game opens) -->
+<div id="starter-offer-overlay">
+  <div class="starter-box">
+    <div class="starter-ribbon">LIMITED OFFER</div>
+    <div class="starter-title">🎁 STARTER PACK</div>
+    <div class="starter-subtitle">A fresh random bundle, every time you play!</div>
+    <div class="starter-items" id="starterItemsRow"></div>
+    <div class="starter-price-row">
+      <div class="starter-price-old">Value: <span id="starterValueText">0</span> 🪙</div>
+      <button class="starter-claim-btn" id="starterClaimBtn">CLAIM FREE!</button>
+    </div>
+    <button class="starter-skip-btn" id="starterSkipBtn">No thanks</button>
+  </div>
+</div>
+
 <!-- DAILY STREAK -->
 <div id="daily-streak-overlay">
   <div class="daily-box">
@@ -1496,6 +1591,20 @@ const DIFF = {
   impossible: { react: 1.00, aggro: 1.00, jumpChance: 0.090, specialChance: 0.070, label:'Impossible', color:'#ffffff' },
   pro:        { react: 1.05, aggro: 1.35, jumpChance: 0.130, specialChance: 0.110, label:'PRO',        color:'#ffcc00' },
 };
+
+const ULT_METER_MAX = 100;
+
+function gainUltMeter(fighter, amount) {
+  if (!fighter || fighter.ultReady) return;
+  fighter.ultMeter = Math.min(ULT_METER_MAX, (fighter.ultMeter || 0) + amount);
+  if (fighter.ultMeter >= ULT_METER_MAX) {
+    fighter.ultMeter = ULT_METER_MAX;
+    fighter.ultReady = true;
+    fighter.ultFlashTimer = 1.2;
+    spawnParticles(fighter.cx, fighter.cy, '#ffdd33', 18);
+    playSFX(880, 0.12, 'sine');
+  }
+}
 
 // ─── STATE ───────────────────────────────────────────────────────────────────
 let gameState = 'menu';
@@ -1849,6 +1958,11 @@ class Fighter {
     this.attackType = null;
     this.attackCooldown = 0;
     this.specialCooldown = 0;
+    this.ultMeter = 0;
+    this.ultReady = false;
+    this.ultFlashTimer = 0;
+    this.invincible = false;
+    this.invincibleTimer = 0;
     this.animFrame = 0;
     this.animTimer = 0;
     this.limbAngle = 0;
@@ -1933,10 +2047,16 @@ class Fighter {
     if (attackType === 'punch') return { x: this.cx + dir*12, y: this.cy - 20, w: reach, h: 56, dir };
     if (attackType === 'kick')  return { x: this.cx + dir*14, y: this.cy + 4, w: kickReach, h: 60, dir };
     if (attackType === 'special') return { x: this.cx + dir*8, y: this.cy - 34, w: 172, h: 84, dir };
+    if (attackType === 'ultimate') return { x: this.cx + dir*4, y: this.cy - 60, w: 260, h: 140, dir };
     return null;
   }
 
   hit(attackType, attacker) {
+    if (this.invincible) {
+      spawnParticles(this.cx, this.cy, '#ffdd33', 6);
+      playSFX(1000, 0.05, 'sine');
+      return;
+    }
     if (this.airDodging) {
       spawnParticles(this.cx, this.cy, '#ffffff', 10);
       playSFX(900, 0.06, 'sine');
@@ -1952,7 +2072,7 @@ class Fighter {
       return;
     }
     const dirAway = Math.sign(this.cx - attacker.cx) || (this.facing * -1) || 1;
-    if (this.blocking && this.blockTimer > 0) {
+    if (this.blocking && this.blockTimer > 0 && attackType !== 'ultimate') {
       const chip = attackType === 'special' ? 3 : 1;
       this.damage = Math.min(999, this.damage + chip);
       this.vx += dirAway * 120;
@@ -1964,12 +2084,18 @@ class Fighter {
     let baseDmg = attackType === 'punch' ? 8 : attackType === 'kick' ? 13 : 22;
     if (attackType === 'dashhit') baseDmg = 6;
     if (attackType === 'projectile') baseDmg = 10;
+    if (attackType === 'ultimate') baseDmg = 38;
     const dmgRoll = (baseDmg + Math.random()*4 - 2) * (attacker.char ? attacker.char.dmgMult : 1);
     this.damage = Math.min(999, this.damage + dmgRoll);
     this.totalDamageTaken = (this.totalDamageTaken||0) + dmgRoll;
+    // ── Smash-style Ultimate meter: both dealing AND taking damage builds toward a devastating Ultimate ──
+    if (attackType !== 'ultimate') {
+      gainUltMeter(attacker, dmgRoll * 0.85);
+      gainUltMeter(this, dmgRoll * 1.15);
+    }
     const rage = 1 + Math.min(attacker.damage, 150) * 0.0035;
     const pctFactor = 0.35 + Math.pow(this.damage / 100, 1.6) * 0.9;
-    const kb = pctFactor * (attackType === 'special' ? 1.9 : 1) * rage;
+    const kb = pctFactor * (attackType === 'ultimate' ? 3.1 : attackType === 'special' ? 1.9 : 1) * rage;
     this.vx = dirAway * kb * 1150;
     this.vy = -kb * 680;
     this.stunTimer = 0.18 + this.damage * 0.0008;
@@ -1979,24 +2105,28 @@ class Fighter {
     this.tumbleSpin = dirAway * (2.5 + kb * 3);
 
     // ── Impact tiers: bigger hits get a stronger shake, longer freeze-frame, and a bright shockwave ring ──
-    const isHeavy = attackType === 'special' || dmgRoll > 16;
+    const isUltimate = attackType === 'ultimate';
+    const isHeavy = attackType === 'special' || isUltimate || dmgRoll > 16;
     const isKick = attackType === 'kick';
-    camera.shake = isHeavy ? 14 + dmgRoll * 0.4 : 6 + dmgRoll * 0.35;
-    hitStop = attackType === 'special' ? 0.11 : isHeavy ? 0.08 : isKick ? 0.06 : 0.045;
-    const trailColors = getTrailColors(attacker);
-    spawnParticles(this.cx, this.cy, trailColors, 12 + Math.floor(dmgRoll * 0.7) + (isHeavy ? 10 : 0));
-    spawnParticles(this.cx, this.cy, '#ffffff', isHeavy ? 10 : 4);
-    spawnImpactRing(this.cx, this.cy, isHeavy ? '#ffdd33' : '#ffffff', {
-      maxRadius: isHeavy ? 105 : 62,
-      lineWidth: isHeavy ? 9 : 5,
-      life: isHeavy ? 0.42 : 0.28,
+    camera.shake = isUltimate ? 26 + dmgRoll * 0.6 : isHeavy ? 14 + dmgRoll * 0.4 : 6 + dmgRoll * 0.35;
+    hitStop = isUltimate ? 0.2 : attackType === 'special' ? 0.11 : isHeavy ? 0.08 : isKick ? 0.06 : 0.045;
+    const trailColors = isUltimate ? '#ffdd33' : getTrailColors(attacker);
+    spawnParticles(this.cx, this.cy, trailColors, 12 + Math.floor(dmgRoll * 0.7) + (isHeavy ? 10 : 0) + (isUltimate ? 20 : 0));
+    spawnParticles(this.cx, this.cy, '#ffffff', isUltimate ? 20 : isHeavy ? 10 : 4);
+    spawnImpactRing(this.cx, this.cy, isUltimate ? '#ffdd33' : isHeavy ? '#ffdd33' : '#ffffff', {
+      maxRadius: isUltimate ? 200 : isHeavy ? 105 : 62,
+      lineWidth: isUltimate ? 14 : isHeavy ? 9 : 5,
+      life: isUltimate ? 0.6 : isHeavy ? 0.42 : 0.28,
     });
     if (attackType === 'special') {
       spawnImpactRing(this.cx, this.cy, '#ff44aa', { maxRadius: 145, lineWidth: 5, life: 0.5 });
     }
-    flashScreen(attackType === 'special' ? 0.22 : isHeavy ? 0.14 : 0.08);
+    if (isUltimate) {
+      spawnPopup(this.cx, this.cy - 90, 'CRUSHED!', { color:'#ffdd33', size:32, vy:-55, life:0.9, scale:1.3, startScale:0.4 });
+    }
+    flashScreen(isUltimate ? 0.5 : attackType === 'special' ? 0.22 : isHeavy ? 0.14 : 0.08);
     registerComboHit(attacker, this, dmgRoll, attackType);
-    playSFX(attackType === 'special' ? 180 : isKick ? 300 : 350, attackType === 'special' ? 0.16 : 0.12, 'square');
+    playSFX(isUltimate ? 110 : attackType === 'special' ? 180 : isKick ? 300 : 350, isUltimate ? 0.3 : attackType === 'special' ? 0.16 : 0.12, 'square');
     if (isHeavy) playSFX(90, 0.1, 'sawtooth');
   }
 
@@ -2051,6 +2181,8 @@ class Fighter {
     if (this.attackTimer > 0) { this.attackTimer -= dt; }
     if (this.attackCooldown > 0) { this.attackCooldown -= dt; }
     if (this.specialCooldown > 0) { this.specialCooldown -= dt; }
+    if (this.invincibleTimer > 0) { this.invincibleTimer -= dt; if (this.invincibleTimer <= 0) this.invincible = false; }
+    if (this.ultFlashTimer > 0) { this.ultFlashTimer -= dt; }
     if (this.airDodgeTimer > 0) { this.airDodgeTimer -= dt; if (this.airDodgeTimer <= 0) this.airDodging = false; }
     if (this.airDodgeCooldown > 0) { this.airDodgeCooldown -= dt; }
     if (this.grounded) this.airDodgeCooldown = 0;
@@ -2224,26 +2356,58 @@ class Fighter {
   }
 
   useSpecial(enemies) {
+    if (this.ultReady) {
+      this.useUltimate(enemies);
+      return;
+    }
     const sp = this.char.special;
     this.specialCooldown = MODS.noUltCooldown ? 0 : 1.35;
     if (sp === 'counter') {
       this.counterActive = true;
       this.counterTimer = 0.6;
       this.attackType = 'special'; this.attackTimer = 0.3; this.attackDuration = 0.3; this.attackCooldown = 0.1;
+      // ── Counter cutscene: time seems to slow as the fighter drops into a defensive stance ──
+      hitStop = Math.max(hitStop, 0.14);
+      camera.shake = Math.max(camera.shake, 4);
+      zoomPunch(0.05);
+      spawnImpactRing(this.cx, this.cy, '#ff44ff', { maxRadius: 90, lineWidth: 4, life: 0.45 });
+      spawnParticles(this.cx, this.cy, '#ff44ff', 14);
+      showAnnouncer(this.char.specialName.toUpperCase() + '!', '#ff44ff');
       spawnPopup(this.cx, this.cy - 70, 'READY!', { color:'#ff44ff', size:20, vy:-40, life:0.5, scale:1 });
       playSFX(500, 0.1, 'sine');
     } else if (sp === 'fireball') {
       this.attackType = 'special'; this.attackTimer = 0.22; this.attackDuration = 0.22; this.attackCooldown = 0.2;
+      // ── Fireball cutscene: a brief charge flash + camera punch-in as the bolt is unleashed ──
+      hitStop = Math.max(hitStop, 0.06);
+      camera.shake = Math.max(camera.shake, 6);
+      zoomPunch(0.04);
+      spawnImpactRing(this.cx + this.facing*20, this.cy - 10, '#ffaa33', { maxRadius: 55, lineWidth: 5, life: 0.3 });
+      spawnParticles(this.cx + this.facing*20, this.cy - 10, '#ffaa33', 12);
+      showAnnouncer(this.char.specialName.toUpperCase() + '!', '#ffaa33');
       spawnProjectile(this);
       playSFX(320, 0.14, 'sawtooth');
     } else if (sp === 'dashpunch') {
       this.dashPunchTimer = 0.5;
       this.dashPunchHits = 0;
       this.attackType = 'special'; this.attackTimer = 0.5; this.attackDuration = 0.5; this.attackCooldown = 0.1;
+      // ── Dash Punch cutscene: ground-shaking wind-up burst before the rushing combo ──
+      hitStop = Math.max(hitStop, 0.09);
+      camera.shake = Math.max(camera.shake, 10);
+      zoomPunch(0.06);
+      spawnImpactRing(this.cx, this.feet, '#ff5533', { maxRadius: 80, lineWidth: 7, life: 0.35 });
+      spawnParticles(this.cx, this.feet, '#ff5533', 16);
+      showAnnouncer(this.char.specialName.toUpperCase() + '!', '#ff5533');
       this.vx = this.facing * 700;
       playSFX(220, 0.12, 'square');
     } else if (sp === 'flyingkick') {
       this.attackType = 'special'; this.attackTimer = 0.32; this.attackDuration = 0.32; this.attackCooldown = 0.15;
+      // ── Flying Kick cutscene: quick upward camera punch + motion streak as the fighter launches ──
+      hitStop = Math.max(hitStop, 0.07);
+      camera.shake = Math.max(camera.shake, 7);
+      zoomPunch(0.05);
+      spawnImpactRing(this.cx, this.cy, '#33ccff', { maxRadius: 65, lineWidth: 5, life: 0.3 });
+      spawnParticles(this.cx, this.cy, '#33ccff', 12);
+      showAnnouncer(this.char.specialName.toUpperCase() + '!', '#33ccff');
       this.vx = this.facing * 900;
       this.vy = this.grounded ? -300 : this.vy - 150;
       this.grounded = false;
@@ -2251,6 +2415,37 @@ class Fighter {
       playSFX(260, 0.13, 'triangle');
     } else {
       this.doAttack('special', enemies, 0.24, 0.0);
+    }
+  }
+
+  useUltimate(enemies) {
+    // ── Super Smash Bros-style Final Smash: consumes the full meter for one huge, screen-shaking hit ──
+    this.ultReady = false;
+    this.ultMeter = 0;
+    this.specialCooldown = MODS.noUltCooldown ? 0 : 1.35;
+    this.invincible = true;
+    this.invincibleTimer = 0.5;
+    this.attackType = 'ultimate';
+    this.attackTimer = 0.55;
+    this.attackDuration = 0.55;
+    this.attackCooldown = 0.25;
+    this.hasHitThisAttack = false;
+    this.vx = this.facing * 380;
+    camera.shake = Math.max(camera.shake, 24);
+    hitStop = Math.max(hitStop, 0.16);
+    flashScreen(0.4);
+    spawnParticles(this.cx, this.cy, '#ffdd33', 40);
+    spawnImpactRing(this.cx, this.cy, '#ffdd33', { maxRadius: 220, lineWidth: 12, life: 0.6 });
+    showAnnouncer(this.name.toUpperCase() + ' ULTIMATE!', this.color);
+    playSFX(140, 0.3, 'sawtooth');
+    const hb = this.getHitbox('ultimate');
+    for (const e of enemies) {
+      if (e === this || e.dead || !e.visible) continue;
+      if (rectsOverlap(hb, { x: e.x, y: e.y, w: e.w, h: e.h })) {
+        e.hit('ultimate', this);
+        e.facing = -this.facing;
+        this.hasHitThisAttack = true;
+      }
     }
   }
 
@@ -2313,7 +2508,9 @@ class Fighter {
       if (!MODS.noBlocking) { this.blocking = true; this.blockTimer = 0.2; }
     }
 
-    if (absDist < (isPro ? 165 : 125) && this.attackCooldown <= 0 && !this.blocking) {
+    if (absDist < (isPro ? 220 : 170) && this.ultReady) {
+      this.useSpecial(enemies);
+    } else if (absDist < (isPro ? 165 : 125) && this.attackCooldown <= 0 && !this.blocking) {
       const r = Math.random();
       if (r < d.specialChance && this.specialCooldown <= 0) {
         this.useSpecial(enemies);
@@ -2393,6 +2590,42 @@ class Fighter {
       ctx.setLineDash([6*s,6*s]);
       ctx.stroke();
       ctx.setLineDash([]);
+    }
+    if (this.ultReady) {
+      const pulse = 0.5 + 0.5 * Math.sin(performance.now() / 130);
+      ctx.save();
+      ctx.globalAlpha = 0.35 + pulse * 0.35;
+      ctx.beginPath();
+      ctx.arc(cx, cy, w * (0.9 + pulse * 0.15), 0, Math.PI * 2);
+      ctx.strokeStyle = '#ffdd33';
+      ctx.lineWidth = 3 * s;
+      ctx.shadowColor = '#ffdd33';
+      ctx.shadowBlur = 18 * s;
+      ctx.stroke();
+      ctx.restore();
+    } else if (this.ultMeter > 0) {
+      const chargeFrac = this.ultMeter / ULT_METER_MAX;
+      ctx.save();
+      ctx.globalAlpha = chargeFrac * 0.3;
+      ctx.beginPath();
+      ctx.arc(cx, cy, w * 0.85, 0, Math.PI * 2);
+      ctx.strokeStyle = '#ff88dd';
+      ctx.lineWidth = 2 * s;
+      ctx.stroke();
+      ctx.restore();
+    }
+    if (this.invincible) {
+      ctx.save();
+      const shimmer = 0.4 + 0.3 * Math.sin(performance.now() / 60);
+      ctx.globalAlpha = shimmer;
+      ctx.beginPath();
+      ctx.arc(cx, cy, w * 1.0, 0, Math.PI * 2);
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 3 * s;
+      ctx.shadowColor = '#ffdd33';
+      ctx.shadowBlur = 24 * s;
+      ctx.stroke();
+      ctx.restore();
     }
 
     // lean based on movement / attack, plus hit-recoil lean and airborne tumble spin for real impact feedback
@@ -3266,6 +3499,7 @@ function buildHUD() {
       <div class="hp-bar-wrap"><div class="hp-bar" id="hp-${f.id}" style="background:${f.color};width:100%"></div></div>
       <div class="stocks" id="stocks-${f.id}"></div>
       <div class="damage-pct" id="dmg-${f.id}" style="color:${f.color}">0%</div>
+      <div class="ult-bar-wrap"><div class="ult-bar" id="ult-${f.id}" style="width:0%"></div></div>
     `;
     if (i === 0) hud.appendChild(div);
     else if (i === fighters.length - 1 && fighters.length <= 2) hud.appendChild(div);
@@ -3289,6 +3523,12 @@ function updateHUD() {
     const dmgEl = document.getElementById('dmg-'+f.id);
     const stocksEl = document.getElementById('stocks-'+f.id);
     const hpEl = document.getElementById('hp-'+f.id);
+    const ultEl = document.getElementById('ult-'+f.id);
+    if (ultEl) {
+      const ultPct = Math.min(100, (f.ultMeter || 0));
+      ultEl.style.width = ultPct + '%';
+      ultEl.classList.toggle('ult-ready', !!f.ultReady);
+    }
     if (dmgEl) dmgEl.textContent = Math.floor(f.damage) + '%';
     if (hpEl) {
       const pct = Math.max(0, 100 - Math.min(100, f.damage/2));
@@ -4059,8 +4299,95 @@ function claimDailyStreak() {
   document.getElementById('daily-streak-overlay').classList.remove('active');
   setTimeout(() => showRewardPopup(reward.icon, 'Day ' + dailyStreak + ' Reward Claimed!'), 300);
 }
+// ─── STARTER OFFER LOGIC (randomized welcome bundle, shown every time the game opens) ───
+function generateStarterPack() {
+  const items = [];
+  let totalValue = 0;
+
+  // Always includes a coin pile that varies each time
+  const coinAmt = [200, 300, 400, 500, 750][Math.floor(Math.random() * 5)];
+  items.push({ type: 'coins', icon: '🪙', name: coinAmt + ' Coins', amt: coinAmt, rarity: 'common' });
+  totalValue += coinAmt;
+
+  // Random skin the player doesn't already own (falls back to a random owned-eligible one)
+  const unownedSkins = SKINS.filter(s => !ownedItems.skins.includes(s.id));
+  const skinPool = unownedSkins.length ? unownedSkins : SKINS;
+  const skin = skinPool[Math.floor(Math.random() * skinPool.length)];
+  items.push({ type: 'skin', icon: '🥋', name: skin.name, swatch: skin.color, rarity: skin.rarity, refId: skin.id });
+  totalValue += skin.price || 150;
+
+  // Random trail the player doesn't already own
+  const unownedTrails = TRAILS.filter(t => !ownedItems.trails.includes(t.id));
+  const trailPool = unownedTrails.length ? unownedTrails : TRAILS;
+  const trail = trailPool[Math.floor(Math.random() * trailPool.length)];
+  items.push({ type: 'trail', icon: '✨', name: trail.name, swatch: trail.grad, rarity: trail.rarity, refId: trail.id });
+  totalValue += trail.price || 120;
+
+  // Small chance at a bonus powerup slot for extra excitement
+  if (Math.random() < 0.35) {
+    const unownedPU = POWERUPS.filter(p => !ownedItems.powerups.includes(p.id));
+    if (unownedPU.length) {
+      const pu = unownedPU[Math.floor(Math.random() * unownedPU.length)];
+      items.push({ type: 'powerup', icon: pu.icon, name: pu.name, rarity: 'legendary', refId: pu.id });
+      totalValue += pu.price || 600;
+    }
+  }
+
+  return { items, totalValue };
+}
+
+let currentStarterPack = null;
+
+function renderStarterOffer() {
+  currentStarterPack = generateStarterPack();
+  const row = document.getElementById('starterItemsRow');
+  const valEl = document.getElementById('starterValueText');
+  if (!row) return;
+  row.innerHTML = '';
+  currentStarterPack.items.forEach(item => {
+    const card = document.createElement('div');
+    card.className = 'starter-item-card rarity-' + (item.rarity || 'common');
+    const swatchHtml = item.swatch ? `<div class="starter-item-swatch" style="background:${item.swatch}"></div>` : `<div class="starter-item-icon">${item.icon}</div>`;
+    card.innerHTML = `
+      ${swatchHtml}
+      <div class="starter-item-name">${item.name}</div>
+      ${item.amt ? `<div class="starter-item-amt">+${item.amt}</div>` : ''}
+    `;
+    row.appendChild(card);
+  });
+  if (valEl) valEl.textContent = currentStarterPack.totalValue.toLocaleString();
+}
+
+function claimStarterPack() {
+  if (!currentStarterPack) return;
+  currentStarterPack.items.forEach(item => {
+    if (item.type === 'coins') { coins += item.amt; }
+    else if (item.type === 'skin') { if (!ownedItems.skins.includes(item.refId)) ownedItems.skins.push(item.refId); }
+    else if (item.type === 'trail') { if (!ownedItems.trails.includes(item.refId)) ownedItems.trails.push(item.refId); }
+    else if (item.type === 'powerup') { if (!ownedItems.powerups.includes(item.refId)) ownedItems.powerups.push(item.refId); }
+  });
+  saveShop();
+  updateCoinsUI();
+  document.getElementById('starter-offer-overlay').classList.remove('active');
+  setTimeout(() => showRewardPopup('🎁', 'Starter Pack Claimed!'), 250);
+  setTimeout(showDailyStreakIfNeeded, 900);
+}
+
+function skipStarterPack() {
+  document.getElementById('starter-offer-overlay').classList.remove('active');
+  showDailyStreakIfNeeded();
+}
+
+document.getElementById('starterClaimBtn')?.addEventListener('click', claimStarterPack);
+document.getElementById('starterSkipBtn')?.addEventListener('click', skipStarterPack);
+
+function showStarterOfferIfNeeded() {
+  renderStarterOffer();
+  document.getElementById('starter-offer-overlay').classList.add('active');
+}
+showStarterOfferIfNeeded();
+
 document.getElementById('dailyClaimBtn').addEventListener('click', claimDailyStreak);
-showDailyStreakIfNeeded();
 
 // ─── PROFILE ─────────────────────────────────────────────────────────────────
 const TROPHY_RANK_NAMES = ['Rookie','Bronze','Silver','Gold','Platinum','Diamond','Master','Legend','Mythic','Titan','Cosmic','Champion'];
@@ -4679,9 +5006,6 @@ if (gunsToggleEl) {
   gunsToggleEl.checked = gunsModEnabled;
   refreshGunsToggleDesc();
   gunsToggleEl.addEventListener('change', applyGunsModState);
-  // Mobile fallback: some touch browsers can swallow the native 'change' event
-  // when the tap lands on the visual slider instead of the raw input, so we
-  // mirror the same manual-toggle safety net used for the Fun Mods switches.
   const gunsSliderEl = gunsToggleEl.parentElement?.querySelector('.mods-switch-slider');
   if (gunsSliderEl) {
     gunsSliderEl.addEventListener('touchend', (e) => {
@@ -4717,11 +5041,6 @@ if (extraModsContainer) {
       MODS[m.key] = checkboxEl.checked;
       saveMods();
     };
-    // 'change' covers desktop clicks + most mobile taps. Some mobile browsers
-    // (notably iOS Safari when the label/slider sits on top of the input) can
-    // eat the native change event on a fast tap, so we also listen for
-    // touchend directly on the slider and flip the checkbox manually as a
-    // fallback — this guarantees mods toggle reliably on phones/tablets too.
     checkboxEl.addEventListener('change', applyModState);
     const sliderEl = row.querySelector('.mods-switch-slider');
     if (sliderEl) {
