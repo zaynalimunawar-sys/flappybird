@@ -669,43 +669,6 @@ body { font-family: 'Rajdhani', sans-serif; color: var(--color-text); display: f
 }
 .starter-skip-btn:hover { color: #fff; }
 
-/* ─── TUTORIAL OVERLAY ─── */
-#tutorial-overlay {
-  position: fixed; inset: 0; z-index: 240; display: none; align-items: center; justify-content: center;
-  background: rgba(0,0,0,0.84); backdrop-filter: blur(8px);
-}
-#tutorial-overlay.active { display: flex; }
-.tutorial-box {
-  width: min(560px, 92vw); background: linear-gradient(160deg, rgba(18,10,30,0.98), rgba(8,8,16,0.98));
-  border: 2px solid rgba(0,212,255,0.35); border-radius: 24px; padding: 28px 24px 22px;
-  box-shadow: 0 20px 80px rgba(0,0,0,0.75), 0 0 40px rgba(0,212,255,0.12);
-  text-align: center;
-}
-.tutorial-badge {
-  display:inline-block; padding: 5px 12px; border-radius: 999px; margin-bottom: 14px;
-  background: rgba(0,212,255,0.14); color: #8cecff; border: 1px solid rgba(0,212,255,0.35);
-  font-size: 0.72rem; letter-spacing: 2px; text-transform: uppercase; font-weight: 800;
-}
-.tutorial-title {
-  font-family: 'Bangers', cursive; font-size: clamp(1.6rem, 5vw, 2.4rem); letter-spacing: 2px; color: #fff;
-  margin-bottom: 10px; text-shadow: 0 0 18px rgba(255,255,255,0.15);
-}
-.tutorial-step { font-size: 1rem; line-height: 1.5; color: var(--color-text); min-height: 70px; }
-.tutorial-progress { font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase; color: var(--color-muted); margin-top: 8px; }
-.tutorial-dots { display:flex; justify-content:center; gap:8px; margin: 14px 0 16px; }
-.tutorial-dot { width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,0.18); }
-.tutorial-dot.active { background: #00d4ff; box-shadow: 0 0 12px rgba(0,212,255,0.8); }
-.tutorial-btn-row { display:flex; justify-content:center; gap: 12px; flex-wrap: wrap; }
-.tutorial-nav-btn {
-  min-width: 110px; padding: 12px 18px; border-radius: 14px; border: none; cursor: pointer;
-  font-family: 'Bangers', cursive; font-size: 1rem; letter-spacing: 1.2px; color: #04222b;
-  background: linear-gradient(135deg, #00d4ff, #88f6ff); box-shadow: 0 6px 20px rgba(0,212,255,0.22);
-}
-.tutorial-nav-btn.ghost {
-  background: rgba(255,255,255,0.08); color: var(--color-text); border: 1px solid rgba(255,255,255,0.14);
-}
-
-
 
 /* ─── FIGHT PASS SCREEN (Brawl Stars style) ─── */
 #pass-screen {
@@ -1208,7 +1171,6 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
       <div class="trophy-display" id="trophyDisplay">🏆 <span id="trophyVal">0</span></div>
     </div>
     <button class="profile-open-btn" id="profileOpenBtn">👤</button>
-    <button class="profile-open-btn" id="tutorialOpenBtn" title="Tutorial">❔</button>
   </div>
   <button id="adminTriggerBtn" style="position:fixed; top:8px; left:8px; width:14px; height:14px; opacity:0; border:none; background:transparent; z-index:200; cursor:default;" aria-hidden="true"></button>
   <div class="menu-scroll">
@@ -1426,21 +1388,6 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
       <button class="starter-claim-btn" id="starterClaimBtn">CLAIM FREE!</button>
     </div>
     <button class="starter-skip-btn" id="starterSkipBtn">No thanks</button>
-  </div>
-</div>
-
-<!-- TUTORIAL OVERLAY -->
-<div id="tutorial-overlay">
-  <div class="tutorial-box">
-    <div class="tutorial-badge">HOW TO PLAY</div>
-    <div class="tutorial-title" id="tutorialTitle">Welcome to Stickman Wars</div>
-    <div class="tutorial-step" id="tutorialStep">Use the left joystick to move around.</div>
-    <div class="tutorial-progress" id="tutorialProgress">1 / 5</div>
-    <div class="tutorial-dots" id="tutorialDots"></div>
-    <div class="tutorial-btn-row">
-      <button class="tutorial-nav-btn ghost" id="tutorialSkipBtn">Skip</button>
-      <button class="tutorial-nav-btn" id="tutorialNextBtn">Next</button>
-    </div>
   </div>
 </div>
 
@@ -3860,14 +3807,13 @@ function loadShopSave() {
     equippedTitle = s.equippedTitle || 'none';
     starterPackClaimed = s.starterPackClaimed || false;
     lastStarterOfferDate = s.lastStarterOfferDate || null;
-    tutorialSeen = s.tutorialSeen || false;
   } catch(e) {}
   if (!ownedItems.skins.includes('default')) ownedItems.skins.push('default');
   if (!ownedItems.trails.includes('none')) ownedItems.trails.push('none');
   if (!ownedTitles.includes('none')) ownedTitles.push('none');
 }
 function saveShop() {
-  try { localStorage.setItem('tf_save', JSON.stringify({ coins, ownedItems, equipped, boxCooldowns, passXp, passTier, passPremiumOwned, passClaimedFree, passClaimedPremium, dailyStreak, lastLoginDate, trophies, highestTrophies, matchesPlayed, matchesWon, bestComboEver, playerUsername, mastery, ownedTitles, equippedTitle, starterPackClaimed, lastStarterOfferDate, tutorialSeen })); } catch(e) {}
+  try { localStorage.setItem('tf_save', JSON.stringify({ coins, ownedItems, equipped, boxCooldowns, passXp, passTier, passPremiumOwned, passClaimedFree, passClaimedPremium, dailyStreak, lastLoginDate, trophies, highestTrophies, matchesPlayed, matchesWon, bestComboEver, playerUsername, mastery, ownedTitles, equippedTitle, starterPackClaimed, lastStarterOfferDate })); } catch(e) {}
 }
 function savePassData() { saveShop(); }
 loadShopSave();
@@ -4316,89 +4262,6 @@ function showRewardPopup(icon, title) {
   document.getElementById('rewardTitle').textContent = title;
   document.getElementById('rewardPopup').classList.add('active');
 }
-
-// ─── TUTORIAL LOGIC ─────────────────────────────────────────────────────────
-const TUTORIAL_STEPS = [
-  { title: 'Move Around', text: 'Use the left joystick to run, dodge, and control spacing. On keyboard, A/D or arrow keys move you left and right.' },
-  { title: 'Jump & Double Jump', text: 'Press Jump to hop over attacks and reach platforms. Use a second jump in the air to recover.' },
-  { title: 'Attack', text: 'Punch and kick are your basic combo tools. Punch is faster; kick hits harder and reaches farther.' },
-  { title: 'Special', text: 'Your character has a unique special move. It can be a counter, projectile, dash attack, or flying strike.' },
-  { title: 'Win The Match', text: 'Knock opponents off the stage and deplete their stocks. When you build Ultimates, use them to swing the match.' },
-];
-let tutorialIndex = 0;
-let tutorialSeen = false;
-
-function loadTutorialSave() {
-  try {
-    const s = JSON.parse(localStorage.getItem('tf_save') || '{}');
-    tutorialSeen = !!s.tutorialSeen;
-  } catch(e) {}
-}
-function saveTutorialSave() {
-  try {
-    const s = JSON.parse(localStorage.getItem('tf_save') || '{}');
-    s.tutorialSeen = tutorialSeen;
-    localStorage.setItem('tf_save', JSON.stringify(s));
-  } catch(e) {}
-}
-function buildTutorialDots() {
-  const dots = document.getElementById('tutorialDots');
-  if (!dots) return;
-  dots.innerHTML = '';
-  TUTORIAL_STEPS.forEach((_, i) => {
-    const d = document.createElement('div');
-    d.className = 'tutorial-dot' + (i === tutorialIndex ? ' active' : '');
-    dots.appendChild(d);
-  });
-}
-function renderTutorialStep() {
-  const step = TUTORIAL_STEPS[tutorialIndex];
-  const titleEl = document.getElementById('tutorialTitle');
-  const stepEl = document.getElementById('tutorialStep');
-  const progEl = document.getElementById('tutorialProgress');
-  const nextBtn = document.getElementById('tutorialNextBtn');
-  const skipBtn = document.getElementById('tutorialSkipBtn');
-  if (titleEl) titleEl.textContent = step.title;
-  if (stepEl) stepEl.textContent = step.text;
-  if (progEl) progEl.textContent = (tutorialIndex + 1) + ' / ' + TUTORIAL_STEPS.length;
-  if (nextBtn) nextBtn.textContent = tutorialIndex === TUTORIAL_STEPS.length - 1 ? 'Done' : 'Next';
-  if (skipBtn) skipBtn.textContent = tutorialIndex === 0 ? 'Skip' : 'Back';
-  buildTutorialDots();
-}
-function openTutorial() {
-  tutorialIndex = 0;
-  renderTutorialStep();
-  document.getElementById('tutorial-overlay').classList.add('active');
-  saveTutorialSave();
-}
-function closeTutorial() {
-  document.getElementById('tutorial-overlay').classList.remove('active');
-  tutorialSeen = true;
-  saveTutorialSave();
-}
-function tutorialAdvance(dir) {
-  tutorialIndex += dir;
-  if (tutorialIndex < 0) tutorialIndex = 0;
-  if (tutorialIndex >= TUTORIAL_STEPS.length) {
-    closeTutorial();
-    return;
-  }
-  renderTutorialStep();
-}
-loadTutorialSave();
-document.getElementById('tutorialOpenBtn')?.addEventListener('click', openTutorial);
-document.getElementById('tutorialNextBtn')?.addEventListener('click', () => tutorialAdvance(1));
-document.getElementById('tutorialSkipBtn')?.addEventListener('click', () => {
-  if (tutorialIndex === 0) closeTutorial();
-  else tutorialAdvance(-1);
-});
-document.getElementById('tutorial-overlay')?.addEventListener('click', (e) => {
-  if (e.target.id === 'tutorial-overlay') closeTutorial();
-});
-function showTutorialIfFirstRun() {
-  if (!tutorialSeen) setTimeout(openTutorial, 900);
-}
-showTutorialIfFirstRun();
 
 // ─── DAILY STREAK LOGIC ──────────────────────────────────────────────────────
 function renderDailyStreak() {
