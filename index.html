@@ -452,6 +452,89 @@ body { font-family: 'Rajdhani', sans-serif; color: var(--color-text); display: f
 }
 .profile-delete-btn:hover { background: linear-gradient(135deg, #661111, #330808); border-color: #ff4466; color: #fff; transform: translateY(-2px); box-shadow: 0 6px 18px rgba(255,68,102,0.3); }
 
+/* ─── LEADERBOARD SCREEN ─── */
+#leaderboard-screen {
+  position: fixed; inset: 0; z-index: 113; display: none; flex-direction: column;
+  background: radial-gradient(ellipse at 50% 0%, #1a1236 0%, #0d0d1a 72%);
+  overflow-y: auto; -webkit-overflow-scrolling: touch;
+}
+#leaderboard-screen.active { display: flex; }
+.leaderboard-wrap {
+  width: 100%; max-width: 640px; margin: 0 auto; padding: 24px 18px 60px;
+}
+.leaderboard-hero {
+  padding: 18px 18px 14px; border-radius: 22px;
+  background: linear-gradient(160deg, rgba(255,221,68,0.12), rgba(255,255,255,0.04));
+  border: 1px solid rgba(255,221,68,0.18); margin-bottom: 14px;
+}
+.leaderboard-title {
+  font-family: 'Bangers', cursive; font-size: clamp(1.5rem, 5vw, 2.2rem);
+  letter-spacing: 1.5px; color: #ffdd44; text-shadow: 0 0 18px rgba(255,180,0,0.35);
+}
+.leaderboard-sub { margin-top: 6px; font-size: 0.82rem; color: var(--color-muted); }
+.leaderboard-list { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+.leaderboard-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 14px 16px; border-radius: 18px; background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08); box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+}
+.leaderboard-row.top1 { background: linear-gradient(135deg, rgba(255,221,68,0.16), rgba(255,255,255,0.05)); border-color: rgba(255,221,68,0.34); }
+.leaderboard-row.top2 { background: linear-gradient(135deg, rgba(160,190,255,0.12), rgba(255,255,255,0.05)); border-color: rgba(160,190,255,0.28); }
+.leaderboard-row.top3 { background: linear-gradient(135deg, rgba(255,160,90,0.12), rgba(255,255,255,0.05)); border-color: rgba(255,160,90,0.28); }
+.leaderboard-rank {
+  width: 44px; height: 44px; flex: 0 0 44px; border-radius: 50%; display:flex; align-items:center; justify-content:center;
+  background: rgba(0,0,0,0.28); border: 1px solid rgba(255,255,255,0.08);
+  font-family: 'Bangers', cursive; font-size: 1.05rem; color: #fff;
+}
+.leaderboard-main { flex: 1; min-width: 0; }
+.leaderboard-name { font-family: 'Rajdhani', sans-serif; font-weight: 800; font-size: 1rem; color: #fff; }
+.leaderboard-statline { font-size: 0.76rem; color: var(--color-muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.leaderboard-stat { text-align: right; min-width: 92px; }
+.leaderboard-stat-val { font-family: 'Bangers', cursive; font-size: 1.25rem; color: #ffdd44; line-height: 1; }
+.leaderboard-stat-label { font-size: 0.66rem; color: var(--color-muted); letter-spacing: 1.2px; text-transform: uppercase; margin-top: 2px; }
+.leaderboard-chiprow { display:flex; gap:8px; flex-wrap:wrap; margin-top: 10px; }
+.leaderboard-chip {
+  padding: 5px 10px; border-radius: 999px; background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08); font-size: 0.72rem; color: var(--color-text);
+}
+
+
+
+
+/* ─── LEADERBOARD SCREEN ─── */
+.leaderboard-wrap {
+  width: 100%; max-width: 560px; margin: 0 auto; padding: 18px;
+}
+.leaderboard-hero {
+  padding: 18px 18px 14px; border-radius: 20px;
+  background: linear-gradient(160deg, rgba(0,212,255,0.12), rgba(255,255,255,0.03));
+  border: 1px solid rgba(0,212,255,0.18); margin-bottom: 14px;
+}
+.leaderboard-title {
+  font-family: 'Bangers', cursive; font-size: clamp(1.5rem, 5vw, 2.2rem);
+  letter-spacing: 1.5px; color: #ffdd44; text-shadow: 0 0 18px rgba(255,180,0,0.35);
+}
+.leaderboard-sub { margin-top: 6px; font-size: 0.82rem; color: var(--color-muted); }
+.leaderboard-list { display: flex; flex-direction: column; gap: 10px; }
+.leaderboard-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 14px 16px; border-radius: 16px; background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08); box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+}
+.leaderboard-row.top1 { background: linear-gradient(135deg, rgba(255,221,68,0.14), rgba(255,255,255,0.05)); border-color: rgba(255,221,68,0.34); }
+.leaderboard-row.top2 { background: linear-gradient(135deg, rgba(160,190,255,0.12), rgba(255,255,255,0.05)); border-color: rgba(160,190,255,0.28); }
+.leaderboard-row.top3 { background: linear-gradient(135deg, rgba(255,160,90,0.12), rgba(255,255,255,0.05)); border-color: rgba(255,160,90,0.28); }
+.leaderboard-rank {
+  width: 42px; height: 42px; flex: 0 0 42px; border-radius: 50%; display:flex; align-items:center; justify-content:center;
+  background: rgba(0,0,0,0.28); border: 1px solid rgba(255,255,255,0.08);
+  font-family: 'Bangers', cursive; font-size: 1.1rem; color: #fff;
+}
+.leaderboard-name { font-family: 'Rajdhani', sans-serif; font-weight: 800; font-size: 1rem; color: #fff; }
+.leaderboard-statline { font-size: 0.76rem; color: var(--color-muted); margin-top: 2px; }
+.leaderboard-stat { text-align: right; min-width: 82px; }
+.leaderboard-stat-val { font-family: 'Bangers', cursive; font-size: 1.25rem; color: #ffdd44; line-height: 1; }
+.leaderboard-stat-label { font-size: 0.66rem; color: var(--color-muted); letter-spacing: 1.2px; text-transform: uppercase; margin-top: 2px; }
+
 /* ─── SHOP SCREEN ─── */
 #shop-screen {
   position: fixed; inset: 0; z-index: 110; display: none; flex-direction: column;
@@ -1251,6 +1334,7 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
       <button class="menu-tab" data-menutab="stage">🗺️ Stage</button>
       <button class="menu-tab" data-menutab="career">🏆 Career</button>
       <button class="menu-tab" data-menutab="mods">🔧 Mods</button>
+      <button class="menu-tab" data-menutab="leaderboard">🏅 Leaderboard</button>
       </div>
 
     <div class="menu-panel active" data-panel="fighter">
@@ -1293,6 +1377,16 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
       <div class="career-map-wrap" id="careerMapBtns"></div>
     </div>
 
+    <div class="menu-panel" data-panel="leaderboard">
+      <div class="leaderboard-wrap">
+        <div class="leaderboard-hero">
+          <div class="leaderboard-title">🏅 Leaderboard</div>
+          <div class="leaderboard-sub">Your best stats, ranked against your own progress.</div>
+        </div>
+        <div class="leaderboard-list" id="leaderboardList"></div>
+      </div>
+    </div>
+
     <div class="menu-panel" data-panel="mods">
       <div class="menu-subsection">
         <h3>Weapon Mods</h3>
@@ -1315,6 +1409,7 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
     <div class="menu-btn-row">
       <button class="shop-open-btn" id="shopOpenBtn">🛒 SHOP</button>
       <button class="pass-open-btn" id="passOpenBtn">🎫 PASS</button>
+      <button class="profile-open-btn" id="leaderboardOpenBtn">🏅 LEADERBOARD</button>
     </div>
   </div>
 </div>
@@ -1367,6 +1462,29 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
     <div class="profile-rank-badge" id="profileRankBadge">🏆 0 Trophies</div>
     <div class="profile-stats-grid" id="profileStatsGrid"></div>
     <button class="profile-delete-btn" id="profileDeleteBtn">🗑️ Delete Account</button>
+  </div>
+</div>
+
+
+
+<!-- LEADERBOARD -->
+<div id="leaderboard-screen">
+  <div class="profile-topbar">
+    <h1 class="profile-title">🏅 LEADERBOARD</h1>
+    <button class="profile-close-btn" id="leaderboardCloseBtn">✕ Close</button>
+  </div>
+  <div class="leaderboard-wrap">
+    <div class="leaderboard-hero">
+      <div class="leaderboard-title">Your Best Stats</div>
+      <div class="leaderboard-sub">A local leaderboard built from your own save data.</div>
+      <div class="leaderboard-chiprow">
+        <div class="leaderboard-chip">Trophies</div>
+        <div class="leaderboard-chip">Wins</div>
+        <div class="leaderboard-chip">Best Combo</div>
+        <div class="leaderboard-chip">Career</div>
+      </div>
+    </div>
+    <div class="leaderboard-list" id="leaderboardList"></div>
   </div>
 </div>
 
@@ -1872,6 +1990,15 @@ function getPortraitExtraPlatforms() {
     { x: STAGE_W*0.73, y: 260, w: STAGE_W*0.22, h: 18, main: false },
   ];
 }
+function getCharSizeMult() {
+  const portrait = isPortraitMode();
+  const narrowPhone = window.innerWidth <= 520;
+  if (portrait && narrowPhone) return 1.65;
+  if (portrait) return 1.38;
+  if (narrowPhone) return 1.18;
+  return 1.0;
+}
+
 function getStage() {
   const base = STAGES[currentStageIdx];
   const portrait = isPortraitMode();
@@ -2016,7 +2143,9 @@ class Fighter {
     }
     this.color = FIGHTER_COLORS[id];
     this.name = isPlayer ? 'YOU' : FIGHTER_NAMES[id];
-    this.w = 65 * (0.9 + this.char.weightMult*0.1); this.h = 151 * (0.9 + this.char.weightMult*0.1);
+    const sizeMult = getCharSizeMult();
+    this.w = 65 * (0.9 + this.char.weightMult*0.1) * sizeMult;
+    this.h = 151 * (0.9 + this.char.weightMult*0.1) * sizeMult;
     this.counterActive = false;
     this.counterTimer = 0;
     this.dashPunchTimer = 0;
@@ -4828,6 +4957,44 @@ function renderProfile() {
   ).join('');
 }
 
+
+
+function buildLeaderboardData() {
+  const rankIdx = getTrophyRank(trophies);
+  const careerClears = Object.values(careerProgress.stars || {}).filter(Boolean).length;
+  const rows = [
+    { rank: 1, label: 'Trophies', value: trophies, stat: TROPHY_RANK_NAMES[rankIdx], detail: 'Your main rank progress', cls: 'top1' },
+    { rank: 2, label: 'Wins', value: matchesWon, stat: Math.round((matchesWon / Math.max(1, matchesPlayed)) * 100) + '%', detail: 'Match wins', cls: 'top2' },
+    { rank: 3, label: 'Best Combo', value: bestComboEver, stat: bestComboEver + 'x', detail: 'Highest combo recorded', cls: 'top3' },
+    { rank: 4, label: 'Highest Trophies', value: highestTrophies, stat: highestTrophies.toLocaleString(), detail: 'Peak trophy count', cls: '' },
+    { rank: 5, label: 'Career Clears', value: careerClears, stat: careerClears + '/' + CAREER_TOTAL_LEVELS, detail: 'Levels completed', cls: '' },
+    { rank: 6, label: 'Matches Played', value: matchesPlayed, stat: matchesPlayed.toLocaleString(), detail: 'Total fights', cls: '' },
+  ];
+  rows.sort((a,b) => b.value - a.value);
+  return rows;
+}
+
+function renderLeaderboard() {
+  const wrap = document.getElementById('leaderboardList');
+  if (!wrap) return;
+  const rows = buildLeaderboardData();
+  wrap.innerHTML = rows.map((r, i) => `
+    <div class="leaderboard-row ${r.cls}">
+      <div class="leaderboard-rank">#${i + 1}</div>
+      <div class="leaderboard-main">
+        <div class="leaderboard-name">${r.label}</div>
+        <div class="leaderboard-statline">${r.detail}</div>
+      </div>
+      <div class="leaderboard-stat">
+        <div class="leaderboard-stat-val">${r.stat}</div>
+        <div class="leaderboard-stat-label">${i === 0 ? 'TOP SCORE' : 'LOCAL RANK'}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openLeaderboard() { document.getElementById('leaderboard-screen').classList.add('active'); renderLeaderboard(); }
+function closeLeaderboard() { document.getElementById('leaderboard-screen').classList.remove('active'); }
 document.getElementById('profileOpenBtn').addEventListener('click', openProfile);
 document.getElementById('profileCloseBtn').addEventListener('click', closeProfile);
 document.getElementById('profileNameInput').addEventListener('change', (e) => {
@@ -4952,8 +5119,9 @@ function startGame() {
   const mains = stageForSpawn.platforms.filter(p=>p.main);
   const leftMain = mains[0] || {x:0,w:STAGE_W};
   const rightMain = mains[mains.length-1] || leftMain;
-  const spawnLeftX = leftMain.x + leftMain.w*0.22;
-  const spawnRightX = rightMain.x + rightMain.w*0.78 - 58;
+  const portraitSpawnBoost = isPortraitMode() ? 26 : 0;
+  const spawnLeftX = leftMain.x + leftMain.w*0.22 - portraitSpawnBoost*0.45;
+  const spawnRightX = rightMain.x + rightMain.w*0.78 - 58 + portraitSpawnBoost*0.45;
   fighters.push(new Fighter(0, spawnLeftX, true, difficulty, getChar()));
   fighters[0].customData = (customCharacterOwned && selectedCharIdx === CHARACTERS.length) ? JSON.parse(JSON.stringify(customCharacter)) : null;
   for (let i = 0; i < cpuCount; i++) {
