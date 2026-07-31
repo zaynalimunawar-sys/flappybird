@@ -1993,9 +1993,27 @@ function getPortraitExtraPlatforms() {
 function getCharSizeMult() {
   const portrait = isPortraitMode();
   const narrowPhone = window.innerWidth <= 520;
-  if (portrait && narrowPhone) return 1.48;
-  if (portrait) return 1.26;
-  if (narrowPhone) return 1.10;
+  if (portrait && narrowPhone) return 1.18;
+  if (portrait) return 1.08;
+  if (narrowPhone) return 1.02;
+  return 1.0;
+}
+
+function getPortraitSpeedMult() {
+  const portrait = isPortraitMode();
+  const narrowPhone = window.innerWidth <= 520;
+  if (portrait && narrowPhone) return 1.22;
+  if (portrait) return 1.12;
+  if (narrowPhone) return 1.05;
+  return 1.0;
+}
+
+function getGameplaySpeedMult() {
+  const portrait = isPortraitMode();
+  const narrowPhone = window.innerWidth <= 520;
+  if (portrait && narrowPhone) return 1.10;
+  if (portrait) return 1.06;
+  if (narrowPhone) return 1.03;
   return 1.0;
 }
 
@@ -2144,6 +2162,7 @@ class Fighter {
     this.color = FIGHTER_COLORS[id];
     this.name = isPlayer ? 'YOU' : FIGHTER_NAMES[id];
     const sizeMult = getCharSizeMult();
+    this.portraitSpeedMult = getPortraitSpeedMult();
     this.w = 65 * (0.9 + this.char.weightMult*0.1) * sizeMult;
     this.h = 151 * (0.9 + this.char.weightMult*0.1) * sizeMult;
     this.counterActive = false;
@@ -2468,7 +2487,7 @@ class Fighter {
       this.walkCycle += dt * 22;
       this.limbAngle = Math.sin(this.walkCycle) * 0.9;
     } else if (this.grounded && Math.abs(this.vx) > 20) {
-      const speedRatio = Math.abs(this.vx) / PLAYER_SPEED;
+      const speedRatio = Math.abs(this.vx) / (PLAYER_SPEED * (this.portraitSpeedMult || 1));
       this.walkCycle += dt * (9 + speedRatio * 9);
       this.limbAngle = Math.sin(this.walkCycle) * (0.55 + speedRatio * 0.2);
       // hips/shoulders bounce twice per stride (once per footfall) for a real weight-shift feel
@@ -2506,7 +2525,7 @@ class Fighter {
     }
 
     // ── Afterimage trail: threshold scaled to the new higher top speed, plus punches/kicks now trail too for snappier feedback ──
-    if (Math.abs(this.vx) > PLAYER_SPEED * 1.05 || (this.attackType && this.attackTimer > 0)) {
+    if (Math.abs(this.vx) > (PLAYER_SPEED * (this.portraitSpeedMult || 1)) * 1.05 || (this.attackType && this.attackTimer > 0)) {
       this.afterimages.push({ x: this.x, y: this.y, facing: this.facing, life: 0.16 });
     }
     for (let i = this.afterimages.length - 1; i >= 0; i--) {
@@ -2526,7 +2545,7 @@ class Fighter {
   }
 
   handlePlayerInput(enemies) {
-    const spd = PLAYER_SPEED * this.char.speedMult;
+    const spd = (PLAYER_SPEED * (this.portraitSpeedMult || 1)) * this.char.speedMult;
     if (keys['KeyA']) { this.vx = -spd; this.facing = -1; }
     else if (keys['KeyD']) { this.vx = spd; this.facing = 1; }
 
@@ -2693,7 +2712,7 @@ class Fighter {
     const absDist = Math.abs(dist);
     this.facing = dist > 0 ? 1 : -1;
 
-    const aiSpd = PLAYER_SPEED * this.char.speedMult;
+    const aiSpd = (PLAYER_SPEED * (this.portraitSpeedMult || 1)) * this.char.speedMult;
     if (this.retreatTimer > 0) {
       this.retreatTimer -= dt;
       this.vx = -this.facing * aiSpd * 0.85;
@@ -2736,8 +2755,8 @@ class Fighter {
       }
     }
 
-    if (this.x < 100) this.vx = PLAYER_SPEED;
-    if (this.x + this.w > STAGE_W - 100) this.vx = -PLAYER_SPEED;
+    if (this.x < 100) this.vx = (PLAYER_SPEED * (this.portraitSpeedMult || 1));
+    if (this.x + this.w > STAGE_W - 100) this.vx = -(PLAYER_SPEED * (this.portraitSpeedMult || 1));
     if (this.y > 400 && !this.grounded && this.jumps < 2) { this.vy = DOUBLE_JUMP_VEL; this.jumps++; }
   }
 
@@ -2838,7 +2857,7 @@ class Fighter {
     }
 
     // lean based on movement / attack, plus hit-recoil lean and airborne tumble spin for real impact feedback
-    const moveLean = Math.max(-1, Math.min(1, this.vx / PLAYER_SPEED)) * 0.09;
+    const moveLean = Math.max(-1, Math.min(1, this.vx / (PLAYER_SPEED * (this.portraitSpeedMult || 1)))) * 0.09;
     const atkLean = (this.attackType === 'punch' && this.attackTimer > 0) ? dir * 0.14 : 0;
     const lean = moveLean + atkLean + this.hitLean * 0.3 + this.tumbleAngle;
 
@@ -5119,7 +5138,7 @@ function startGame() {
   const mains = stageForSpawn.platforms.filter(p=>p.main);
   const leftMain = mains[0] || {x:0,w:STAGE_W};
   const rightMain = mains[mains.length-1] || leftMain;
-  const portraitSpawnBoost = isPortraitMode() ? 26 : 0;
+  const portraitSpawnBoost = isPortraitMode() ? 34 : 0;
   const spawnLeftX = leftMain.x + leftMain.w*0.22 - portraitSpawnBoost*0.45;
   const spawnRightX = rightMain.x + rightMain.w*0.78 - 58 + portraitSpawnBoost*0.45;
   fighters.push(new Fighter(0, spawnLeftX, true, difficulty, getChar()));
