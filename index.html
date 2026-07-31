@@ -3617,6 +3617,7 @@ let dailyStreak = 0;
 let lastLoginDate = null;
 let dailyClaimedToday = false;
 let starterPackClaimed = false;
+let lastStarterOfferDate = null;
 
 // ─── TROPHIES & PROFILE ──────────────────────────────────────────────────────
 let trophies = 0;
@@ -3805,13 +3806,14 @@ function loadShopSave() {
     ownedTitles = s.ownedTitles || ['none'];
     equippedTitle = s.equippedTitle || 'none';
     starterPackClaimed = s.starterPackClaimed || false;
+    lastStarterOfferDate = s.lastStarterOfferDate || null;
   } catch(e) {}
   if (!ownedItems.skins.includes('default')) ownedItems.skins.push('default');
   if (!ownedItems.trails.includes('none')) ownedItems.trails.push('none');
   if (!ownedTitles.includes('none')) ownedTitles.push('none');
 }
 function saveShop() {
-  try { localStorage.setItem('tf_save', JSON.stringify({ coins, ownedItems, equipped, boxCooldowns, passXp, passTier, passPremiumOwned, passClaimedFree, passClaimedPremium, dailyStreak, lastLoginDate, trophies, highestTrophies, matchesPlayed, matchesWon, bestComboEver, playerUsername, mastery, ownedTitles, equippedTitle, starterPackClaimed })); } catch(e) {}
+  try { localStorage.setItem('tf_save', JSON.stringify({ coins, ownedItems, equipped, boxCooldowns, passXp, passTier, passPremiumOwned, passClaimedFree, passClaimedPremium, dailyStreak, lastLoginDate, trophies, highestTrophies, matchesPlayed, matchesWon, bestComboEver, playerUsername, mastery, ownedTitles, equippedTitle, starterPackClaimed, lastStarterOfferDate })); } catch(e) {}
 }
 function savePassData() { saveShop(); }
 loadShopSave();
@@ -4303,7 +4305,7 @@ function claimDailyStreak() {
   document.getElementById('daily-streak-overlay').classList.remove('active');
   setTimeout(() => showRewardPopup(reward.icon, 'Day ' + dailyStreak + ' Reward Claimed!'), 300);
 }
-// ─── STARTER OFFER LOGIC (randomized bundle — free the very first time, coins to reroll after) ───
+// ─── STARTER OFFER LOGIC (randomized bundle — free the very first time, one offer per day after that) ───
 // Price is now randomized per-offer and scales with the pack's value (see generateStarterPack)
 
 function generateStarterPack() {
@@ -4420,6 +4422,10 @@ document.getElementById('starterClaimBtn')?.addEventListener('click', claimStart
 document.getElementById('starterSkipBtn')?.addEventListener('click', skipStarterPack);
 
 function showStarterOfferIfNeeded() {
+  const today = new Date().toDateString();
+  if (lastStarterOfferDate === today) { showDailyStreakIfNeeded(); return; }
+  lastStarterOfferDate = today;
+  saveShop();
   renderStarterOffer();
   document.getElementById('starter-offer-overlay').classList.add('active');
 }
