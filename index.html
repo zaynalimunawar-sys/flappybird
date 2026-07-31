@@ -1993,8 +1993,8 @@ function getPortraitExtraPlatforms() {
 function getCharSizeMult() {
   const portrait = isPortraitMode();
   const narrowPhone = window.innerWidth <= 520;
-  if (portrait && narrowPhone) return 1.06;
-  if (portrait) return 1.02;
+  if (portrait && narrowPhone) return 1.0;
+  if (portrait) return 1.0;
   if (narrowPhone) return 1.0;
   return 1.0;
 }
