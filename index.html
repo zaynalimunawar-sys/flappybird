@@ -1860,6 +1860,7 @@ let currentStageIdx = 0;
 // When the device is in portrait orientation (taller than wide — typical phone-in-hand),
 // the play area gets visually squeezed horizontally, so we inject extra platforms near
 // the top of the stage to give fighters more places to jump, land, and juggle up there.
+const PORTRAIT_CHAR_SCALE = 1.35; // Characters are scaled up on portrait/phone screens so they read clearly on the narrower, vertical play area.
 function isPortraitMode() {
   return window.innerHeight > window.innerWidth;
 }
@@ -1984,6 +1985,20 @@ function resizeCanvas() {
 window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
 
+// Keep fighter sizes in sync with portrait/landscape mode if the device rotates mid-match.
+function updateFighterSizesForOrientation() {
+  if (!fighters || !fighters.length) return;
+  const _sizeMult = isPortraitMode() ? PORTRAIT_CHAR_SCALE : 1;
+  fighters.forEach(f => {
+    const baseW = 65 * (0.9 + f.char.weightMult*0.1);
+    const baseH = 151 * (0.9 + f.char.weightMult*0.1);
+    f.w = baseW * _sizeMult;
+    f.h = baseH * _sizeMult;
+  });
+}
+window.addEventListener('resize', updateFighterSizesForOrientation);
+window.addEventListener('orientationchange', () => setTimeout(updateFighterSizesForOrientation, 350));
+
 function scaleX() { return uniformScale(); }
 function scaleY() { return uniformScale(); }
 function uniformScale() { return Math.min(canvas._logicalW / STAGE_W, canvas._logicalH / STAGE_H); }
@@ -2016,7 +2031,8 @@ class Fighter {
     }
     this.color = FIGHTER_COLORS[id];
     this.name = isPlayer ? 'YOU' : FIGHTER_NAMES[id];
-    this.w = 65 * (0.9 + this.char.weightMult*0.1); this.h = 151 * (0.9 + this.char.weightMult*0.1);
+    const _sizeMult = (typeof isPortraitMode === 'function' && isPortraitMode()) ? PORTRAIT_CHAR_SCALE : 1;
+    this.w = 65 * (0.9 + this.char.weightMult*0.1) * _sizeMult; this.h = 151 * (0.9 + this.char.weightMult*0.1) * _sizeMult;
     this.counterActive = false;
     this.counterTimer = 0;
     this.dashPunchTimer = 0;
