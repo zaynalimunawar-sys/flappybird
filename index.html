@@ -1861,7 +1861,9 @@ let currentStageIdx = 0;
 // the play area gets visually squeezed horizontally, so we inject extra platforms near
 // the top of the stage to give fighters more places to jump, land, and juggle up there.
 const PORTRAIT_CHAR_SCALE = 1.15; // Characters are scaled up on portrait/phone screens so they read clearly on the narrower, vertical play area (reduced from 1.35 per feedback).
-const PORTRAIT_SPEED_MULT = 2.0; // Fighters on portrait/phone now move at a full 2x multiplier so movement feels as snappy and fast as the desktop/computer version.
+const PORTRAIT_SPEED_MULT = 2.0; // Player movement on portrait/phone gets a full 2x multiplier so movement feels as snappy and fast as the desktop/computer version.
+const PORTRAIT_SPEED_MULT_AI = 1.15; // CPUs get a much smaller portrait speed boost than the player, so lower difficulties don't suddenly feel unfairly fast on phone.
+const CPU_SPEED_MULT = 0.82; // CPUs move a bit slower than the player's top speed baseline so Easy/Medium stay approachable after recent speed increases.
 function isPortraitMode() {
   return window.innerHeight > window.innerWidth;
 }
@@ -2581,7 +2583,7 @@ class Fighter {
     const absDist = Math.abs(dist);
     this.facing = dist > 0 ? 1 : -1;
 
-    const aiSpd = PLAYER_SPEED * this.char.speedMult * (isPortraitMode() ? PORTRAIT_SPEED_MULT : 1);
+    const aiSpd = PLAYER_SPEED * this.char.speedMult * CPU_SPEED_MULT * (isPortraitMode() ? PORTRAIT_SPEED_MULT_AI : 1);
     if (this.retreatTimer > 0) {
       this.retreatTimer -= dt;
       this.vx = -this.facing * aiSpd * 0.85;
