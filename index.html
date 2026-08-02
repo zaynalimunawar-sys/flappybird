@@ -1641,7 +1641,7 @@ function renderCareerMap() {
 
 // ─── CONFIG ─────────────────────────────────────────────────────────────────
 const GRAVITY = 1850;
-const PLAYER_SPEED = 690; // increased base movement speed for faster-feeling fighters
+const PLAYER_SPEED = 620; // moderate base speed increase (dialed back from 690 — that combined with portrait multiplier felt too fast)
 const JUMP_VEL = -820;
 const DOUBLE_JUMP_VEL = -720;
 const FASTFALL_MULT = 2.6;
@@ -1861,8 +1861,8 @@ let currentStageIdx = 0;
 // the play area gets visually squeezed horizontally, so we inject extra platforms near
 // the top of the stage to give fighters more places to jump, land, and juggle up there.
 const PORTRAIT_CHAR_SCALE = 1.15; // Characters are scaled up on portrait/phone screens so they read clearly on the narrower, vertical play area (reduced from 1.35 per feedback).
-const PORTRAIT_SPEED_MULT = 2.0; // Player movement on portrait/phone gets a full 2x multiplier so movement feels as snappy and fast as the desktop/computer version.
-const PORTRAIT_SPEED_MULT_AI = 1.15; // CPUs get a much smaller portrait speed boost than the player, so lower difficulties don't suddenly feel unfairly fast on phone.
+const PORTRAIT_SPEED_MULT = 1.2; // Player movement on portrait/phone gets a modest boost (reduced from 2.0 per feedback — 2.0 felt way too fast).
+const PORTRAIT_SPEED_MULT_AI = 1.05; // CPUs get an even smaller portrait speed boost than the player, so lower difficulties stay approachable on phone.
 const CPU_SPEED_MULT = 0.82; // CPUs move a bit slower than the player's top speed baseline so Easy/Medium stay approachable after recent speed increases.
 function isPortraitMode() {
   return window.innerHeight > window.innerWidth;
