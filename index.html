@@ -1860,8 +1860,8 @@ let currentStageIdx = 0;
 // When the device is in portrait orientation (taller than wide — typical phone-in-hand),
 // the play area gets visually squeezed horizontally, so we inject extra platforms near
 // the top of the stage to give fighters more places to jump, land, and juggle up there.
-const PORTRAIT_CHAR_SCALE = 1.35; // Characters are scaled up on portrait/phone screens so they read clearly on the narrower, vertical play area.
-const PORTRAIT_SPEED_MULT = 1.25; // Fighters move even faster on portrait/phone screens to keep pace with the taller, narrower map.
+const PORTRAIT_CHAR_SCALE = 1.15; // Characters are scaled up on portrait/phone screens so they read clearly on the narrower, vertical play area (reduced from 1.35 per feedback).
+const PORTRAIT_SPEED_MULT = 1.55; // Fighters move even faster on portrait/phone screens to keep pace with the taller, narrower map (increased from 1.25 per feedback).
 function isPortraitMode() {
   return window.innerHeight > window.innerWidth;
 }
