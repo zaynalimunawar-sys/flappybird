@@ -1641,7 +1641,7 @@ function renderCareerMap() {
 
 // ─── CONFIG ─────────────────────────────────────────────────────────────────
 const GRAVITY = 1850;
-const PLAYER_SPEED = 590;
+const PLAYER_SPEED = 690; // increased base movement speed for faster-feeling fighters
 const JUMP_VEL = -820;
 const DOUBLE_JUMP_VEL = -720;
 const FASTFALL_MULT = 2.6;
@@ -1861,6 +1861,7 @@ let currentStageIdx = 0;
 // the play area gets visually squeezed horizontally, so we inject extra platforms near
 // the top of the stage to give fighters more places to jump, land, and juggle up there.
 const PORTRAIT_CHAR_SCALE = 1.35; // Characters are scaled up on portrait/phone screens so they read clearly on the narrower, vertical play area.
+const PORTRAIT_SPEED_MULT = 1.25; // Fighters move even faster on portrait/phone screens to keep pace with the taller, narrower map.
 function isPortraitMode() {
   return window.innerHeight > window.innerWidth;
 }
@@ -2413,7 +2414,7 @@ class Fighter {
   }
 
   handlePlayerInput(enemies) {
-    const spd = PLAYER_SPEED * this.char.speedMult;
+    const spd = PLAYER_SPEED * this.char.speedMult * (isPortraitMode() ? PORTRAIT_SPEED_MULT : 1);
     if (keys['KeyA']) { this.vx = -spd; this.facing = -1; }
     else if (keys['KeyD']) { this.vx = spd; this.facing = 1; }
 
@@ -2580,7 +2581,7 @@ class Fighter {
     const absDist = Math.abs(dist);
     this.facing = dist > 0 ? 1 : -1;
 
-    const aiSpd = PLAYER_SPEED * this.char.speedMult;
+    const aiSpd = PLAYER_SPEED * this.char.speedMult * (isPortraitMode() ? PORTRAIT_SPEED_MULT : 1);
     if (this.retreatTimer > 0) {
       this.retreatTimer -= dt;
       this.vx = -this.facing * aiSpd * 0.85;
