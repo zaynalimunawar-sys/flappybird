@@ -230,9 +230,17 @@ body { font-family: 'Rajdhani', sans-serif; color: var(--color-text); display: f
 #debug { position: fixed; bottom: 0; left: 0; z-index: 99; background: rgba(0,0,0,.75); color: #0f0; font: 11px/1.5 monospace; padding: 4px 8px; pointer-events: none; }
 
 /* ─── STAGE SELECT ─── */
-.stage-select-btns { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; max-width: 620px; }
+.stage-select-btns {
+  display: flex; gap: 10px; flex-wrap: nowrap; overflow-x: auto; overflow-y: hidden;
+  scroll-snap-type: x proximity; max-width: 100%; padding: 4px 6px 14px;
+  -webkit-overflow-scrolling: touch; scrollbar-width: thin; scrollbar-color: rgba(0,212,255,0.4) rgba(255,255,255,0.05);
+}
+.stage-select-btns::-webkit-scrollbar { height: 8px; }
+.stage-select-btns::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 8px; }
+.stage-select-btns::-webkit-scrollbar-thumb { background: rgba(0,212,255,0.4); border-radius: 8px; }
+.stage-select-btns::-webkit-scrollbar-thumb:hover { background: rgba(0,212,255,0.65); }
 .stage-card {
-  width: 108px; height: 78px; border-radius: 12px; border: 2px solid var(--color-border);
+  width: 108px; height: 78px; flex: 0 0 auto; scroll-snap-align: center; border-radius: 12px; border: 2px solid var(--color-border);
   cursor: pointer; position: relative; overflow: hidden; transition: all 200ms ease;
   display: flex; align-items: flex-end; justify-content: center; padding-bottom: 6px;
 }
@@ -245,9 +253,17 @@ body { font-family: 'Rajdhani', sans-serif; color: var(--color-text); display: f
 .stage-desc { margin-top: 10px; font-size: 0.8rem; color: var(--color-muted); text-align: center; max-width: 500px; min-height: 20px; }
 
 /* ─── CHARACTER SELECT ─── */
-.char-select-row { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+.char-select-row {
+  display: flex; gap: 14px; flex-wrap: nowrap; overflow-x: auto; overflow-y: hidden;
+  scroll-snap-type: x proximity; padding: 4px 6px 14px; max-width: 100%;
+  -webkit-overflow-scrolling: touch; scrollbar-width: thin; scrollbar-color: rgba(0,212,255,0.4) rgba(255,255,255,0.05);
+}
+.char-select-row::-webkit-scrollbar { height: 8px; }
+.char-select-row::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 8px; }
+.char-select-row::-webkit-scrollbar-thumb { background: rgba(0,212,255,0.4); border-radius: 8px; }
+.char-select-row::-webkit-scrollbar-thumb:hover { background: rgba(0,212,255,0.65); }
 .char-card {
-  width: 118px; padding: 14px 8px; border-radius: 16px; border: 2px solid var(--color-border);
+  width: 118px; flex: 0 0 auto; scroll-snap-align: center; padding: 14px 8px; border-radius: 16px; border: 2px solid var(--color-border);
   background: rgba(255,255,255,0.04); cursor: pointer; text-align: center;
   transition: all 200ms ease; display: flex; flex-direction: column; align-items: center; gap: 6px;
 }
@@ -1019,8 +1035,43 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
 .career-level-btn.boss { border-color:#ffdd00; background:rgba(255,220,0,0.12); color:#ffdd44; box-shadow: 0 0 12px rgba(255,220,0,0.3); }
 .career-level-btn.locked { opacity:0.3; cursor:not-allowed; }
 .career-level-btn.done { border-color: rgba(0,255,150,0.5); background: rgba(0,255,150,0.08); }
-.career-map-wrap { display:flex; flex-wrap:wrap; gap:10px; justify-content:center; max-width:560px; margin: 0 auto 12px; }
 .career-progress-label { font-size:0.85rem; color: var(--color-muted); text-align:center; margin-bottom: 14px; }
+
+/* ─── RPG-STYLE SCROLLING CAREER MAP ─── */
+.career-map-scroll {
+  position: relative; width: 100%; max-width: 640px; height: 480px; margin: 0 auto;
+  overflow-y: auto; overflow-x: hidden; border-radius: 18px;
+  background: radial-gradient(ellipse at 50% 0%, #12163a 0%, #0a0a18 65%, #060610 100%);
+  border: 1px solid rgba(255,255,255,0.08); box-shadow: inset 0 0 60px rgba(0,0,0,0.5);
+  -webkit-overflow-scrolling: touch; scrollbar-width: thin; scrollbar-color: rgba(0,212,255,0.4) rgba(255,255,255,0.05);
+}
+.career-map-scroll::-webkit-scrollbar { width: 8px; }
+.career-map-scroll::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); }
+.career-map-scroll::-webkit-scrollbar-thumb { background: rgba(0,212,255,0.4); border-radius: 8px; }
+.career-map-scroll::-webkit-scrollbar-thumb:hover { background: rgba(0,212,255,0.65); }
+.career-map-inner { position: relative; width: 100%; }
+.career-map-inner svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+.career-map-deco { position: absolute; font-size: 22px; opacity: 0.18; z-index: 0; pointer-events: none; filter: blur(0.2px); }
+.career-node {
+  position: absolute; width: 58px; height: 58px; border-radius: 50%; z-index: 2;
+  border: 3px solid var(--color-border); background: linear-gradient(160deg, #2a2a4a, #14142a);
+  color: #fff; cursor: pointer; font-family: 'Bangers', cursive; font-size: 1.05rem;
+  display: flex; align-items: center; justify-content: center; transition: all 200ms ease;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.5); transform: translate(-50%, -50%);
+}
+.career-node:hover:not(:disabled) { transform: translate(-50%, -50%) scale(1.12); border-color: var(--color-p1); box-shadow: 0 0 18px rgba(0,212,255,0.5); }
+.career-node.locked { opacity: 0.32; cursor: not-allowed; filter: grayscale(0.6); }
+.career-node.locked::after { content: '🔒'; position: absolute; font-size: 16px; bottom: -6px; right: -4px; filter: none; }
+.career-node.done { border-color: rgba(0,255,150,0.6); background: linear-gradient(160deg, #113322, #0a1a14); box-shadow: 0 0 16px rgba(0,255,150,0.35); }
+.career-node.done::before { content: '⭐'; position: absolute; font-size: 15px; top: -8px; right: -6px; }
+.career-node.boss { width: 74px; height: 74px; border-color: #ffdd00; background: linear-gradient(160deg, #3a2a00, #1a1200); color: #ffdd44; box-shadow: 0 0 20px rgba(255,220,0,0.4); }
+.career-node.boss:hover:not(:disabled) { box-shadow: 0 0 26px rgba(255,220,0,0.65); }
+.career-node.current { animation: careerNodePulse 1.4s ease-in-out infinite; border-color: #00e0ff; }
+@keyframes careerNodePulse { 0%,100% { box-shadow: 0 0 14px rgba(0,224,255,0.4); } 50% { box-shadow: 0 0 28px rgba(0,224,255,0.85); } }
+.career-node-label {
+  position: absolute; top: 100%; left: 50%; transform: translateX(-50%); margin-top: 4px;
+  font-size: 0.6rem; color: var(--color-muted); white-space: nowrap; font-family: 'Rajdhani', sans-serif;
+}
 
 
 
@@ -1290,7 +1341,9 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
 
     <div class="menu-panel" data-panel="career">
       <div class="career-progress-label" id="careerProgressLabel">Level 1 / 30</div>
-      <div class="career-map-wrap" id="careerMapBtns"></div>
+      <div class="career-map-scroll" id="careerMapScroll">
+        <div class="career-map-inner" id="careerMapBtns"></div>
+      </div>
     </div>
 
     <div class="menu-panel" data-panel="mods">
@@ -1610,24 +1663,97 @@ function onCareerLevelComplete(playerWon) {
   renderCareerMap();
 }
 
+const CAREER_MAP_DECOS = ['\u{1F332}','\u{26F0}\uFE0F','\u{1F3DA}\uFE0F','\u{2694}\uFE0F','\u{1F525}','\u{2744}\uFE0F','\u{1F30B}','\u{1F332}','\u{2B50}','\u{1F3F0}'];
+
 function renderCareerMap() {
-  const wrap = document.getElementById('careerMapBtns');
+  const inner = document.getElementById('careerMapBtns');
+  const scrollWrap = document.getElementById('careerMapScroll');
   const label = document.getElementById('careerProgressLabel');
-  if (!wrap) return;
-  wrap.innerHTML = '';
-  if (label) label.textContent = 'Unlocked: Level ' + Math.min(careerProgress.unlockedLevel, CAREER_TOTAL_LEVELS) + ' / ' + CAREER_TOTAL_LEVELS;
+  if (!inner) return;
+  inner.innerHTML = '';
+  const unlocked = Math.min(careerProgress.unlockedLevel, CAREER_TOTAL_LEVELS);
+  if (label) label.textContent = 'Unlocked: Level ' + unlocked + ' / ' + CAREER_TOTAL_LEVELS;
+
+  const rowH = 110;      // vertical spacing per level node
+  const topPad = 60;
+  const bottomPad = 70;
+  const mapH = topPad + (CAREER_TOTAL_LEVELS - 1) * rowH + bottomPad;
+  const centerX = 50;    // percent
+  const amp = 32;        // horizontal wiggle amplitude in percent
+
+  inner.style.height = mapH + 'px';
+
+  // decorative scenery scattered along the path
+  for (let i = 0; i < 16; i++) {
+    const deco = document.createElement('div');
+    deco.className = 'career-map-deco';
+    deco.textContent = CAREER_MAP_DECOS[i % CAREER_MAP_DECOS.length];
+    const dy = topPad + Math.random() * (mapH - topPad - bottomPad);
+    const side = Math.random() < 0.5 ? (8 + Math.random()*14) : (78 + Math.random()*14);
+    deco.style.top = dy + 'px';
+    deco.style.left = side + '%';
+    deco.style.fontSize = (16 + Math.random()*14) + 'px';
+    inner.appendChild(deco);
+  }
+
+  // compute node positions bottom (level1) -> top (final level), winding path feel
+  const positions = [];
   for (let lvl = 1; lvl <= CAREER_TOTAL_LEVELS; lvl++) {
+    const yFromBottom = topPad + (lvl - 1) * rowH;
+    const y = mapH - yFromBottom;
+    const x = centerX + Math.sin((lvl - 1) * 0.85) * amp;
+    positions.push({ lvl, x, y });
+  }
+
+  // SVG connecting path
+  const svgNS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(svgNS, 'svg');
+  svg.setAttribute('viewBox', `0 0 100 ${mapH}`);
+  svg.setAttribute('preserveAspectRatio', 'none');
+  svg.style.height = mapH + 'px';
+  let d = '';
+  positions.forEach((p, i) => {
+    d += (i === 0 ? 'M' : 'L') + p.x + ' ' + p.y + ' ';
+  });
+  const path = document.createElementNS(svgNS, 'path');
+  path.setAttribute('d', d.trim());
+  path.setAttribute('fill', 'none');
+  path.setAttribute('stroke', 'rgba(255,255,255,0.14)');
+  path.setAttribute('stroke-width', '1.4');
+  path.setAttribute('stroke-dasharray', '2,2.4');
+  path.setAttribute('vector-effect', 'non-scaling-stroke');
+  svg.appendChild(path);
+  inner.appendChild(svg);
+
+  positions.forEach(({ lvl, x, y }) => {
     const locked = lvl > careerProgress.unlockedLevel;
     const boss = isBossLevel(lvl);
     const done = !!careerProgress.stars[lvl];
+    const isCurrent = lvl === unlocked && !locked;
     const btn = document.createElement('button');
-    btn.className = 'career-level-btn' + (locked ? ' locked' : '') + (boss ? ' boss' : '') + (done ? ' done' : '');
-    btn.textContent = boss ? ('👑' + lvl) : lvl;
+    btn.className = 'career-node' + (locked ? ' locked' : '') + (boss ? ' boss' : '') + (done ? ' done' : '') + (isCurrent ? ' current' : '');
+    btn.style.left = x + '%';
+    btn.style.top = y + 'px';
+    btn.textContent = boss ? '👑' : lvl;
     btn.disabled = locked;
     btn.title = boss ? ('Boss: ' + BOSS_NAMES[getBossIndex(lvl)]) : ('Level ' + lvl);
     btn.addEventListener('click', () => { if (!locked) startCareerLevel(lvl); });
-    wrap.appendChild(btn);
-  }
+
+    const lbl = document.createElement('div');
+    lbl.className = 'career-node-label';
+    lbl.textContent = boss ? BOSS_NAMES[getBossIndex(lvl)] : ('Lv ' + lvl);
+    btn.appendChild(lbl);
+
+    inner.appendChild(btn);
+  });
+
+  // auto-scroll to keep current/next level in view
+  requestAnimationFrame(() => {
+    if (!scrollWrap) return;
+    const curPos = positions.find(p => p.lvl === unlocked) || positions[0];
+    const targetScroll = curPos.y - scrollWrap.clientHeight / 2;
+    scrollWrap.scrollTop = Math.max(0, targetScroll);
+  });
 }
 
 // ═══════════════════ DEVICE MODE (iPad-only — phone mode removed for stability) ═══════════════════
