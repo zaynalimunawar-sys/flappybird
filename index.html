@@ -6765,6 +6765,289 @@ clanRenderActive = function(clan) {
 
 
 </script>
+
+<script>
+/* ============================================================
+   CLAN CHAT NOTIFICATIONS (merged directly into the game)
+   ------------------------------------------------------------
+   Hooks into the game's real clanFindMine(), clanRenderActive(),
+   clanPlayerId, myClanId, playSFX(), openClanScreen(), and
+   extraModsContainer. Shows a toast + badge when a clanmate
+   chats while you're not looking at the Clan Chat tab. Mute
+   toggle lives in the Clan Chat header and in Menu -> Mods.
+   ============================================================ */
+(function () {
+  "use strict";
+
+  const MUTE_KEY = "clanChatNotifMuted";
+  const SEEN_KEY = "clanChatSeenTs";
+
+  function loadMuted() {
+    try { return localStorage.getItem(MUTE_KEY) === "1"; } catch (e) { return false; }
+  }
+  function saveMuted(v) {
+    try { localStorage.setItem(MUTE_KEY, v ? "1" : "0"); } catch (e) {}
+  }
+  function loadSeen() {
+    try { return parseInt(localStorage.getItem(SEEN_KEY) || "0", 10) || 0; } catch (e) { return 0; }
+  }
+  function saveSeen(ts) {
+    try { localStorage.setItem(SEEN_KEY, String(ts)); } catch (e) {}
+  }
+
+  let notifMuted = loadMuted();
+  let lastSeenTs = loadSeen();
+  let unread = 0;
+  let lastKnownChatLen = -1;
+
+  function isViewingClanChat() {
+    const screen = document.getElementById("clan-screen");
+    const chatPanel = document.querySelector('.clan-subpanel[data-clanpanel="chat"]');
+    return !!screen && !!chatPanel &&
+      screen.classList.contains("active") &&
+      chatPanel.classList.contains("active") &&
+      !document.hidden;
+  }
+
+  function injectStyles() {
+    if (document.getElementById("clanNotifStyles")) return;
+    const s = document.createElement("style");
+    s.id = "clanNotifStyles";
+    s.textContent = `
+      .clan-open-btn{position:relative;}
+      .clan-notif-badge{position:absolute;top:-4px;right:-4px;min-width:16px;height:16px;border-radius:9px;background:#ff3355;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 4px;box-shadow:0 0 6px rgba(255,50,80,.8);z-index:5;font-family:'Rajdhani',sans-serif;line-height:1;}
+      .clan-notif-badge.hidden{display:none;}
+      .clan-notif-toast-wrap{position:fixed;top:14px;right:14px;z-index:400;display:flex;flex-direction:column;gap:8px;pointer-events:none;max-width:280px;}
+      .clan-notif-toast{pointer-events:auto;background:linear-gradient(135deg,#0d3a28,#0a1a14);border:1px solid rgba(60,255,170,.4);border-radius:14px;padding:10px 14px;color:#fff;font-family:'Rajdhani',sans-serif;box-shadow:0 8px 24px rgba(0,0,0,.5);display:flex;gap:10px;align-items:flex-start;cursor:pointer;animation:clanToastIn .28s cubic-bezier(.34,1.56,.64,1);}
+      .clan-notif-toast.leaving{animation:clanToastOut .25s ease forwards;}
+      @keyframes clanToastIn{from{transform:translateX(40px);opacity:0;}to{transform:translateX(0);opacity:1;}}
+      @keyframes clanToastOut{from{transform:translateX(0);opacity:1;}to{transform:translateX(40px);opacity:0;}}
+      .clan-notif-toast-icon{font-size:20px;line-height:1;margin-top:1px;}
+      .clan-notif-toast-body{flex:1;min-width:0;}
+      .clan-notif-toast-name{font-weight:700;color:#33ff99;font-size:.82rem;margin-bottom:2px;}
+      .clan-notif-toast-text{font-size:.8rem;color:rgba(255,255,255,.85);word-break:break-word;line-height:1.25;}
+      .clan-notif-toast-close{background:none;border:none;color:rgba(255,255,255,.4);font-size:14px;cursor:pointer;padding:0 2px;}
+      .clan-notif-bell-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px;padding:4px 2px;}
+      .clan-notif-bell-label{font-size:.78rem;color:rgba(255,255,255,.8);font-weight:700;font-family:'Rajdhani',sans-serif;}
+      .clan-notif-bell-btn{border:none;background:rgba(255,255,255,.08);color:#fff;border-radius:10px;width:34px;height:28px;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+      .clan-notif-bell-btn.muted{color:rgba(255,255,255,.35);background:rgba(255,60,60,.12);}
+      .clan-notif-bell-btn:hover{background:rgba(255,255,255,.16);}
+    `;
+    document.head.appendChild(s);
+  }
+
+  function ensureBadge() {
+    const btn = document.getElementById("clanOpenBtn");
+    if (!btn) return null;
+    let badge = document.getElementById("clanNotifBadge");
+    if (!badge) {
+      badge = document.createElement("span");
+      badge.id = "clanNotifBadge";
+      badge.className = "clan-notif-badge hidden";
+      btn.appendChild(badge);
+    }
+    return badge;
+  }
+  function updateBadge() {
+    const b = ensureBadge();
+    if (!b) return;
+    if (unread > 0 && !notifMuted) {
+      b.textContent = unread > 9 ? "9+" : String(unread);
+      b.classList.remove("hidden");
+    } else {
+      b.classList.add("hidden");
+    }
+  }
+
+  function bellIcon() { return notifMuted ? "\u{1F515}" : "\u{1F514}"; }
+  function refreshBells() {
+    document.querySelectorAll(".clan-notif-bell-btn").forEach((b) => {
+      b.textContent = bellIcon();
+      b.classList.toggle("muted", notifMuted);
+      b.title = notifMuted ? "Notifications OFF - tap to enable" : "Notifications ON - tap to mute";
+    });
+    const desc = document.getElementById("clanChatNotifModDesc");
+    if (desc) desc.textContent = notifMuted
+      ? "Muted. You won't be notified when clanmates chat."
+      : "On. You'll get a pop-up and badge when clanmates chat.";
+  }
+  function toggleMute() {
+    notifMuted = !notifMuted;
+    saveMuted(notifMuted);
+    if (notifMuted) { unread = 0; }
+    updateBadge();
+    refreshBells();
+  }
+
+  function injectChatBell() {
+    const chatBox = document.querySelector('.clan-subpanel[data-clanpanel="chat"] .clan-chat-box');
+    if (!chatBox || document.getElementById("clanChatNotifBellRow")) return;
+    const title = chatBox.querySelector(".clan-chat-title");
+    if (!title) return;
+    const row = document.createElement("div");
+    row.id = "clanChatNotifBellRow";
+    row.className = "clan-notif-bell-row";
+    row.innerHTML = `<span class="clan-notif-bell-label">Chat Notifications</span><button type="button" class="clan-notif-bell-btn">${bellIcon()}</button>`;
+    title.insertAdjacentElement("afterend", row);
+    row.querySelector("button").addEventListener("click", toggleMute);
+    refreshBells();
+  }
+
+  function injectModsToggle() {
+    const container = document.getElementById("extraModsContainer");
+    if (!container || document.getElementById("clanChatNotifModRow")) return;
+    const row = document.createElement("div");
+    row.className = "mods-toggle-row";
+    row.id = "clanChatNotifModRow";
+    row.innerHTML = `<span class="mods-toggle-label">Clan Chat Notifications</span><button type="button" class="clan-notif-bell-btn">${bellIcon()}</button>`;
+    const desc = document.createElement("div");
+    desc.className = "mods-toggle-desc";
+    desc.id = "clanChatNotifModDesc";
+    desc.textContent = notifMuted
+      ? "Muted. You won't be notified when clanmates chat."
+      : "On. You'll get a pop-up and badge when clanmates chat.";
+    container.appendChild(row);
+    container.appendChild(desc);
+    row.querySelector("button").addEventListener("click", toggleMute);
+  }
+
+  function ensureToastWrap() {
+    let wrap = document.getElementById("clanNotifToastWrap");
+    if (!wrap) {
+      wrap = document.createElement("div");
+      wrap.id = "clanNotifToastWrap";
+      wrap.className = "clan-notif-toast-wrap";
+      document.body.appendChild(wrap);
+    }
+    return wrap;
+  }
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+  function removeToast(t) {
+    if (!t || !t.parentNode) return;
+    t.classList.add("leaving");
+    setTimeout(() => t.remove(), 260);
+  }
+  function showToast(name, text) {
+    const wrap = ensureToastWrap();
+    const t = document.createElement("div");
+    t.className = "clan-notif-toast";
+    t.innerHTML = `<div class="clan-notif-toast-icon">\u{1F4AC}</div><div class="clan-notif-toast-body"><div class="clan-notif-toast-name">${escapeHtml(name)}</div><div class="clan-notif-toast-text">${escapeHtml(text)}</div></div><button class="clan-notif-toast-close">\u2715</button>`;
+    t.addEventListener("click", (e) => {
+      if (e.target.classList.contains("clan-notif-toast-close")) { removeToast(t); return; }
+      removeToast(t);
+      try {
+        if (typeof openClanScreen === "function") openClanScreen();
+        const chatTab = document.querySelector('.clan-subtab[data-clansub="chat"]');
+        if (chatTab) chatTab.click();
+      } catch (err) {}
+    });
+    wrap.appendChild(t);
+    setTimeout(() => removeToast(t), 6000);
+  }
+
+  function pingSound() {
+    try {
+      if (typeof playSFX === "function") {
+        playSFX(700, 0.08, "sine");
+        setTimeout(() => playSFX(1000, 0.08, "sine"), 90);
+      }
+    } catch (e) {}
+  }
+
+  function checkForNewMessages() {
+    if (typeof clanFindMine !== "function") return;
+    const clan = clanFindMine();
+    if (!clan || !Array.isArray(clan.chat)) return;
+
+    const viewing = isViewingClanChat();
+
+    if (clan.chat.length === lastKnownChatLen && !viewing) return;
+    lastKnownChatLen = clan.chat.length;
+
+    const myId = typeof clanPlayerId !== "undefined" ? clanPlayerId : null;
+    const newMsgs = clan.chat.filter((m) => m.ts > lastSeenTs && m.id !== myId && !m.pending);
+
+    if (viewing) {
+      const latest = clan.chat.length ? clan.chat[clan.chat.length - 1].ts : lastSeenTs;
+      lastSeenTs = Math.max(lastSeenTs, latest);
+      saveSeen(lastSeenTs);
+      unread = 0;
+      updateBadge();
+      return;
+    }
+
+    if (!newMsgs.length) return;
+
+    lastSeenTs = clan.chat[clan.chat.length - 1].ts;
+    saveSeen(lastSeenTs);
+
+    if (notifMuted) return;
+
+    unread += newMsgs.length;
+    updateBadge();
+
+    const chatOnly = newMsgs.filter((m) => !m.system);
+    if (chatOnly.length) {
+      const last = chatOnly[chatOnly.length - 1];
+      showToast(last.name || "Clanmate", last.text || "");
+      pingSound();
+    }
+  }
+
+  function wrapClanRenderActive() {
+    if (typeof clanRenderActive !== "function" || clanRenderActive.__notifWrapped) return;
+    const original = clanRenderActive;
+    clanRenderActive = function (clan) {
+      original(clan);
+      checkForNewMessages();
+    };
+    clanRenderActive.__notifWrapped = true;
+  }
+
+  function boot() {
+    injectStyles();
+    ensureBadge();
+    updateBadge();
+    injectChatBell();
+    injectModsToggle();
+    wrapClanRenderActive();
+
+    const mo = new MutationObserver(() => {
+      injectChatBell();
+      injectModsToggle();
+      ensureBadge();
+      wrapClanRenderActive();
+    });
+    mo.observe(document.body, { childList: true, subtree: true });
+
+    document.addEventListener("click", (e) => {
+      const t = e.target;
+      if (t && t.closest && t.closest('.clan-subtab[data-clansub="chat"]')) {
+        setTimeout(checkForNewMessages, 100);
+      }
+      if (t && t.id === "clanOpenBtn") {
+        setTimeout(checkForNewMessages, 150);
+      }
+    });
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) checkForNewMessages();
+    });
+
+    setInterval(() => {
+      wrapClanRenderActive();
+      checkForNewMessages();
+    }, 4000);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", boot);
+  } else {
+    boot();
+  }
+})();
+</script>
 </body>
 
 </html>
