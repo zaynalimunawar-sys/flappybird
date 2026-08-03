@@ -1351,6 +1351,52 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
 .clan-create-confirm { background: linear-gradient(135deg,#22cc88,#0a7a4a); color: #fff; }
 .clan-create-cancel { background: rgba(255,255,255,0.08); color: #fff; }
 .clan-create-error { color: #ff5566; font-size: 0.78rem; text-align: center; min-height: 1.1em; }
+
+/* ─── CLAN GAMES ─── */
+.clan-subtabs { display: flex; gap: 8px; margin-bottom: 16px; background: rgba(255,255,255,0.04); border-radius: 12px; padding: 5px; }
+.clan-subtab { flex: 1; padding: 9px 10px; border-radius: 9px; border: none; background: transparent; cursor: pointer;
+  color: rgba(255,255,255,0.45); font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 0.82rem; transition: all 180ms ease; }
+.clan-subtab:hover { color: #fff; }
+.clan-subtab.active { background: rgba(40,255,150,0.16); color: #33ff99; box-shadow: 0 0 14px rgba(40,255,150,0.25); }
+.clan-subpanel { display: none; }
+.clan-subpanel.active { display: block; }
+
+.clan-games-header { text-align: center; margin-bottom: 14px; }
+.clan-games-week { font-size: 0.72rem; color: var(--color-muted); letter-spacing: 1px; text-transform: uppercase; }
+.clan-games-title { font-family: 'Bangers', cursive; font-size: 1.4rem; color: #ffdd44; text-shadow: 0 0 16px rgba(255,200,0,0.4); margin-top: 2px; }
+.clan-games-countdown { font-size: 0.72rem; color: var(--color-muted); margin-top: 2px; }
+
+.clan-task-card {
+  background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.1); border-radius: 16px;
+  padding: 14px 16px; margin-bottom: 12px;
+}
+.clan-task-top { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.clan-task-icon { font-size: 26px; }
+.clan-task-name { font-weight: 700; font-size: 0.92rem; flex: 1; }
+.clan-task-progress-text { font-size: 0.72rem; color: var(--color-muted); }
+.clan-task-bar-wrap { width: 100%; height: 14px; background: rgba(255,255,255,0.08); border-radius: 8px; overflow: hidden; border: 1px solid rgba(255,255,255,0.12); position: relative; }
+.clan-task-bar { height: 100%; border-radius: 8px; transition: width 0.4s ease; background: linear-gradient(90deg,#22cc88,#33ff99); box-shadow: 0 0 10px rgba(40,255,150,0.5); }
+.clan-task-tiers { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+.clan-tier-chip {
+  flex: 1; min-width: 78px; text-align: center; padding: 8px 6px; border-radius: 10px; border: 2px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.03); font-size: 0.68rem; position: relative;
+}
+.clan-tier-chip.reached { border-color: rgba(255,200,0,0.5); background: rgba(255,200,0,0.08); }
+.clan-tier-chip .ctc-goal { color: var(--color-muted); font-size: 0.64rem; }
+.clan-tier-chip .ctc-reward { color: #ffdd44; font-weight: 700; margin-top: 2px; }
+.clan-tier-claim-btn {
+  margin-top: 5px; width: 100%; padding: 5px; border-radius: 8px; border: none; cursor: pointer;
+  font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 0.68rem;
+  background: linear-gradient(135deg,#ffdd00,#ff9900); color: #3a1a00;
+}
+.clan-tier-claim-btn:disabled { opacity: 0.35; cursor: not-allowed; background: rgba(255,255,255,0.1); color: var(--color-muted); }
+.clan-games-leaderboard { margin-top: 18px; }
+.clan-games-lb-title { font-size: 0.75rem; color: var(--color-muted); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 8px; }
+.clan-lb-row { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 10px; background: rgba(255,255,255,0.04); margin-bottom: 6px; }
+.clan-lb-rank { font-family: 'Bangers', cursive; font-size: 1rem; color: #33ff99; width: 22px; text-align: center; }
+.clan-lb-name { flex: 1; font-size: 0.85rem; font-weight: 700; }
+.clan-lb-pts { font-size: 0.8rem; color: #ffdd44; font-weight: 700; }
+.clan-lb-row.me { border: 1px solid rgba(40,255,150,0.4); }
 </style>
 </head>
 <body>
@@ -1509,12 +1555,33 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
         <button class="clan-leave-btn" id="clanLeaveBtn">Leave Clan</button>
       </div>
       <div class="clan-members-row" id="clanMembersRow"></div>
-      <div class="clan-chat-box">
-        <div class="clan-chat-title">💬 Clan Chat</div>
-        <div class="clan-chat-log" id="clanChatLog"></div>
-        <div class="clan-chat-input-row">
-          <input type="text" class="clan-chat-input" id="clanChatInput" placeholder="Say something..." maxlength="200">
-          <button class="clan-chat-send-btn" id="clanChatSendBtn">Send</button>
+
+      <div class="clan-subtabs">
+        <button class="clan-subtab active" data-clansub="chat">💬 Chat</button>
+        <button class="clan-subtab" data-clansub="games">🎮 Clan Games</button>
+      </div>
+
+      <div class="clan-subpanel active" data-clanpanel="chat">
+        <div class="clan-chat-box">
+          <div class="clan-chat-title">💬 Clan Chat</div>
+          <div class="clan-chat-log" id="clanChatLog"></div>
+          <div class="clan-chat-input-row">
+            <input type="text" class="clan-chat-input" id="clanChatInput" placeholder="Say something..." maxlength="200">
+            <button class="clan-chat-send-btn" id="clanChatSendBtn">Send</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="clan-subpanel" data-clanpanel="games">
+        <div class="clan-games-header">
+          <div class="clan-games-week" id="clanGamesWeek">CLAN GAMES</div>
+          <div class="clan-games-title">🎮 Weekly Clan Games</div>
+          <div class="clan-games-countdown" id="clanGamesCountdown">Resets in --</div>
+        </div>
+        <div id="clanTasksContainer"></div>
+        <div class="clan-games-leaderboard">
+          <div class="clan-games-lb-title">🏅 Top Contributors</div>
+          <div id="clanGamesLeaderboard"></div>
         </div>
       </div>
     </div>
@@ -5302,6 +5369,9 @@ function checkGameOver() {
     document.getElementById('hud').style.display = 'none';
 
     if (playerWon) launchConfetti(); else if (isDraw) launchConfetti(0.4);
+    if (typeof clanRecordMatchContribution === 'function') {
+      try { clanRecordMatchContribution(playerWon, dmgDealt); } catch(e) {}
+    }
   }
 }
 
@@ -6520,6 +6590,179 @@ document.getElementById('clanLeaveBtn')?.addEventListener('click', clanLeave);
 document.getElementById('clanChatSendBtn')?.addEventListener('click', clanSendChat);
 document.getElementById('clanChatInput')?.addEventListener('keydown', e => { if (e.key === 'Enter') clanSendChat(); });
 document.getElementById('clanSearchInput')?.addEventListener('input', () => clanRenderList());
+
+// ═══════════════════ CLAN GAMES (weekly co-op tasks, shared per-clan) ═══════════════════
+const CLAN_GAMES_TASKS = [
+  { id: 'wins',   icon: '🏆', name: 'Team Victories',  unit: '',   tiers: [10, 25, 50, 100, 200],    rewards: [50, 120, 250, 500, 1000] },
+  { id: 'damage', icon: '💥', name: 'Damage Dealt',    unit: '%',  tiers: [500, 1500, 3500, 7000, 15000], rewards: [50, 120, 250, 500, 1000] },
+  { id: 'matches',icon: '⚔️', name: 'Matches Played',  unit: '',   tiers: [20, 50, 100, 200, 400],   rewards: [50, 120, 250, 500, 1000] },
+];
+
+function clanGamesGetWeekId() {
+  const d = new Date();
+  const onejan = new Date(d.getFullYear(), 0, 1);
+  const week = Math.ceil((((d - onejan) / 86400000) + onejan.getDay() + 1) / 7);
+  return `${d.getFullYear()}-W${week}`;
+}
+function clanGamesWeekResetLabel() {
+  const d = new Date();
+  const day = d.getDay();
+  const daysUntilMonday = (8 - day) % 7 || 7;
+  const next = new Date(d);
+  next.setDate(d.getDate() + daysUntilMonday);
+  next.setHours(0,0,0,0);
+  const diffMs = next - d;
+  const days = Math.floor(diffMs / 86400000);
+  const hours = Math.floor((diffMs % 86400000) / 3600000);
+  return `Resets in ${days}d ${hours}h`;
+}
+
+function clanGamesEnsureWeek(clan) {
+  const weekId = clanGamesGetWeekId();
+  if (!clan.gamesWeek || clan.gamesWeek.weekId !== weekId) {
+    clan.gamesWeek = {
+      weekId,
+      totals: { wins: 0, damage: 0, matches: 0 },
+      contributions: {},
+      claimedBy: {}
+    };
+    return true;
+  }
+  if (!clan.gamesWeek.totals) clan.gamesWeek.totals = { wins: 0, damage: 0, matches: 0 };
+  if (!clan.gamesWeek.contributions) clan.gamesWeek.contributions = {};
+  if (!clan.gamesWeek.claimedBy) clan.gamesWeek.claimedBy = {};
+  return false;
+}
+
+// Called right after a match ends (see checkGameOver hook below).
+async function clanRecordMatchContribution(playerWon, dmgDealt) {
+  if (!myClanId) return;
+  await clanWithFreshData(data => {
+    const clan = data.clans.find(c => c.id === myClanId);
+    if (!clan) return;
+    clanGamesEnsureWeek(clan);
+    const gw = clan.gamesWeek;
+    gw.totals.matches += 1;
+    if (playerWon) gw.totals.wins += 1;
+    gw.totals.damage += Math.max(0, Math.round(dmgDealt || 0));
+    if (!gw.contributions[clanPlayerId]) gw.contributions[clanPlayerId] = { name: getClanPlayerName(), wins: 0, damage: 0, matches: 0 };
+    const mine = gw.contributions[clanPlayerId];
+    mine.name = getClanPlayerName();
+    mine.matches += 1;
+    if (playerWon) mine.wins += 1;
+    mine.damage += Math.max(0, Math.round(dmgDealt || 0));
+    clanTouchMembership(clan);
+  });
+  if (document.getElementById('clan-screen')?.classList.contains('active')) clanRenderCurrentView();
+}
+
+function clanGamesTierReached(task, tierIdx, totals) {
+  return (totals[task.id] || 0) >= task.tiers[tierIdx];
+}
+
+async function clanGamesClaimTier(taskId, tierIdx) {
+  const mine = clanFindMine();
+  if (!mine) return;
+  const task = CLAN_GAMES_TASKS.find(t => t.id === taskId);
+  if (!task) return;
+  let claimedReward = 0;
+  await clanWithFreshData(data => {
+    const clan = data.clans.find(c => c.id === myClanId);
+    if (!clan) return;
+    clanGamesEnsureWeek(clan);
+    const gw = clan.gamesWeek;
+    const totals = gw.totals;
+    if ((totals[taskId] || 0) < task.tiers[tierIdx]) return;
+    if (!gw.claimedBy[clanPlayerId]) gw.claimedBy[clanPlayerId] = [];
+    const key = `${gw.weekId}:${taskId}:${tierIdx}`;
+    if (gw.claimedBy[clanPlayerId].includes(key)) return;
+    gw.claimedBy[clanPlayerId].push(key);
+    claimedReward = task.rewards[tierIdx];
+  });
+  if (claimedReward > 0) {
+    coins += claimedReward;
+    updateCoinsUI();
+    saveShop();
+    showRewardPopup('🎁', `Clan Games Reward!\n+${claimedReward} 🪙`);
+  }
+  clanRenderCurrentView();
+}
+
+function clanGamesRenderTasks(clan) {
+  clanGamesEnsureWeek(clan);
+  const gw = clan.gamesWeek;
+  const totals = gw.totals;
+  const myClaims = gw.claimedBy[clanPlayerId] || [];
+  document.getElementById('clanGamesWeek').textContent = `CLAN GAMES · ${gw.weekId}`;
+  document.getElementById('clanGamesCountdown').textContent = clanGamesWeekResetLabel();
+
+  const container = document.getElementById('clanTasksContainer');
+  container.innerHTML = CLAN_GAMES_TASKS.map(task => {
+    const cur = totals[task.id] || 0;
+    const maxTier = task.tiers[task.tiers.length - 1];
+    const pct = Math.min(100, (cur / maxTier) * 100);
+    const tiersHtml = task.tiers.map((goal, i) => {
+      const reached = cur >= goal;
+      const key = `${gw.weekId}:${task.id}:${i}`;
+      const claimed = myClaims.includes(key);
+      return `<div class="clan-tier-chip ${reached?'reached':''}">
+        <div class="ctc-goal">${goal.toLocaleString()}${task.unit}</div>
+        <div class="ctc-reward">🪙 ${task.rewards[i]}</div>
+        <button class="clan-tier-claim-btn" data-task="${task.id}" data-tier="${i}" ${(!reached || claimed) ? 'disabled' : ''}>${claimed ? 'Claimed' : reached ? 'Claim' : 'Locked'}</button>
+      </div>`;
+    }).join('');
+    return `<div class="clan-task-card">
+      <div class="clan-task-top">
+        <div class="clan-task-icon">${task.icon}</div>
+        <div class="clan-task-name">${task.name}</div>
+        <div class="clan-task-progress-text">${cur.toLocaleString()} / ${maxTier.toLocaleString()}${task.unit}</div>
+      </div>
+      <div class="clan-task-bar-wrap"><div class="clan-task-bar" style="width:${pct}%"></div></div>
+      <div class="clan-task-tiers">${tiersHtml}</div>
+    </div>`;
+  }).join('');
+
+  container.querySelectorAll('.clan-tier-claim-btn').forEach(btn => {
+    btn.addEventListener('click', () => clanGamesClaimTier(btn.getAttribute('data-task'), parseInt(btn.getAttribute('data-tier'))));
+  });
+
+  const lbEl = document.getElementById('clanGamesLeaderboard');
+  const contribs = Object.entries(gw.contributions || {})
+    .map(([id, c]) => ({ id, ...c, score: (c.wins||0)*10 + (c.damage||0)*0.1 + (c.matches||0)*2 }))
+    .sort((a,b) => b.score - a.score)
+    .slice(0, 10);
+  if (!contribs.length) {
+    lbEl.innerHTML = '<div class="clan-empty-msg">No contributions yet this week. Play a match to get on the board!</div>';
+  } else {
+    lbEl.innerHTML = contribs.map((c, i) => `
+      <div class="clan-lb-row ${c.id === clanPlayerId ? 'me' : ''}">
+        <div class="clan-lb-rank">#${i+1}</div>
+        <div class="clan-lb-name">${clanEscape(c.name)}</div>
+        <div class="clan-lb-pts">${Math.round(c.score).toLocaleString()} pts</div>
+      </div>`).join('');
+  }
+}
+
+document.querySelectorAll('.clan-subtab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.clan-subtab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.clan-subpanel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.querySelector(`.clan-subpanel[data-clanpanel="${tab.getAttribute('data-clansub')}"]`)?.classList.add('active');
+    if (tab.getAttribute('data-clansub') === 'games') {
+      const mine = clanFindMine();
+      if (mine) clanGamesRenderTasks(mine);
+    }
+  });
+});
+
+// Wrap clanRenderActive so the Clan Games panel refreshes whenever the clan view redraws.
+const _clanRenderActiveOriginal = clanRenderActive;
+clanRenderActive = function(clan) {
+  _clanRenderActiveOriginal(clan);
+  clanGamesRenderTasks(clan);
+};
+
 
 </script>
 </body>
