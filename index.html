@@ -6136,11 +6136,13 @@ runIntroFight();
 </script>
 <script>
 
-// ═══════════════════ ONLINE CLANS (shared via public JSON store) ═══════════════════
+// ═══════════════════ ONLINE CLANS (shared via public JSON store, hardened for scale) ═══════════════════
 const CLAN_API_BASE = 'https://jsonblob.com/api/jsonBlob/019fc53e-6d9f-75d7-a396-0f13819b729e';
 const CLAN_ICONS = ['🛡️','⚔️','🐉','🔥','⚡','💀','👑','🌟','🦅','🐺','☠️','🌪️'];
-const CLAN_POLL_MS = 4000;
-const CLAN_ONLINE_WINDOW_MS = 20000;
+const CLAN_POLL_MS_BASE = 8000;
+const CLAN_POLL_MS_MAX = 60000;
+const CLAN_ONLINE_WINDOW_MS = 40000;
+const CLAN_HEARTBEAT_MS = 30000;
 
 function getClanPlayerId() {
   try {
@@ -6158,6 +6160,11 @@ try { myClanId = localStorage.getItem('myClanId') || null; } catch(e) {}
 let clanPollTimer = null;
 let clanApiOnline = false;
 let clanLastRenderedChatCount = 0;
+let clanPollInterval = CLAN_POLL_MS_BASE;
+let clanConsecutiveFailures = 0;
+let clanLastHeartbeat = 0;
+let clanLocalCacheLoaded = false;
+let clanBusy = false; // prevents overlapping fetch/push cycles
 
 function clanSetStatus(online) {
   clanApiOnline = online;
@@ -6165,38 +6172,85 @@ function clanSetStatus(online) {
   const txt = document.getElementById('clanStatusText');
   if (!dot || !txt) return;
   dot.classList.toggle('offline', !online);
-  txt.textContent = online ? 'Connected · Live' : 'Offline — showing cached data';
+  txt.textContent = online ? 'Connected · Live' : `Reconnecting… (retrying every ${Math.round(clanPollInterval/1000)}s)`;
 }
 
-async function clanFetchData() {
+function clanSaveLocalCache() {
+  try { localStorage.setItem('clanDataCache', JSON.stringify(clanData)); } catch(e) {}
+}
+function clanLoadLocalCache() {
   try {
-    const res = await fetch(CLAN_API_BASE, { cache: 'no-store' });
-    if (!res.ok) throw new Error('bad status');
+    const cached = JSON.parse(localStorage.getItem('clanDataCache'));
+    if (cached && Array.isArray(cached.clans)) { clanData = cached; clanLocalCacheLoaded = true; }
+  } catch(e) {}
+}
+
+// Fetch with a small retry + timeout so one flaky request doesn't hang the UI.
+async function clanFetchData(silent) {
+  try {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 7000);
+    const res = await fetch(CLAN_API_BASE, { cache: 'no-store', signal: ctrl.signal });
+    clearTimeout(t);
+    if (res.status === 429) throw new Error('rate-limited');
+    if (!res.ok) throw new Error('bad status ' + res.status);
     const json = await res.json();
     if (json && Array.isArray(json.clans)) {
       clanData = json;
+      clanSaveLocalCache();
+      clanConsecutiveFailures = 0;
+      clanPollInterval = CLAN_POLL_MS_BASE;
       clanSetStatus(true);
       return true;
     }
     throw new Error('bad shape');
   } catch(e) {
+    clanConsecutiveFailures++;
+    clanPollInterval = Math.min(CLAN_POLL_MS_MAX, CLAN_POLL_MS_BASE * Math.pow(1.6, clanConsecutiveFailures)) + Math.random()*1000;
+    if (!clanLocalCacheLoaded) clanLoadLocalCache();
     clanSetStatus(false);
+    if (!silent) clanRestartPolling();
     return false;
   }
 }
 
 async function clanPushData() {
   try {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 7000);
     const res = await fetch(CLAN_API_BASE, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(clanData)
+      body: JSON.stringify(clanData),
+      signal: ctrl.signal
     });
+    clearTimeout(t);
+    clanSaveLocalCache();
+    if (res.status === 429) { clanConsecutiveFailures++; clanSetStatus(false); return false; }
+    clanConsecutiveFailures = 0;
     clanSetStatus(res.ok);
     return res.ok;
   } catch(e) {
+    clanConsecutiveFailures++;
     clanSetStatus(false);
     return false;
+  }
+}
+
+// Core fix for "missing messages": always re-fetch the freshest server state immediately
+// before merging a local change into it, then push. This prevents two clients from both
+// reading stale data and one overwriting the other's chat message / join / leave.
+async function clanWithFreshData(mutatorFn) {
+  if (clanBusy) { await new Promise(r => setTimeout(r, 400)); }
+  clanBusy = true;
+  try {
+    const ok = await clanFetchData(true);
+    if (!ok && !clanLocalCacheLoaded) clanLoadLocalCache();
+    mutatorFn(clanData);
+    const pushed = await clanPushData();
+    return pushed;
+  } finally {
+    clanBusy = false;
   }
 }
 
@@ -6215,12 +6269,41 @@ function clanTouchMembership(clan) {
   me.lastSeen = Date.now();
 }
 
-async function clanRefreshAndRender() {
+function clanRestartPolling() {
+  if (clanPollTimer) clearTimeout(clanPollTimer);
+  clanPollTimer = setTimeout(clanPollTick, clanPollInterval);
+}
+
+async function clanPollTick() {
+  if (!document.getElementById('clan-screen')?.classList.contains('active')) return;
+  if (document.hidden) { clanRestartPolling(); return; }
   await clanFetchData();
   const mine = clanFindMine();
   if (mine) {
-    clanTouchMembership(mine);
-    clanPushData();
+    const now = Date.now();
+    if (now - clanLastHeartbeat > CLAN_HEARTBEAT_MS) {
+      clanLastHeartbeat = now;
+      await clanWithFreshData(data => {
+        const c = data.clans.find(x => x.id === myClanId);
+        if (c) clanTouchMembership(c);
+      });
+    }
+  }
+  clanRenderCurrentView();
+  clanRestartPolling();
+}
+
+async function clanRefreshAndRender() {
+  clanLoadLocalCache();
+  clanRenderCurrentView();
+  await clanFetchData();
+  const mine = clanFindMine();
+  if (mine) {
+    clanLastHeartbeat = Date.now();
+    await clanWithFreshData(data => {
+      const c = data.clans.find(x => x.id === myClanId);
+      if (c) clanTouchMembership(c);
+    });
   }
   clanRenderCurrentView();
 }
@@ -6246,17 +6329,17 @@ function clanRenderList() {
   let list = clanData.clans.slice().sort((a,b) => (b.members?.length||0) - (a.members?.length||0));
   if (q) list = list.filter(c => c.name.toLowerCase().includes(q) || (c.tag||'').toLowerCase().includes(q));
   if (!list.length) {
-    container.innerHTML = '<div class="clan-empty-msg">No clans found yet. Be the first to create one! 🛡️</div>';
+    container.innerHTML = `<div class="clan-empty-msg">${clanApiOnline ? 'No clans found yet. Be the first to create one! 🛡️' : 'Offline — clan list will appear once reconnected.'}</div>`;
     return;
   }
   container.innerHTML = list.map(c => {
     const memCount = c.members?.length || 0;
-    const full = memCount >= 30;
+    const full = memCount >= 100;
     return `<div class="clan-list-card">
       <div class="clan-list-icon">${c.icon || '🛡️'}</div>
       <div class="clan-list-info">
         <div class="clan-list-name">${clanEscape(c.name)} <span class="clan-list-tag">#${clanEscape(c.tag||'')}</span></div>
-        <div class="clan-list-members">${memCount}/30 members</div>
+        <div class="clan-list-members">${memCount}/100 members</div>
       </div>
       <button class="clan-join-btn" data-clanid="${c.id}" ${full?'disabled':''}>${full?'Full':'Join'}</button>
     </div>`;
@@ -6273,7 +6356,7 @@ function clanEscape(s) {
 function clanRenderActive(clan) {
   document.getElementById('clanActiveIcon').textContent = clan.icon || '🛡️';
   document.getElementById('clanActiveName').textContent = clan.name;
-  document.getElementById('clanActiveTag').textContent = `#${clan.tag||''} · ${clan.members.length}/30 members`;
+  document.getElementById('clanActiveTag').textContent = `#${clan.tag||''} · ${clan.members.length}/100 members`;
   const now = Date.now();
   const membersRow = document.getElementById('clanMembersRow');
   membersRow.innerHTML = clan.members.slice().sort((a,b)=> (now-a.lastSeen) - (now-b.lastSeen)).map(m => {
@@ -6283,49 +6366,52 @@ function clanRenderActive(clan) {
 
   const chatLog = document.getElementById('clanChatLog');
   const chat = clan.chat || [];
-  if (chat.length !== clanLastRenderedChatCount || document.activeElement !== document.getElementById('clanChatInput')) {
-    const wasAtBottom = chatLog.scrollTop + chatLog.clientHeight >= chatLog.scrollHeight - 40;
-    chatLog.innerHTML = chat.slice(-100).map(m => {
+  const chatInputFocused = document.activeElement === document.getElementById('clanChatInput');
+  if (chat.length !== clanLastRenderedChatCount || !chatInputFocused) {
+    const wasAtBottom = chatLog.scrollTop + chatLog.clientHeight >= chatLog.scrollHeight - 60;
+    chatLog.innerHTML = chat.slice(-150).map(m => {
       if (m.system) return `<div class="clan-chat-msg system">— ${clanEscape(m.text)} —</div>`;
       const t = new Date(m.ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       return `<div class="clan-chat-msg"><span class="cn">${clanEscape(m.name)}:</span>${clanEscape(m.text)}<span class="ct">${t}</span></div>`;
     }).join('');
     clanLastRenderedChatCount = chat.length;
-    if (wasAtBottom || chat.length <= 100) chatLog.scrollTop = chatLog.scrollHeight;
+    if (wasAtBottom || chat.length <= 150 || !chatInputFocused) chatLog.scrollTop = chatLog.scrollHeight;
   }
 }
 
 async function clanJoin(clanId) {
-  await clanFetchData();
-  const clan = clanData.clans.find(c => c.id === clanId);
-  if (!clan) return;
-  if (clan.members.length >= 30) return;
-  if (!clan.members.find(m => m.id === clanPlayerId)) {
-    clan.members.push({ id: clanPlayerId, name: getClanPlayerName(), lastSeen: Date.now(), owner: false });
-    clan.chat = clan.chat || [];
-    clan.chat.push({ system: true, text: `${getClanPlayerName()} joined the clan`, ts: Date.now() });
-  }
-  myClanId = clanId;
-  try { localStorage.setItem('myClanId', myClanId); } catch(e) {}
-  await clanPushData();
+  const btn = document.querySelector(`.clan-join-btn[data-clanid="${clanId}"]`);
+  if (btn) { btn.disabled = true; btn.textContent = 'Joining...'; }
+  const ok = await clanWithFreshData(data => {
+    const clan = data.clans.find(c => c.id === clanId);
+    if (!clan) return;
+    if (clan.members.length >= 100) return;
+    if (!clan.members.find(m => m.id === clanPlayerId)) {
+      clan.members.push({ id: clanPlayerId, name: getClanPlayerName(), lastSeen: Date.now(), owner: false });
+      clan.chat = clan.chat || [];
+      clan.chat.push({ system: true, text: `${getClanPlayerName()} joined the clan`, ts: Date.now() });
+      myClanId = clanId;
+    }
+  });
+  if (myClanId === clanId) { try { localStorage.setItem('myClanId', myClanId); } catch(e) {} }
   clanRenderCurrentView();
 }
 
 async function clanLeave() {
   if (!confirm('Leave this clan?')) return;
-  await clanFetchData();
-  const clan = clanData.clans.find(c => c.id === myClanId);
-  if (clan) {
+  const leavingId = myClanId;
+  await clanWithFreshData(data => {
+    const clan = data.clans.find(c => c.id === leavingId);
+    if (!clan) return;
     clan.members = clan.members.filter(m => m.id !== clanPlayerId);
     clan.chat = clan.chat || [];
     clan.chat.push({ system: true, text: `${getClanPlayerName()} left the clan`, ts: Date.now() });
     if (clan.members.length === 0) {
-      clanData.clans = clanData.clans.filter(c => c.id !== clan.id);
+      data.clans = data.clans.filter(c => c.id !== clan.id);
     } else if (!clan.members.find(m => m.owner)) {
       clan.members[0].owner = true;
     }
-    await clanPushData();
-  }
+  });
   myClanId = null;
   try { localStorage.removeItem('myClanId'); } catch(e) {}
   clanRenderCurrentView();
@@ -6336,13 +6422,21 @@ async function clanSendChat() {
   const text = input.value.trim();
   if (!text || !myClanId) return;
   input.value = '';
-  await clanFetchData();
-  const clan = clanData.clans.find(c => c.id === myClanId);
-  if (!clan) return;
-  clan.chat = clan.chat || [];
-  clan.chat.push({ name: getClanPlayerName(), text: text.slice(0, 200), ts: Date.now(), id: clanPlayerId });
-  clanTouchMembership(clan);
-  await clanPushData();
+  const optimisticMsg = { name: getClanPlayerName(), text: text.slice(0, 200), ts: Date.now(), id: clanPlayerId, pending: true };
+  // Show it instantly for the sender so the UI never feels like messages vanish.
+  const mineLocal = clanFindMine();
+  if (mineLocal) {
+    mineLocal.chat = mineLocal.chat || [];
+    mineLocal.chat.push(optimisticMsg);
+    clanRenderActive(mineLocal);
+  }
+  await clanWithFreshData(data => {
+    const clan = data.clans.find(c => c.id === myClanId);
+    if (!clan) return;
+    clan.chat = clan.chat || [];
+    clan.chat.push({ name: getClanPlayerName(), text: text.slice(0, 200), ts: optimisticMsg.ts, id: clanPlayerId });
+    clanTouchMembership(clan);
+  });
   clanRenderCurrentView();
 }
 
@@ -6371,36 +6465,51 @@ async function clanConfirmCreate() {
   const errEl = document.getElementById('clanCreateError');
   if (name.length < 3) { errEl.textContent = 'Clan name must be at least 3 characters.'; return; }
   if (tag.length < 2) { errEl.textContent = 'Tag must be at least 2 characters.'; return; }
-  await clanFetchData();
-  if (clanData.clans.some(c => c.name.toLowerCase() === name.toLowerCase())) {
-    errEl.textContent = 'A clan with that name already exists.'; return;
+  const confirmBtn = document.getElementById('clanCreateConfirmBtn');
+  confirmBtn.disabled = true; confirmBtn.textContent = 'Creating...';
+  let newClanId = null;
+  let nameTaken = false;
+  await clanWithFreshData(data => {
+    if (data.clans.some(c => c.name.toLowerCase() === name.toLowerCase())) { nameTaken = true; return; }
+    newClanId = 'c_' + Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+    data.clans.push({
+      id: newClanId, name, tag, icon: clanSelectedIcon,
+      members: [{ id: clanPlayerId, name: getClanPlayerName(), lastSeen: Date.now(), owner: true }],
+      chat: [{ system: true, text: `${clanEscape(name)} was founded by ${getClanPlayerName()}!`, ts: Date.now() }]
+    });
+  });
+  confirmBtn.disabled = false; confirmBtn.textContent = 'Create';
+  if (nameTaken) { errEl.textContent = 'A clan with that name already exists.'; return; }
+  if (newClanId) {
+    myClanId = newClanId;
+    try { localStorage.setItem('myClanId', myClanId); } catch(e) {}
+    clanCloseCreate();
+    clanRenderCurrentView();
   }
-  const newClan = {
-    id: 'c_' + Date.now().toString(36) + Math.random().toString(36).slice(2,6),
-    name, tag, icon: clanSelectedIcon,
-    members: [{ id: clanPlayerId, name: getClanPlayerName(), lastSeen: Date.now(), owner: true }],
-    chat: [{ system: true, text: `${clanEscape(name)} was founded by ${getClanPlayerName()}!`, ts: Date.now() }]
-  };
-  clanData.clans.push(newClan);
-  myClanId = newClan.id;
-  try { localStorage.setItem('myClanId', myClanId); } catch(e) {}
-  await clanPushData();
-  clanCloseCreate();
-  clanRenderCurrentView();
 }
 
 function openClanScreen() {
   document.getElementById('clan-screen').classList.add('active');
+  clanLoadLocalCache();
+  clanRenderCurrentView();
   clanRefreshAndRender();
-  if (clanPollTimer) clearInterval(clanPollTimer);
-  clanPollTimer = setInterval(() => {
-    if (document.getElementById('clan-screen').classList.contains('active')) clanRefreshAndRender();
-  }, CLAN_POLL_MS);
+  clanConsecutiveFailures = 0;
+  clanPollInterval = CLAN_POLL_MS_BASE;
+  clanRestartPolling();
 }
 function closeClanScreen() {
   document.getElementById('clan-screen').classList.remove('active');
-  if (clanPollTimer) { clearInterval(clanPollTimer); clanPollTimer = null; }
+  if (clanPollTimer) { clearTimeout(clanPollTimer); clanPollTimer = null; }
 }
+
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden && document.getElementById('clan-screen')?.classList.contains('active')) {
+    clanConsecutiveFailures = 0;
+    clanPollInterval = CLAN_POLL_MS_BASE;
+    clanRefreshAndRender();
+    clanRestartPolling();
+  }
+});
 
 document.getElementById('clanOpenBtn')?.addEventListener('click', openClanScreen);
 document.getElementById('clanCloseBtn')?.addEventListener('click', closeClanScreen);
