@@ -230,17 +230,9 @@ body { font-family: 'Rajdhani', sans-serif; color: var(--color-text); display: f
 #debug { position: fixed; bottom: 0; left: 0; z-index: 99; background: rgba(0,0,0,.75); color: #0f0; font: 11px/1.5 monospace; padding: 4px 8px; pointer-events: none; }
 
 /* ─── STAGE SELECT ─── */
-.stage-select-btns {
-  display: flex; gap: 10px; flex-wrap: nowrap; overflow-x: auto; overflow-y: hidden;
-  scroll-snap-type: x proximity; max-width: 100%; padding: 4px 6px 14px;
-  -webkit-overflow-scrolling: touch; scrollbar-width: thin; scrollbar-color: rgba(0,212,255,0.4) rgba(255,255,255,0.05);
-}
-.stage-select-btns::-webkit-scrollbar { height: 8px; }
-.stage-select-btns::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 8px; }
-.stage-select-btns::-webkit-scrollbar-thumb { background: rgba(0,212,255,0.4); border-radius: 8px; }
-.stage-select-btns::-webkit-scrollbar-thumb:hover { background: rgba(0,212,255,0.65); }
+.stage-select-btns { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; max-width: 620px; }
 .stage-card {
-  width: 108px; height: 78px; flex: 0 0 auto; scroll-snap-align: center; border-radius: 12px; border: 2px solid var(--color-border);
+  width: 108px; height: 78px; border-radius: 12px; border: 2px solid var(--color-border);
   cursor: pointer; position: relative; overflow: hidden; transition: all 200ms ease;
   display: flex; align-items: flex-end; justify-content: center; padding-bottom: 6px;
 }
@@ -253,17 +245,9 @@ body { font-family: 'Rajdhani', sans-serif; color: var(--color-text); display: f
 .stage-desc { margin-top: 10px; font-size: 0.8rem; color: var(--color-muted); text-align: center; max-width: 500px; min-height: 20px; }
 
 /* ─── CHARACTER SELECT ─── */
-.char-select-row {
-  display: flex; gap: 14px; flex-wrap: nowrap; overflow-x: auto; overflow-y: hidden;
-  scroll-snap-type: x proximity; padding: 4px 6px 14px; max-width: 100%;
-  -webkit-overflow-scrolling: touch; scrollbar-width: thin; scrollbar-color: rgba(0,212,255,0.4) rgba(255,255,255,0.05);
-}
-.char-select-row::-webkit-scrollbar { height: 8px; }
-.char-select-row::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 8px; }
-.char-select-row::-webkit-scrollbar-thumb { background: rgba(0,212,255,0.4); border-radius: 8px; }
-.char-select-row::-webkit-scrollbar-thumb:hover { background: rgba(0,212,255,0.65); }
+.char-select-row { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
 .char-card {
-  width: 118px; flex: 0 0 auto; scroll-snap-align: center; padding: 14px 8px; border-radius: 16px; border: 2px solid var(--color-border);
+  width: 118px; padding: 14px 8px; border-radius: 16px; border: 2px solid var(--color-border);
   background: rgba(255,255,255,0.04); cursor: pointer; text-align: center;
   transition: all 200ms ease; display: flex; flex-direction: column; align-items: center; gap: 6px;
 }
@@ -1035,43 +1019,8 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
 .career-level-btn.boss { border-color:#ffdd00; background:rgba(255,220,0,0.12); color:#ffdd44; box-shadow: 0 0 12px rgba(255,220,0,0.3); }
 .career-level-btn.locked { opacity:0.3; cursor:not-allowed; }
 .career-level-btn.done { border-color: rgba(0,255,150,0.5); background: rgba(0,255,150,0.08); }
+.career-map-wrap { display:flex; flex-wrap:wrap; gap:10px; justify-content:center; max-width:560px; margin: 0 auto 12px; }
 .career-progress-label { font-size:0.85rem; color: var(--color-muted); text-align:center; margin-bottom: 14px; }
-
-/* ─── RPG-STYLE SCROLLING CAREER MAP ─── */
-.career-map-scroll {
-  position: relative; width: 100%; max-width: 640px; height: 480px; margin: 0 auto;
-  overflow-y: auto; overflow-x: hidden; border-radius: 18px;
-  background: radial-gradient(ellipse at 50% 0%, #12163a 0%, #0a0a18 65%, #060610 100%);
-  border: 1px solid rgba(255,255,255,0.08); box-shadow: inset 0 0 60px rgba(0,0,0,0.5);
-  -webkit-overflow-scrolling: touch; scrollbar-width: thin; scrollbar-color: rgba(0,212,255,0.4) rgba(255,255,255,0.05);
-}
-.career-map-scroll::-webkit-scrollbar { width: 8px; }
-.career-map-scroll::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); }
-.career-map-scroll::-webkit-scrollbar-thumb { background: rgba(0,212,255,0.4); border-radius: 8px; }
-.career-map-scroll::-webkit-scrollbar-thumb:hover { background: rgba(0,212,255,0.65); }
-.career-map-inner { position: relative; width: 100%; }
-.career-map-inner svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
-.career-map-deco { position: absolute; font-size: 22px; opacity: 0.18; z-index: 0; pointer-events: none; filter: blur(0.2px); }
-.career-node {
-  position: absolute; width: 58px; height: 58px; border-radius: 50%; z-index: 2;
-  border: 3px solid var(--color-border); background: linear-gradient(160deg, #2a2a4a, #14142a);
-  color: #fff; cursor: pointer; font-family: 'Bangers', cursive; font-size: 1.05rem;
-  display: flex; align-items: center; justify-content: center; transition: all 200ms ease;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.5); transform: translate(-50%, -50%);
-}
-.career-node:hover:not(:disabled) { transform: translate(-50%, -50%) scale(1.12); border-color: var(--color-p1); box-shadow: 0 0 18px rgba(0,212,255,0.5); }
-.career-node.locked { opacity: 0.32; cursor: not-allowed; filter: grayscale(0.6); }
-.career-node.locked::after { content: '🔒'; position: absolute; font-size: 16px; bottom: -6px; right: -4px; filter: none; }
-.career-node.done { border-color: rgba(0,255,150,0.6); background: linear-gradient(160deg, #113322, #0a1a14); box-shadow: 0 0 16px rgba(0,255,150,0.35); }
-.career-node.done::before { content: '⭐'; position: absolute; font-size: 15px; top: -8px; right: -6px; }
-.career-node.boss { width: 74px; height: 74px; border-color: #ffdd00; background: linear-gradient(160deg, #3a2a00, #1a1200); color: #ffdd44; box-shadow: 0 0 20px rgba(255,220,0,0.4); }
-.career-node.boss:hover:not(:disabled) { box-shadow: 0 0 26px rgba(255,220,0,0.65); }
-.career-node.current { animation: careerNodePulse 1.4s ease-in-out infinite; border-color: #00e0ff; }
-@keyframes careerNodePulse { 0%,100% { box-shadow: 0 0 14px rgba(0,224,255,0.4); } 50% { box-shadow: 0 0 28px rgba(0,224,255,0.85); } }
-.career-node-label {
-  position: absolute; top: 100%; left: 50%; transform: translateX(-50%); margin-top: 4px;
-  font-size: 0.6rem; color: var(--color-muted); white-space: nowrap; font-family: 'Rajdhani', sans-serif;
-}
 
 
 
@@ -1257,6 +1206,151 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
   100% { opacity: 0; transform: translate(var(--px), var(--py)) scale(0.15); }
 }
 
+
+/* ─── ONLINE CLANS ─── */
+.clan-open-btn {
+  padding: 16px 32px; border-radius: 12px; border: none;
+  background: linear-gradient(135deg, #22cc88, #0a7a4a); color: #fff;
+  font-family: 'Bangers', cursive; font-size: 1.5rem; letter-spacing: 2px;
+  cursor: pointer; transition: all 200ms ease;
+  box-shadow: 0 4px 24px rgba(20,200,120,0.4); position: relative; overflow: hidden;
+}
+.clan-open-btn:hover { transform: translateY(-3px) scale(1.04); box-shadow: 0 8px 32px rgba(20,200,120,0.7); }
+.clan-open-btn .clan-online-dot {
+  position: absolute; top: 6px; right: 8px; width: 10px; height: 10px; border-radius: 50%;
+  background: #33ff88; box-shadow: 0 0 8px #33ff88; animation: clanDotPulse 1.4s ease-in-out infinite;
+}
+@keyframes clanDotPulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.7); } }
+
+#clan-screen {
+  position: fixed; inset: 0; z-index: 116; display: none; flex-direction: column;
+  background: radial-gradient(ellipse at 50% 0%, #0a2a1e 0%, #0d0d1a 70%);
+  overflow-y: auto; -webkit-overflow-scrolling: touch;
+}
+#clan-screen.active { display: flex; }
+.clan-topbar {
+  position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: 16px;
+  padding: 18px 20px; background: rgba(10,10,26,0.92); backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.clan-title { font-family: 'Bangers', cursive; font-size: clamp(1.6rem, 4vw, 2.4rem); color: #33ff99; text-shadow: 0 0 20px rgba(40,255,150,0.5); flex: 1; }
+.clan-close-btn {
+  padding: 8px 18px; border-radius: 24px; border: 2px solid var(--color-border);
+  background: var(--color-surface); color: var(--color-text); cursor: pointer;
+  font-family: 'Rajdhani', sans-serif; font-weight: 600;
+}
+.clan-close-btn:hover { border-color: #33ff99; color: #33ff99; }
+.clan-body { padding: 20px 18px 60px; max-width: 640px; margin: 0 auto; width: 100%; }
+
+.clan-status-strip { font-size: 0.75rem; color: var(--color-muted); text-align: center; margin-bottom: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.clan-status-dot { width: 8px; height: 8px; border-radius: 50%; background: #33ff88; box-shadow: 0 0 8px #33ff88; }
+.clan-status-dot.offline { background: #ff4466; box-shadow: 0 0 8px #ff4466; }
+
+.clan-search-row { display: flex; gap: 8px; margin-bottom: 16px; }
+.clan-search-input {
+  flex: 1; border-radius: 12px; border: 1px solid rgba(255,255,255,0.14); background: rgba(0,0,0,0.32);
+  color: #fff; padding: 11px 14px; outline: none; font-family: 'Rajdhani', sans-serif; font-weight: 700;
+}
+.clan-search-input:focus { border-color: #33ff99; box-shadow: 0 0 0 3px rgba(40,255,150,0.15); }
+.clan-create-btn {
+  padding: 11px 20px; border-radius: 12px; border: none; cursor: pointer; white-space: nowrap;
+  font-family: 'Bangers', cursive; font-size: 1rem; letter-spacing: 1px;
+  background: linear-gradient(135deg,#22cc88,#0a7a4a); color: #fff;
+  box-shadow: 0 4px 16px rgba(20,200,120,0.4);
+}
+.clan-create-btn:hover { transform: scale(1.04); }
+
+.clan-list-card {
+  background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.1); border-radius: 16px;
+  padding: 14px 16px; margin-bottom: 10px; display: flex; align-items: center; gap: 12px;
+  transition: transform 150ms ease, border-color 150ms ease;
+}
+.clan-list-card:hover { transform: translateY(-2px); border-color: rgba(40,255,150,0.4); }
+.clan-list-icon { font-size: 32px; }
+.clan-list-info { flex: 1; min-width: 0; }
+.clan-list-name { font-weight: 700; font-size: 1rem; display:flex; align-items:center; gap:6px; }
+.clan-list-tag { font-size: 0.68rem; color: #33ff99; background: rgba(40,255,150,0.12); padding: 1px 8px; border-radius: 8px; letter-spacing: 0.5px; }
+.clan-list-members { font-size: 0.72rem; color: var(--color-muted); margin-top: 2px; }
+.clan-join-btn {
+  padding: 9px 18px; border-radius: 10px; border: none; cursor: pointer;
+  font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 0.85rem;
+  background: linear-gradient(135deg,#22cc88,#0a7a4a); color: #fff; white-space: nowrap;
+}
+.clan-join-btn:hover { transform: scale(1.04); }
+.clan-join-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.clan-empty-msg { text-align: center; color: var(--color-muted); font-size: 0.85rem; padding: 30px 10px; }
+
+.clan-active-hero {
+  background: linear-gradient(160deg, rgba(20,200,120,0.14), rgba(255,255,255,0.03));
+  border: 2px solid rgba(40,255,150,0.35); border-radius: 20px; padding: 20px; margin-bottom: 18px;
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+}
+.clan-active-icon { font-size: 48px; }
+.clan-active-info { flex: 1; min-width: 160px; }
+.clan-active-name { font-family: 'Bangers', cursive; font-size: 1.4rem; color: #fff; letter-spacing: 1px; }
+.clan-active-tag { font-size: 0.75rem; color: #33ff99; }
+.clan-leave-btn {
+  padding: 9px 18px; border-radius: 10px; border: 2px solid rgba(255,68,102,0.5); cursor: pointer;
+  background: rgba(102,17,17,0.35); color: #ff8899; font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 0.85rem;
+}
+.clan-leave-btn:hover { background: linear-gradient(135deg,#661111,#330808); color: #fff; }
+
+.clan-members-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+.clan-member-pill {
+  display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 20px;
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); font-size: 0.78rem;
+}
+.clan-member-pill.online::before { content:''; width:7px; height:7px; border-radius:50%; background:#33ff88; box-shadow:0 0 6px #33ff88; display:inline-block; }
+.clan-member-pill.owner { border-color: rgba(255,200,0,0.5); color: #ffdd44; }
+
+.clan-chat-box {
+  background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px;
+  padding: 14px; display: flex; flex-direction: column; gap: 8px;
+}
+.clan-chat-title { font-size: 0.75rem; color: var(--color-muted); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 4px; }
+.clan-chat-log { height: 260px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; padding-right: 4px; }
+.clan-chat-msg { font-size: 0.85rem; line-height: 1.35; word-break: break-word; }
+.clan-chat-msg .cn { font-weight: 700; color: #33ff99; margin-right: 6px; }
+.clan-chat-msg .ct { color: rgba(255,255,255,0.3); font-size: 0.65rem; margin-left: 6px; }
+.clan-chat-msg.system { color: var(--color-muted); font-style: italic; }
+.clan-chat-input-row { display: flex; gap: 8px; margin-top: 4px; }
+.clan-chat-input {
+  flex: 1; border-radius: 12px; border: 1px solid rgba(255,255,255,0.14); background: rgba(0,0,0,0.32);
+  color: #fff; padding: 10px 14px; outline: none; font-family: 'Rajdhani', sans-serif; font-weight: 600;
+}
+.clan-chat-input:focus { border-color: #33ff99; box-shadow: 0 0 0 3px rgba(40,255,150,0.15); }
+.clan-chat-send-btn {
+  padding: 10px 20px; border-radius: 12px; border: none; cursor: pointer;
+  background: linear-gradient(135deg,#22cc88,#0a7a4a); color: #fff;
+  font-family: 'Bangers', cursive; font-size: 0.95rem; letter-spacing: 1px;
+}
+.clan-chat-send-btn:hover { transform: scale(1.04); }
+
+#clan-create-overlay {
+  position: fixed; inset: 0; z-index: 230; display: none; align-items: center; justify-content: center;
+  background: rgba(0,0,0,0.8); backdrop-filter: blur(6px);
+}
+#clan-create-overlay.active { display: flex; }
+.clan-create-box {
+  background: linear-gradient(160deg,#0a2a1e,#0d0d1a); border: 2px solid rgba(40,255,150,0.4);
+  border-radius: 24px; padding: 28px 26px; display: flex; flex-direction: column; gap: 12px;
+  max-width: 380px; width: 90vw; box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  animation: rewardPop 0.35s cubic-bezier(.34,1.56,.64,1);
+}
+.clan-create-box h2 { font-family: 'Bangers', cursive; font-size: 1.4rem; color: #33ff99; text-align: center; }
+.clan-create-box input, .clan-create-box select {
+  border-radius: 12px; border: 1px solid rgba(255,255,255,0.14); background: rgba(0,0,0,0.32);
+  color: #fff; padding: 11px 14px; outline: none; font-family: 'Rajdhani', sans-serif; font-weight: 700;
+}
+.clan-create-box input:focus { border-color: #33ff99; }
+.clan-create-icon-row { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+.clan-icon-pick { font-size: 24px; padding: 8px; border-radius: 10px; border: 2px solid transparent; cursor: pointer; background: rgba(255,255,255,0.05); }
+.clan-icon-pick.selected { border-color: #33ff99; background: rgba(40,255,150,0.15); }
+.clan-create-actions { display: flex; gap: 10px; margin-top: 6px; }
+.clan-create-actions button { flex: 1; padding: 11px; border-radius: 12px; border: none; cursor: pointer; font-family: 'Rajdhani', sans-serif; font-weight: 700; }
+.clan-create-confirm { background: linear-gradient(135deg,#22cc88,#0a7a4a); color: #fff; }
+.clan-create-cancel { background: rgba(255,255,255,0.08); color: #fff; }
+.clan-create-error { color: #ff5566; font-size: 0.78rem; text-align: center; min-height: 1.1em; }
 </style>
 </head>
 <body>
@@ -1341,9 +1435,7 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
 
     <div class="menu-panel" data-panel="career">
       <div class="career-progress-label" id="careerProgressLabel">Level 1 / 30</div>
-      <div class="career-map-scroll" id="careerMapScroll">
-        <div class="career-map-inner" id="careerMapBtns"></div>
-      </div>
+      <div class="career-map-wrap" id="careerMapBtns"></div>
     </div>
 
     <div class="menu-panel" data-panel="mods">
@@ -1368,6 +1460,7 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
     <div class="menu-btn-row">
       <button class="shop-open-btn" id="shopOpenBtn">🛒 SHOP</button>
       <button class="pass-open-btn" id="passOpenBtn">🎫 PASS</button>
+      <button class="clan-open-btn" id="clanOpenBtn">🛡️ CLANS<span class="clan-online-dot"></span></button>
     </div>
   </div>
 </div>
@@ -1388,6 +1481,59 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
         <button class="shop-tab" data-tab="boxes">📦 Boxes</button>
   </div>
   <div class="shop-body"><div class="shop-featured-banner" id="shopFeaturedBanner"></div><div id="shopBody"></div></div>
+</div>
+
+
+<!-- ONLINE CLANS -->
+<div id="clan-screen">
+  <div class="clan-topbar">
+    <h1 class="clan-title">🛡️ CLANS</h1>
+    <button class="clan-close-btn" id="clanCloseBtn">✕ Close</button>
+  </div>
+  <div class="clan-body">
+    <div class="clan-status-strip"><span class="clan-status-dot" id="clanStatusDot"></span><span id="clanStatusText">Connecting...</span></div>
+    <div id="clanNoClanView">
+      <div class="clan-search-row">
+        <input type="text" class="clan-search-input" id="clanSearchInput" placeholder="Search clans by name...">
+        <button class="clan-create-btn" id="clanOpenCreateBtn">+ Create</button>
+      </div>
+      <div id="clanListContainer"></div>
+    </div>
+    <div id="clanActiveView" style="display:none;">
+      <div class="clan-active-hero">
+        <div class="clan-active-icon" id="clanActiveIcon">🛡️</div>
+        <div class="clan-active-info">
+          <div class="clan-active-name" id="clanActiveName">Clan Name</div>
+          <div class="clan-active-tag" id="clanActiveTag">0 members · Trophies: 0</div>
+        </div>
+        <button class="clan-leave-btn" id="clanLeaveBtn">Leave Clan</button>
+      </div>
+      <div class="clan-members-row" id="clanMembersRow"></div>
+      <div class="clan-chat-box">
+        <div class="clan-chat-title">💬 Clan Chat</div>
+        <div class="clan-chat-log" id="clanChatLog"></div>
+        <div class="clan-chat-input-row">
+          <input type="text" class="clan-chat-input" id="clanChatInput" placeholder="Say something..." maxlength="200">
+          <button class="clan-chat-send-btn" id="clanChatSendBtn">Send</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CLAN CREATE OVERLAY -->
+<div id="clan-create-overlay">
+  <div class="clan-create-box">
+    <h2>Create a Clan</h2>
+    <input type="text" id="clanCreateNameInput" placeholder="Clan name" maxlength="20">
+    <input type="text" id="clanCreateTagInput" placeholder="Tag (e.g. WARS)" maxlength="6">
+    <div class="clan-create-icon-row" id="clanCreateIconRow"></div>
+    <div class="clan-create-error" id="clanCreateError"></div>
+    <div class="clan-create-actions">
+      <button class="clan-create-cancel" id="clanCreateCancelBtn">Cancel</button>
+      <button class="clan-create-confirm" id="clanCreateConfirmBtn">Create</button>
+    </div>
+  </div>
 </div>
 
 <!-- MASTERY -->
@@ -1663,97 +1809,24 @@ function onCareerLevelComplete(playerWon) {
   renderCareerMap();
 }
 
-const CAREER_MAP_DECOS = ['\u{1F332}','\u{26F0}\uFE0F','\u{1F3DA}\uFE0F','\u{2694}\uFE0F','\u{1F525}','\u{2744}\uFE0F','\u{1F30B}','\u{1F332}','\u{2B50}','\u{1F3F0}'];
-
 function renderCareerMap() {
-  const inner = document.getElementById('careerMapBtns');
-  const scrollWrap = document.getElementById('careerMapScroll');
+  const wrap = document.getElementById('careerMapBtns');
   const label = document.getElementById('careerProgressLabel');
-  if (!inner) return;
-  inner.innerHTML = '';
-  const unlocked = Math.min(careerProgress.unlockedLevel, CAREER_TOTAL_LEVELS);
-  if (label) label.textContent = 'Unlocked: Level ' + unlocked + ' / ' + CAREER_TOTAL_LEVELS;
-
-  const rowH = 110;      // vertical spacing per level node
-  const topPad = 60;
-  const bottomPad = 70;
-  const mapH = topPad + (CAREER_TOTAL_LEVELS - 1) * rowH + bottomPad;
-  const centerX = 50;    // percent
-  const amp = 32;        // horizontal wiggle amplitude in percent
-
-  inner.style.height = mapH + 'px';
-
-  // decorative scenery scattered along the path
-  for (let i = 0; i < 16; i++) {
-    const deco = document.createElement('div');
-    deco.className = 'career-map-deco';
-    deco.textContent = CAREER_MAP_DECOS[i % CAREER_MAP_DECOS.length];
-    const dy = topPad + Math.random() * (mapH - topPad - bottomPad);
-    const side = Math.random() < 0.5 ? (8 + Math.random()*14) : (78 + Math.random()*14);
-    deco.style.top = dy + 'px';
-    deco.style.left = side + '%';
-    deco.style.fontSize = (16 + Math.random()*14) + 'px';
-    inner.appendChild(deco);
-  }
-
-  // compute node positions bottom (level1) -> top (final level), winding path feel
-  const positions = [];
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  if (label) label.textContent = 'Unlocked: Level ' + Math.min(careerProgress.unlockedLevel, CAREER_TOTAL_LEVELS) + ' / ' + CAREER_TOTAL_LEVELS;
   for (let lvl = 1; lvl <= CAREER_TOTAL_LEVELS; lvl++) {
-    const yFromBottom = topPad + (lvl - 1) * rowH;
-    const y = mapH - yFromBottom;
-    const x = centerX + Math.sin((lvl - 1) * 0.85) * amp;
-    positions.push({ lvl, x, y });
-  }
-
-  // SVG connecting path
-  const svgNS = 'http://www.w3.org/2000/svg';
-  const svg = document.createElementNS(svgNS, 'svg');
-  svg.setAttribute('viewBox', `0 0 100 ${mapH}`);
-  svg.setAttribute('preserveAspectRatio', 'none');
-  svg.style.height = mapH + 'px';
-  let d = '';
-  positions.forEach((p, i) => {
-    d += (i === 0 ? 'M' : 'L') + p.x + ' ' + p.y + ' ';
-  });
-  const path = document.createElementNS(svgNS, 'path');
-  path.setAttribute('d', d.trim());
-  path.setAttribute('fill', 'none');
-  path.setAttribute('stroke', 'rgba(255,255,255,0.14)');
-  path.setAttribute('stroke-width', '1.4');
-  path.setAttribute('stroke-dasharray', '2,2.4');
-  path.setAttribute('vector-effect', 'non-scaling-stroke');
-  svg.appendChild(path);
-  inner.appendChild(svg);
-
-  positions.forEach(({ lvl, x, y }) => {
     const locked = lvl > careerProgress.unlockedLevel;
     const boss = isBossLevel(lvl);
     const done = !!careerProgress.stars[lvl];
-    const isCurrent = lvl === unlocked && !locked;
     const btn = document.createElement('button');
-    btn.className = 'career-node' + (locked ? ' locked' : '') + (boss ? ' boss' : '') + (done ? ' done' : '') + (isCurrent ? ' current' : '');
-    btn.style.left = x + '%';
-    btn.style.top = y + 'px';
-    btn.textContent = boss ? '👑' : lvl;
+    btn.className = 'career-level-btn' + (locked ? ' locked' : '') + (boss ? ' boss' : '') + (done ? ' done' : '');
+    btn.textContent = boss ? ('👑' + lvl) : lvl;
     btn.disabled = locked;
     btn.title = boss ? ('Boss: ' + BOSS_NAMES[getBossIndex(lvl)]) : ('Level ' + lvl);
     btn.addEventListener('click', () => { if (!locked) startCareerLevel(lvl); });
-
-    const lbl = document.createElement('div');
-    lbl.className = 'career-node-label';
-    lbl.textContent = boss ? BOSS_NAMES[getBossIndex(lvl)] : ('Lv ' + lvl);
-    btn.appendChild(lbl);
-
-    inner.appendChild(btn);
-  });
-
-  // auto-scroll to keep current/next level in view
-  requestAnimationFrame(() => {
-    if (!scrollWrap) return;
-    const curPos = positions.find(p => p.lvl === unlocked) || positions[0];
-    const targetScroll = curPos.y - scrollWrap.clientHeight / 2;
-    scrollWrap.scrollTop = Math.max(0, targetScroll);
-  });
+    wrap.appendChild(btn);
+  }
 }
 
 // ═══════════════════ DEVICE MODE (iPad-only — phone mode removed for stability) ═══════════════════
@@ -6060,6 +6133,285 @@ runIntroFight();
   introEl.addEventListener('touchstart', endIntro, { passive: true });
   setTimeout(endIntro, 3100);
 })();
+</script>
+<script>
+
+// ═══════════════════ ONLINE CLANS (shared via public JSON store) ═══════════════════
+const CLAN_API_BASE = 'https://jsonblob.com/api/jsonBlob/019fc53e-6d9f-75d7-a396-0f13819b729e';
+const CLAN_ICONS = ['🛡️','⚔️','🐉','🔥','⚡','💀','👑','🌟','🦅','🐺','☠️','🌪️'];
+const CLAN_POLL_MS = 4000;
+const CLAN_ONLINE_WINDOW_MS = 20000;
+
+function getClanPlayerId() {
+  try {
+    let id = localStorage.getItem('clanPlayerId');
+    if (!id) { id = 'p_' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36); localStorage.setItem('clanPlayerId', id); }
+    return id;
+  } catch(e) { return 'p_anon'; }
+}
+const clanPlayerId = getClanPlayerId();
+function getClanPlayerName() { return (typeof playerUsername !== 'undefined' && playerUsername) ? playerUsername : 'Fighter'; }
+
+let clanData = { clans: [] };
+let myClanId = null;
+try { myClanId = localStorage.getItem('myClanId') || null; } catch(e) {}
+let clanPollTimer = null;
+let clanApiOnline = false;
+let clanLastRenderedChatCount = 0;
+
+function clanSetStatus(online) {
+  clanApiOnline = online;
+  const dot = document.getElementById('clanStatusDot');
+  const txt = document.getElementById('clanStatusText');
+  if (!dot || !txt) return;
+  dot.classList.toggle('offline', !online);
+  txt.textContent = online ? 'Connected · Live' : 'Offline — showing cached data';
+}
+
+async function clanFetchData() {
+  try {
+    const res = await fetch(CLAN_API_BASE, { cache: 'no-store' });
+    if (!res.ok) throw new Error('bad status');
+    const json = await res.json();
+    if (json && Array.isArray(json.clans)) {
+      clanData = json;
+      clanSetStatus(true);
+      return true;
+    }
+    throw new Error('bad shape');
+  } catch(e) {
+    clanSetStatus(false);
+    return false;
+  }
+}
+
+async function clanPushData() {
+  try {
+    const res = await fetch(CLAN_API_BASE, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(clanData)
+    });
+    clanSetStatus(res.ok);
+    return res.ok;
+  } catch(e) {
+    clanSetStatus(false);
+    return false;
+  }
+}
+
+function clanFindMine() {
+  return clanData.clans.find(c => c.id === myClanId) || null;
+}
+
+function clanTouchMembership(clan) {
+  if (!clan) return;
+  let me = clan.members.find(m => m.id === clanPlayerId);
+  if (!me) {
+    me = { id: clanPlayerId, name: getClanPlayerName(), lastSeen: Date.now(), owner: false };
+    clan.members.push(me);
+  }
+  me.name = getClanPlayerName();
+  me.lastSeen = Date.now();
+}
+
+async function clanRefreshAndRender() {
+  await clanFetchData();
+  const mine = clanFindMine();
+  if (mine) {
+    clanTouchMembership(mine);
+    clanPushData();
+  }
+  clanRenderCurrentView();
+}
+
+function clanRenderCurrentView() {
+  const mine = clanFindMine();
+  const noClanView = document.getElementById('clanNoClanView');
+  const activeView = document.getElementById('clanActiveView');
+  if (mine) {
+    noClanView.style.display = 'none';
+    activeView.style.display = 'block';
+    clanRenderActive(mine);
+  } else {
+    noClanView.style.display = 'block';
+    activeView.style.display = 'none';
+    clanRenderList();
+  }
+}
+
+function clanRenderList() {
+  const container = document.getElementById('clanListContainer');
+  const q = (document.getElementById('clanSearchInput')?.value || '').toLowerCase().trim();
+  let list = clanData.clans.slice().sort((a,b) => (b.members?.length||0) - (a.members?.length||0));
+  if (q) list = list.filter(c => c.name.toLowerCase().includes(q) || (c.tag||'').toLowerCase().includes(q));
+  if (!list.length) {
+    container.innerHTML = '<div class="clan-empty-msg">No clans found yet. Be the first to create one! 🛡️</div>';
+    return;
+  }
+  container.innerHTML = list.map(c => {
+    const memCount = c.members?.length || 0;
+    const full = memCount >= 30;
+    return `<div class="clan-list-card">
+      <div class="clan-list-icon">${c.icon || '🛡️'}</div>
+      <div class="clan-list-info">
+        <div class="clan-list-name">${clanEscape(c.name)} <span class="clan-list-tag">#${clanEscape(c.tag||'')}</span></div>
+        <div class="clan-list-members">${memCount}/30 members</div>
+      </div>
+      <button class="clan-join-btn" data-clanid="${c.id}" ${full?'disabled':''}>${full?'Full':'Join'}</button>
+    </div>`;
+  }).join('');
+  container.querySelectorAll('.clan-join-btn').forEach(btn => {
+    btn.addEventListener('click', () => clanJoin(btn.getAttribute('data-clanid')));
+  });
+}
+
+function clanEscape(s) {
+  return String(s || '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+}
+
+function clanRenderActive(clan) {
+  document.getElementById('clanActiveIcon').textContent = clan.icon || '🛡️';
+  document.getElementById('clanActiveName').textContent = clan.name;
+  document.getElementById('clanActiveTag').textContent = `#${clan.tag||''} · ${clan.members.length}/30 members`;
+  const now = Date.now();
+  const membersRow = document.getElementById('clanMembersRow');
+  membersRow.innerHTML = clan.members.slice().sort((a,b)=> (now-a.lastSeen) - (now-b.lastSeen)).map(m => {
+    const online = (now - (m.lastSeen||0)) < CLAN_ONLINE_WINDOW_MS;
+    return `<div class="clan-member-pill ${online?'online':''} ${m.owner?'owner':''}">${m.owner?'👑 ':''}${clanEscape(m.name)}</div>`;
+  }).join('');
+
+  const chatLog = document.getElementById('clanChatLog');
+  const chat = clan.chat || [];
+  if (chat.length !== clanLastRenderedChatCount || document.activeElement !== document.getElementById('clanChatInput')) {
+    const wasAtBottom = chatLog.scrollTop + chatLog.clientHeight >= chatLog.scrollHeight - 40;
+    chatLog.innerHTML = chat.slice(-100).map(m => {
+      if (m.system) return `<div class="clan-chat-msg system">— ${clanEscape(m.text)} —</div>`;
+      const t = new Date(m.ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      return `<div class="clan-chat-msg"><span class="cn">${clanEscape(m.name)}:</span>${clanEscape(m.text)}<span class="ct">${t}</span></div>`;
+    }).join('');
+    clanLastRenderedChatCount = chat.length;
+    if (wasAtBottom || chat.length <= 100) chatLog.scrollTop = chatLog.scrollHeight;
+  }
+}
+
+async function clanJoin(clanId) {
+  await clanFetchData();
+  const clan = clanData.clans.find(c => c.id === clanId);
+  if (!clan) return;
+  if (clan.members.length >= 30) return;
+  if (!clan.members.find(m => m.id === clanPlayerId)) {
+    clan.members.push({ id: clanPlayerId, name: getClanPlayerName(), lastSeen: Date.now(), owner: false });
+    clan.chat = clan.chat || [];
+    clan.chat.push({ system: true, text: `${getClanPlayerName()} joined the clan`, ts: Date.now() });
+  }
+  myClanId = clanId;
+  try { localStorage.setItem('myClanId', myClanId); } catch(e) {}
+  await clanPushData();
+  clanRenderCurrentView();
+}
+
+async function clanLeave() {
+  if (!confirm('Leave this clan?')) return;
+  await clanFetchData();
+  const clan = clanData.clans.find(c => c.id === myClanId);
+  if (clan) {
+    clan.members = clan.members.filter(m => m.id !== clanPlayerId);
+    clan.chat = clan.chat || [];
+    clan.chat.push({ system: true, text: `${getClanPlayerName()} left the clan`, ts: Date.now() });
+    if (clan.members.length === 0) {
+      clanData.clans = clanData.clans.filter(c => c.id !== clan.id);
+    } else if (!clan.members.find(m => m.owner)) {
+      clan.members[0].owner = true;
+    }
+    await clanPushData();
+  }
+  myClanId = null;
+  try { localStorage.removeItem('myClanId'); } catch(e) {}
+  clanRenderCurrentView();
+}
+
+async function clanSendChat() {
+  const input = document.getElementById('clanChatInput');
+  const text = input.value.trim();
+  if (!text || !myClanId) return;
+  input.value = '';
+  await clanFetchData();
+  const clan = clanData.clans.find(c => c.id === myClanId);
+  if (!clan) return;
+  clan.chat = clan.chat || [];
+  clan.chat.push({ name: getClanPlayerName(), text: text.slice(0, 200), ts: Date.now(), id: clanPlayerId });
+  clanTouchMembership(clan);
+  await clanPushData();
+  clanRenderCurrentView();
+}
+
+let clanSelectedIcon = CLAN_ICONS[0];
+function clanOpenCreate() {
+  const row = document.getElementById('clanCreateIconRow');
+  row.innerHTML = CLAN_ICONS.map(ic => `<div class="clan-icon-pick ${ic===clanSelectedIcon?'selected':''}" data-icon="${ic}">${ic}</div>`).join('');
+  row.querySelectorAll('.clan-icon-pick').forEach(el => {
+    el.addEventListener('click', () => {
+      clanSelectedIcon = el.getAttribute('data-icon');
+      row.querySelectorAll('.clan-icon-pick').forEach(e2 => e2.classList.remove('selected'));
+      el.classList.add('selected');
+    });
+  });
+  document.getElementById('clanCreateNameInput').value = '';
+  document.getElementById('clanCreateTagInput').value = '';
+  document.getElementById('clanCreateError').textContent = '';
+  document.getElementById('clan-create-overlay').classList.add('active');
+}
+function clanCloseCreate() {
+  document.getElementById('clan-create-overlay').classList.remove('active');
+}
+async function clanConfirmCreate() {
+  const name = document.getElementById('clanCreateNameInput').value.trim();
+  const tag = document.getElementById('clanCreateTagInput').value.trim().toUpperCase().replace(/[^A-Z0-9]/g,'');
+  const errEl = document.getElementById('clanCreateError');
+  if (name.length < 3) { errEl.textContent = 'Clan name must be at least 3 characters.'; return; }
+  if (tag.length < 2) { errEl.textContent = 'Tag must be at least 2 characters.'; return; }
+  await clanFetchData();
+  if (clanData.clans.some(c => c.name.toLowerCase() === name.toLowerCase())) {
+    errEl.textContent = 'A clan with that name already exists.'; return;
+  }
+  const newClan = {
+    id: 'c_' + Date.now().toString(36) + Math.random().toString(36).slice(2,6),
+    name, tag, icon: clanSelectedIcon,
+    members: [{ id: clanPlayerId, name: getClanPlayerName(), lastSeen: Date.now(), owner: true }],
+    chat: [{ system: true, text: `${clanEscape(name)} was founded by ${getClanPlayerName()}!`, ts: Date.now() }]
+  };
+  clanData.clans.push(newClan);
+  myClanId = newClan.id;
+  try { localStorage.setItem('myClanId', myClanId); } catch(e) {}
+  await clanPushData();
+  clanCloseCreate();
+  clanRenderCurrentView();
+}
+
+function openClanScreen() {
+  document.getElementById('clan-screen').classList.add('active');
+  clanRefreshAndRender();
+  if (clanPollTimer) clearInterval(clanPollTimer);
+  clanPollTimer = setInterval(() => {
+    if (document.getElementById('clan-screen').classList.contains('active')) clanRefreshAndRender();
+  }, CLAN_POLL_MS);
+}
+function closeClanScreen() {
+  document.getElementById('clan-screen').classList.remove('active');
+  if (clanPollTimer) { clearInterval(clanPollTimer); clanPollTimer = null; }
+}
+
+document.getElementById('clanOpenBtn')?.addEventListener('click', openClanScreen);
+document.getElementById('clanCloseBtn')?.addEventListener('click', closeClanScreen);
+document.getElementById('clanOpenCreateBtn')?.addEventListener('click', clanOpenCreate);
+document.getElementById('clanCreateCancelBtn')?.addEventListener('click', clanCloseCreate);
+document.getElementById('clanCreateConfirmBtn')?.addEventListener('click', clanConfirmCreate);
+document.getElementById('clanLeaveBtn')?.addEventListener('click', clanLeave);
+document.getElementById('clanChatSendBtn')?.addEventListener('click', clanSendChat);
+document.getElementById('clanChatInput')?.addEventListener('keydown', e => { if (e.key === 'Enter') clanSendChat(); });
+document.getElementById('clanSearchInput')?.addEventListener('input', () => clanRenderList());
+
 </script>
 </body>
 
