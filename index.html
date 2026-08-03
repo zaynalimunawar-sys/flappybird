@@ -1397,79 +1397,6 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
 .clan-lb-name { flex: 1; font-size: 0.85rem; font-weight: 700; }
 .clan-lb-pts { font-size: 0.8rem; color: #ffdd44; font-weight: 700; }
 .clan-lb-row.me { border: 1px solid rgba(40,255,150,0.4); }
-
-/* ─── CLAN DUELS (async 1v1 vs clanmates) ─── */
-.clan-duel-header { text-align: center; margin-bottom: 14px; }
-.clan-duel-title { font-family: 'Bangers', cursive; font-size: 1.4rem; color: #ff6688; text-shadow: 0 0 16px rgba(255,60,100,0.4); }
-.clan-duel-sub { font-size: 0.75rem; color: var(--color-muted); margin-top: 2px; }
-
-.clan-duel-section-label { font-size: 0.72rem; color: var(--color-muted); letter-spacing: 1.5px; text-transform: uppercase; margin: 16px 0 8px; }
-.clan-duel-section-label:first-child { margin-top: 0; }
-
-.clan-duel-invite-card {
-  background: rgba(255,100,140,0.08); border: 2px solid rgba(255,100,140,0.35); border-radius: 14px;
-  padding: 12px 14px; margin-bottom: 10px; display: flex; align-items: center; gap: 10px;
-  animation: duelInvitePulse 1.6s ease-in-out infinite;
-}
-@keyframes duelInvitePulse { 0%,100% { box-shadow: 0 0 0 rgba(255,60,100,0); } 50% { box-shadow: 0 0 16px rgba(255,60,100,0.35); } }
-.clan-duel-invite-info { flex: 1; }
-.clan-duel-invite-name { font-weight: 700; font-size: 0.9rem; }
-.clan-duel-invite-desc { font-size: 0.72rem; color: var(--color-muted); }
-.clan-duel-accept-btn, .clan-duel-decline-btn {
-  padding: 8px 14px; border-radius: 10px; border: none; cursor: pointer;
-  font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 0.8rem;
-}
-.clan-duel-accept-btn { background: linear-gradient(135deg,#22cc88,#0a7a4a); color: #fff; }
-.clan-duel-decline-btn { background: rgba(255,68,102,0.2); color: #ff8899; border: 1px solid rgba(255,68,102,0.4); }
-
-.clan-duel-active-card {
-  background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.1); border-radius: 14px;
-  padding: 12px 14px; margin-bottom: 10px; display: flex; align-items: center; gap: 12px;
-}
-.clan-duel-vs { font-family: 'Bangers', cursive; font-size: 1.1rem; color: #ff6688; }
-.clan-duel-active-names { flex: 1; font-size: 0.85rem; }
-.clan-duel-waiting-tag { font-size: 0.68rem; color: var(--color-muted); }
-.clan-duel-play-btn {
-  padding: 8px 16px; border-radius: 10px; border: none; cursor: pointer;
-  font-family: 'Bangers', cursive; font-size: 0.9rem; letter-spacing: 1px;
-  background: linear-gradient(135deg,#ff2288,#6600cc); color: #fff;
-}
-.clan-duel-play-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
-.clan-mate-challenge-row {
-  display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 12px;
-  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); margin-bottom: 8px;
-}
-.clan-mate-challenge-name { flex: 1; font-size: 0.85rem; font-weight: 700; }
-.clan-mate-challenge-btn {
-  padding: 7px 14px; border-radius: 10px; border: none; cursor: pointer;
-  font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 0.78rem;
-  background: linear-gradient(135deg,#ff2288,#6600cc); color: #fff;
-}
-.clan-mate-challenge-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
-.clan-duel-history-row {
-  display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 10px;
-  background: rgba(255,255,255,0.03); margin-bottom: 6px; font-size: 0.78rem;
-}
-.clan-duel-history-result { font-weight: 800; padding: 2px 8px; border-radius: 8px; font-size: 0.68rem; }
-.clan-duel-history-result.win { background: rgba(40,255,150,0.18); color: #33ff99; }
-.clan-duel-history-result.loss { background: rgba(255,68,102,0.18); color: #ff8899; }
-
-#duel-result-overlay {
-  position: fixed; inset: 0; z-index: 240; display: none; align-items: center; justify-content: center;
-  background: rgba(0,0,0,0.82); backdrop-filter: blur(6px);
-}
-#duel-result-overlay.active { display: flex; }
-.duel-result-box {
-  background: linear-gradient(160deg,#2a0a1e,#0d0d1a); border: 2px solid rgba(255,100,140,0.45);
-  border-radius: 24px; padding: 32px 28px; display: flex; flex-direction: column; align-items: center; gap: 12px;
-  max-width: 400px; width: 90vw; box-shadow: 0 20px 60px rgba(0,0,0,0.6);
-  animation: rewardPop 0.4s cubic-bezier(.34,1.56,.64,1);
-}
-.duel-result-badge { font-size: 60px; }
-.duel-result-title { font-family: 'Bangers', cursive; font-size: 1.7rem; text-align: center; }
-.duel-result-sub { font-size: 0.85rem; color: var(--color-muted); text-align: center; }
 </style>
 </head>
 <body>
@@ -1632,7 +1559,6 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
       <div class="clan-subtabs">
         <button class="clan-subtab active" data-clansub="chat">💬 Chat</button>
         <button class="clan-subtab" data-clansub="games">🎮 Clan Games</button>
-        <button class="clan-subtab" data-clansub="duels">⚔️ 1v1 Duels</button>
       </div>
 
       <div class="clan-subpanel active" data-clanpanel="chat">
@@ -1658,40 +1584,7 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
           <div id="clanGamesLeaderboard"></div>
         </div>
       </div>
-
-      <div class="clan-subpanel" data-clanpanel="duels">
-        <div class="clan-duel-header">
-          <div class="clan-duel-title">⚔️ Clan Duels</div>
-          <div class="clan-duel-sub">Challenge a clanmate to a private 1v1</div>
-        </div>
-
-        <div id="clanDuelInvitesSection" style="display:none;">
-          <div class="clan-duel-section-label">Incoming Challenges</div>
-          <div id="clanDuelInvitesContainer"></div>
-        </div>
-
-        <div id="clanDuelActiveSection" style="display:none;">
-          <div class="clan-duel-section-label">Active Duels</div>
-          <div id="clanDuelActiveContainer"></div>
-        </div>
-
-        <div class="clan-duel-section-label">Challenge a Member</div>
-        <div id="clanDuelMatesContainer"></div>
-
-        <div class="clan-duel-section-label">Recent Results</div>
-        <div id="clanDuelHistoryContainer"></div>
-      </div>
     </div>
-  </div>
-</div>
-
-<!-- CLAN DUEL RESULT POPUP -->
-<div id="duel-result-overlay">
-  <div class="duel-result-box">
-    <div class="duel-result-badge" id="duelResultBadge">🏆</div>
-    <div class="duel-result-title" id="duelResultTitle">You Won!</div>
-    <div class="duel-result-sub" id="duelResultSub">vs Someone</div>
-    <button class="go-btn primary" id="duelResultCloseBtn">Nice!</button>
   </div>
 </div>
 
@@ -5479,10 +5372,6 @@ function checkGameOver() {
     if (typeof clanRecordMatchContribution === 'function') {
       try { clanRecordMatchContribution(playerWon, dmgDealt); } catch(e) {}
     }
-    if (typeof activeDuelId !== 'undefined' && activeDuelId) {
-      const duelIdToSubmit = activeDuelId;
-      try { clanDuelSubmitResult(duelIdToSubmit, playerWon, dmgDealt, stocksLeft); } catch(e) {}
-    }
   }
 }
 
@@ -6860,10 +6749,10 @@ document.querySelectorAll('.clan-subtab').forEach(tab => {
     document.querySelectorAll('.clan-subpanel').forEach(p => p.classList.remove('active'));
     tab.classList.add('active');
     document.querySelector(`.clan-subpanel[data-clanpanel="${tab.getAttribute('data-clansub')}"]`)?.classList.add('active');
-    const mine = clanFindMine();
-    if (!mine) return;
-    if (tab.getAttribute('data-clansub') === 'games') clanGamesRenderTasks(mine);
-    if (tab.getAttribute('data-clansub') === 'duels' && typeof clanDuelRenderPanel === 'function') clanDuelRenderPanel(mine);
+    if (tab.getAttribute('data-clansub') === 'games') {
+      const mine = clanFindMine();
+      if (mine) clanGamesRenderTasks(mine);
+    }
   });
 });
 
@@ -6873,208 +6762,6 @@ clanRenderActive = function(clan) {
   _clanRenderActiveOriginal(clan);
   clanGamesRenderTasks(clan);
 };
-
-// ═══════════════════ CLAN DUELS (async 1v1 vs clanmates) ═══════════════════
-// Since this game has no realtime netcode, duels work asynchronously: both players
-// each play a solo match against a tough AI opponent representing their rival, and
-// whoever posts the better performance (win + damage dealt) wins the duel. This keeps
-// duels fair and fully working without needing a live multiplayer connection.
-const CLAN_DUEL_DIFFICULTY = 'hard';
-let activeDuelId = null;
-let shownDuelResults = [];
-try { shownDuelResults = JSON.parse(localStorage.getItem('shownDuelResults')) || []; } catch(e) {}
-function clanDuelMarkShown(id) {
-  if (!shownDuelResults.includes(id)) {
-    shownDuelResults.push(id);
-    if (shownDuelResults.length > 200) shownDuelResults = shownDuelResults.slice(-200);
-    try { localStorage.setItem('shownDuelResults', JSON.stringify(shownDuelResults)); } catch(e) {}
-  }
-}
-
-function clanDuelScore(res) {
-  if (!res) return 0;
-  return (res.won ? 1000 : 0) + Math.round(res.damage || 0) + (res.stocksLeft || 0) * 50;
-}
-
-async function clanDuelChallenge(mateId, mateName) {
-  await clanWithFreshData(data => {
-    const clan = data.clans.find(c => c.id === myClanId);
-    if (!clan) return;
-    clan.duels = clan.duels || [];
-    const existing = clan.duels.find(d => d.status !== 'completed' &&
-      ((d.aId === clanPlayerId && d.bId === mateId) || (d.aId === mateId && d.bId === clanPlayerId)));
-    if (existing) return;
-    clan.duels.push({
-      id: 'd_' + Date.now().toString(36) + Math.random().toString(36).slice(2,6),
-      aId: clanPlayerId, aName: getClanPlayerName(),
-      bId: mateId, bName: mateName,
-      status: 'pending', createdAt: Date.now(), results: {}
-    });
-    clanTouchMembership(clan);
-  });
-  clanRenderCurrentView();
-}
-
-async function clanDuelRespond(duelId, accept) {
-  await clanWithFreshData(data => {
-    const clan = data.clans.find(c => c.id === myClanId);
-    if (!clan || !clan.duels) return;
-    const duel = clan.duels.find(d => d.id === duelId);
-    if (!duel) return;
-    duel.status = accept ? 'ready' : 'declined';
-    clanTouchMembership(clan);
-  });
-  clanRenderCurrentView();
-}
-
-function clanDuelStartMatch(duelId) {
-  const clan = clanFindMine();
-  if (!clan || !clan.duels) return;
-  const duel = clan.duels.find(d => d.id === duelId);
-  if (!duel || duel.status !== 'ready') return;
-  if (duel.results && duel.results[clanPlayerId]) return; // already played my side
-  activeDuelId = duelId;
-  cpuCount = 1;
-  difficulty = CLAN_DUEL_DIFFICULTY;
-  closeClanScreen();
-  document.getElementById('menu').style.display = 'none';
-  startGame();
-}
-
-async function clanDuelSubmitResult(duelId, playerWon, dmgDealt, stocksLeft) {
-  let resolvedPopup = null;
-  await clanWithFreshData(data => {
-    const clan = data.clans.find(c => c.id === myClanId);
-    if (!clan || !clan.duels) return;
-    const duel = clan.duels.find(d => d.id === duelId);
-    if (!duel) return;
-    duel.results = duel.results || {};
-    duel.results[clanPlayerId] = { won: playerWon, damage: Math.round(dmgDealt||0), stocksLeft: stocksLeft||0, name: getClanPlayerName() };
-    const aRes = duel.results[duel.aId];
-    const bRes = duel.results[duel.bId];
-    if (aRes && bRes && duel.status !== 'completed') {
-      const aScore = clanDuelScore(aRes);
-      const bScore = clanDuelScore(bRes);
-      duel.status = 'completed';
-      duel.winnerId = aScore >= bScore ? duel.aId : duel.bId;
-      duel.completedAt = Date.now();
-      if (duel.winnerId === clanPlayerId) {
-        resolvedPopup = { won: true, oppName: clanPlayerId === duel.aId ? duel.bName : duel.aName };
-      } else {
-        resolvedPopup = { won: false, oppName: clanPlayerId === duel.aId ? duel.bName : duel.aName };
-      }
-    }
-    clanTouchMembership(clan);
-  });
-  activeDuelId = null;
-  if (resolvedPopup) {
-    clanDuelMarkShown(duelId);
-    clanDuelShowResultPopup(resolvedPopup.won, resolvedPopup.oppName);
-  } else {
-    showRewardPopup('⏳', 'Duel result submitted!\nWaiting for your opponent to play...');
-  }
-}
-
-function clanDuelShowResultPopup(won, oppName) {
-  document.getElementById('duelResultBadge').textContent = won ? '🏆' : '💀';
-  document.getElementById('duelResultTitle').textContent = won ? 'DUEL WON!' : 'DUEL LOST';
-  document.getElementById('duelResultTitle').style.color = won ? '#33ff99' : '#ff5566';
-  document.getElementById('duelResultSub').textContent = `vs ${oppName}`;
-  document.getElementById('duel-result-overlay').classList.add('active');
-  if (won) { try { launchConfetti(0.6); } catch(e) {} }
-}
-document.getElementById('duelResultCloseBtn')?.addEventListener('click', () => {
-  document.getElementById('duel-result-overlay').classList.remove('active');
-});
-
-function clanDuelCheckForNewResolved(clan) {
-  if (!clan.duels) return;
-  clan.duels.filter(d => d.status === 'completed' && (d.aId === clanPlayerId || d.bId === clanPlayerId) && !shownDuelResults.includes(d.id))
-    .forEach(d => {
-      clanDuelMarkShown(d.id);
-      const won = d.winnerId === clanPlayerId;
-      const oppName = clanPlayerId === d.aId ? d.bName : d.aName;
-      setTimeout(() => clanDuelShowResultPopup(won, oppName), 400);
-    });
-}
-
-function clanDuelRenderPanel(clan) {
-  clan.duels = clan.duels || [];
-  clanDuelCheckForNewResolved(clan);
-
-  const invites = clan.duels.filter(d => d.status === 'pending' && d.bId === clanPlayerId);
-  const invitesSection = document.getElementById('clanDuelInvitesSection');
-  invitesSection.style.display = invites.length ? 'block' : 'none';
-  document.getElementById('clanDuelInvitesContainer').innerHTML = invites.map(d => `
-    <div class="clan-duel-invite-card">
-      <div class="clan-duel-invite-info">
-        <div class="clan-duel-invite-name">${clanEscape(d.aName)} challenged you!</div>
-        <div class="clan-duel-invite-desc">1v1 duel · ${CLAN_DUEL_DIFFICULTY} AI proxy match</div>
-      </div>
-      <button class="clan-duel-accept-btn" data-duel="${d.id}" data-accept="1">Accept</button>
-      <button class="clan-duel-decline-btn" data-duel="${d.id}" data-accept="0">Decline</button>
-    </div>`).join('');
-  invitesSection.querySelectorAll('button[data-duel]').forEach(btn => {
-    btn.addEventListener('click', () => clanDuelRespond(btn.getAttribute('data-duel'), btn.getAttribute('data-accept') === '1'));
-  });
-
-  const active = clan.duels.filter(d => d.status === 'ready' && (d.aId === clanPlayerId || d.bId === clanPlayerId));
-  const activeSection = document.getElementById('clanDuelActiveSection');
-  activeSection.style.display = active.length ? 'block' : 'none';
-  document.getElementById('clanDuelActiveContainer').innerHTML = active.map(d => {
-    const oppName = d.aId === clanPlayerId ? d.bName : d.aName;
-    const alreadyPlayed = d.results && d.results[clanPlayerId];
-    return `<div class="clan-duel-active-card">
-      <div class="clan-duel-active-names">You <span class="clan-duel-vs">VS</span> ${clanEscape(oppName)}</div>
-      ${alreadyPlayed ? '<div class="clan-duel-waiting-tag">Waiting for opponent...</div>' : `<button class="clan-duel-play-btn" data-duel="${d.id}">▶ Play Duel</button>`}
-    </div>`;
-  }).join('');
-  activeSection.querySelectorAll('.clan-duel-play-btn').forEach(btn => {
-    btn.addEventListener('click', () => clanDuelStartMatch(btn.getAttribute('data-duel')));
-  });
-
-  const matesContainer = document.getElementById('clanDuelMatesContainer');
-  const mates = clan.members.filter(m => m.id !== clanPlayerId);
-  if (!mates.length) {
-    matesContainer.innerHTML = '<div class="clan-empty-msg">Invite friends to your clan to duel them!</div>';
-  } else {
-    matesContainer.innerHTML = mates.map(m => {
-      const hasPending = clan.duels.some(d => d.status !== 'completed' &&
-        ((d.aId === clanPlayerId && d.bId === m.id) || (d.aId === m.id && d.bId === clanPlayerId)));
-      return `<div class="clan-mate-challenge-row">
-        <div class="clan-mate-challenge-name">${clanEscape(m.name)}</div>
-        <button class="clan-mate-challenge-btn" data-mateid="${m.id}" data-matename="${clanEscape(m.name)}" ${hasPending?'disabled':''}>${hasPending ? 'Pending' : 'Challenge'}</button>
-      </div>`;
-    }).join('');
-    matesContainer.querySelectorAll('.clan-mate-challenge-btn').forEach(btn => {
-      btn.addEventListener('click', () => clanDuelChallenge(btn.getAttribute('data-mateid'), btn.getAttribute('data-matename')));
-    });
-  }
-
-  const historyContainer = document.getElementById('clanDuelHistoryContainer');
-  const history = clan.duels.filter(d => d.status === 'completed' && (d.aId === clanPlayerId || d.bId === clanPlayerId))
-    .sort((a,b) => (b.completedAt||0) - (a.completedAt||0)).slice(0, 12);
-  if (!history.length) {
-    historyContainer.innerHTML = '<div class="clan-empty-msg">No duels played yet.</div>';
-  } else {
-    historyContainer.innerHTML = history.map(d => {
-      const oppName = d.aId === clanPlayerId ? d.bName : d.aName;
-      const won = d.winnerId === clanPlayerId;
-      return `<div class="clan-duel-history-row">
-        <span class="clan-duel-history-result ${won?'win':'loss'}">${won?'WIN':'LOSS'}</span>
-        <span>vs ${clanEscape(oppName)}</span>
-      </div>`;
-    }).join('');
-  }
-}
-
-// Wrap clanRenderActive again so the Duels panel refreshes on every clan view redraw.
-const _clanRenderActiveWithGames = clanRenderActive;
-clanRenderActive = function(clan) {
-  _clanRenderActiveWithGames(clan);
-  clanDuelRenderPanel(clan);
-};
-
 
 
 </script>
