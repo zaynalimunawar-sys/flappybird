@@ -1300,6 +1300,113 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
   50% { text-shadow:4px 5px 0 #092a4a,7px 8px 0 rgba(0,0,0,.5),0 0 18px rgba(0,212,255,.45); }
 }
 </style>
+
+<style>
+/* Responsive compact tabs & weapon grid slot */
+.menu-tabs {
+  max-width: 96vw;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.menu-tabs::-webkit-scrollbar { display: none; }
+.menu-tab {
+  flex: 0 0 auto;
+  padding: 8px 12px !important;
+  font-size: 0.78rem !important;
+  white-space: nowrap;
+}
+.weapon-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+  max-width: 500px;
+  margin: 0 auto 12px;
+  width: 100%;
+  padding: 0 4px;
+}
+.weapon-card {
+  background: rgba(255,255,255,0.05);
+  border: 1.5px solid rgba(255,255,255,0.12);
+  border-radius: 14px;
+  padding: 10px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  text-align: center;
+  transition: all 180ms ease;
+  position: relative;
+}
+.weapon-card.active {
+  background: rgba(0, 212, 255, 0.08);
+  border-color: rgba(0, 212, 255, 0.5);
+  box-shadow: 0 0 14px rgba(0, 212, 255, 0.2);
+}
+.weapon-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 4px;
+}
+.weapon-card-name {
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #fff;
+}
+.weapon-card-badge {
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.weapon-card-badge.on {
+  background: rgba(0,255,150,0.2);
+  color: #00ff96;
+}
+.weapon-card-badge.off {
+  background: rgba(255,68,102,0.2);
+  color: #ff4466;
+}
+.weapon-card-desc {
+  font-size: 0.68rem;
+  color: var(--color-muted);
+  line-height: 1.25;
+}
+.weapon-card-power {
+  font-family: 'Bangers', cursive;
+  font-size: 0.76rem;
+  letter-spacing: 0.5px;
+  color: #ffdd44;
+}
+.weapon-card .mods-switch {
+  width: 44px;
+  height: 24px;
+}
+.weapon-card .mods-switch-slider:before {
+  width: 16px;
+  height: 16px;
+  left: 2px;
+  top: 2px;
+}
+.weapon-card .mods-switch input:checked + .mods-switch-slider:before {
+  transform: translateX(20px);
+}
+.mods-toggle-row {
+  padding: 8px 14px !important;
+  margin-bottom: 6px !important;
+  border-radius: 12px !important;
+}
+.mods-toggle-desc {
+  margin-bottom: 8px !important;
+  font-size: 0.72rem !important;
+}
+</style>
+
 </head>
 <body>
 <!-- INTRO SPLASH -->
@@ -1344,6 +1451,7 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
       <button class="menu-tab" data-menutab="match">⚔️ Match</button>
       <button class="menu-tab" data-menutab="stage">🗺️ Stage</button>
       <button class="menu-tab" data-menutab="career">🏆 Career</button>
+      <button class="menu-tab" data-menutab="weapons">⚔️ Weapons</button>
       <button class="menu-tab" data-menutab="mods">🔧 Mods</button>
       </div>
 
@@ -1387,20 +1495,16 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
       <div class="career-map-wrap" id="careerMapBtns"></div>
     </div>
 
+    <div class="menu-panel" data-panel="weapons">
+      <div class="menu-subsection">
+        <h3>Battle Arsenal</h3>
+        <div class="weapon-grid" id="weaponsGridContainer"></div>
+      </div>
+    </div>
+
     <div class="menu-panel" data-panel="mods">
       <div class="menu-subsection">
-        <h3>Weapon Mods</h3>
-        <div class="mods-toggle-row">
-          <span class="mods-toggle-label">Guns</span>
-          <label class="mods-switch">
-            <input type="checkbox" id="gunsToggle" checked>
-            <span class="mods-switch-slider"></span>
-          </label>
-        </div>
-        <div class="mods-toggle-desc" id="gunsToggleDesc">Guns are ON — pickups will drop during matches.</div>
-      </div>
-      <div class="menu-subsection">
-        <h3>Fun Mods</h3>
+        <h3>Game Modifiers</h3>
         <div id="extraModsContainer"></div>
       </div>
     </div>
@@ -6042,6 +6146,404 @@ runIntroFight();
 })();
 </script>
 
+<script>
+// =========================================================================
+// EXPANDED WEAPONS ARSENAL & WEAPONS TAB SYSTEM
+// =========================================================================
+const ARSENAL = {
+  gun: {
+    id: 'gun',
+    name: 'Blaster Gun',
+    icon: '🔫',
+    color: '#ffee44',
+    power: 'Rapid Fire',
+    desc: 'Rapid range bullets. J: continuous fire.',
+    isGun: true
+  },
+  sword: {
+    id: 'sword',
+    name: 'Sword',
+    icon: '⚔️',
+    color: '#65e5ff',
+    reach: 180,
+    damage: 15,
+    cool: 0.24,
+    power: 'Blade Wave',
+    desc: 'Fast slashes. L: piercing energy wave.'
+  },
+  hammer: {
+    id: 'hammer',
+    name: 'War Hammer',
+    icon: '🔨',
+    color: '#ffc35c',
+    reach: 145,
+    damage: 26,
+    cool: 0.60,
+    power: 'Earthshatter',
+    desc: 'Heavy stun blow. L: 360° ground slam.'
+  },
+  spear: {
+    id: 'spear',
+    name: 'Storm Spear',
+    icon: '🔱',
+    color: '#b58cff',
+    reach: 260,
+    damage: 13,
+    cool: 0.35,
+    power: 'Lightning Thrust',
+    desc: 'Huge reach. L: high-speed charge impale.'
+  },
+  axe: {
+    id: 'axe',
+    name: 'Battle Axe',
+    icon: '🪓',
+    color: '#ff7a91',
+    reach: 165,
+    damage: 20,
+    cool: 0.44,
+    power: 'Whirlwind',
+    desc: 'Wide cleave. L: 360° spinning cyclone.'
+  }
+};
+
+let weaponToggles = {};
+try {
+  weaponToggles = JSON.parse(localStorage.getItem('weaponToggles') || '{}') || {};
+} catch(e) {}
+
+// Populate defaults
+for (const id of Object.keys(ARSENAL)) {
+  if (typeof weaponToggles[id] !== 'boolean') weaponToggles[id] = true;
+}
+
+// Keep gunsModEnabled in sync with ARSENAL.gun
+if (typeof gunsModEnabled !== 'undefined') {
+  gunsModEnabled = !!weaponToggles.gun;
+}
+
+function saveWeaponToggles() {
+  try { localStorage.setItem('weaponToggles', JSON.stringify(weaponToggles)); } catch(e) {}
+  if (typeof gunsModEnabled !== 'undefined') gunsModEnabled = !!weaponToggles.gun;
+  if (!weaponToggles.gun && typeof guns !== 'undefined') guns.length = 0;
+  meleeDrops = meleeDrops.filter(d => weaponToggles[d.id]);
+  if (typeof fighters !== 'undefined' && fighters) {
+    fighters.forEach(f => {
+      if (f.melee && !weaponToggles[f.melee]) f.melee = null;
+      if (f.hasGun && !weaponToggles.gun) { f.hasGun = false; f.gunAmmo = 0; }
+    });
+  }
+}
+
+// Render Weapons Tab Grid
+function renderWeaponsTab() {
+  const container = document.getElementById('weaponsGridContainer');
+  if (!container) return;
+  container.innerHTML = '';
+
+  for (const [id, w] of Object.entries(ARSENAL)) {
+    const card = document.createElement('div');
+    const enabled = !!weaponToggles[id];
+    card.className = 'weapon-card' + (enabled ? ' active' : '');
+
+    card.innerHTML = `
+      <div class="weapon-card-header">
+        <span class="weapon-card-name">${w.icon} ${w.name}</span>
+        <label class="mods-switch">
+          <input type="checkbox" id="weap_toggle_${id}" ${enabled ? 'checked' : ''}>
+          <span class="mods-switch-slider"></span>
+        </label>
+      </div>
+      <div class="weapon-card-desc">${w.desc}</div>
+      <div class="weapon-card-power" style="color:${w.color};">⚡ ${w.power}</div>
+    `;
+
+    const cb = card.querySelector(`#weap_toggle_${id}`);
+    const toggleFunc = () => {
+      weaponToggles[id] = cb.checked;
+      card.classList.toggle('active', cb.checked);
+      saveWeaponToggles();
+    };
+    cb.addEventListener('change', toggleFunc);
+
+    const slider = card.querySelector('.mods-switch-slider');
+    if (slider) {
+      slider.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        cb.checked = !cb.checked;
+        toggleFunc();
+      }, { passive: false });
+    }
+
+    container.appendChild(card);
+  }
+}
+renderWeaponsTab();
+
+// Ensure gunsToggle listener stays in sync if checked elsewhere
+if (typeof gunsToggleEl !== 'undefined' && gunsToggleEl) {
+  gunsToggleEl.addEventListener('change', () => {
+    weaponToggles.gun = gunsToggleEl.checked;
+    saveWeaponToggles();
+    renderWeaponsTab();
+  });
+}
+
+// Melee drops state
+let meleeDrops = [];
+let meleeClock = 2;
+
+function weaponStrike(f, range, dmg, radial) {
+  const w = ARSENAL[f.melee];
+  if (!w) return;
+  for (const e of fighters) {
+    if (e === f || e.dead || !e.visible || e.respawnTimer > 0) continue;
+    const dx = e.cx - f.cx;
+    if (Math.abs(dx) > range + e.w/2 || (!radial && dx * f.facing < -25) || Math.abs(e.cy - f.cy) > f.h * 0.8) continue;
+    const proxy = Object.create(f);
+    proxy.char = Object.assign({}, f.char, { dmgMult: (f.char.dmgMult || 1) * dmg / 13 });
+    e.hit('kick', proxy);
+    spawnParticles(e.cx, e.cy, w.color, 12);
+  }
+}
+
+function meleeAttack(f, power) {
+  const w = ARSENAL[f.melee];
+  if (!w) return;
+  f.attackType = 'punch';
+  f.attackTimer = power ? 0.48 : 0.24;
+  f.attackDuration = f.attackTimer;
+  f.attackCooldown = power ? 0.55 : w.cool;
+  f.meleeAnim = f.attackTimer;
+  f.meleePower = power;
+
+  if (power) {
+    f.specialCooldown = (typeof MODS !== 'undefined' && MODS.noUltCooldown) ? 0 : 3.4;
+    spawnPopup(f.cx, f.cy - 90, w.power.toUpperCase() + '!', { color: w.color, size: 26 });
+    spawnImpactRing(f.cx, f.cy, w.color, { maxRadius: f.melee === 'axe' ? 240 : 160, lineWidth: 8, life: 0.5 });
+    camera.shake = Math.max(camera.shake, f.melee === 'hammer' ? 22 : 10);
+
+    if (f.melee === 'sword') {
+      projectiles.push({
+        x: f.cx + f.facing * 40,
+        y: f.cy,
+        vx: f.facing * 980,
+        vy: 0,
+        dir: f.facing,
+        owner: f,
+        life: 1.1,
+        w: 65,
+        h: 80,
+        color: w.color
+      });
+      playSFX(550, 0.15, 'sawtooth');
+    } else if (f.melee === 'hammer') {
+      weaponStrike(f, 240, 35, true);
+      spawnImpactRing(f.cx, f.feet, w.color, { maxRadius: 280, lineWidth: 12, life: 0.6 });
+      playSFX(100, 0.25, 'square');
+    } else if (f.melee === 'spear') {
+      f.vx = f.facing * 1150;
+      weaponStrike(f, 360, 29, false);
+      playSFX(480, 0.15, 'sawtooth');
+    } else if (f.melee === 'axe') {
+      weaponStrike(f, 240, 30, true);
+      playSFX(320, 0.20, 'square');
+    }
+  } else {
+    weaponStrike(f, w.reach, w.damage, false);
+    playSFX(f.melee === 'hammer' ? 140 : 420, 0.10, f.melee === 'hammer' ? 'square' : 'triangle');
+  }
+}
+
+// Hook fighter attacks
+const origAttack = Fighter.prototype.doAttack;
+Fighter.prototype.doAttack = function(type, enemies, duration, cooldown) {
+  if (this.melee && type === 'punch') {
+    meleeAttack(this, false);
+    return;
+  }
+  return origAttack.call(this, type, enemies, duration, cooldown);
+};
+
+const origSpecial = Fighter.prototype.useSpecial;
+Fighter.prototype.useSpecial = function(enemies) {
+  if (this.melee && !this.ultReady) {
+    meleeAttack(this, true);
+    return;
+  }
+  return origSpecial.call(this, enemies);
+};
+
+const origUpdate = Fighter.prototype.update;
+Fighter.prototype.update = function(dt, enemies) {
+  if (this.melee) {
+    this.meleeLife = (this.meleeLife || 24) - dt;
+    this.meleeAnim = Math.max(0, (this.meleeAnim || 0) - dt);
+    if (this.meleeLife <= 0 || this.dead || this.respawnTimer > 0 || !weaponToggles[this.melee]) {
+      this.melee = null;
+    }
+  }
+  return origUpdate.call(this, dt, enemies);
+};
+
+function paintWeapon(c, id) {
+  const w = ARSENAL[id];
+  if (!w) return;
+  c.strokeStyle = '#22182e';
+  c.fillStyle = w.color;
+  c.lineWidth = 5;
+  c.lineCap = 'round';
+  c.beginPath();
+  c.moveTo(-14, 0);
+  c.lineTo(52, 0);
+  c.stroke();
+
+  if (id === 'hammer') {
+    c.fillRect(43, -23, 29, 46);
+    c.strokeRect(43, -23, 29, 46);
+  } else if (id === 'axe') {
+    c.beginPath();
+    c.moveTo(40, -28);
+    c.quadraticCurveTo(95, -12, 58, 30);
+    c.lineTo(46, 6);
+    c.closePath();
+    c.fill();
+    c.stroke();
+  } else {
+    c.beginPath();
+    c.moveTo(12, -7);
+    c.lineTo(id === 'spear' ? 112 : 84, 0);
+    c.lineTo(12, 7);
+    c.closePath();
+    c.fill();
+    c.stroke();
+    if (id === 'sword') {
+      c.fillStyle = '#ffe58a';
+      c.fillRect(9, -16, 6, 32);
+    }
+  }
+}
+
+const origDraw = Fighter.prototype.draw;
+Fighter.prototype.draw = function(c) {
+  origDraw.call(this, c);
+  if (!this.melee || this.dead || !this.visible) return;
+  const w = ARSENAL[this.melee], s = scale();
+  c.save();
+  c.translate(sx(this.cx), sy(this.cy));
+  c.scale(s * this.facing, s);
+  c.strokeStyle = this.color;
+  c.lineWidth = 10;
+  c.lineCap = 'round';
+  c.beginPath();
+  c.moveTo(0, -35);
+  c.lineTo(27, -10);
+  c.lineTo(35, 0);
+  c.stroke();
+  c.translate(35, 0);
+
+  const t = this.meleeAnim || 0;
+  if (t > 0) {
+    c.rotate(-1.3 + Math.sin((1 - t / (this.attackDuration || 0.24)) * Math.PI) * 2.3);
+  } else {
+    c.rotate(-0.65);
+  }
+
+  c.shadowColor = w.color;
+  c.shadowBlur = 10;
+  paintWeapon(c, this.melee);
+  c.restore();
+
+  c.save();
+  c.font = 'bold ' + Math.max(10, 13 * s) + 'px sans-serif';
+  c.textAlign = 'center';
+  c.fillStyle = w.color;
+  c.fillText(w.name + ' · ' + Math.ceil(this.meleeLife) + 's', sx(this.cx), sy(this.y - 30));
+  c.restore();
+};
+
+const origGunsUpdate = updateGuns;
+updateGuns = function(dt) {
+  origGunsUpdate(dt);
+  meleeClock -= dt;
+  if (meleeClock <= 0) {
+    meleeClock = 5.5;
+    const availableIds = ['sword', 'hammer', 'spear', 'axe'].filter(id => weaponToggles[id]);
+    if (availableIds.length && meleeDrops.length < 5) {
+      const platforms = getStage().platforms;
+      const p = platforms[Math.floor(Math.random() * platforms.length)];
+      meleeDrops.push({
+        id: availableIds[Math.floor(Math.random() * availableIds.length)],
+        x: p.x + p.w * (0.2 + Math.random() * 0.6),
+        y: -60,
+        vy: 0,
+        life: 25,
+        landed: false
+      });
+    }
+  }
+
+  for (let i = meleeDrops.length - 1; i >= 0; i--) {
+    const d = meleeDrops[i];
+    d.life -= dt;
+    if (!d.landed) {
+      const prev = d.y;
+      d.vy += GRAVITY * dt;
+      d.y += d.vy * dt;
+      for (const p of getStage().platforms) {
+        if (d.x >= p.x && d.x <= p.x + p.w && prev <= p.y - 20 && d.y >= p.y - 20) {
+          d.y = p.y - 20;
+          d.vy = 0;
+          d.landed = true;
+          break;
+        }
+      }
+    }
+
+    let taken = false;
+    for (const f of fighters) {
+      if (f.dead || !f.visible || f.respawnTimer > 0 || f.melee || f.hasGun) continue;
+      if (Math.abs(f.cx - d.x) < f.w/2 + 35 && Math.abs(f.cy - d.y) < f.h/2 + 25) {
+        f.melee = d.id;
+        f.meleeLife = 24;
+        f.hasGun = false;
+        spawnPopup(f.cx, f.cy - 80, ARSENAL[d.id].name.toUpperCase() + '!', { color: ARSENAL[d.id].color });
+        taken = true;
+        break;
+      }
+    }
+
+    if (taken || d.life <= 0 || d.y > STAGE_H + 80) {
+      meleeDrops.splice(i, 1);
+    }
+  }
+};
+
+const origDrawGuns = drawGuns;
+drawGuns = function() {
+  origDrawGuns();
+  for (const d of meleeDrops) {
+    ctx.save();
+    ctx.translate(sx(d.x), sy(d.y + Math.sin(performance.now() / 250) * 4));
+    ctx.scale(scale() * 0.6, scale() * 0.6);
+    ctx.shadowColor = ARSENAL[d.id].color;
+    ctx.shadowBlur = 15;
+    paintWeapon(ctx, d.id);
+    ctx.restore();
+  }
+};
+
+const origStart = startGame;
+startGame = function() {
+  meleeDrops = [];
+  meleeClock = 2;
+  return origStart();
+};
+
+document.getElementById('startBtn').removeEventListener('click', origStart);
+document.getElementById('startBtn').addEventListener('click', startGame);
+document.getElementById('rematchBtn').removeEventListener('click', origStart);
+document.getElementById('rematchBtn').addEventListener('click', startGame);
+</script>
 </body>
 
 </html>
