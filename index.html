@@ -1299,6 +1299,148 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
   0%,100% { text-shadow:3px 4px 0 #092a4a,6px 7px 0 rgba(0,0,0,.45); }
   50% { text-shadow:4px 5px 0 #092a4a,7px 8px 0 rgba(0,0,0,.5),0 0 18px rgba(0,212,255,.45); }
 }
+/* Improved illustrated portraits: selection menu only */
+.hb-roster-art {background:radial-gradient(ellipse at 50% 62%,color-mix(in srgb,var(--hb-color) 35%,transparent) 0%,transparent 66%),linear-gradient(150deg,#24354e,#0e1425 80%);}
+.hb-roster-art svg {width:128px;height:128px;transform:translateY(11px);filter:drop-shadow(0 5px 4px #000b);}
+.hb-feature-figure {filter:drop-shadow(0 9px 5px #0008) drop-shadow(0 0 14px color-mix(in srgb,var(--hb-color) 35%,transparent));}
+.hb-feature-art {height:195px;}
+.hb-feature-figure {height:188px;width:170px;}
+@media(max-width:700px){.hb-feature-art{height:175px}.hb-feature-figure{height:164px;width:155px}}
+/* Menu artwork matches the game's minimal stickman visual language. */
+.hb-feature-figure {filter:drop-shadow(0 6px 5px #0009) !important;}
+.hb-roster-art svg {filter:drop-shadow(0 4px 3px #0009) !important;}
+.hb-feature-burst {opacity:.12 !important;}
+.hb-feature-orbit {opacity:.35 !important;}
+.hb-roster-art::before {opacity:.18 !important;}
+
+/* Bright comic-book look for menu portraits, inspired by the supplied reference image. */
+.hb-feature-art { background: repeating-conic-gradient(from -12deg at 50% 62%,#ffffff18 0deg 16deg,transparent 16deg 36deg), radial-gradient(circle at 50% 45%,#49e7f4 0%,#1879dc 53%,#192b8d 100%) !important; border-radius:18px; overflow:hidden; }
+.hb-feature-burst { opacity:.58 !important; }
+.hb-feature-orbit { opacity:.18 !important; }
+.hb-feature-figure { filter:drop-shadow(4px 7px 0px #07112a7d) !important; }
+.hb-roster-art { background: repeating-conic-gradient(from 10deg at 50% 60%,#ffffff12 0deg 19deg,transparent 19deg 40deg),radial-gradient(circle at 50% 55%,#43d8ed,#2065cf 72%,#182a86) !important; }
+.hb-roster-art svg { filter:drop-shadow(3px 5px 0px #07112a80) !important; }
+
+/* ═══ RANKED MODE • repaired responsive layout ═══ */
+#menu .menu-panel[data-panel="ranked"] {
+  width:100%; max-width:720px; margin-inline:auto; min-height:0; align-items:stretch;
+  padding: 4px 10px 12px;
+}
+#menu .ranked-card {
+  --rank-accent:#cd7f32;
+  width:100%; max-width:650px; box-sizing:border-box; margin:0 auto;
+  display:flex; flex-direction:column; gap:13px;
+  padding:clamp(15px,2.6vw,26px) !important;
+  border:2px solid color-mix(in srgb,var(--rank-accent) 55%,#34466a) !important;
+  border-radius:16px !important;
+  background:radial-gradient(ellipse at 90% 4%,color-mix(in srgb,var(--rank-accent) 17%,transparent),transparent 55%),linear-gradient(145deg,#152644,#0b1228) !important;
+  box-shadow:0 18px 45px #0007,inset 0 1px 0 #ffffff24 !important;
+  color:#e8f3ff; overflow:hidden;
+}
+#menu .ranked-header {display:flex;align-items:center;gap:clamp(10px,3vw,18px);width:100%;}
+#menu .ranked-badge-wrap {flex:0 0 auto;width:clamp(60px,11vw,86px);height:clamp(60px,11vw,86px);display:grid;place-items:center;background:linear-gradient(145deg,color-mix(in srgb,var(--rank-accent) 42%,#0a1935),#101d35);border:2px solid var(--rank-accent);border-radius:16px;box-shadow:inset 0 1px #ffffff55,0 0 25px color-mix(in srgb,var(--rank-accent) 18%,transparent);}
+#menu .ranked-badge-icon {font-size:clamp(32px,6vw,47px);line-height:1;filter:drop-shadow(0 3px 5px #0007)}
+#menu .ranked-tier-info {flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;}
+#menu .ranked-season-tag {font:800 10px 'Rajdhani',sans-serif;letter-spacing:2px;color:#9ab7df;}
+#menu .ranked-tier-name {font:900 clamp(26px,5vw,41px) 'Rajdhani',sans-serif;letter-spacing:1px;line-height:1.03;text-shadow:0 2px 10px #0009;overflow-wrap:anywhere;}
+#menu .ranked-pts-label {font:900 18px 'Rajdhani',sans-serif;color:#ffefaa;letter-spacing:1px;}
+#menu .ranked-bar-wrap {width:100%;height:13px;background:#050c1c;border:1px solid #344a6b;border-radius:99px;overflow:hidden;box-sizing:border-box;}
+#menu .ranked-bar {height:100%;width:0;background:linear-gradient(90deg,var(--rank-accent),#ffffff);border-radius:99px;box-shadow:0 0 16px var(--rank-accent);transition:width .3s;}
+#menu .ranked-next-tier-label {font:800 12px 'Rajdhani',sans-serif;color:#aec6e7;text-align:center;letter-spacing:.35px;}
+#menu .ranked-stats-row {width:100%;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;}
+#menu .ranked-stat-pill {min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:12px 7px;border:1px solid #344868;background:#101d36;border-radius:9px;text-align:center;}
+#menu .ranked-stat-pill .rsp-label {font:800 10px 'Rajdhani',sans-serif;letter-spacing:.7px;color:#9eb4d2;}
+#menu .ranked-stat-pill .rsp-val {font:900 16px 'Rajdhani',sans-serif;letter-spacing:.5px;color:#fff;overflow-wrap:anywhere;}
+#menu .ranked-queue-btn {width:100%;min-height:49px;padding:11px 13px;background:linear-gradient(180deg,#ffe775,#ffb900 62%,#ed8c00);border:2px solid #fff3aa;border-radius:9px;color:#1e1620;font:900 clamp(15px,2.5vw,19px) 'Rajdhani',sans-serif;letter-spacing:1px;cursor:pointer;box-shadow:0 5px 0 #925b0a,0 10px 19px #0007;transition:transform .12s,filter .12s;touch-action:manipulation;}
+#menu .ranked-queue-btn:hover {filter:brightness(1.08);transform:translateY(-2px);}
+#menu .ranked-queue-btn:active {transform:translateY(3px);box-shadow:0 2px 0 #925b0a;}
+#menu .ranked-note {font:600 11px/1.45 'Rajdhani',sans-serif;color:#a1b7d2;text-align:center;max-width:100%;margin:0;}
+#rankedHudBanner{pointer-events:none;position:fixed;top:clamp(45px,9vh,82px);left:50%;transform:translateX(-50%);z-index:18;display:none;background:linear-gradient(90deg,#121e40ee,#263154f5);border:2px solid #ffd747;border-radius:8px;padding:7px 13px;color:#ffe77d;font:900 15px 'Rajdhani',sans-serif;letter-spacing:1px;text-shadow:0 2px 4px #000;box-shadow:0 5px 22px #0009;white-space:nowrap;max-width:96vw;text-overflow:ellipsis;overflow:hidden;}
+#game-over-screen .ranked-result {display:none;max-width:min(440px,90vw);padding:8px 14px;margin:8px auto;border-radius:8px;border:2px solid #efbd42;background:#15223c;color:#ffe77a;text-align:center;font:900 18px 'Rajdhani',sans-serif;letter-spacing:.5px;}
+@media (max-width:520px) {
+  #menu .menu-panel[data-panel="ranked"]{padding:3px 4px 8px;}
+  #menu .ranked-card {gap:9px;padding:13px !important;border-radius:11px!important;}
+  #menu .ranked-stats-row {gap:5px;}
+  #menu .ranked-stat-pill {padding:8px 3px;}
+  #menu .ranked-stat-pill .rsp-label {font-size:9px;letter-spacing:0;}
+  #menu .ranked-stat-pill .rsp-val {font-size:12px;}
+  #menu .ranked-queue-btn {min-height:44px;}
+}
+@media(max-height:620px){#menu .ranked-card{gap:7px;padding:11px!important}#menu .ranked-badge-wrap{width:50px;height:50px}#menu .ranked-badge-icon{font-size:27px}#menu .ranked-stat-pill{padding:7px}}
+
+
+/* ═══ EXTENDED CINEMATIC FIGHT INTRO — completely isolated from game ═══ */
+#intro-screen {
+  position:fixed; inset:0; z-index:10000; display:block; overflow:hidden;
+  background:#041022; opacity:1; transform:none; animation:none; isolation:isolate;
+  font-family:'Rajdhani',Arial,sans-serif; user-select:none;
+}
+#intro-screen.cin-hidden{display:none !important;}
+#intro-screen.fade-out{pointer-events:none;animation:cin-exit .5s ease-in forwards !important;}
+@keyframes cin-exit{to{opacity:0;transform:scale(1.035);}}
+#introFightCanvas{position:absolute;inset:0;display:block;width:100%;height:100%;z-index:1;pointer-events:none;}
+.cin-vignette{position:absolute;inset:0;z-index:2;pointer-events:none;
+ background:linear-gradient(180deg,rgba(1,5,20,.55),transparent 23%,transparent 60%,rgba(1,5,20,.73) 100%),radial-gradient(ellipse at center,transparent 35%,rgba(0,0,0,.28) 100%);}
+.cin-topline{position:absolute;z-index:5;top:clamp(12px,3vh,25px);left:clamp(14px,4vw,52px);right:clamp(14px,4vw,52px);display:flex;justify-content:space-between;align-items:flex-start;gap:15px;}
+.cin-brand{font-family:'Bangers',Impact,sans-serif;font-size:clamp(19px,3.4vw,36px);color:#f4fcff;letter-spacing:1.4px;text-shadow:3px 3px 0 #091e45,0 0 10px #1395ff6b;line-height:1;}
+.cin-brand b{color:#ffdd32;font-weight:inherit;}
+.cin-brand small{display:block;color:#7cacd5;font:800 clamp(8px,1vw,11px) 'Rajdhani',sans-serif;letter-spacing:2.3px;margin-top:8px;}
+.cin-live{font-size:clamp(9px,1.3vw,13px);font-weight:900;letter-spacing:1.4px;background:#09162abf;border:1px solid #9abef044;padding:9px 13px;border-radius:4px;color:#deebff;white-space:nowrap;}
+.cin-live i{display:inline-block;width:8px;height:8px;border-radius:50%;background:#ff486f;box-shadow:0 0 12px #ff486f;margin-right:5px;animation:cin-blink 1.1s infinite alternate;}
+@keyframes cin-blink{to{opacity:.25}}
+.cin-hud{position:absolute;z-index:6;top:clamp(67px,12vh,108px);left:clamp(15px,6vw,92px);right:clamp(15px,6vw,92px);display:grid;grid-template-columns:minmax(0,1fr) 70px minmax(0,1fr);align-items:center;gap:clamp(8px,2vw,25px);}
+.cin-player{min-width:0;max-width:450px;}
+.cin-p2{justify-self:end;width:100%;}
+.cin-player-head{display:flex;align-items:center;gap:8px;margin-bottom:5px;color:white;font-size:clamp(12px,2.2vw,23px);font-weight:900;letter-spacing:1px;font-style:italic;text-shadow:2px 2px #050f24;}
+.cin-player-head span{font-style:normal;font-size:clamp(10px,1.3vw,14px);padding:1px 7px;background:#03bfec;color:#001a2a;transform:skew(-9deg);}
+.cin-p2 .cin-player-head{flex-direction:row-reverse;}
+.cin-p2 .cin-player-head span{background:#ff4362;color:#33000c;}
+.cin-player-head small{font-size:clamp(7px,1vw,11px);font-weight:700;letter-spacing:1px;color:#8db6d0;margin-left:auto;}
+.cin-p2 .cin-player-head small{margin-left:0;margin-right:auto;}
+.cin-hp-track{height:clamp(11px,1.8vh,18px);background:#070b1e;border:2px solid #b9d9f3;box-shadow:0 4px 0 #0008;transform:skew(-9deg);padding:2px;}
+.cin-hp-fill{height:100%;width:100%;background:linear-gradient(90deg,#1187f4,#12f4ff);box-shadow:0 0 13px #00d9ff;transform-origin:left;}
+.cin-p2 .cin-hp-fill{background:linear-gradient(90deg,#ff9e28,#fc244d);box-shadow:0 0 13px #ff274d;transform-origin:right;}
+.cin-vs{font:clamp(24px,4.1vw,48px) 'Bangers',Impact,sans-serif;text-align:center;color:#fff;letter-spacing:2px;-webkit-text-stroke:1px #040e27;text-shadow:3px 4px 0 #ec3156,0 0 22px #ff445f;}
+.cin-action{position:absolute;z-index:7;left:50%;top:44%;transform:translate(-50%,-50%) rotate(-2deg);width:min(89vw,850px);text-align:center;pointer-events:none;transition:opacity .19s ease,transform .19s ease;opacity:1;}
+.cin-action.cin-away{opacity:0;transform:translate(-50%,-43%) scale(.8) rotate(-2deg);}
+.cin-round{font-weight:900;font-size:clamp(10px,1.65vw,15px);letter-spacing:clamp(2px,.7vw,7px);color:#cce4ff;text-shadow:1px 2px #000;}
+.cin-callout{font:clamp(55px,12vw,146px)/.92 'Bangers',Impact,sans-serif;letter-spacing:clamp(1px,1vw,10px);color:#fff;text-shadow:4px 5px 0 #051632,7px 9px 0 #e12b48,0 0 35px #2ab7ff55;-webkit-text-stroke:1px #0c1431;white-space:nowrap;}
+.cin-sub{display:inline-block;margin-top:9px;background:#091932d9;padding:6px 18px;font-size:clamp(10px,1.7vw,16px);font-weight:900;letter-spacing:3px;color:#94daff;border-left:4px solid #08d8ff;border-right:4px solid #ff456c;}
+.cin-action.cin-hot .cin-callout{color:#ffeb47;text-shadow:3px 5px #391529,6px 10px #e22842,0 0 40px #ff7b00;}
+.cin-action.cin-ultra .cin-callout{color:#78f6ff;text-shadow:3px 5px #01192f,6px 10px #0077d8,0 0 35px #04deff;}
+.cin-winner{position:absolute;z-index:9;top:46%;left:50%;width:min(95vw,800px);transform:translate(-50%,-43%) scale(.82);opacity:0;text-align:center;pointer-events:none;transition:opacity .33s ease,transform .5s cubic-bezier(.2,1.5,.2,1);}
+.cin-winner.cin-show{opacity:1;transform:translate(-50%,-50%) scale(1);}
+.cin-victory-label{display:inline-block;color:#081526;font-weight:900;font-size:clamp(12px,2vw,19px);letter-spacing:3px;background:#ffe23b;padding:5px 22px;transform:skew(-12deg);box-shadow:4px 5px #081023;}
+.cin-winner h1{font:clamp(70px,16vw,178px)/.82 'Bangers',Impact,sans-serif;letter-spacing:5px;margin:20px 0 13px;color:#fff;-webkit-text-stroke:clamp(1px,.5vw,5px) #0b1734;text-shadow:5px 7px #006dc4,9px 12px #051632,0 0 45px #00acff55;}
+.cin-winner h1 span{color:#ffd638;text-shadow:5px 7px #ed4a15,9px 12px #051632,0 0 32px #ffbc0f55;}
+.cin-winner p{color:#e9f3ff;font-weight:900;font-size:clamp(12px,2.4vw,24px);letter-spacing:clamp(2px,.6vw,7px);text-shadow:2px 4px #05122e;}
+.cin-title-rule{height:5px;width:65%;margin:18px auto 0;background:linear-gradient(90deg,transparent,#05d5ff,#ffd638,#fb3655,transparent);box-shadow:0 0 19px #02ddff99;}
+.cin-flash{position:absolute;z-index:8;inset:0;pointer-events:none;opacity:0;background:#e4ffff;mix-blend-mode:screen;}
+.cin-footer{position:absolute;bottom:clamp(12px,3vh,27px);left:clamp(14px,4vw,52px);right:clamp(14px,4vw,52px);z-index:12;display:flex;align-items:center;gap:15px;}
+.cin-foot-label{color:#87a5cf;font-size:clamp(9px,1.4vw,13px);letter-spacing:1px;font-weight:700;white-space:nowrap;}
+.cin-foot-label b{display:block;font-size:clamp(10px,1.3vw,14px);color:white;letter-spacing:1.2px;}
+.cin-progress{height:7px;flex:1;min-width:30px;background:#1a3154;border:1px solid #a8c7e270;transform:skew(-13deg);overflow:hidden;}
+#cinProgress{height:100%;width:0;background:linear-gradient(90deg,#078aff,#00e3fc 65%,#e5f8ff);box-shadow:0 0 15px #3dedff;}
+#introSkipBtn{appearance:none;flex:none;border:1px solid #88b1e070;border-radius:5px;background:#0a1c34db;color:#fff;font:900 clamp(11px,1.5vw,15px) 'Rajdhani',Arial,sans-serif;letter-spacing:1px;padding:10px 16px;cursor:pointer;touch-action:manipulation;}
+#introSkipBtn:hover,#introSkipBtn:focus-visible{outline:2px solid #f8d853;background:#205186;}
+#introSkipBtn b{font-size:17px;margin-left:8px;color:#ffdb43;}
+.cin-replay{margin-top:9px;cursor:pointer;background:#0f2444cc;border:1px solid #63c7ff8f;color:#c2efff;letter-spacing:1.3px;font:800 11px 'Rajdhani',sans-serif;padding:7px 12px;border-radius:5px;}
+.cin-replay:hover{background:#164176;color:white;}
+@media(max-width:600px){
+ .cin-hud{grid-template-columns:minmax(0,1fr) 36px minmax(0,1fr);gap:6px;top:70px;}
+ .cin-topline{top:12px;}.cin-player-head small{display:none;}
+ .cin-player-head{font-size:14px;}.cin-callout{font-size:clamp(45px,13vw,74px);}
+ .cin-footer{flex-wrap:wrap;gap:7px;}.cin-foot-label{width:100%;}.cin-foot-label b{display:inline;margin-left:8px;}
+ #introSkipBtn{padding:7px 10px;}
+ .cin-winner h1{font-size:clamp(65px,18vw,110px);}
+}
+@media(max-height:470px){.cin-hud{top:49px}.cin-topline{top:7px}.cin-brand small{display:none}.cin-footer{bottom:8px}.cin-foot-label{display:none}.cin-winner h1{font-size:clamp(48px,11vw,90px);margin:8px 0}.cin-winner .cin-title-rule{margin-top:7px;}}
+@media(prefers-reduced-motion:reduce){.cin-live i{animation:none}#intro-screen.fade-out{animation:none!important;opacity:0;}}
+/* Action announcements move out of the way once the exchange starts. */
+.cin-action.cin-during{top:31%;}
+.cin-action.cin-during .cin-callout{font-size:clamp(40px,7vw,85px);}
+.cin-action.cin-during .cin-sub{font-size:clamp(9px,1.1vw,12px);}
+
 </style>
 
 <style>
@@ -1732,30 +1874,647 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
   transform: scale(1.03) !important;
   box-shadow: 0 6px 20px rgba(255,34,68,0.4) !important;
 }
+
+/* ══════════════════════════════════════════════════════════════════
+   STICKMAN WARS • BATTLEGROUNDS-INSPIRED FIGHTER SELECT
+   Scoped to the fighter panel, so all other menus remain unchanged.
+   ══════════════════════════════════════════════════════════════════ */
+#menu .menu-panel.hb-fighter-panel {
+  width:min(1080px,calc(100vw - 32px)) !important;
+  max-width:none !important;
+  flex:0 0 auto;
+  padding:22px !important;
+  color:#f9fbff;
+  background:linear-gradient(135deg,rgba(12,19,37,.94),rgba(13,19,34,.94)) !important;
+  border:1px solid rgba(205,224,255,.2) !important;
+  border-radius:18px !important;
+  box-shadow:0 25px 65px rgba(0,0,0,.48),inset 0 1px rgba(255,255,255,.08) !important;
+}
+.hb-fighter-panel .hb-select-heading { width:100%; display:flex; align-items:flex-end; justify-content:space-between; gap:14px; margin:0 0 17px; }
+.hb-fighter-panel .hb-eyebrow {font-size:10px;color:#6fa4db;font-weight:800;letter-spacing:2.4px;}
+.hb-fighter-panel .hb-select-heading h2 {font-family:'Bangers',cursive;font-size:clamp(28px,4vw,43px);letter-spacing:2.1px;line-height:1.08;color:white;text-shadow:2px 3px 0 #263b62;}
+.hb-fighter-panel .hb-select-heading h2 span {color:#ffdb63;}
+.hb-fighter-panel .hb-roster-count {white-space:nowrap;font-size:11px;font-weight:800;letter-spacing:1.5px;color:#a5c2e3;border:1px solid #304765;background:#19283d;padding:8px 11px;border-radius:5px;}
+.hb-character-select {width:100%;display:grid;grid-template-columns:minmax(270px,35%) minmax(0,1fr);gap:16px;align-items:stretch;}
+.hb-feature {--hb-color:#38bff0;min-width:0;position:relative;padding:14px 16px 16px;display:flex;flex-direction:column;overflow:hidden;background:linear-gradient(160deg,#192742,#0c1426 68%);border:1px solid #40516d;border-radius:13px;box-shadow:0 5px 25px #02091788;}
+.hb-feature::before {content:'';position:absolute;inset:0 0 auto;height:210px;background:radial-gradient(ellipse at 50% 40%,color-mix(in srgb,var(--hb-color) 33%,transparent),transparent 67%);pointer-events:none;opacity:.65;}
+.hb-feature-top {display:flex;justify-content:space-between;position:relative;z-index:1;gap:8px;align-items:center;}
+.hb-feature-chapter {font-size:9px;letter-spacing:1.65px;font-weight:800;color:#a2b6d8;}
+.hb-category {font-size:9px;letter-spacing:1px;color:#121927;background:var(--hb-color);padding:5px 7px;border-radius:3px;font-weight:900;}
+.hb-feature-art {height:172px;position:relative;display:grid;place-items:center;isolation:isolate;}
+.hb-feature-burst {position:absolute;width:190px;height:190px;border-radius:50%;background:repeating-conic-gradient(from 0deg,color-mix(in srgb,var(--hb-color) 32%,transparent) 0deg 10deg,transparent 10deg 24deg);opacity:.38;mask-image:radial-gradient(circle,transparent 0 26%,#000 30% 69%,transparent 75%);animation:hbBurstSpin 38s linear infinite;}
+.hb-feature-orbit {position:absolute;width:145px;height:145px;border:1px solid color-mix(in srgb,var(--hb-color) 70%,transparent);border-radius:50%;box-shadow:0 0 26px color-mix(in srgb,var(--hb-color) 28%,transparent),inset 0 0 20px color-mix(in srgb,var(--hb-color) 16%,transparent);}
+.hb-feature-figure {position:relative;z-index:1;width:150px;height:166px;filter:drop-shadow(0 0 14px var(--hb-color));animation:hbHeroFloat 2.9s ease-in-out infinite;}
+.hb-feature-figure svg {width:100%;height:100%;}
+.hb-feature-icon {position:absolute;z-index:2;right:10px;bottom:0;display:grid;place-items:center;width:40px;height:40px;border:1px solid #60748d;background:#131d30;border-radius:10px;font-size:22px;box-shadow:0 3px 10px #0008;}
+@keyframes hbHeroFloat {0%,100%{transform:translateY(3px)}50%{transform:translateY(-5px)}}
+@keyframes hbBurstSpin {to{transform:rotate(360deg)}}
+.hb-info-main {text-align:center;position:relative;z-index:1;margin-bottom:11px;}
+.hb-feature-label {color:#859abb;font-size:9px;letter-spacing:2px;font-weight:900;}
+.hb-info-main h3 {font-family:'Bangers',cursive;font-size:36px;letter-spacing:2px;line-height:1.15;color:#fff;text-shadow:0 3px #0008;overflow-wrap:anywhere;}
+.hb-tagline {font-size:12px;color:#aebdd7;min-height:17px;}
+.hb-difficulty {display:flex;justify-content:center;align-items:center;gap:12px;margin-top:9px;font-size:10px;color:#91a9c7;letter-spacing:1px;font-weight:800;}
+#hbDifficultyStars {font-size:16px;letter-spacing:3px;color:#ffe278;text-shadow:0 0 12px #ffe27866;}
+.hb-attributes {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 14px;margin-top:2px;}
+.hb-attribute>div:first-child {display:flex;justify-content:space-between;align-items:center;font-size:10px;letter-spacing:1px;color:#aac1db;font-weight:900;margin-bottom:4px;}
+.hb-attribute-track {height:7px;background:#2a354f;border-radius:2px;overflow:hidden;}
+.hb-attribute-track span {display:block;height:100%;width:50%;background:linear-gradient(90deg,color-mix(in srgb,var(--hb-color) 65%,#111),var(--hb-color));box-shadow:0 0 12px var(--hb-color);transition:width .26s ease;}
+.hb-special-box {margin-top:14px;display:flex;gap:11px;padding:11px;background:rgba(8,14,28,.85);border:1px solid rgba(140,170,210,.2);border-left:3px solid var(--hb-color);border-radius:6px;}
+.hb-special-mark {font-size:22px;color:var(--hb-color);line-height:1;}
+.hb-special-caption {font-size:10px;letter-spacing:1.2px;color:#92a6c4;font-weight:800;}
+.hb-special-caption kbd {font-family:inherit;font-size:9px;color:#e8f6ff;padding:1px 5px;border:1px solid #5e7499;border-radius:2px;}
+.hb-special-name {font-size:16px;color:#fff;font-weight:800;line-height:1.25;}
+.hb-special-box p {font-size:11px;line-height:1.35;color:#9dadc6;margin-top:3px;}
+.hb-mastery-preview {margin-top:12px;}
+.hb-mastery-preview>span {display:flex;justify-content:space-between;font-size:10px;font-weight:800;letter-spacing:1px;color:#d9c8f7;}
+.hb-mastery-track {height:6px;border-radius:5px;background:#303551;overflow:hidden;margin-top:6px;}
+.hb-mastery-track div {height:100%;width:0;background:linear-gradient(90deg,#8b6dff,#e78cff);transition:width .25s;}
+.hb-feature-actions {margin-top:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.hb-current-pill {flex:1;min-width:116px;text-align:center;padding:10px 5px;border:1px solid #307d6b;background:#14392f;color:#80f4c8;font-size:10px;font-weight:900;letter-spacing:.5px;border-radius:5px;}
+.hb-mastery-btn {flex:1;min-width:120px;background:linear-gradient(180deg,#7d64d6,#533db0);border:1px solid #b49fff;border-radius:5px;box-shadow:0 3px 0 #362a66;cursor:pointer;color:#fff;padding:9px 6px;font:900 10px 'Rajdhani',sans-serif;letter-spacing:.7px;transition:transform .15s,filter .15s;}
+.hb-mastery-btn:hover {transform:translateY(-2px);filter:brightness(1.2);}
+.hb-roster-panel {min-width:0;display:flex;flex-direction:column;border:1px solid #2c3a56;border-radius:13px;padding:14px;background:linear-gradient(180deg,#111b2d,#101726);}
+.hb-roster-toolbar {display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:12px;}
+.hb-roster-subheading {font-family:'Bangers',cursive;font-size:22px;letter-spacing:1px;color:#f4f7ff;}
+.hb-roster-toolbar p {font-size:12px;color:#89a0c0;}
+.hb-equipped-marker {white-space:nowrap;color:#61e6ad;font-size:10px;letter-spacing:1px;font-weight:900;margin-top:3px;}
+#menu .hb-char-roster {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;justify-content:stretch;align-content:start;}
+#menu .hb-char-roster .char-card {--hb-color:#4bd5ef;isolation:isolate;position:relative;display:flex;flex-direction:column;align-items:stretch;gap:0;overflow:hidden;width:100%;min-width:0;min-height:170px;padding:0 !important;border-radius:8px !important;background:linear-gradient(180deg,#223551 0%,#0d1425 100%) !important;border:1px solid #34455f !important;box-shadow:inset 0 1px #ffffff16,0 4px 12px #0005 !important;color:#fff !important;animation:none !important;transform:none !important;text-align:left;cursor:pointer;transition:border-color .17s ease,transform .17s ease,box-shadow .17s ease !important;}
+#menu .hb-char-roster .char-card:hover {border-color:var(--hb-color) !important;transform:translateY(-3px) !important;box-shadow:0 8px 22px #0008 !important;}
+#menu .hb-char-roster .char-card.selected {border:2px solid var(--hb-color) !important;background:linear-gradient(180deg,#2c415e,#121c30) !important;box-shadow:0 0 0 1px color-mix(in srgb,var(--hb-color) 45%,transparent),0 0 18px color-mix(in srgb,var(--hb-color) 25%,transparent) !important;transform:none !important;}
+#menu .hb-char-roster .char-card.admin-locked {opacity:.7;filter:saturate(.65);}
+.hb-roster-art {height:114px;position:relative;display:grid;place-items:center;overflow:hidden;background:radial-gradient(ellipse at 50% 70%,color-mix(in srgb,var(--hb-color) 25%,transparent),transparent 70%);}
+.hb-roster-art::before {content:'';position:absolute;width:106px;height:106px;top:15px;border:1px solid color-mix(in srgb,var(--hb-color) 32%,transparent);transform:rotate(30deg);}
+.hb-roster-art svg {height:114px;width:114px;filter:drop-shadow(0 0 9px var(--hb-color));transform:translateY(6px);transition:transform .2s;}
+.char-card:hover .hb-roster-art svg {transform:translateY(0) scale(1.05);}
+.hb-roster-sticker {position:absolute;right:7px;bottom:4px;display:grid;place-items:center;font-size:19px;width:29px;height:29px;border:1px solid #ffffff38;background:#111c30dc;border-radius:5px;}
+.hb-roster-title {font-size:13px;font-weight:900;line-height:1.3;letter-spacing:.5px;color:#f9fbff;padding:7px 8px 0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+.hb-roster-type {color:#91a9c7;font-size:9px;letter-spacing:1px;font-weight:800;padding:1px 8px 7px;}
+.hb-roster-selected {position:absolute;top:0;left:0;font-size:9px;letter-spacing:1px;font-weight:900;color:#0b1324;background:var(--hb-color);padding:4px 6px;}
+.hb-roster-footer {border-top:1px solid #293c54;display:flex;justify-content:space-between;gap:10px;margin-top:auto;padding:15px 2px 2px;color:#7594b8;font-size:10px;letter-spacing:.55px;font-weight:800;}
+#menu .hb-fighter-panel .char-desc[hidden] {display:none !important;}
+@media(max-width:700px) {#menu .menu-panel.hb-fighter-panel{padding:14px !important;} .hb-character-select{grid-template-columns:1fr;} .hb-feature-art{height:150px;} .hb-feature-figure{height:147px;width:135px;} .hb-roster-art{height:100px;} .hb-roster-art svg{height:100px;width:100px;} #menu .hb-char-roster .char-card{min-height:150px;} .hb-fighter-panel .hb-select-heading h2{font-size:30px;} }
+@media(max-width:370px) {#menu .hb-char-roster{grid-template-columns:repeat(2,minmax(0,1fr));} .hb-roster-count{display:none;} }
+@media(prefers-reduced-motion:reduce) {.hb-feature-burst,.hb-feature-figure{animation:none;} .hb-char-roster .char-card{transition:none !important;}}
+
+</style>
+
+<style id="epic-menu-final-style">
+/* Reference-inspired bright comic-book fighter selection, while retaining the game's real menu and mechanics. */
+#menu .menu-panel.hb-fighter-panel{background:linear-gradient(140deg,#080e29,#101b43 65%,#070d24)!important;border:3px solid #0a1b3b!important;border-radius:9px!important;box-shadow:0 18px 60px #000b,0 0 0 2px #3177d055!important;padding:15px!important;width:min(1100px,calc(100vw - 28px))!important;}
+.hb-fighter-panel .hb-select-heading{background:linear-gradient(112deg,#ff293f,#bc1030 70%,transparent 70%);padding:9px 17px 9px 12px;margin:-15px -15px 15px;width:calc(100% + 30px);min-height:72px;align-items:center;}
+.hb-fighter-panel .hb-select-heading h2{font-family:'Bangers',Impact,sans-serif!important;font-size:clamp(28px,4vw,47px)!important;color:#fff!important;-webkit-text-stroke:1.1px #080b1b;text-shadow:3px 4px 0 #070b1b,0 0 15px #fff3!important;letter-spacing:2px!important;}
+.hb-fighter-panel .hb-select-heading h2 span{color:#ffe542!important;}
+.hb-fighter-panel .hb-eyebrow{color:#ffe1e7!important;}
+.hb-fighter-panel .hb-roster-count{background:#101a39;border:2px solid #3e74bc;color:#dceeff;}
+.hb-character-select{grid-template-columns:minmax(275px,39%) minmax(0,1fr)!important;gap:12px!important;}
+.hb-feature{background:linear-gradient(180deg,#073e91 0%,#0a2464 49%,#08132f 70%)!important;border:3px solid #1677ed!important;border-radius:9px!important;padding:12px!important;box-shadow:inset 0 0 28px #03baff24!important;}
+.hb-feature::before{height:70%;background:repeating-conic-gradient(from -15deg at 50% 70%,#29c8ff30 0 15deg,transparent 15deg 34deg),radial-gradient(ellipse at 50% 45%,#0aace77d,transparent 65%)!important;opacity:1!important;}
+.hb-feature-art{height:240px!important;background:transparent!important;border-radius:0!important;overflow:hidden!important;}
+.hb-feature-burst,.hb-feature-orbit{display:none!important;}
+.hb-feature-figure{height:230px!important;width:210px!important;filter:drop-shadow(0 0 11px var(--hb-color)) drop-shadow(4px 6px 0 #07102a88)!important;}
+.hb-feature-figure svg{height:100%;width:100%;}
+.hb-feature-chapter{color:#b6eaff!important;}
+.hb-feature-name,.hb-feature h3{font-family:'Bangers',Impact,sans-serif!important;letter-spacing:1px!important;text-shadow:2px 3px #020a20;}
+.hb-feature-info,.hb-special,.hb-feature-special{border-radius:8px!important;}
+.hb-roster{gap:10px!important;}
+.hb-roster .char-card,.hb-fighter-panel .char-card{border:2px solid #324c86!important;border-radius:9px!important;background:#09152e!important;box-shadow:0 4px 0 #050b1b!important;overflow:hidden;transition:transform .15s,border-color .15s,box-shadow .15s!important;}
+.hb-fighter-panel .char-card:hover{transform:translateY(-3px)!important;border-color:var(--hb-color)!important;box-shadow:0 4px 16px color-mix(in srgb,var(--hb-color) 40%,transparent)!important;}
+.hb-fighter-panel .char-card.selected{border:3px solid #00dfff!important;box-shadow:0 0 16px #00dfff9e!important;}
+.hb-roster-art{background:repeating-conic-gradient(from 7deg at 50% 70%,#ffffff1a 0 15deg,transparent 15deg 34deg),linear-gradient(145deg,color-mix(in srgb,var(--hb-color) 62%,#17225a),#102151 85%)!important;}
+.hb-roster-art::before{display:none!important;}
+.hb-roster-art svg{filter:drop-shadow(1px 3px 0 #06122a7d)!important;}
+.hb-roster-title{font-family:'Bangers',Impact,sans-serif!important;letter-spacing:1px!important;font-size:clamp(13px,1.6vw,20px)!important;color:#fff!important;text-shadow:2px 2px #05091a;}
+.hb-roster-sticker{font-size:13px!important;}
+@media(max-width:720px){.hb-character-select{grid-template-columns:1fr!important}.hb-feature-art{height:195px!important}.hb-feature-figure{height:190px!important;width:180px!important}.hb-fighter-panel .hb-select-heading{min-height:60px}}
+</style>
+<style id="roster-figure-match-fix">
+/* Left reference: crisp illustrated stick figures, not inflated body shapes. */
+#menu .hb-feature-figure{width:min(265px,100%)!important;height:250px!important;filter:drop-shadow(3px 5px 0 #06102b8a)!important;}
+#menu .hb-feature-art{height:264px!important;}
+#menu .hb-feature-figure svg{width:100%;height:100%;object-fit:contain;}
+#menu .hb-roster-art svg{width:100%!important;height:138px!important;max-width:150px!important;transform:none!important;filter:drop-shadow(2px 3px 0 #05102677)!important;}
+#menu .hb-roster-art{height:147px!important;}
+#menu .hb-feature-orbit,#menu .hb-feature-burst{display:none!important;}
+#menu .hb-feature-icon{display:none!important;}
+@media(max-width:720px){#menu .hb-feature-figure{height:200px!important;width:205px!important}#menu .hb-feature-art{height:210px!important}#menu .hb-roster-art{height:117px!important}#menu .hb-roster-art svg{height:114px!important}}
+</style>
+
+<style id="fighter-roster-scroll-fix">
+/* Scroll the fighter choices, instead of growing the whole menu. */
+#menu .menu-panel.hb-fighter-panel {
+  width: min(1020px, calc(100vw - 28px)) !important;
+  box-sizing: border-box;
+}
+#menu .hb-character-select { align-items: start !important; }
+#menu .hb-roster-panel {
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+#menu .hb-char-roster {
+  box-sizing: border-box;
+  max-height: min(365px, 49vh);
+  min-height: 0;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  overscroll-behavior-y: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #21dcff #0a1839;
+  padding: 3px 9px 8px 3px;
+  align-content: start;
+}
+#menu .hb-char-roster::-webkit-scrollbar { width: 9px; }
+#menu .hb-char-roster::-webkit-scrollbar-track { background: #0a1839; border-radius: 10px; }
+#menu .hb-char-roster::-webkit-scrollbar-thumb { background: #17d3f4; border-radius: 10px; border: 2px solid #0a1839; }
+#menu .hb-char-roster::-webkit-scrollbar-thumb:hover { background: #7deeff; }
+#menu .hb-char-roster .char-card { min-height: 0 !important; }
+#menu .hb-feature-art { height: 190px !important; }
+#menu .hb-feature-figure { height: 184px !important; width: 195px !important; }
+#menu .hb-feature-figure svg { max-height: 100%; }
+#menu .hb-roster-art { height: 119px !important; }
+#menu .hb-roster-art svg { height: 114px !important; }
+#menu .hb-roster-toolbar { margin-bottom: 8px; }
+#menu .hb-roster-footer { margin-top: 8px; padding-top: 11px; }
+#menu .hb-roster-footer::after { content: 'SCROLL ↕'; color: #21dcff; white-space: nowrap; }
+@media (max-width: 720px) {
+  #menu .hb-char-roster { max-height: 275px; }
+  #menu .hb-feature-art { height: 175px !important; }
+  #menu .hb-feature-figure { height: 169px !important; width: 175px !important; }
+  #menu .hb-roster-art { height: 108px !important; }
+  #menu .hb-roster-art svg { height: 105px !important; }
+}
+</style>
+
+
+<style id="stickman-compact-roster-v2">
+/* Compact fighter menu — local to the Fighter tab, leaving gameplay untouched. */
+#menu .menu-panel.hb-fighter-panel {
+  width: min(740px, 100%) !important;
+  max-width: 100% !important;
+  padding: 10px !important;
+  margin-inline: auto !important;
+  border-width: 2px !important;
+  overflow: hidden !important;
+}
+#menu .hb-fighter-panel .hb-select-heading {
+  min-height: 0 !important;
+  margin: 0 0 8px !important;
+  padding: 7px 10px !important;
+  gap: 6px !important;
+  align-items: center !important;
+}
+#menu .hb-fighter-panel .hb-select-heading h2 {
+  font-size: clamp(22px, 3.4vw, 29px) !important;
+  line-height: 1 !important;
+}
+#menu .hb-fighter-panel .hb-eyebrow {font-size:8px !important;letter-spacing:1px !important;}
+#menu .hb-fighter-panel .hb-roster-count {font-size:9px !important;padding:4px 6px !important;}
+#menu .hb-character-select {
+  display: grid !important;
+  width: 100% !important;
+  grid-template-columns: minmax(0, 270px) minmax(0, 1fr) !important;
+  gap: 9px !important;
+  align-items: start !important;
+}
+#menu .hb-feature {
+  display: grid !important;
+  grid-template-columns: 98px minmax(0,1fr) !important;
+  grid-template-areas:
+    'top top'
+    'art info'
+    'attrs attrs'
+    'special special'
+    'mastery mastery'
+    'actions actions' !important;
+  gap: 5px 7px !important;
+  align-items: center !important;
+  padding: 8px !important;
+  min-width: 0 !important;
+  border-radius: 7px !important;
+}
+#menu .hb-feature-top {grid-area:top !important; min-width:0; gap:3px !important;}
+#menu .hb-feature-chapter {font-size:7px !important;letter-spacing:.4px !important;}
+#menu .hb-category {font-size:7px !important;letter-spacing:0 !important;padding:3px 4px !important;max-width:130px;white-space:normal;text-align:right;}
+#menu .hb-feature-art {
+  grid-area:art !important;
+  width: 98px !important;
+  height: 106px !important;
+  min-height: 0 !important;
+  border-radius: 6px !important;
+  overflow: hidden !important;
+}
+#menu .hb-feature-figure {
+  width: 88px !important;
+  height: 100px !important;
+  max-width: 88px !important;
+  max-height: 100px !important;
+  animation: none !important;
+  filter: drop-shadow(2px 3px 0 #06102b8a) !important;
+}
+#menu .hb-feature-figure svg {width:100% !important;height:100% !important;max-height:100% !important;}
+#menu .hb-feature-burst,#menu .hb-feature-orbit {display:none !important;}
+#menu .hb-info-main {grid-area:info !important;margin:0 !important;text-align:left !important;min-width:0 !important;}
+#menu .hb-feature-label {font-size:7px !important;letter-spacing:.4px !important;}
+#menu .hb-info-main h3 {font-size:clamp(19px,2.6vw,25px) !important;line-height:1 !important;letter-spacing:.3px !important;}
+#menu .hb-tagline {min-height:0 !important;font-size:9px !important;line-height:1.15 !important;}
+#menu .hb-difficulty {display:block !important;margin-top:4px !important;font-size:8px !important;letter-spacing:0 !important;}
+#menu #hbDifficultyStars {display:block;font-size:11px !important;letter-spacing:0 !important;}
+#menu .hb-attributes {grid-area:attrs !important;gap:5px 9px !important;margin:2px 0 0 !important;}
+#menu .hb-attribute > div:first-child {font-size:8px !important;letter-spacing:0 !important;margin-bottom:2px !important;}
+#menu .hb-attribute-track {height:4px !important;}
+#menu .hb-special-box {grid-area:special !important;margin:2px 0 0 !important;padding:6px !important;gap:5px !important;}
+#menu .hb-special-mark {font-size:14px !important;}
+#menu .hb-special-caption {font-size:8px !important;letter-spacing:.2px !important;}
+#menu .hb-special-name {font-size:12px !important;line-height:1.1 !important;}
+#menu .hb-special-box p {font-size:9px !important;line-height:1.15 !important;margin-top:1px !important;}
+#menu .hb-mastery-preview {grid-area:mastery !important;margin-top:2px !important;}
+#menu .hb-mastery-preview > span {font-size:8px !important;}
+#menu .hb-mastery-track {height:4px !important;margin-top:3px !important;}
+#menu .hb-feature-actions {grid-area:actions !important;margin:2px 0 0 !important;gap:4px !important;flex-wrap:nowrap !important;}
+#menu .hb-current-pill,#menu .hb-mastery-btn {min-width:0 !important;padding:6px 3px !important;font-size:8px !important;line-height:1.1 !important;letter-spacing:0 !important;}
+#menu .hb-roster-panel {min-width:0 !important;padding:8px !important;border-radius:7px !important;overflow:hidden !important;}
+#menu .hb-roster-toolbar {margin-bottom:6px !important;align-items:center !important;}
+#menu .hb-roster-subheading {font-size:17px !important;line-height:1 !important;}
+#menu .hb-roster-toolbar p {font-size:9px !important;line-height:1.1 !important;}
+#menu .hb-equipped-marker {font-size:8px !important;}
+#menu .hb-char-roster {
+  min-height:0 !important;
+  max-height: min(285px, 43vh) !important;
+  overflow-y: auto !important;
+  overflow-x:hidden !important;
+  grid-template-columns: repeat(3,minmax(0,1fr)) !important;
+  gap:6px !important;
+  padding:2px 5px 4px 2px !important;
+  align-content:start !important;
+  overscroll-behavior:contain;
+  scrollbar-width: thin;
+}
+#menu .hb-char-roster .char-card {min-width:0 !important;min-height:0 !important;max-height:none !important;border-radius:5px !important;}
+#menu .hb-roster-art {height:83px !important;min-height:0 !important;border-radius:4px !important;}
+#menu .hb-roster-art svg {width:76px !important;height:80px !important;max-width:100% !important;max-height:100% !important;transform:none !important;}
+#menu .hb-roster-title {padding:4px 5px 0 !important;font-size:10px !important;line-height:1.15 !important;}
+#menu .hb-roster-type {padding:1px 5px 4px !important;font-size:7px !important;letter-spacing:0 !important;}
+#menu .hb-roster-sticker {width:18px !important;height:18px !important;right:2px !important;bottom:2px !important;font-size:11px !important;}
+#menu .hb-roster-selected {font-size:7px !important;padding:2px 3px !important;}
+#menu .hb-roster-footer {padding:6px 0 0 !important;margin:6px 0 0 !important;font-size:8px !important;gap:4px !important;letter-spacing:0 !important;}
+#menu .hb-roster-footer span:first-child {display:none !important;}
+#menu .hb-roster-footer::after {content:'SCROLL ↕' !important;font-size:8px !important;}
+@media (max-width: 570px) {
+ #menu .menu-panel.hb-fighter-panel {width:100% !important;padding:7px !important;}
+ #menu .hb-character-select {grid-template-columns:minmax(0,1fr) !important;gap:7px !important;}
+ #menu .hb-feature {grid-template-columns:86px minmax(0,1fr) !important;}
+ #menu .hb-feature-art {width:86px !important;height:88px !important;}
+ #menu .hb-feature-figure {width:74px !important;height:85px !important;}
+ #menu .hb-feature-actions {max-width:100% !important;}
+ #menu .hb-char-roster {max-height: min(208px,32vh) !important;}
+ #menu .hb-roster-art {height:75px !important;}
+ #menu .hb-roster-art svg {height:73px !important;width:70px !important;}
+ #menu .hb-roster-toolbar p {display:none !important;}
+}
+@media (max-width: 345px) {
+ #menu .hb-char-roster {grid-template-columns:repeat(2,minmax(0,1fr)) !important;}
+ #menu .hb-roster-footer {display:none !important;}
+}
+@media (max-height: 640px) and (min-width: 571px) {
+ #menu .hb-char-roster {max-height: min(210px, 37vh) !important;}
+}
+
+</style>
+
+<style>
+/* ORIGINAL FIGHTER SELECTION — restored from the first uploaded game. */
+#menu .menu-panel[data-panel="fighter"] {
+  width: min(640px, 100%) !important;
+  max-width: 640px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  min-height: 0 !important;
+  align-items: center !important;
+}
+#menu .menu-panel[data-panel="fighter"] .char-select-row {
+  display:flex !important;
+  gap:14px !important;
+  flex-wrap:wrap !important;
+  justify-content:center !important;
+  width:100% !important;
+  overflow:visible !important;
+  max-height:none !important;
+  padding:0 !important;
+}
+#menu .menu-panel[data-panel="fighter"] .char-card {
+  width:118px !important;
+  min-height:0 !important;
+  max-height:none !important;
+  padding:14px 8px !important;
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  gap:6px !important;
+  text-align:center !important;
+  border-radius:16px !important;
+  border:2px solid var(--color-border) !important;
+  background:rgba(255,255,255,0.04) !important;
+  box-shadow:none !important;
+  animation:none !important;
+  transform:none !important;
+  transition:all 200ms ease !important;
+}
+#menu .menu-panel[data-panel="fighter"] .char-card:hover {
+  transform:translateY(-4px) !important;
+  border-color:rgba(255,255,255,0.35) !important;
+}
+#menu .menu-panel[data-panel="fighter"] .char-card.selected {
+  box-shadow:0 0 24px currentColor !important;
+  animation:none !important;
+  transform:none !important;
+  border-color:currentColor !important;
+}
+#menu .menu-panel[data-panel="fighter"] .char-card-icon {font-size:2.4rem !important;}
+#menu .menu-panel[data-panel="fighter"] .char-card-name {font-size:.85rem !important;font-weight:700 !important;}
+#menu .menu-panel[data-panel="fighter"] .char-desc {display:block !important; margin-top:12px;}
+#menu .menu-panel[data-panel="fighter"] .mastery-open-btn {margin-top:14px;}
+@media(max-width:700px) {
+  #menu .menu-panel[data-panel="fighter"] .char-card {width:100px !important;padding:10px 6px !important;}
+}
+</style>
+
+<style id="awakeningStyles">
+.awake-bar-wrap{height:9px;border:1px solid #6d46e2;background:#100b2b;border-radius:7px;overflow:hidden;margin-top:5px;box-shadow:inset 0 0 5px #000}
+.awake-bar{height:100%;width:0;background:linear-gradient(90deg,#7a41ff,#d66dff,#fff0ff);transition:width .12s;box-shadow:0 0 8px #bd78ff}
+.awake-bar.awake-active{background:linear-gradient(90deg,#ffb52e,#ffe56c,#fff);animation:awakePulse .6s alternate infinite}
+.awake-label{font:700 10px Arial,sans-serif;letter-spacing:1px;color:#dbbbff;text-shadow:0 1px 3px #000;margin-top:2px}
+@keyframes awakePulse{to{filter:brightness(1.5)}}
+#awakeningTouchBtn{position:fixed;right:12px;bottom:185px;z-index:45;background:linear-gradient(145deg,#a52bff,#38117e);border:2px solid #e4adff;border-radius:50%;width:62px;height:62px;color:white;font:900 12px Arial,sans-serif;box-shadow:0 0 14px #8b4bff99;display:none;touch-action:manipulation}
+@media(pointer:coarse){body.game-playing #awakeningTouchBtn{display:block}}
+</style>
+
+<style id="integratedRewardsStyles">
+#menu .loot-tab-panel {
+  width:min(760px,100%) !important; max-width:100% !important;
+  padding:0 !important; margin:0 auto !important;
+  overflow:hidden !important; border-radius:15px !important;
+  border:2px solid #24498e !important; background:#091329 !important;
+  box-shadow:0 14px 35px #0009,0 0 0 1px #58c8fd2b !important;
+  backdrop-filter:none !important; -webkit-backdrop-filter:none !important;
+  color:#f7faff; font-family:'Rajdhani',Arial,sans-serif;
+}
+#menu .loot-tab-panel * {box-sizing:border-box}
+#menu .loot-head {
+  width:100%; display:flex; justify-content:space-between; align-items:center; gap:12px;
+  text-align:left; min-height:113px; padding:16px 20px 14px; position:relative;
+  background:linear-gradient(112deg,#ab1c44 0%,#c12956 53%,#3b174c 100%);
+  border-bottom:3px solid #061127;
+}
+#menu .loot-head-collection {background:linear-gradient(115deg,#174c85 0%,#217a9f 56%,#182b59 100%)}
+#menu .loot-head:after {content:"";position:absolute;right:0;bottom:0;width:46%;height:100%;opacity:.24;pointer-events:none;background:repeating-linear-gradient(117deg,transparent 0 20px,#fff 21px 23px,transparent 24px 36px)}
+#menu .loot-head>div{z-index:1;position:relative}
+#menu .loot-kicker{font-size:10px;font-weight:900;letter-spacing:2.5px;color:#ffe4d8}
+#menu .loot-head h2{margin:5px 0 2px;font:900 clamp(27px,5vw,39px)/1 'Bangers',Impact,sans-serif;letter-spacing:2px; color:white;text-shadow:2px 3px 0 #091123}
+#menu .loot-head p{margin:0;font-size:13px;letter-spacing:.25px;color:#f3e9f8;font-weight:600;line-height:1.3}
+#menu .loot-head-chip{flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:107px;padding:9px;border:2px solid #ffd778;border-radius:10px;background:#101a3ce8;color:#ffe8ab;box-shadow:0 3px 0 #0a1025}
+#menu .loot-head-chip span{font-size:25px;line-height:1}
+#menu .loot-head-chip b{font:900 13px 'Rajdhani',Arial,sans-serif;letter-spacing:.5px;margin-top:4px}
+#menu .loot-vault-emblem{font-size:48px;filter:drop-shadow(0 4px 4px #0008)}
+#menu .loot-gacha-body,#menu .loot-collection-body{width:100%;padding:16px 19px 18px;background:radial-gradient(ellipse at 50% 5%,#162f63 0,#0b1833 50%,#070f24 100%)}
+#menu .loot-dealer{width:100%;display:flex;align-items:center;gap:12px;background:linear-gradient(120deg,#132450,#122044);border:1px solid #4569a8;border-radius:11px;padding:10px 14px;margin-bottom:16px;text-align:left;box-shadow:inset 0 1px 0 #ffffff19}
+#menu .loot-dealer-avatar{width:52px;height:52px;display:grid;place-items:center;border:2px solid #ffd675;background:#512a76;border-radius:11px;font-size:29px;flex:none}
+#menu .loot-dealer>div:nth-child(2){flex:1;min-width:0}
+#menu .loot-dealer .loot-eyebrow{display:block;font-weight:900;font-size:9px;letter-spacing:1.4px;color:#ffda97}
+#menu .loot-dealer strong{display:block;font:bold 18px 'Bangers',Impact,Arial;letter-spacing:1.7px;color:#fff}
+#menu .loot-dealer small{display:block;color:#b8cdf5;font-size:11px;line-height:1.3}
+#menu .loot-dealer-count{flex:none;border:1px solid #a0b6e6;color:#dbe9ff;background:#0a1832;padding:8px 10px;border-radius:7px;font-weight:900;font-size:13px}
+#menu .loot-reel-label{width:100%;display:flex;justify-content:space-between;gap:6px;color:#bad7ff;font-weight:900;letter-spacing:1.2px;font-size:11px;margin-bottom:7px}
+#menu .gachaReelWindow{position:relative;width:100%;height:140px;border:3px solid #668ce5;border-radius:10px;overflow:hidden;background:repeating-linear-gradient(124deg,#15234e,#15234e 15px,#12204a 15px,#12204a 30px);box-shadow:inset 0 0 34px #03091c,0 6px 0 #030a19}
+#menu .gachaReelWindow:before,#menu .gachaReelWindow:after{content:"";position:absolute;top:0;bottom:0;width:50px;z-index:2;pointer-events:none}
+#menu .gachaReelWindow:before{left:0;background:linear-gradient(to right,#0c1535,transparent)}
+#menu .gachaReelWindow:after{right:0;background:linear-gradient(to left,#0c1535,transparent)}
+#menu .gachaTrack{display:flex;align-items:center;gap:12px; height:100%;width:max-content;transform:translateX(0);will-change:transform;transition:transform 2200ms cubic-bezier(.09,.77,.08,1)}
+#menu .gachaTile{flex:0 0 106px;height:112px;border:2px solid #6da8e2;border-bottom-width:5px;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;text-align:center;background:linear-gradient(155deg,#254873,#101d42);box-shadow:inset 0 1px 0 #ffffff27;position:relative}
+#menu .gachaTile[data-rarity="EPIC"]{border-color:#ce90ff;background:linear-gradient(155deg,#523080,#191940)}
+#menu .gachaTile[data-rarity="LEGENDARY"]{border-color:#ffe086;background:linear-gradient(155deg,#725124,#2e203c)}
+#menu .gachaTile[data-rarity="MYTHIC"]{border-color:#ff8fdf;background:linear-gradient(155deg,#783065,#25193f)}
+#menu .gachaTile .gachaEmoji{font-size:34px;line-height:1.08;filter:drop-shadow(0 2px 2px #0006)}
+#menu .gachaTile b{font-size:12px;font-weight:900;color:#fff}
+#menu .gachaTile small{font-size:9px;font-weight:900;letter-spacing:.6px}
+#menu .gachaNeedle{position:absolute;z-index:3;left:50%;top:0;bottom:0;width:110px;transform:translateX(-50%);border-left:2px solid #ffe48b;border-right:2px solid #ffe48b;background:#fff59d0b;pointer-events:none;box-shadow:0 0 18px #ffd14d33}
+#menu .gachaNeedle:before{content:'▼';position:absolute;top:-8px;left:50%;transform:translateX(-50%);font-size:24px;color:#ffe38e;text-shadow:0 2px 3px #000}
+#menu .gachaNeedle:after{content:'▲';position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);font-size:24px;color:#ffe38e;text-shadow:0 2px 3px #000}
+#menu .loot-result{width:100%;min-height:45px;display:flex;justify-content:center;align-items:center;margin:13px 0 9px;font-weight:900;font-size:18px;letter-spacing:1px;text-align:center;color:#ffe9b7;text-shadow:0 2px 4px #0009}
+#menu .gachaButtons{width:100%;display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap}
+#menu .gachaRoll{min-width:215px;padding:12px 20px;border:2px solid #fff0b4;border-bottom:5px solid #995221;border-radius:10px;background:linear-gradient(180deg,#fff078,#ffb342);color:#241a27;font:900 17px 'Rajdhani',Arial,sans-serif;letter-spacing:1px;cursor:pointer}
+#menu .gachaRoll:hover:not(:disabled){filter:brightness(1.1);transform:translateY(-1px)}
+#menu .gachaRoll:disabled{opacity:.55;cursor:default;box-shadow:none}
+#menu .gachaSkip{display:none;border:1px solid #819cdb;border-radius:8px;background:#24366a;color:#fff;font:900 13px 'Rajdhani',Arial,sans-serif;padding:12px 15px;cursor:pointer}
+#menu .loot-odds-section{width:100%;margin-top:18px;padding:14px 12px;border-radius:9px;border:1px solid #365c9d;background:#0b1736}
+#menu .loot-odds-head{display:flex;justify-content:space-between;align-items:baseline;gap:6px;margin-bottom:10px}
+#menu .loot-odds-head h3{font:900 20px 'Bangers',Impact,Arial,sans-serif;color:#f9e4a3;letter-spacing:2px;margin:0}
+#menu .loot-odds-head span{font-size:10px;letter-spacing:.5px;color:#a8c5f7;font-weight:900}
+#menu .gachaOdds{width:100%;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+#menu .gachaOdds>div{padding:9px 10px;border-radius:7px;background:#14254a;border:1px solid #42679a;min-width:0}
+#menu .gachaOdds>div b{display:block;font-size:11px;letter-spacing:.5px}
+#menu .gachaOdds>div span{display:block;font:900 19px 'Rajdhani',Arial,sans-serif;color:#ffedb8;margin-top:3px}
+#menu .gachaOdds>div .loot-chance-track{display:block;height:5px;background:#070f24;border-radius:3px;overflow:hidden;margin-top:6px}
+#menu .gachaOdds>div .loot-chance-track i{display:block;height:100%;min-width:0;border-radius:3px}
+#menu .loot-fine{font-size:11px;line-height:1.55;color:#aabddb;text-align:left;margin:11px 0 0}
+#menu .loot-bottom-note{text-align:center}
+#menu .collectionStats{width:100%;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin-bottom:17px}
+#menu .collectionStatBox{display:flex;align-items:center;gap:9px;padding:10px 12px;background:#172f57;border:1px solid #4d7ca8;border-radius:8px;min-width:0}
+#menu .collectionStatIcon{font-size:26px}
+#menu .collectionStatBox strong{display:block;color:#fff;font:900 20px 'Rajdhani',Arial,sans-serif;line-height:1}
+#menu .collectionStatBox small{font-size:10px;color:#bddaf5;font-weight:800}
+#menu .loot-collection-top{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;margin-bottom:10px}
+#menu .loot-collection-top h3{margin:0;font:900 21px 'Bangers',Impact,Arial,sans-serif;letter-spacing:1.5px;color:#e6f3ff}
+#menu .loot-filter{font-size:11px;color:#b9ceec;font-weight:900;display:flex;align-items:center;gap:7px}
+#menu .loot-filter select{font-family:inherit;font-size:12px;font-weight:700;background:#203964;color:#fff;padding:5px 8px;border:1px solid #678cba;border-radius:6px}
+#menu .collectionGrid{width:100%;max-height:310px;overflow-y:auto;overscroll-behavior:contain;display:grid;grid-template-columns:repeat(auto-fit,minmax(124px,1fr));gap:10px;align-content:start;padding:2px 5px 4px 2px;scrollbar-width:thin;scrollbar-color:#53c8ee #102249}
+#menu .collectionItem{position:relative;border:2px solid #426998;background:linear-gradient(145deg,#162b55,#0c1d3b);border-radius:9px;text-align:center;padding:12px 8px 10px;min-height:154px;display:flex;flex-direction:column;align-items:center;gap:4px}
+#menu .collectionItem[data-rarity="RARE"]{border-color:#488fc0}
+#menu .collectionItem[data-rarity="EPIC"]{border-color:#9f70cf}
+#menu .collectionItem[data-rarity="LEGENDARY"]{border-color:#c5a34a}
+#menu .collectionItem[data-rarity="MYTHIC"]{border-color:#da73b6}
+#menu .collectionItem.owned{box-shadow:inset 0 0 20px #2bbcc626;filter:brightness(1.15)}
+#menu .collectionItem .collectIcon{font-size:36px;line-height:1.15}
+#menu .collectionItem strong{display:block;color:white;font-weight:900;font-size:15px}
+#menu .collectionItem small{display:block;line-height:1.35;font-size:11px;color:#c0d6f2}
+#menu .collectionItem .collectionProgress{width:100%;height:6px;border-radius:5px;overflow:hidden;background:#050e1e;margin-top:auto}
+#menu .collectionProgress div{height:100%;border-radius:5px;background:linear-gradient(90deg,#429bff,#ffe28b)}
+#menu .loot-event-title{display:flex;align-items:baseline;justify-content:space-between;gap:7px;width:100%;margin-top:19px;margin-bottom:8px;font-weight:900;letter-spacing:1px;font-size:17px;color:#ffe8aa}
+#menu .loot-event-title small{color:#a7c3dd;font-weight:700;font-size:10px;letter-spacing:0}
+#menu #collectionEvent{width:100%}
+#menu #collectionEvent .collectionItem{text-align:left;display:block;min-height:0;padding:12px;border-color:#5169a8}
+#menu #collectionEvent .collectionItem strong{font-size:16px;margin-bottom:7px}
+#menu #collectionEvent .collectionItem small{font-size:12px}
+#menu #collectionEvent .collectionNote{font-size:11px;color:#afc6e8;margin:9px 0 0}
+@media(max-width:650px){
+ #menu .loot-head{padding:13px 12px;min-height:97px}
+ #menu .loot-head p{font-size:11px}
+ #menu .loot-head-chip{min-width:79px;padding:7px 5px}
+ #menu .loot-head-chip span{font-size:21px}
+ #menu .loot-head-chip b{font-size:10px}
+ #menu .loot-gacha-body,#menu .loot-collection-body{padding:12px 10px 16px}
+ #menu .loot-dealer{gap:8px;padding:8px}
+ #menu .loot-dealer-avatar{height:45px;width:45px;font-size:26px}
+ #menu .loot-dealer-count{padding:5px;font-size:11px}
+ #menu .gachaReelWindow{height:122px}
+ #menu .gachaTile{flex-basis:88px;height:100px}
+ #menu .gachaTile .gachaEmoji{font-size:30px}
+ #menu .gachaTile b{font-size:10px}
+ #menu .gachaNeedle{width:93px}
+ #menu .gachaOdds{grid-template-columns:repeat(2,minmax(0,1fr))}
+ #menu .loot-odds-head span{font-size:9px;text-align:right}
+ #menu .collectionStats{gap:5px}
+ #menu .collectionStatBox{padding:9px 6px;gap:5px}
+ #menu .collectionStatIcon{font-size:18px}
+ #menu .collectionStatBox strong{font-size:16px}
+ #menu .collectionStatBox small{font-size:9px}
+ #menu .collectionGrid{grid-template-columns:repeat(2,minmax(0,1fr));max-height:285px}
+ #menu .loot-vault-emblem{font-size:35px}
+}
+@media(max-width:355px){#menu .loot-head h2{font-size:24px}#menu .loot-dealer strong{font-size:14px}#menu .loot-dealer .loot-eyebrow{font-size:8px}#menu .loot-reel-label{font-size:9px}#menu .loot-result{font-size:15px}}
+@media(prefers-reduced-motion:reduce){#menu .gachaTrack{transition:none!important}}
+</style>
+
+<style id="mobilePassAndControlsFix">
+/* Mobile pass: one vertical page scroll, independently horizontal reward tracks. */
+#pass-screen {
+  width: 100%; height: 100%; height: 100dvh; min-height: 0; max-height: 100dvh;
+  overflow-x: hidden; overflow-y: auto; overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch; box-sizing: border-box;
+}
+#pass-screen.active { display: flex; }
+#pass-screen .pass-hero { flex: 0 0 auto; box-sizing: border-box; }
+#pass-screen .pass-track-scroll {
+  display: block; flex: 0 0 auto; width: 100%; min-width: 0; max-width: 100%;
+  padding: 24px 12px calc(24px + env(safe-area-inset-bottom));
+  overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain; scrollbar-width: thin; box-sizing: border-box;
+}
+#pass-screen .pass-track { display: flex; width: max-content; min-width: max-content; max-width: none; }
+#pass-screen .pass-tier-col { flex: 0 0 92px; min-width: 92px; }
+#pass-screen .pass-reward-card { width: 82px; min-height: 92px; }
+#pass-screen .pass-track-title { margin: 18px 0 12px; }
+#pass-screen button { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+
+/* Use a real, non-overlapping button grid in mobile landscape. The old absolute
+   coordinates placed Jump/Block on the far edge where they could overlap actions. */
+@media (hover: none) and (pointer: coarse) and (orientation: landscape) and (max-height: 560px) {
+  #touch-controls { z-index: 90; }
+  .tc-joystick, body.is-ipad .tc-joystick {
+    position: fixed; left: max(10px, env(safe-area-inset-left)) !important;
+    bottom: max(10px, env(safe-area-inset-bottom)) !important;
+    width: clamp(88px, 25vh, 118px); height: clamp(88px, 25vh, 118px);
+  }
+  .tc-stick { width: 44px; height: 44px; top: calc(50% - 22px); left: calc(50% - 22px); }
+  .tc-joystick-label { bottom: -15px; font-size: .5rem; letter-spacing: 1px; }
+  .tc-actions, body.is-ipad .tc-actions {
+    position: fixed; right: max(10px, env(safe-area-inset-right)) !important;
+    bottom: max(10px, env(safe-area-inset-bottom)) !important;
+    display: grid !important; grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-rows: repeat(2, minmax(0, 1fr)); gap: 5px;
+    width: min(214px, 39vw); height: min(128px, 39vh); pointer-events: none;
+  }
+  .tc-actions .tc-btn {
+    position: relative !important; inset: auto !important; right: auto !important; bottom: auto !important; left: auto !important;
+    width: 100% !important; height: 100% !important; min-width: 0; min-height: 0; max-width: 68px; max-height: 62px;
+    aspect-ratio: 1; padding: 2px; justify-self: center; align-self: center;
+    pointer-events: auto; touch-action: none; z-index: 2; transform-origin: center;
+  }
+  #tc-jump { grid-column: 1; grid-row: 1; }
+  #tc-block { grid-column: 1; grid-row: 2; }
+  #tc-punch { grid-column: 2; grid-row: 1; }
+  #tc-kick { grid-column: 3; grid-row: 1; }
+  #tc-special { grid-column: 2; grid-row: 2; }
+  .tc-btn .tc-icon { font-size: clamp(1rem, 3.6vh, 1.35rem); }
+  .tc-btn .tc-label { font-size: clamp(.43rem, 1.45vh, .55rem); letter-spacing: .4px; }
+  .tc-pause-btn { top: max(8px, env(safe-area-inset-top)); right: max(8px, env(safe-area-inset-right)); width: 40px; height: 40px; z-index: 95; }
+  #hud { padding: 6px 10px; gap: 6px; }
+  .fighter-hud { max-width: 36vw; padding: 4px 7px; gap: 3px; }
+  .fighter-name { font-size: .56rem; }
+  .timer-num { font-size: 1rem; }
+  .damage-pct { font-size: .82rem; }
+  #pass-screen .pass-hero { padding: 36px 12px 16px; }
+  #pass-screen .pass-title { font-size: clamp(1.7rem, 5vw, 2.6rem); margin: 0 0 8px; letter-spacing: 2px; }
+  #pass-screen .pass-season-label { font-size: .65rem; letter-spacing: 1.5px; }
+  #pass-screen .pass-tier-badge { width: 62px; height: 62px; margin: 0 auto 7px; animation: none; }
+  #pass-screen .pass-tier-badge .pass-tier-current-num { font-size: 1.55rem; }
+  #pass-screen .pass-tier-badge .pass-tier-current-label { font-size: .48rem; }
+  #pass-screen .pass-xp-bar-wrap { height: 13px; }
+  #pass-screen .pass-track-scroll { padding-top: 12px; padding-bottom: calc(18px + env(safe-area-inset-bottom)); }
+  #pass-screen .pass-track-title { margin: 12px 0 8px; }
+}
+
+/* Portrait phones: compact touch cluster, without overlapping the joystick. */
+@media (hover: none) and (pointer: coarse) and (orientation: portrait) and (max-width: 600px) {
+  #touch-controls { z-index: 90; }
+  .tc-joystick, body.is-ipad .tc-joystick {
+    position: fixed; left: max(10px, env(safe-area-inset-left)) !important;
+    bottom: max(18px, env(safe-area-inset-bottom)) !important;
+    width: clamp(92px, 29vw, 124px); height: clamp(92px, 29vw, 124px);
+  }
+  .tc-stick { width: 44px; height: 44px; top: calc(50% - 22px); left: calc(50% - 22px); }
+  .tc-joystick-label { bottom: -15px; font-size: .5rem; letter-spacing: 1px; }
+  .tc-actions, body.is-ipad .tc-actions {
+    position: fixed; right: max(8px, env(safe-area-inset-right)) !important;
+    bottom: max(16px, env(safe-area-inset-bottom)) !important;
+    display: grid !important; grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-rows: repeat(2, minmax(0, 1fr)); gap: 5px;
+    width: min(180px, 48vw); height: 126px; pointer-events: none;
+  }
+  .tc-actions .tc-btn {
+    position: relative !important; inset: auto !important; right: auto !important; bottom: auto !important; left: auto !important;
+    width: 100% !important; height: 100% !important; min-width: 0; min-height: 0; max-width: 58px; max-height: 58px;
+    aspect-ratio: 1; padding: 2px; justify-self: center; align-self: center;
+    pointer-events: auto; touch-action: none; z-index: 2; transform-origin: center;
+  }
+  #tc-jump { grid-column: 1; grid-row: 1; }
+  #tc-block { grid-column: 1; grid-row: 2; }
+  #tc-punch { grid-column: 2; grid-row: 1; }
+  #tc-kick { grid-column: 3; grid-row: 1; }
+  #tc-special { grid-column: 2; grid-row: 2; }
+  .tc-btn .tc-icon { font-size: 1.05rem; }
+  .tc-btn .tc-label { font-size: .43rem; letter-spacing: .3px; }
+  .tc-pause-btn { top: max(8px, env(safe-area-inset-top)); right: max(8px, env(safe-area-inset-right)); width: 42px; height: 42px; z-index: 95; }
+  #pass-screen .pass-hero { padding: 44px 12px 22px; }
+  #pass-screen .pass-title { font-size: clamp(2rem, 8vw, 3rem); letter-spacing: 2px; margin-bottom: 12px; }
+  #pass-screen .pass-season-label { font-size: .7rem; letter-spacing: 2px; }
+  #pass-screen .pass-tier-badge { width: 82px; height: 82px; margin-bottom: 9px; animation: none; }
+  #pass-screen .pass-tier-badge .pass-tier-current-num { font-size: 1.9rem; }
+  #pass-screen .pass-xp-bar-wrap { height: 15px; }
+  #pass-screen .pass-track-scroll { padding-top: 16px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #pass-screen .pass-tier-badge, #pass-screen .pass-reward-card.claimable { animation: none !important; }
+}
 </style>
 
 </head>
 <body>
-<!-- INTRO SPLASH -->
-<div id="intro-screen">
-  <div class="intro-bg-rays"></div>
-  <div class="intro-vignette"></div>
-  <div class="intro-screen-glow"></div>
-  <div class="intro-streak intro-streak-left"></div>
-  <div class="intro-streak intro-streak-right"></div>
-  <canvas id="introFightCanvas" style="position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none;"></canvas>
-  <div class="intro-impact-ring"></div>
-  <div class="intro-impact-ring ring2"></div>
-  <div class="intro-flash"></div>
-  <div id="introParticles"></div>
-  <div class="intro-logo-wrap">
-    <h1 class="intro-logo">🥋 STICKMAN WARS</h1>
-    <div class="intro-underline"></div>
-    <div class="intro-subtitle">Fast Paced 2D Platform Fighter</div>
+<!-- CINEMATIC FIGHT INTRO: independent preview, does not affect gameplay -->
+<div id="intro-screen" aria-label="Stickman Wars cinematic fight introduction">
+  <canvas id="introFightCanvas" aria-hidden="true"></canvas>
+  <div class="cin-vignette" aria-hidden="true"></div>
+  <div class="cin-topline"><div class="cin-brand">STICKMAN <b>WARS</b><small>ARCADE OPENING • ARENA 01</small></div><span class="cin-live"><i></i> EXHIBITION MATCH</span></div>
+  <div class="cin-hud" aria-hidden="true">
+    <div class="cin-player cin-p1"><div class="cin-player-head"><span>01</span> STRIKER <small>CYAN TEAM</small></div><div class="cin-hp-track"><div id="cinHp1" class="cin-hp-fill"></div></div></div>
+    <div class="cin-vs">VS</div>
+    <div class="cin-player cin-p2"><div class="cin-player-head"><span>02</span> RIVAL <small>CRIMSON TEAM</small></div><div class="cin-hp-track"><div id="cinHp2" class="cin-hp-fill"></div></div></div>
   </div>
-  <div class="intro-skip-hint" id="introSkipHint">Tap to skip</div>
+  <div id="cinAction" class="cin-action" aria-live="off"><div id="cinRound" class="cin-round">EXHIBITION MATCH</div><div id="cinCallout" class="cin-callout">GET READY</div><div id="cinSub" class="cin-sub">TWO FIGHTERS. ONE WINNER.</div></div>
+  <div id="cinWinner" class="cin-winner" aria-hidden="true"><div class="cin-victory-label">K.O. • STRIKER WINS</div><h1>STICKMAN<br><span>WARS</span></h1><p>YOUR BATTLE STARTS NOW</p><div class="cin-title-rule"></div></div>
+  <div id="cinFlash" class="cin-flash" aria-hidden="true"></div>
+  <div class="cin-footer"><span class="cin-foot-label">INTRO CINEMATIC <b id="cinStepLabel">01 / THE CHALLENGE</b></span><div class="cin-progress"><div id="cinProgress"></div></div><button id="introSkipBtn" type="button" aria-label="Skip cinematic intro">SKIP INTRO <b>→</b></button></div>
 </div>
-
 
 <!-- MENU -->
 <div id="menu">
@@ -1771,6 +2530,7 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
     <div class="menu-header">
       <h1>🥋 STICKMAN WARS</h1>
       <p class="subtitle">Fast Paced 2D Platform Fighter</p>
+      <button type="button" class="cin-replay" id="cinReplayBtn" title="Watch the opening again">▶ REPLAY OPENING</button>
     </div>
 
     <div class="menu-tabs">
@@ -1780,6 +2540,8 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
       <button class="menu-tab" data-menutab="career">🏆 Career</button>
       <button class="menu-tab" data-menutab="ranked">⭐ Ranked</button>
       <button class="menu-tab" data-menutab="weapons">⚔️ Weapons</button>
+      <button class="menu-tab" data-menutab="gacha">🎲 Gacha</button>
+      <button class="menu-tab" data-menutab="collection">🏆 Collection</button>
       <button class="menu-tab" data-menutab="mods">🔧 Mods</button>
       </div>
 
@@ -1831,15 +2593,15 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
           </div>
           <div class="ranked-tier-info">
             <div class="ranked-season-tag">SEASON 1 RANKED</div>
-            <div class="ranked-tier-name" id="rankedTierName">GOLD II</div>
-            <div class="ranked-pts-label" id="rankedPtsLabel">2,450 RP</div>
+            <div class="ranked-tier-name" id="rankedTierName">BRONZE</div>
+            <div class="ranked-pts-label" id="rankedPtsLabel">0 RP</div>
           </div>
         </div>
 
         <div class="ranked-bar-wrap">
           <div class="ranked-bar" id="rankedBar" style="width: 60%;"></div>
         </div>
-        <div class="ranked-next-tier-label" id="rankedNextTierLabel">Next Tier: Platinum I (550 RP needed)</div>
+        <div class="ranked-next-tier-label" id="rankedNextTierLabel">Next Tier: Silver (500 RP needed)</div>
 
         <div class="ranked-stats-row">
           <div class="ranked-stat-pill">
@@ -1851,13 +2613,13 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
             <span class="rsp-val" id="rankedPeakVal">🥇 GOLD</span>
           </div>
           <div class="ranked-stat-pill">
-            <span class="rsp-label">FAIR ELO MATCH</span>
-            <span class="rsp-val">⚔️ 1v1 BO3</span>
+            <span class="rsp-label">OPPONENT</span>
+            <span class="rsp-val">⚔️ CPU 1v1</span>
           </div>
         </div>
 
         <button class="ranked-queue-btn" id="rankedQueueBtn">⚔️ ENTER RANKED MATCH</button>
-        <p class="ranked-note">High stakes: Win to climb tiers and unlock seasonal badges! Losses deduce RP.</p>
+        <p class="ranked-note">High stakes: Beat increasingly tough CPU rivals to gain RP. Losses deduct RP.</p>
       </div>
     </div>
 
@@ -1874,6 +2636,64 @@ body.is-ipad .tc-actions { right:28px; bottom:28px; }
         <div id="extraModsContainer"></div>
       </div>
     </div>
+
+
+    <!-- GACHA AND COLLECTION ARE NORMAL MENU TABS, NOT SCREEN-COVERING POPUPS. -->
+    <section class="menu-panel loot-tab-panel" data-panel="gacha" aria-label="Gacha fighter rewards">
+      <div class="loot-head loot-head-gacha">
+        <div>
+          <div class="loot-kicker">STICKMAN WARS · FIGHTER REWARDS</div>
+          <h2>🎲 MYSTERY GACHA</h2>
+          <p>Spend coins for a random drop: currency, pass XP, cosmetics, or a rare fighter.</p>
+        </div>
+        <div class="loot-head-chip"><span>🪙</span><b id="gachaTicketCount">0 COINS</b></div>
+      </div>
+      <div class="loot-gacha-body">
+        <div class="loot-dealer">
+          <div class="loot-dealer-avatar">🧙</div>
+          <div><span class="loot-eyebrow">MYSTERY REWARD DEALER</span><strong>THE DROP ARENA</strong><small>1,500 coins → coins, XP, cosmetics, or a rare fighter</small></div>
+          <div id="gachaOwnedCount" class="loot-dealer-count">0/10</div>
+        </div>
+        <div class="loot-reel-label"><span>◈ REWARD REVEAL</span><span>▼ CENTER POINTER</span></div>
+        <div class="gachaReelWindow" id="gachaReelWindow" aria-label="Fighter reward reveal">
+          <div id="gachaTrack" class="gachaTrack"></div>
+          <div class="gachaNeedle" aria-hidden="true"></div>
+        </div>
+        <div class="loot-result" id="gachaResult" role="status" aria-live="polite">YOUR NEXT FIGHTER IS A MYSTERY</div>
+        <div class="gachaButtons">
+          <button class="gachaRoll" id="gachaRoll" type="button">🪙 ROLL FOR 1,500 COINS</button>
+          <button class="gachaSkip" id="gachaSkip" type="button">SKIP REVEAL</button>
+        </div>
+        <div class="loot-odds-section">
+          <div class="loot-odds-head"><h3>REWARD ODDS</h3><span>ACTUAL CHANCE OF YOUR NEXT ROLL</span></div>
+          <div id="gachaOdds" class="gachaOdds"></div>
+          <p class="loot-fine">Fighters are rare drops. Most rolls give coins, pass XP, or cosmetics. Odds update when a reward category is exhausted. The reel always lands on the reward actually selected.</p>
+        </div>
+        <p class="loot-fine loot-bottom-note">🪙 Earn coins through matches and other in-game rewards. Each roll costs 1,500 coins. Fighter and cosmetic unlocks are permanent.</p>
+      </div>
+    </section>
+
+    <section class="menu-panel loot-tab-panel" data-panel="collection" aria-label="Fighter collection">
+      <div class="loot-head loot-head-collection">
+        <div>
+          <div class="loot-kicker">STICKMAN WARS · YOUR COLLECTION</div>
+          <h2>🏆 FIGHTER VAULT</h2>
+          <p>Build your roster through victories or Gacha rewards.</p>
+        </div>
+        <div class="loot-vault-emblem" aria-hidden="true">🏆</div>
+      </div>
+      <div class="loot-collection-body">
+        <div class="collectionStats" id="collectionStats"></div>
+        <div class="loot-collection-top">
+          <h3>UNLOCKABLE FIGHTERS</h3>
+          <label class="loot-filter">SHOW <select id="collectionFilter"><option value="all">All</option><option value="locked">Locked</option><option value="owned">Unlocked</option></select></label>
+        </div>
+        <div class="collectionGrid" id="collectionGrid"></div>
+        <div class="loot-event-title"><span>🌟 ARENA SPOTLIGHT</span><small>Rotating challenges · permanent badges</small></div>
+        <div id="collectionEvent"></div>
+        <p class="loot-fine">All unlocks are permanent. There are no deadlines to collect fighters.</p>
+      </div>
+    </section>
 
     <button class="start-btn" id="startBtn">FIGHT!</button>
     <div class="menu-btn-row">
@@ -2253,6 +3073,30 @@ const DIFF = {
 };
 
 const ULT_METER_MAX = 100;
+const AWAKENING_METER_MAX = 100;
+const AWAKENING_DURATION = 20;
+function gainAwakening(fighter, amount) {
+  if (!fighter || fighter.dead || fighter.awakeningTime > 0) return;
+  fighter.awakeningMeter = Math.min(AWAKENING_METER_MAX, (fighter.awakeningMeter || 0) + amount);
+}
+function activateAwakening(fighter) {
+  if (!fighter || fighter.dead || !fighter.visible || fighter.awakeningTime > 0 || fighter.awakeningMeter < AWAKENING_METER_MAX || gameState !== 'playing') return false;
+  fighter.awakeningMeter = 0;
+  fighter.awakeningTime = AWAKENING_DURATION;
+  fighter.awakeningBurst = 0.9;
+  fighter.stunTimer = 0;
+  fighter.specialCooldown = 0;
+  fighter.invincible = true;
+  fighter.invincibleTimer = Math.max(fighter.invincibleTimer, 0.55);
+  spawnParticles(fighter.cx, fighter.cy, '#cf80ff', 42);
+  spawnImpactRing(fighter.cx, fighter.cy, '#e9baff', {maxRadius:180,lineWidth:9,life:.6});
+  camera.shake = Math.max(camera.shake, 13);
+  flashScreen(.23);
+  showAnnouncer((fighter.char.name || 'FIGHTER').toUpperCase()+' AWAKENED!', '#dfb0ff');
+  playSFX(570,.27,'sawtooth');
+  return true;
+}
+
 
 function gainUltMeter(fighter, amount) {
   if (!fighter || fighter.ultReady) return;
@@ -2429,6 +3273,139 @@ const STAGES = [
     hazard: null,
   },
   {
+    id: 'cybercity', name: 'Cyber City', icon: '🌃',
+    desc: 'Neon skyline with rooftop jumps and electrified edges.',
+    thumb: 'linear-gradient(160deg,#162d62,#060c21)',
+    bgTop: '#09132d', bgMid: '#162d62', bgBot: '#060c21', accent: '#38e8ff',
+    platforms: [
+      { x: 130, y: 610, w: 1020, h: 90, main: true },
+      { x: 80, y: 450, w: 200, h: 20, main: false },
+      { x: 1000, y: 450, w: 200, h: 20, main: false },
+      { x: 465, y: 330, w: 350, h: 20, main: false }
+    ],
+    hazard: 'electric',
+  },
+  {
+    id: 'moonbase', name: 'Moon Base', icon: '🌕',
+    desc: 'Fight above a lunar research outpost on scattered landing pads.',
+    thumb: 'linear-gradient(160deg,#293755,#0b1020)',
+    bgTop: '#070c23', bgMid: '#293755', bgBot: '#0b1020', accent: '#c7d9ff',
+    platforms: [
+      { x: 250, y: 620, w: 780, h: 80, main: true },
+      { x: 40, y: 460, w: 220, h: 18, main: false },
+      { x: 1020, y: 460, w: 220, h: 18, main: false },
+      { x: 480, y: 320, w: 320, h: 18, main: false }
+    ],
+    hazard: null,
+  },
+  {
+    id: 'crystal', name: 'Crystal Cavern', icon: '💎',
+    desc: 'A glowing crystal cave with stacked platforms for aerial combos.',
+    thumb: 'linear-gradient(160deg,#38205d,#090b22)',
+    bgTop: '#1d0b38', bgMid: '#38205d', bgBot: '#090b22', accent: '#d07dff',
+    platforms: [
+      { x: 220, y: 630, w: 840, h: 70, main: true },
+      { x: 65, y: 485, w: 230, h: 20, main: false },
+      { x: 985, y: 485, w: 230, h: 20, main: false },
+      { x: 435, y: 365, w: 410, h: 20, main: false },
+      { x: 555, y: 230, w: 170, h: 18, main: false }
+    ],
+    hazard: null,
+  },
+  {
+    id: 'pirate', name: 'Pirate Ship', icon: '🏴‍☠️',
+    desc: 'Battle across a storm-tossed ship deck and raised sails.',
+    thumb: 'linear-gradient(160deg,#125070,#08172c)',
+    bgTop: '#0a2442', bgMid: '#125070', bgBot: '#08172c', accent: '#ffc778',
+    platforms: [
+      { x: 150, y: 620, w: 980, h: 80, main: true },
+      { x: 260, y: 465, w: 230, h: 20, main: false },
+      { x: 790, y: 465, w: 230, h: 20, main: false },
+      { x: 535, y: 305, w: 210, h: 18, main: false }
+    ],
+    hazard: 'wind',
+  },
+  {
+    id: 'factory', name: 'Robot Factory', icon: '🤖',
+    desc: 'Industrial conveyor platforms with dangerous electric machinery.',
+    thumb: 'linear-gradient(160deg,#2e3e50,#080d15)',
+    bgTop: '#10151e', bgMid: '#2e3e50', bgBot: '#080d15', accent: '#ffba48',
+    platforms: [
+      { x: 80, y: 625, w: 1120, h: 85, main: true },
+      { x: 160, y: 465, w: 220, h: 20, main: false },
+      { x: 900, y: 465, w: 220, h: 20, main: false },
+      { x: 475, y: 335, w: 330, h: 20, main: false }
+    ],
+    hazard: 'electric',
+  },
+  {
+    id: 'forest', name: 'Enchanted Forest', icon: '🌳',
+    desc: 'Leap between ancient treetop platforms under magical lights.',
+    thumb: 'linear-gradient(160deg,#15533c,#081b14)',
+    bgTop: '#06271e', bgMid: '#15533c', bgBot: '#081b14', accent: '#79ff9b',
+    platforms: [
+      { x: 160, y: 630, w: 960, h: 80, main: true },
+      { x: 40, y: 450, w: 250, h: 20, main: false },
+      { x: 990, y: 450, w: 250, h: 20, main: false },
+      { x: 440, y: 315, w: 400, h: 20, main: false }
+    ],
+    hazard: null,
+  },
+  {
+    id: 'glacier', name: 'Glacier Bridge', icon: '🧊',
+    desc: 'A slippery frozen crossing with platforms suspended above the ice.',
+    thumb: 'linear-gradient(160deg,#427eaa,#c1e4fa)',
+    bgTop: '#10273f', bgMid: '#427eaa', bgBot: '#c1e4fa', accent: '#b6f5ff',
+    platforms: [
+      { x: 180, y: 625, w: 920, h: 80, main: true },
+      { x: 60, y: 465, w: 210, h: 20, main: false },
+      { x: 1010, y: 465, w: 210, h: 20, main: false },
+      { x: 475, y: 330, w: 330, h: 20, main: false }
+    ],
+    hazard: 'ice',
+  },
+  {
+    id: 'shadow', name: 'Shadow Dimension', icon: '🌑',
+    desc: 'An eerie void with floating islands and shifting winds.',
+    thumb: 'linear-gradient(160deg,#31124a,#05030d)',
+    bgTop: '#170a29', bgMid: '#31124a', bgBot: '#05030d', accent: '#b65bff',
+    platforms: [
+      { x: 380, y: 625, w: 520, h: 75, main: true },
+      { x: 50, y: 500, w: 230, h: 20, main: false },
+      { x: 1000, y: 500, w: 230, h: 20, main: false },
+      { x: 420, y: 350, w: 440, h: 20, main: false },
+      { x: 560, y: 210, w: 160, h: 20, main: false }
+    ],
+    hazard: 'wind',
+  },
+  {
+    id: 'magmaforge', name: 'Magma Forge', icon: '🔥',
+    desc: 'A molten blacksmith arena with lava beneath the fighting platforms.',
+    thumb: 'linear-gradient(160deg,#672319,#1c0707)',
+    bgTop: '#3a0d09', bgMid: '#672319', bgBot: '#1c0707', accent: '#ff8b32',
+    platforms: [
+      { x: 260, y: 585, w: 760, h: 70, main: true },
+      { x: 40, y: 430, w: 220, h: 20, main: false },
+      { x: 1020, y: 430, w: 220, h: 20, main: false },
+      { x: 485, y: 305, w: 310, h: 20, main: false }
+    ],
+    hazard: 'lava',
+  },
+  {
+    id: 'cloudpalace', name: 'Cloud Palace', icon: '🏰',
+    desc: 'Fight high above the clouds on floating palace balconies.',
+    thumb: 'linear-gradient(160deg,#528ed2,#d8edff)',
+    bgTop: '#163869', bgMid: '#528ed2', bgBot: '#d8edff', accent: '#ffe9b0',
+    platforms: [
+      { x: 300, y: 620, w: 680, h: 75, main: true },
+      { x: 20, y: 490, w: 250, h: 20, main: false },
+      { x: 1010, y: 490, w: 250, h: 20, main: false },
+      { x: 430, y: 350, w: 420, h: 20, main: false },
+      { x: 540, y: 220, w: 200, h: 18, main: false }
+    ],
+    hazard: 'wind',
+  },
+  {
     id: 'spacestation', name: 'Orbit Station', icon: '\ud83e\udef0',
     desc: 'A derelict space station with scattered low-gravity platforms floating in the void.',
     thumb: 'linear-gradient(160deg,#0a0a2a,#000000)',
@@ -2533,6 +3510,16 @@ const CHARACTERS = [
     special: 'fireball', specialName: 'Arcane Bolt',
     desc: 'Mystic ranged fighter. Arcane Bolt fires a piercing energy projectile.',
   },
+  { id:'comet', name:'Comet', icon:'☄️', color:'#ffad36', speedMult:1.16, jumpMult:1.1, weightMult:0.9, dmgMult:1.02, special:'flyingkick', specialName:'Meteor Dash', desc:'A blazing dash fighter. Unlock with 3 victories.', collectible:true, rarity:'RARE', requiredWins:3 },
+  { id:'frostbite', name:'Frostbite', icon:'❄️', color:'#7fdfff', speedMult:0.98, jumpMult:1.12, weightMult:1.05, dmgMult:1.04, special:'fireball', specialName:'Frost Pulse', desc:'An icy ranged specialist. Unlock with 7 victories.', collectible:true, rarity:'EPIC', requiredWins:7 },
+  { id:'nebulon', name:'Nebulon', icon:'🌌', color:'#ad88ff', speedMult:1.18, jumpMult:1.1, weightMult:0.83, dmgMult:0.98, special:'counter', specialName:'Cosmic Counter', desc:'A mysterious cosmic duelist. Unlock with 12 victories.', collectible:true, rarity:'LEGENDARY', requiredWins:12 },
+  { id:'solaris', name:'Solaris', icon:'🌞', color:'#ffdd5b', speedMult:1.08, jumpMult:1.05, weightMult:1.05, dmgMult:1.08, special:'dashpunch', specialName:'Solar Rush', desc:'A golden close-range fighter. Unlock with 20 victories.', collectible:true, rarity:'MYTHIC', requiredWins:20 },
+  { id:'thunderbolt', name:'Thunderbolt', icon:'⚡', color:'#f5d742', speedMult:1.20, jumpMult:1.06, weightMult:0.85, dmgMult:0.99, special:'flyingkick', specialName:'Thunder Dash', desc:'A quick electric-themed fighter. Unlock at 8 victories or through Gacha.', collectible:true, rarity:'RARE', requiredWins:8 },
+  { id:'ember', name:'Ember', icon:'🔥', color:'#ff704e', speedMult:1.04, jumpMult:1.08, weightMult:0.98, dmgMult:1.03, special:'fireball', specialName:'Flame Shot', desc:'A fiery ranged fighter. Unlock at 11 victories or through Gacha.', collectible:true, rarity:'RARE', requiredWins:11 },
+  { id:'ironclad', name:'Ironclad', icon:'🦾', color:'#9eb9d3', speedMult:0.86, jumpMult:0.89, weightMult:1.35, dmgMult:1.17, special:'dashpunch', specialName:'Steel Charge', desc:'A durable close-range fighter. Unlock at 16 victories or through Gacha.', collectible:true, rarity:'EPIC', requiredWins:16 },
+  { id:'stormcaller', name:'Stormcaller', icon:'🌩️', color:'#79c6ff', speedMult:1.10, jumpMult:1.06, weightMult:0.91, dmgMult:1.03, special:'fireball', specialName:'Lightning Orb', desc:'A nimble projectile fighter. Unlock at 22 victories or through Gacha.', collectible:true, rarity:'EPIC', requiredWins:22 },
+  { id:'eclipse', name:'Eclipse', icon:'🌘', color:'#ca92f2', speedMult:1.15, jumpMult:1.10, weightMult:0.86, dmgMult:1.10, special:'flyingkick', specialName:'Eclipse Rush', desc:'A shadowy combo fighter. Unlock at 28 victories or through Gacha.', collectible:true, rarity:'LEGENDARY', requiredWins:28 },
+  { id:'astral', name:'Astral', icon:'🌠', color:'#f4aaed', speedMult:1.11, jumpMult:1.10, weightMult:0.94, dmgMult:1.10, special:'counter', specialName:'Astral Mirror', desc:'A celestial counter specialist. Unlock at 36 victories or through Gacha.', collectible:true, rarity:'MYTHIC', requiredWins:36 },
   {
     id: 'overlord', name: 'OVERLORD', icon: '👑', color: '#ff0055',
     speedMult: 1.65, jumpMult: 1.45, weightMult: 1.5, dmgMult: 2.5,
@@ -2611,6 +3598,7 @@ function sy(y) { return (y + camera.y) * uniformScale() + offsetY(); }
 function sw(w) { return w * uniformScale(); }
 function sh(h) { return h * uniformScale(); }
 
+
 // ─── FIGHTER CLASS ────────────────────────────────────────────────────────────
 const FIGHTER_COLORS = ['#3f8fa8','#a8474f','#b8823c','#6f5a94'];
 const FIGHTER_NAMES  = ['Player','CPU-1','CPU-2','CPU-3'];
@@ -2657,6 +3645,9 @@ class Fighter {
     this.specialCooldown = 0;
     this.ultMeter = 0;
     this.ultReady = false;
+    this.awakeningMeter = 0;
+    this.awakeningTime = 0;
+    this.awakeningBurst = 0;
     this.ultFlashTimer = 0;
     this.invincible = false;
     this.invincibleTimer = 0;
@@ -2782,9 +3773,11 @@ class Fighter {
     if (attackType === 'dashhit') baseDmg = 6;
     if (attackType === 'projectile') baseDmg = 10;
     if (attackType === 'ultimate') baseDmg = 38;
-    const dmgRoll = (baseDmg + Math.random()*4 - 2) * (attacker.char ? attacker.char.dmgMult : 1);
+    const dmgRoll = (baseDmg + Math.random()*4 - 2) * (attacker.char ? attacker.char.dmgMult : 1) * (attacker.awakeningTime > 0 ? 1.22 : 1);
     this.damage = Math.min(999, this.damage + dmgRoll);
     this.totalDamageTaken = (this.totalDamageTaken||0) + dmgRoll;
+    gainAwakening(attacker, dmgRoll * 1.0);
+    gainAwakening(this, dmgRoll * 0.8);
     // ── Smash-style Ultimate meter: both dealing AND taking damage builds toward a devastating Ultimate ──
     if (attackType !== 'ultimate') {
       gainUltMeter(attacker, dmgRoll * 0.85);
@@ -2862,6 +3855,19 @@ class Fighter {
 
   update(dt, enemies) {
     if (this.dead) return;
+    if (this.awakeningTime > 0) {
+      this.awakeningTime = Math.max(0, this.awakeningTime - dt);
+      this.awakeningBurst = Math.max(0, this.awakeningBurst - dt);
+      if (this.awakeningTime > 0 && Math.random() < dt*24) {
+        spawnParticles(this.cx+(Math.random()-.5)*this.w, this.cy+(Math.random()-.5)*this.h, '#c681ff', 1);
+      }
+      if (this.awakeningTime === 0) {
+        spawnParticles(this.cx, this.cy, '#d8b5ff', 18);
+        spawnPopup(this.cx,this.cy-60,'AWAKENING ENDED',{color:'#dbc5ff',size:18,life:.65,vy:-30});
+      }
+    }
+    if (this.isPlayer && justPressed['KeyQ']) activateAwakening(this);
+    if (!this.isPlayer && this.awakeningMeter >= AWAKENING_METER_MAX && this.visible && Math.random() < dt*.65) activateAwakening(this);
     if (this.respawnTimer > 0) {
       this.respawnTimer -= dt;
       if (this.respawnTimer <= 0) { this.visible = true; this.y = 100; }
@@ -3014,13 +4020,13 @@ class Fighter {
   }
 
   handlePlayerInput(enemies) {
-    const spd = PLAYER_SPEED * this.char.speedMult * (isPortraitMode() ? PORTRAIT_SPEED_MULT : 1);
+    const spd = PLAYER_SPEED * this.char.speedMult * (this.awakeningTime > 0 ? 1.25 : 1) * (isPortraitMode() ? PORTRAIT_SPEED_MULT : 1);
     if (keys['KeyA']) { this.vx = -spd; this.facing = -1; }
     else if (keys['KeyD']) { this.vx = spd; this.facing = 1; }
 
     if (justPressed['KeyW'] || justPressed['Space']) {
-      if (this.grounded) { this.vy = JUMP_VEL * this.char.jumpMult; this.grounded = false; this.jumps = 1; playSFX(500, 0.06, 'sine'); }
-      else if (this.jumps < 2) { this.vy = DOUBLE_JUMP_VEL * this.char.jumpMult; this.jumps++; playSFX(420, 0.06, 'sine'); }
+      if (this.grounded) { this.vy = JUMP_VEL * this.char.jumpMult * (this.awakeningTime > 0 ? 1.15 : 1); this.grounded = false; this.jumps = 1; playSFX(500, 0.06, 'sine'); }
+      else if (this.jumps < 2) { this.vy = DOUBLE_JUMP_VEL * this.char.jumpMult * (this.awakeningTime > 0 ? 1.15 : 1) * (this.awakeningTime > 0 ? 1.15 : 1); this.jumps++; playSFX(420, 0.06, 'sine'); }
     }
 
     if (!this.grounded && (keys['KeyS'] || keys['ArrowDown'])) this.fastFalling = true;
@@ -3208,7 +4214,7 @@ class Fighter {
     const absDist = Math.abs(dist);
     this.facing = dist > 0 ? 1 : -1;
 
-    const aiSpd = PLAYER_SPEED * this.char.speedMult * CPU_SPEED_MULT * (isPortraitMode() ? PORTRAIT_SPEED_MULT_AI : 1);
+    const aiSpd = PLAYER_SPEED * this.char.speedMult * (this.awakeningTime > 0 ? 1.25 : 1) * CPU_SPEED_MULT * (isPortraitMode() ? PORTRAIT_SPEED_MULT_AI : 1);
     if (this.retreatTimer > 0) {
       this.retreatTimer -= dt;
       this.vx = -this.facing * aiSpd * 0.85;
@@ -3222,10 +4228,10 @@ class Fighter {
     }
 
     if (target.y < this.y - 60 && this.grounded && Math.random() < d.jumpChance * 5) {
-      this.vy = JUMP_VEL * this.char.jumpMult; this.grounded = false; this.jumps = 1;
+      this.vy = JUMP_VEL * this.char.jumpMult * (this.awakeningTime > 0 ? 1.15 : 1); this.grounded = false; this.jumps = 1;
     } else if (Math.random() < d.jumpChance) {
-      if (this.grounded) { this.vy = JUMP_VEL * this.char.jumpMult; this.grounded = false; this.jumps = 1; }
-      else if (this.jumps < 2) { this.vy = DOUBLE_JUMP_VEL * this.char.jumpMult; this.jumps++; }
+      if (this.grounded) { this.vy = JUMP_VEL * this.char.jumpMult * (this.awakeningTime > 0 ? 1.15 : 1); this.grounded = false; this.jumps = 1; }
+      else if (this.jumps < 2) { this.vy = DOUBLE_JUMP_VEL * this.char.jumpMult * (this.awakeningTime > 0 ? 1.15 : 1) * (this.awakeningTime > 0 ? 1.15 : 1); this.jumps++; }
     }
 
     if (target.attackType && target.attackTimer > 0 && absDist < (isPro ? 190 : 140) && Math.random() < d.react * (isPro ? 0.22 : 0.10)) {
@@ -3297,6 +4303,19 @@ class Fighter {
     ctx.fill();
     ctx.restore();
 
+    if (this.awakeningTime > 0) {
+      const pulse = .5 + .5*Math.sin(performance.now()/155);
+      ctx.save();
+      ctx.globalAlpha = .27 + pulse*.20;
+      ctx.shadowColor = '#bf67ff';
+      ctx.shadowBlur = 25*s;
+      ctx.strokeStyle = '#d7a3ff';
+      ctx.lineWidth = (4+pulse*2)*s;
+      ctx.beginPath();
+      ctx.ellipse(cx, cy, w*.87, h*.65, 0, 0, Math.PI*2);
+      ctx.stroke();
+      ctx.restore();
+    }
     if (this.blocking) {
       ctx.beginPath();
       ctx.arc(cx, cy, w * 0.95, 0, Math.PI * 2);
@@ -4237,6 +5256,8 @@ function buildHUD() {
       <div class="stocks" id="stocks-${f.id}"></div>
       <div class="damage-pct" id="dmg-${f.id}" style="color:${f.color}">0%</div>
       <div class="ult-bar-wrap"><div class="ult-bar" id="ult-${f.id}" style="width:0%"></div></div>
+      <div class="awake-bar-wrap"><div class="awake-bar" id="awake-${f.id}"></div></div>
+      <div class="awake-label" id="awake-label-${f.id}">AWAKENING · Q</div>
     `;
     if (i === 0) hud.appendChild(div);
     else if (i === fighters.length - 1 && fighters.length <= 2) hud.appendChild(div);
@@ -4265,6 +5286,14 @@ function updateHUD() {
       const ultPct = Math.min(100, (f.ultMeter || 0));
       ultEl.style.width = ultPct + '%';
       ultEl.classList.toggle('ult-ready', !!f.ultReady);
+    }
+    const awakeEl = document.getElementById('awake-'+f.id);
+    const awakeLabel = document.getElementById('awake-label-'+f.id);
+    if (awakeEl) {
+      const active = f.awakeningTime > 0;
+      awakeEl.style.width = (active ? f.awakeningTime/AWAKENING_DURATION*100 : f.awakeningMeter || 0) + '%';
+      awakeEl.classList.toggle('awake-active',active);
+      if (awakeLabel) awakeLabel.textContent = active ? 'AWAKENED · '+Math.ceil(f.awakeningTime)+'s' : (f.awakeningMeter >= 100 ? 'AWAKENING READY · Q' : 'AWAKENING · '+Math.floor(f.awakeningMeter)+'%');
     }
     if (dmgEl) dmgEl.textContent = Math.floor(f.damage) + '%';
     if (hpEl) {
@@ -5698,6 +6727,8 @@ setInterval(() => {
 
 // ─── GAME INIT ────────────────────────────────────────────────────────────────
 function startGame() {
+  const rankedResult = document.getElementById('rankedMatchResult');
+  if (rankedResult) rankedResult.style.display = 'none';
   initAudio();
   fighters = [];
   particles = [];
@@ -5750,6 +6781,7 @@ function startGame() {
 }
 
 function goToMenu() {
+  if (rankedActive || rankedLastMatch) cancelRankedMatch();
   gameState = 'menu';
   document.getElementById('menu').style.display = 'flex';
   document.getElementById('game-over-screen').style.display = 'none';
@@ -5831,6 +6863,7 @@ function checkGameOver() {
     trophies = Math.max(0, trophies + trophyChange);
     highestTrophies = Math.max(highestTrophies, trophies);
     saveShop();
+    collectionMatchFinished(playerWon);
     updateCoinsUI();
     document.getElementById('goCoinsVal').textContent = earned;
 
@@ -6023,9 +7056,10 @@ function buildCharSelect() {
   if (customCharacterOwned) roster.push(getCustomCharacterCharData());
   roster.forEach((ch, i) => {
     const isLockedAdmin = ch.adminOnly && !adminUnlocked;
+    const isLockedCollectible = ch.collectible && !collectionOwned(ch.id);
     const card = document.createElement('div');
     const isSelected = (customCharacterOwned ? (i===selectedCharIdx && selectedCharIdx < CHARACTERS.length) || (selectedCharIdx === CHARACTERS.length && ch.id === 'custom') : i===selectedCharIdx);
-    card.className = 'char-card' + (isSelected ? ' selected' : '') + (isLockedAdmin ? ' admin-locked' : '');
+    card.className = 'char-card' + (isSelected ? ' selected' : '') + ((isLockedAdmin || isLockedCollectible) ? ' admin-locked' : '');
     card.style.color = ch.color;
     if (ch.adminOnly) card.style.borderColor = '#ff0055';
     const pips = (mult, max=5) => {
@@ -6035,11 +7069,15 @@ function buildCharSelect() {
       return html;
     };
     card.innerHTML = `
-      <div class="char-card-icon">${isLockedAdmin ? '🔒' : ch.icon}</div>
-      <div class="char-card-name" style="color:${ch.color}">${ch.name}${ch.adminOnly ? ' <span style="font-size:0.65rem; color:#ff0055; font-weight:800; display:block;">[ADMIN]</span>' : ''}</div>
+      <div class="char-card-icon">${(isLockedAdmin || isLockedCollectible) ? '🔒' : ch.icon}</div>
+      <div class="char-card-name" style="color:${ch.color}">${ch.name}${ch.adminOnly ? ' <span style="font-size:0.65rem; color:#ff0055; font-weight:800; display:block;">[ADMIN]</span>' : ''}${ch.collectible ? ' <span style="font-size:.65rem;display:block;color:#ffd67a">['+ch.rarity+']</span>' : ''}</div>
       <div class="char-card-stats">${pips(ch.speedMult)}</div>
     `;
     card.addEventListener('click', () => {
+      if (isLockedCollectible) {
+        showAnnouncer('UNLOCK AT '+ch.requiredWins+' WINS OR IN GACHA!', '#ffdc75');
+        return;
+      }
       if (isLockedAdmin) {
         showAnnouncer('ADMIN ACCESS REQUIRED!', '#ff0055');
         spawnPopup(window.innerWidth/2, 200, 'LOCKED! Tap corner 5x or press Ctrl+Shift+A', { color: '#ff0055', size: 20 });
@@ -6057,7 +7095,7 @@ function buildCharSelect() {
   const cur = (customCharacterOwned && selectedCharIdx === CHARACTERS.length) ? getCustomCharacterCharData() : CHARACTERS[selectedCharIdx];
   document.getElementById('charDescText').textContent = `${cur.specialName} (L key): ${cur.desc}`;
 }
-buildCharSelect();
+document.addEventListener('DOMContentLoaded', buildCharSelect);
 
 const quickProfileBtn = document.getElementById('quickProfileBtn');
 if (quickProfileBtn) {
@@ -6155,10 +7193,13 @@ document.querySelectorAll('.cpu-btn').forEach(btn => {
     cpuCount = parseInt(btn.dataset.count);
   });
 });
-document.getElementById('startBtn').addEventListener('click', startGame);
+document.getElementById('startBtn').addEventListener('click', () => {
+  if (document.querySelector('.menu-panel[data-panel="ranked"].active')) startRankedMatch();
+  else { if (rankedActive || rankedLastMatch) cancelRankedMatch(); startGame(); }
+});
 document.getElementById('resumeBtn').addEventListener('click', togglePause);
 document.getElementById('pauseMenuBtn').addEventListener('click', goToMenu);
-document.getElementById('rematchBtn').addEventListener('click', startGame);
+document.getElementById('rematchBtn').addEventListener('click', () => { if (rankedLastMatch) startRankedMatch(); else startGame(); });
 document.getElementById('goShopBtn').addEventListener('click', openShop);
 document.getElementById('goMenuBtn').addEventListener('click', goToMenu);
 
@@ -6195,48 +7236,65 @@ function bindTouchButton(id, code, vibMs = 12) {
   if (!el) return;
   let pointerActive = false;
   let activePointerId = null;
+
   const start = e => {
-    e.preventDefault();
+    if (e && e.cancelable) e.preventDefault();
     if (pointerActive) return;
     pointerActive = true;
-    if (e.pointerId !== undefined) activePointerId = e.pointerId;
+    activePointerId = (e && e.pointerId !== undefined) ? e.pointerId : null;
+    if (activePointerId !== null && el.setPointerCapture) {
+      try { el.setPointerCapture(activePointerId); } catch (_) {}
+    }
     simulateKey(code, true);
     el.classList.add('active');
     vibrate(vibMs);
   };
+
   const end = e => {
-    if (e && e.preventDefault) e.preventDefault();
+    if (e && e.pointerId !== undefined && activePointerId !== null && e.pointerId !== activePointerId) return;
+    if (!pointerActive) return;
+    if (e && e.cancelable && e.preventDefault) e.preventDefault();
     pointerActive = false;
     activePointerId = null;
     simulateKey(code, false);
     el.classList.remove('active');
   };
-  el.addEventListener('pointerdown', start);
-  el.addEventListener('pointerup', end);
-  el.addEventListener('pointerleave', end);
-  el.addEventListener('pointercancel', end);
-  el.addEventListener('touchstart', start, { passive:false });
-  el.addEventListener('touchend', end, { passive:false });
-  el.addEventListener('touchcancel', end, { passive:false });
+
+  // Use one input path only. Mixing pointer + touch events can release actions twice
+  // on phones, especially while rotating or holding multiple buttons in landscape.
+  if (window.PointerEvent) {
+    el.addEventListener('pointerdown', start, { passive: false });
+    el.addEventListener('pointerup', end, { passive: false });
+    el.addEventListener('pointercancel', end, { passive: false });
+    el.addEventListener('lostpointercapture', end, { passive: false });
+  } else {
+    el.addEventListener('touchstart', start, { passive: false });
+    el.addEventListener('touchend', end, { passive: false });
+    el.addEventListener('touchcancel', end, { passive: false });
+    el.addEventListener('mousedown', start, { passive: false });
+    window.addEventListener('mouseup', end, { passive: false });
+  }
   el.addEventListener('contextmenu', e => e.preventDefault());
-  // Force-clear this button whenever a global reset fires (orientation change, tab blur, etc.)
   touchResetCallbacks.push(() => { if (pointerActive) end({}); });
 }
-
 bindTouchButton('tc-jump', 'KeyW');
 bindTouchButton('tc-block', 'ShiftLeft');
 bindTouchButton('tc-punch', 'KeyJ', 10);
 bindTouchButton('tc-kick', 'KeyK', 10);
 bindTouchButton('tc-special', 'KeyL', 22);
 
-document.getElementById('tcPauseBtn')?.addEventListener('click', e => {
-  e.preventDefault();
-  togglePause();
-});
-document.getElementById('tcPauseBtn')?.addEventListener('touchstart', e => {
-  e.preventDefault();
-  togglePause();
-});
+const touchPauseButton = document.getElementById('tcPauseBtn');
+if (touchPauseButton) {
+  if (window.PointerEvent) {
+    touchPauseButton.addEventListener('pointerup', e => {
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      e.preventDefault();
+      togglePause();
+    }, { passive: false });
+  } else {
+    touchPauseButton.addEventListener('click', e => { e.preventDefault(); togglePause(); });
+  }
+}
 
 // Virtual joystick (movement + fast-fall) — smoother, larger range, proper dead-zone
 (function setupJoystick() {
@@ -6348,363 +7406,398 @@ if (isTouchDevice) {
 
 
 <script>
-
-/* =========================================================================
-   STICKMAN FIGHT INTRO ANIMATION
-   Rendering style matches the in-game Fighter.draw() method:
-   bold flat-color silhouette, thick round-cap strokes, glow, punch/kick
-   pose curves, and jagged impact-spike hit effects.
-   ========================================================================= */
-function runIntroFight(){
+/* STICKMAN WARS — CINEMATIC ARENA OPENING
+   All animation is drawn on a separate canvas; no gameplay state is changed. */
+(function(){
+  'use strict';
+  var root = document.getElementById('intro-screen');
   var canvas = document.getElementById('introFightCanvas');
-  if(!canvas) return;
+  if (!root || !canvas) return;
   var ctx = canvas.getContext('2d');
-
-  function resize(){
-    var dpr = window.devicePixelRatio || 1;
-    canvas.width = window.innerWidth * dpr;
-    canvas.height = window.innerHeight * dpr;
-    canvas.style.width = window.innerWidth + 'px';
-    canvas.style.height = window.innerHeight + 'px';
+  if (!ctx) { root.classList.add('cin-hidden'); return; }
+  var ui = {
+    call: document.getElementById('cinCallout'),
+    round: document.getElementById('cinRound'),
+    sub: document.getElementById('cinSub'),
+    action: document.getElementById('cinAction'),
+    winner: document.getElementById('cinWinner'),
+    hp1: document.getElementById('cinHp1'),
+    hp2: document.getElementById('cinHp2'),
+    progress: document.getElementById('cinProgress'),
+    step: document.getElementById('cinStepLabel'),
+    flash: document.getElementById('cinFlash'),
+    skip: document.getElementById('introSkipBtn'),
+    replay: document.getElementById('cinReplayBtn')
+  };
+  var DURATION = 9400, w = 0, h = 0, scale = 1, dpr = 1;
+  var started = 0, running = false, isDone = false, animationId = 0, exitTimer = 0, currentSection = -1;
+  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+  function lerp(a,b,v){return a+(b-a)*v;}
+  function ease(v){v=clamp(v,0,1);return v*v*(3-2*v);}
+  function interp(t,a,b,v0,v1){return lerp(v0,v1,ease((t-a)/(b-a)));}
+  function smoothPulse(t,at,duration){return Math.max(0,1-Math.abs(t-at)/duration);}
+  function sizeCanvas(){
+    w = Math.max(1,window.innerWidth);h=Math.max(1,window.innerHeight);
+    dpr = Math.min(window.devicePixelRatio || 1,2);
+    canvas.width = Math.round(w*dpr);canvas.height = Math.round(h*dpr);
     ctx.setTransform(dpr,0,0,dpr,0,0);
+    scale = w < 601 && h > w ? clamp(Math.min(w/560,h/610),.67,1.3) : clamp(Math.min(w/850,h/590),.53,1.65);
   }
-  window.addEventListener('resize', resize);
-  resize();
+  window.addEventListener('resize',sizeCanvas,{passive:true});
+  sizeCanvas();
 
-  var W = function(){ return window.innerWidth; };
-  var H = function(){ return window.innerHeight; };
-  var startTime = performance.now();
+  var seed = 19283;
+  function rnd(){seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;}
+  var stars=[];for(var i=0;i<76;i++) stars.push([rnd(),rnd()*.69,.7+rnd()*1.5,rnd()*Math.PI*2]);
+  var events=[
+    {t:2730,x:.52,y:.51,color:'#ffed82',count:29},
+    {t:3440,x:.43,y:.54,color:'#ff5a6f',count:25},
+    {t:5570,x:.65,y:.47,color:'#79f9ff',count:44},
+    {t:5860,x:.7,y:.43,color:'#fff7c4',count:34},
+    {t:6180,x:.73,y:.44,color:'#7defff',count:55}
+  ];
+  events.forEach(function(e){
+    e.bits=[];
+    for(var j=0;j<e.count;j++){
+      var a=rnd()*Math.PI*2,sp=60+rnd()*330;
+      e.bits.push({vx:Math.cos(a)*sp,vy:Math.sin(a)*sp*.67-85,len:2+rnd()*11,size:1.4+rnd()*2.8,angle:a});
+    }
+  });
 
-  var CLASH_T = 400;
-  var POSE_T  = 90;
-  var KNOCK_T = 300;
-  var TOTAL_T = CLASH_T + POSE_T + KNOCK_T + 200;
+  function background(t){
+    var sky=ctx.createLinearGradient(0,0,0,h);
+    sky.addColorStop(0,'#07122a');sky.addColorStop(.46,'#0c3475');sky.addColorStop(.75,'#124f87');sky.addColorStop(1,'#071627');
+    ctx.fillStyle=sky;ctx.fillRect(0,0,w,h);
+    var horizon=h*.73;
+    ctx.save();ctx.globalAlpha=.17;
+    ctx.translate(w*.5,horizon);ctx.rotate(Math.sin(t*.0003)*.04);
+    for(var k=0;k<22;k++){
+      var ang=k*Math.PI*2/22+t*.00011;
+      ctx.beginPath();ctx.moveTo(0,0);
+      ctx.arc(0,0,Math.max(w,h)*2,ang,ang+.032);
+      ctx.closePath();ctx.fillStyle=k%3===0?'#07dfff':'#9ae0ff';ctx.fill();
+    }
+    ctx.restore();
+    for(var q=0;q<stars.length;q++){
+      var st=stars[q],f=.35+.3*Math.sin(t*.002+st[3]);
+      ctx.globalAlpha=f;ctx.fillStyle=q%4?'#a1d8ff':'#fff9b8';
+      ctx.fillRect(st[0]*w,st[1]*h,st[2],st[2]);
+    }
+    ctx.globalAlpha=1;
+    // Stage silhouette: a bright arena instead of a blank loading screen.
+    var offset=Math.floor(t*.018);
+    for(var b=0;b<25;b++){
+      var bx=b*(w/24)-6, bh=(25+((b*43)%72))*scale;
+      ctx.fillStyle=b%3?'#081b3c':'#0c2450';
+      ctx.fillRect(bx,horizon-bh,w/22,bh);
+      if(b%3===0){ctx.fillStyle='#17a6dc88';for(var by=0;by<3;by++)ctx.fillRect(bx+8*scale,horizon-bh+10*scale+by*15*scale,4*scale,4*scale);}
+    }
+    var ground=ctx.createLinearGradient(0,horizon,0,h);
+    ground.addColorStop(0,'#1b477f');ground.addColorStop(.55,'#081f45');ground.addColorStop(1,'#051027');
+    ctx.fillStyle=ground;ctx.fillRect(0,horizon,w,h-horizon);
+    ctx.strokeStyle='#06c1ffcc';ctx.lineWidth=3*scale;ctx.beginPath();ctx.moveTo(0,horizon);ctx.lineTo(w,horizon);ctx.stroke();
+    ctx.strokeStyle='#30c4ff24';ctx.lineWidth=1;
+    for(var g=1;g<7;g++){
+      var py=horizon+(h-horizon)*Math.pow(g/7,1.55);
+      ctx.beginPath();ctx.moveTo(0,py);ctx.lineTo(w,py);ctx.stroke();
+    }
+    for(var gx=-14;gx<=14;gx++){
+      var topX=w*.5+gx*20*scale;
+      var bottomX=w*.5+gx*90*scale;
+      ctx.beginPath();ctx.moveTo(topX,horizon);ctx.lineTo(bottomX,h);ctx.stroke();
+    }
+    for(var sp=0;sp<2;sp++){
+      var sx=w*(sp?.79:.21);
+      var glow=ctx.createRadialGradient(sx,horizon-45*scale,0,sx,horizon-45*scale,170*scale);
+      glow.addColorStop(0,sp?'#ff45632b':'#2ae4fa2b');glow.addColorStop(1,'transparent');
+      ctx.fillStyle=glow;ctx.fillRect(sx-180*scale,horizon-225*scale,360*scale,360*scale);
+    }
+    // Dim animated halftone behind the fighters.
+    ctx.globalAlpha=.13;ctx.fillStyle='#c6eaff';
+    for(var xi=0;xi<w;xi+=24){for(var yi=h*.27;yi<h*.73;yi+=24){
+      if(((xi*5+yi*2)|0)%5===0){ctx.beginPath();ctx.arc(xi,yi,1.5,0,7);ctx.fill();}
+    }}
+    ctx.globalAlpha=1;
+  }
 
-  function drawStickLimb(ctx, baseX, baseY, upperAngle, lowerAngle, upperLen, lowerLen, thickness, color, showFist){
-    ctx.save();
-    ctx.strokeStyle = color;
-    ctx.fillStyle = color;
-    ctx.lineWidth = thickness;
-    ctx.lineCap = 'round';
-    ctx.translate(baseX, baseY);
-    ctx.rotate(upperAngle);
-    ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(0, upperLen); ctx.stroke();
-    ctx.translate(0, upperLen);
-    ctx.rotate(lowerAngle);
-    ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(0, lowerLen); ctx.stroke();
-    if(showFist){
-      ctx.beginPath(); ctx.arc(0, lowerLen, thickness*0.72, 0, Math.PI*2); ctx.fill();
+  // Uses the very same proportions, flat-color silhouette, limb segments,
+  // and ROUND JOINT rendering from the actual Fighter.draw() function.
+  // In particular: no separate stick-on fists, headbands, eyes or outlines.
+  function introStickLimb(g, bx, by, upperAngle, lowerAngle, upperLen, lowerLen, thickness, color) {
+    // Match drawStickLimb in the actual game; use one continuous path through
+    // the elbow so the character looks like a connected animated silhouette.
+    var ex = bx - Math.sin(upperAngle) * upperLen;
+    var ey = by + Math.cos(upperAngle) * upperLen;
+    var handAngle = upperAngle + lowerAngle;
+    var hx = ex - Math.sin(handAngle) * lowerLen;
+    var hy = ey + Math.cos(handAngle) * lowerLen;
+    g.beginPath();g.moveTo(bx,by);g.lineTo(ex,ey);g.lineTo(hx,hy);
+    g.strokeStyle=color;g.lineWidth=thickness;
+    g.lineCap='round';g.lineJoin='round';g.stroke();
+  }
+  function fighter(x,y,d,color,pose){
+    var s=scale*clamp(h/720,.79,1.18);
+    var H=151,W=65; // EXACT in-game Fighter dimensions
+    var limbW=W*.30, shoulder=-H+H*.24, hip=-H+H*.60;
+    var head=shoulder-H*.13, headR=W*.24;
+    var run=clamp(pose.run||0,0,1),kick=clamp(pose.kick||0,0,1);
+    var punch=clamp(pose.punch||0,0,1),guard=clamp(pose.guard||0,0,1);
+    var charge=clamp(pose.charge||0,0,1);
+    var time=pose.clock||0,step=Math.sin(time*.023);
+    var sway=Math.sin(time*.006)*1.3;
+    var lean=(pose.lean||0)/100+(pose.dash?.10:0)+punch*.105-kick*.06;
+
+    ctx.save();ctx.translate(x,y);ctx.scale(d*s,s);
+    // Ground shadow stays on the arena and does not rotate with the fighter.
+    ctx.beginPath();ctx.ellipse(0,5,W*.41,7,0,0,Math.PI*2);
+    ctx.fillStyle='rgba(0,0,0,.35)';ctx.fill();
+
+    // The live game scales around the planted feet (squash/stretch), too.
+    var bounce=run*(2.8+Math.abs(step)*2.4);
+    var hit=clamp(pose.hit||0,0,1);
+    ctx.translate(0,-bounce-hit*7);
+    var squash=1+kick*.035-punch*.045+hit*.07;
+    ctx.scale(squash,1/squash);
+    ctx.translate(0,-H*.38);ctx.rotate(lean+(pose.rotate||0));ctx.translate(0,H*.38);
+    ctx.translate(0,sway*.22);
+
+    ctx.lineCap='round';ctx.lineJoin='round';
+    ctx.strokeStyle=color;ctx.fillStyle=color;
+    ctx.shadowColor=color;ctx.shadowBlur=10;
+
+    // Torso: SINGLE thick stroke, same width and placement as in the match.
+    ctx.beginPath();ctx.moveTo(0,head+headR*.85);ctx.lineTo(0,hip);
+    ctx.lineWidth=limbW;ctx.stroke();
+
+    // Legs are naturally anchored at the common hip. Knee and foot are derived
+    // from joint angles, rather than independently moving pasted-on shapes.
+    var rearStep=run*step,frontStep=-run*step;
+    var rearHip=.47+rearStep*.62,frontHip=-.48+frontStep*.62;
+    var rearKnee=-.25-rearStep*.36,frontKnee=.20-frontStep*.32;
+    rearHip+=kick*.15;
+    frontHip=lerp(frontHip,-1.14,kick);
+    frontKnee=lerp(frontKnee,-.37,kick);
+    introStickLimb(ctx,0,hip,rearHip,rearKnee,H*.20,H*.18,limbW*.70,color);
+    introStickLimb(ctx,0,hip,frontHip,frontKnee,H*.20,H*.18,limbW*.70,color);
+
+    // Punches, guards and special windups are all animated as continuous
+    // shoulder/elbow rotations; both arms remain joined to the body.
+    var rearSwing=-run*step*.8,frontSwing=run*step*.8;
+    var rearAngle=.40+rearSwing*.48;
+    var frontAngle=-.42+frontSwing*.48;
+    var rearElbow=-.55+rearSwing*.18;
+    var frontElbow=.50+frontSwing*.18;
+    rearAngle=lerp(rearAngle,.72,punch*.65);
+    rearElbow=lerp(rearElbow,-.25,punch*.65);
+    frontAngle=lerp(frontAngle,-1.49,punch);
+    frontElbow=lerp(frontElbow,-.12,punch);
+    rearAngle=lerp(rearAngle,2.75,guard);
+    rearElbow=lerp(rearElbow,-.6,guard);
+    frontAngle=lerp(frontAngle,-2.4,guard);
+    frontElbow=lerp(frontElbow,-.18,guard);
+    rearAngle=lerp(rearAngle,2.5,charge);
+    rearElbow=lerp(rearElbow,-.46,charge);
+    frontAngle=lerp(frontAngle,-2.45,charge);
+    frontElbow=lerp(frontElbow,.20,charge);
+    introStickLimb(ctx,0,shoulder,rearAngle,rearElbow,H*.185,H*.17,limbW*.62,color);
+    introStickLimb(ctx,0,shoulder,frontAngle,frontElbow,H*.185,H*.17,limbW*.62,color);
+
+    // Head: a plain colored disk with no eye, headband, outline or helmet;
+    // matches the visual treatment used in the real game itself.
+    ctx.beginPath();ctx.arc(0,head,headR,0,Math.PI*2);ctx.fillStyle=color;ctx.fill();
+    ctx.shadowBlur=0;
+    ctx.restore();
+
+    // The special move gets light effects OUTSIDE the silhouette, not bubbles
+    // or fake parts attached to the anatomy.
+    if(charge>.08){
+      ctx.save();ctx.globalAlpha=charge*.4;
+      ctx.strokeStyle=color;ctx.lineWidth=2*s;ctx.shadowColor=color;ctx.shadowBlur=18*s;
+      var r=34*s+(Math.sin(time*.012)+1)*7*s;
+      ctx.beginPath();ctx.arc(x,y-75*s,r,-.8,.85);ctx.stroke();
+      ctx.restore();
+    }
+  }
+
+  function positions(t){
+    var a=.28,b=.72;
+    if(t<550){a=-.16;b=1.16;}
+    else if(t<1450){a=interp(t,550,1450,-.16,.30);b=interp(t,550,1450,1.16,.70);}
+    else if(t<2350){a=.30;b=.70;}
+    else if(t<2810){a=interp(t,2350,2810,.30,.43);b=interp(t,2350,2810,.70,.57);}
+    else if(t<3170){a=.43;b=.58;}
+    else if(t<3540){a=interp(t,3170,3540,.43,.29);b=interp(t,3170,3540,.58,.46);}
+    else if(t<4300){a=interp(t,3540,4300,.29,.28);b=interp(t,3540,4300,.46,.72);}
+    else if(t<5190){a=.28;b=.72;}
+    else if(t<5570){a=interp(t,5190,5570,.28,.65);b=.72;}
+    else if(t<6120){a=.65;b=.7;}
+    else if(t<6700){a=.63;b=interp(t,6120,6700,.70,1.25);}
+    else{a=.63;b=1.25;}
+    return [a,b];
+  }
+  function drawSpeedLines(t){
+    var amount= t>5190&&t<6170?.72:t<1450&&t>600?.34:0;
+    if(!amount)return;
+    ctx.save();ctx.lineWidth=1.8*scale;ctx.strokeStyle='#e8fcff';
+    var cy=h*.52;
+    for(var j=0;j<20;j++){
+      var yy=(.19+(j*.071)% .57)*h,xx=(j*83+t*.76)%(w+300)-150;
+      ctx.globalAlpha=amount*(.12+(j%4)*.07);
+      ctx.beginPath();ctx.moveTo(xx,yy);ctx.lineTo(xx-(40+j*13)*scale,yy);ctx.stroke();
     }
     ctx.restore();
   }
-
-  function drawImpactSpikes(ctx, x, y, color, alpha, s){
-    ctx.save();
-    ctx.globalAlpha = alpha;
-    ctx.translate(x, y);
-    ctx.fillStyle = color;
-    ctx.shadowColor = color;
-    ctx.shadowBlur = 14*s;
-    var spikes = 8, outerR = 26*s, innerR = 9*s;
-    ctx.beginPath();
-    for(var i=0;i<spikes*2;i++){
-      var r = i%2===0 ? outerR : innerR;
-      var a = (i/(spikes*2))*Math.PI*2;
-      var px = Math.cos(a)*r, py = Math.sin(a)*r*0.7;
-      if(i===0) ctx.moveTo(px,py); else ctx.lineTo(px,py);
-    }
-    ctx.closePath(); ctx.fill();
-    ctx.shadowBlur = 0;
-    ctx.restore();
-  }
-
-  function makeStickman(x, facing, color, role){
-    return {
-      x: x, facing: facing, color: color, role: role,
-      w: 62, h: 150,
-      walkCycle: Math.random()*10,
-      limbAngle: 0,
-      strideBounce: 0,
-      squashX: 1, squashY: 1,
-      attackType: null,
-      attackTimer: 0,
-      attackDuration: 0,
-      armSnap: 0,
-      kickAngle: 0,
-      kickChamber: 0,
-      hitLean: 0,
-      tumbleAngle: 0,
-      tumbleSpin: 0
-    };
-  }
-
-  function updateStickman(f, dt, phase){
-    if(phase === 'run'){
-      f.walkCycle += dt*9;
-      f.limbAngle = Math.sin(f.walkCycle)*0.55;
-      f.strideBounce = Math.abs(Math.sin(f.walkCycle))*0.4;
-      f.attackType = null;
-      f.squashX += (1 - f.squashX)*Math.min(1, dt*16);
-      f.squashY += (1 - f.squashY)*Math.min(1, dt*16);
-    } else if(phase === 'strike'){
-      f.attackDuration = (CLASH_T*0.18)/1000;
-      f.attackTimer = Math.max(0, f.attackTimer - dt);
-      var p = 1 - (f.attackTimer / (f.attackDuration || 1));
-      if(f.role === 'punch'){
-        f.attackType = 'punch';
-        f.armSnap = p < 0.55 ? (p/0.55) : 1;
-      } else {
-        f.attackType = 'kick';
-        var cp = Math.min(1, p/0.6);
-        f.kickChamber = Math.sin(cp*Math.PI*0.5)*0.9;
-        f.kickAngle = f.kickChamber*1.35;
-      }
-      f.strideBounce *= 0.9;
-    } else if(phase === 'pose'){
-      // hold pose
-    } else if(phase === 'knockback'){
-      f.attackType = null;
-      f.tumbleSpin = f.facing * -2.2;
-      f.tumbleAngle += f.tumbleSpin*dt;
-      f.hitLean = f.facing * -0.5;
-    }
-  }
-
-  function drawStickman(ctx, f, cx, cy){
-    var w = f.w, h = f.h, dir = f.facing, color = f.color;
-    ctx.save();
-    ctx.translate(cx, cy);
-
-    ctx.translate(0, h/2);
-    ctx.scale(f.squashX, f.squashY);
-    ctx.translate(0, -h/2);
-
-    ctx.save();
-    ctx.translate(0, h/2 + 6);
-    ctx.scale(1/f.squashX, 1/f.squashY);
-    ctx.beginPath();
-    ctx.ellipse(0,0, w*0.4, h*0.05, 0, 0, Math.PI*2);
-    ctx.fillStyle = 'rgba(0,0,0,0.4)';
-    ctx.fill();
-    ctx.restore();
-
-    var lean = (f.hitLean||0) + (f.tumbleAngle||0);
-    ctx.rotate(lean);
-
-    var strideBob = (f.strideBounce||0) * h*0.025;
-    var hipY = h*0.10 - strideBob;
-    var shoulderY = -h*0.26 - strideBob*0.6;
-    var headY = shoulderY - h*0.13;
-    var headR = w*0.24;
-    var limbW = w*0.30;
-
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
-    ctx.strokeStyle = color;
-    ctx.fillStyle = color;
-    ctx.shadowColor = color;
-    ctx.shadowBlur = 10;
-
-    ctx.lineWidth = limbW;
-    ctx.beginPath();
-    ctx.moveTo(0, headY + headR*0.85);
-    ctx.lineTo(0, hipY);
-    ctx.stroke();
-
-    var armSwing = f.limbAngle;
-    var leadArmExtra = 0, backArmExtra = 0;
-    var isPunching = f.attackType === 'punch';
-    if(isPunching){
-      var snap = f.armSnap||0;
-      armSwing = dir * (-0.5 + snap*1.9);
-      leadArmExtra = snap*0.25;
-    }
-    drawStickLimb(ctx, 0, shoulderY, armSwing*0.9 + 0.4*leadArmExtra*dir, -armSwing*0.55, h*0.185+leadArmExtra*0.06, h*0.17, limbW*0.62, color, isPunching);
-    drawStickLimb(ctx, 0, shoulderY, -armSwing*0.9 - 0.4, armSwing*0.55 + backArmExtra, h*0.185, h*0.17, limbW*0.62, color, isPunching);
-
-    var isKicking = f.attackType === 'kick';
-    var kickPower = isKicking ? -dir*f.kickAngle : 0;
-    var chamberBend = isKicking ? f.kickChamber : 0;
-    var kickL = dir===-1 ? kickPower : 0;
-    var kickR = dir===1 ? kickPower : 0;
-    var chamberL = dir===-1 ? chamberBend : 0;
-    var chamberR = dir===1 ? chamberBend : 0;
-    drawStickLimb(ctx, 0, hipY, f.limbAngle*0.7 + kickL*0.7 - chamberL*0.2, -f.limbAngle*0.45 + kickL*1.2 + chamberL*1.3, h*0.2, h*0.18, limbW*0.7, color, false);
-    drawStickLimb(ctx, 0, hipY, -f.limbAngle*0.7 + kickR*0.7 - chamberR*0.2, f.limbAngle*0.45 + kickR*1.2 + chamberR*1.3, h*0.2, h*0.18, limbW*0.7, color, false);
-
-    ctx.beginPath();
-    ctx.arc(0, headY, headR, 0, Math.PI*2);
-    ctx.fill();
-    ctx.shadowBlur = 0;
-
-    ctx.restore();
-  }
-
-  var left = makeStickman(-120, 1, '#00e5ff', 'punch');
-  var right = makeStickman(W()+120, -1, '#ff3366', 'kick');
-  var lastT = startTime;
-
-  function frame(now){
-    var dt = Math.min(0.05, (now-lastT)/1000);
-    lastT = now;
-    var elapsed = now - startTime;
-    ctx.clearRect(0,0,W(),H());
-
-    if(elapsed > TOTAL_T){
-      canvas.style.opacity = Math.max(0, 1 - (elapsed-TOTAL_T)/250);
-      if(elapsed > TOTAL_T + 300){ canvas.style.opacity = 0; return; }
-      requestAnimationFrame(frame);
-      return;
-    }
-
-    var midY = H()*0.52;
-    var startXL = -120, startXR = W()+120;
-    var meetOffset = 95;
-    var leftX, rightX;
-
-    if(elapsed < CLASH_T){
-      var p = Math.min(1, elapsed/CLASH_T);
-      var ease = 1 - Math.pow(1-p, 3);
-      leftX  = startXL + (W()/2 - meetOffset - startXL) * ease;
-      rightX = startXR + (W()/2 + meetOffset - startXR) * ease;
-      if(p > 0.78){
-        left.attackTimer = left.attackTimer || (CLASH_T*0.22)/1000;
-        right.attackTimer = right.attackTimer || (CLASH_T*0.22)/1000;
-        updateStickman(left, dt, 'strike');
-        updateStickman(right, dt, 'strike');
-      } else {
-        updateStickman(left, dt, 'run');
-        updateStickman(right, dt, 'run');
-      }
-    } else if(elapsed < CLASH_T + POSE_T){
-      leftX = W()/2 - meetOffset; rightX = W()/2 + meetOffset;
-      updateStickman(left, dt, 'pose');
-      updateStickman(right, dt, 'pose');
-
-      var pp = (elapsed-CLASH_T)/POSE_T;
-      drawImpactSpikes(ctx, W()/2, midY - 20, '#ffffff', 1-pp, 1.4);
+  function impact(t){
+    for(var e=0;e<events.length;e++){
+      var ev=events[e],age=(t-ev.t)/1000;
+      if(age<0||age>1.12)continue;
+      var centerX=ev.x*w,centerY=ev.y*h;
+      if(ev.t>=5570){centerX=lerp(.66,.77,clamp((t-5570)/800,0,1))*w;centerY=h*.5;}
       ctx.save();
-      ctx.fillStyle = '#ffffff';
-      for(var i=0;i<14;i++){
-        var a = (i/14)*Math.PI*2;
-        var r = 20 + pp*70;
-        ctx.globalAlpha = 1 - pp;
-        ctx.beginPath();
-        ctx.arc(W()/2 + Math.cos(a)*r, midY + Math.sin(a)*r*0.6, 3, 0, Math.PI*2);
-        ctx.fill();
+      ctx.globalAlpha=(1-age/1.12);
+      ctx.strokeStyle=ev.color;
+      ctx.lineWidth=3.5*scale;
+      ctx.shadowColor=ev.color;ctx.shadowBlur=14*scale;
+      ctx.beginPath();ctx.arc(centerX,centerY,age*160*scale,0,Math.PI*2);ctx.stroke();
+      if(age<.17){
+        ctx.globalAlpha=(1-age/.17)*.8;
+        ctx.fillStyle='#fff';ctx.beginPath();
+        for(var v=0;v<16;v++){
+          var rad=v%2?14:33,radian=v*Math.PI/8;
+          var ax=centerX+Math.cos(radian)*rad*scale,ay=centerY+Math.sin(radian)*rad*scale;
+          if(!v)ctx.moveTo(ax,ay);else ctx.lineTo(ax,ay);
+        }ctx.closePath();ctx.fill();
+      }
+      ctx.shadowBlur=0;
+      for(var n=0;n<ev.bits.length;n++){
+        var bit=ev.bits[n], px=centerX+bit.vx*age*scale,py=centerY+(bit.vy*age+140*age*age)*scale;
+        ctx.globalAlpha=(1-age/1.12)*.95;
+        ctx.strokeStyle=n%3===0?'#fff':ev.color;ctx.lineWidth=bit.size*scale;
+        ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(px-bit.vx*.025*scale,py-bit.vy*.025*scale);ctx.stroke();
       }
       ctx.restore();
-    } else {
-      var kp = Math.min(1, (elapsed-CLASH_T-POSE_T)/KNOCK_T);
-      var kEase = kp*kp;
-      leftX  = (W()/2 - meetOffset) - kEase*150;
-      rightX = (W()/2 + meetOffset) + kEase*150;
-      updateStickman(left, dt, 'knockback');
-      updateStickman(right, dt, 'knockback');
     }
-
-    drawStickman(ctx, left, leftX, midY);
-    drawStickman(ctx, right, rightX, midY);
-
-    requestAnimationFrame(frame);
   }
-  requestAnimationFrame(frame);
-}
-runIntroFight();
-
-(function(){
-  var introEl = document.getElementById('intro-screen');
-  if (!introEl) return;
-
-  var particleWrap = document.getElementById('introParticles');
-  var count = 34;
-  for (var i = 0; i < count; i++) {
-    var p = document.createElement('div');
-    p.className = 'intro-particle';
-    var size = 3 + Math.random()*7;
-    var angle = (Math.PI * 2 * i) / count + Math.random()*0.35;
-    var dist = 140 + Math.random()*280;
-    var px = Math.cos(angle) * dist;
-    var py = Math.sin(angle) * dist;
-    var isRed = i % 2 === 0;
-    p.style.background = isRed ? '#ff3366' : '#00d4ff';
-    p.style.boxShadow = '0 0 8px ' + (isRed ? '#ff3366' : '#00d4ff');
-    p.style.width = size + 'px';
-    p.style.height = size + 'px';
-    p.style.left = '50%';
-    p.style.top = '50%';
-    p.style.setProperty('--px', px + 'px');
-    p.style.setProperty('--py', py + 'px');
-    particleWrap.appendChild(p);
+  function lightning(t,cx,cy){
+    if(t<4390||t>5650)return;
+    var pow=clamp((t-4390)/720,0,1);
+    ctx.save();ctx.strokeStyle='#b1ffff';ctx.shadowColor='#00eaff';ctx.shadowBlur=18*scale;
+    ctx.lineWidth=3.2*scale;
+    for(var i=0;i<8;i++){
+      var a=i*.785+t*.006,r=(42+(i%3)*17)*scale*pow;
+      ctx.globalAlpha=.2+.65*Math.sin(t*.014+i*1.8)**2;
+      ctx.beginPath();ctx.moveTo(cx+Math.cos(a)*r,cy+Math.sin(a)*r);
+      ctx.lineTo(cx+Math.cos(a)*r*1.24-8*scale,cy+Math.sin(a)*r*1.2);
+      ctx.lineTo(cx+Math.cos(a)*r*1.45,cy+Math.sin(a)*r*1.5);ctx.stroke();
+    }ctx.restore();
   }
-
-  // Play a quick "whoosh + impact" sting using WebAudio so the slam actually feels punchy.
-  function playIntroSting() {
-    try {
-      var Ctx = window.AudioContext || window.webkitAudioContext;
-      if (!Ctx) return;
-      var ctx = new Ctx();
-      var now = ctx.currentTime;
-
-      // Rising whoosh before impact
-      var osc1 = ctx.createOscillator();
-      var gain1 = ctx.createGain();
-      osc1.type = 'sawtooth';
-      osc1.frequency.setValueAtTime(120, now);
-      osc1.frequency.exponentialRampToValueAtTime(900, now + 0.35);
-      gain1.gain.setValueAtTime(0.0001, now);
-      gain1.gain.exponentialRampToValueAtTime(0.18, now + 0.3);
-      gain1.gain.exponentialRampToValueAtTime(0.0001, now + 0.4);
-      osc1.connect(gain1); gain1.connect(ctx.destination);
-      osc1.start(now); osc1.stop(now + 0.42);
-
-      // Impact hit at the moment the logo slams in
-      var impactTime = now + 0.4;
-      var osc2 = ctx.createOscillator();
-      var gain2 = ctx.createGain();
-      osc2.type = 'square';
-      osc2.frequency.setValueAtTime(180, impactTime);
-      osc2.frequency.exponentialRampToValueAtTime(60, impactTime + 0.15);
-      gain2.gain.setValueAtTime(0.28, impactTime);
-      gain2.gain.exponentialRampToValueAtTime(0.0001, impactTime + 0.35);
-      osc2.connect(gain2); gain2.connect(ctx.destination);
-      osc2.start(impactTime); osc2.stop(impactTime + 0.4);
-
-      // Bright shimmer after impact
-      var osc3 = ctx.createOscillator();
-      var gain3 = ctx.createGain();
-      osc3.type = 'sine';
-      osc3.frequency.setValueAtTime(1400, impactTime + 0.02);
-      gain3.gain.setValueAtTime(0.0001, impactTime);
-      gain3.gain.exponentialRampToValueAtTime(0.09, impactTime + 0.06);
-      gain3.gain.exponentialRampToValueAtTime(0.0001, impactTime + 0.5);
-      osc3.connect(gain3); gain3.connect(ctx.destination);
-      osc3.start(impactTime); osc3.stop(impactTime + 0.55);
-    } catch(e) {}
+  function foreground(t){
+    var shake=0;
+    for(var i=0;i<events.length;i++)shake=Math.max(shake,smoothPulse(t,events[i].t,155));
+    return shake*6*scale;
   }
-  // Sting must fire on a user gesture on some mobile browsers; try immediately, and also arm on first tap.
-  playIntroSting();
-  var stingArmed = false;
-  function armSting() {
-    if (stingArmed) return;
-    stingArmed = true;
-    playIntroSting();
+  function scene(t){
+    ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,w,h);
+    var shake=foreground(t);
+    ctx.save();ctx.translate(Math.sin(t*.18)*shake,Math.cos(t*.22)*shake*.7);
+    background(t);drawSpeedLines(t);
+    var loc=positions(t),baseY=h*.735;
+    var charH=scale*clamp(h/720,.79,1.18)*175;
+    var groundLimit=baseY;
+    var c1={clock:t},c2={clock:t};
+    if(t>=550&&t<1550){c1.run=interp(t,550,860,0,1)*interp(t,1370,1550,1,0);c2.run=c1.run;}
+    if(t>=2360&&t<3160){c1.punch=interp(t,2360,2650,0,1)*interp(t,2850,3150,1,0);c1.dash=interp(t,2350,2590,0,1)*interp(t,2660,2880,1,0);c2.guard=interp(t,2570,2730,0,1)*interp(t,2860,3060,1,0);}
+    if(t>=3060&&t<3810){c2.kick=interp(t,3060,3380,0,1)*interp(t,3540,3780,1,0);c1.lean=-14*interp(t,3350,3450,0,1)*interp(t,3560,3830,1,0);c1.hit=interp(t,3370,3440,0,1)*interp(t,3480,3650,1,0);}
+    if(t>=4320&&t<5340){c1.charge=interp(t,4320,5040,0,1)*interp(t,5190,5340,1,0);}
+    if(t>=5190&&t<6430){c1.dash=interp(t,5190,5390,0,1)*interp(t,6130,6380,1,0);c1.punch=interp(t,5250,5530,0,1)*interp(t,6140,6400,1,0);}
+    if(t>=6120&&t<6910){c2.rotate=interp(t,6120,6660,0,-1.2);c2.lean=-17;c2.hit=interp(t,6120,6200,0,1)*interp(t,6490,6750,1,0);}
+    if(t>=6800)c1.guard=.24;
+    if(t>5190 && t<6170){
+      var trail=1-clamp((t-5190)/1050,0,1);
+      for(var tr=3;tr>0;tr--){ctx.save();ctx.globalAlpha=trail*(.085+tr*.065);fighter(loc[0]*w-tr*23*scale,baseY,1,'#3f8fa8',c1);ctx.restore();}
+    }
+    var rightOpacity=t>6540?1-clamp((t-6540)/650,0,1):1;
+    ctx.save();ctx.globalAlpha=rightOpacity;fighter(loc[1]*w,baseY,-1,'#a8474f',c2);ctx.restore();
+    fighter(loc[0]*w,baseY,1,'#3f8fa8',c1);
+    lightning(t,loc[0]*w,baseY-charH*.53);
+    impact(t);
+    // Arena ground contact sparks when landing.
+    if(t>6800&&t<7250){ctx.globalAlpha=1-(t-6800)/450;ctx.strokeStyle='#95f3ff';ctx.lineWidth=2;for(var p=0;p<8;p++){
+      ctx.beginPath();ctx.moveTo(loc[0]*w,baseY);ctx.lineTo(loc[0]*w+(p-4)*13*scale,baseY-(p%3)*12*scale);ctx.stroke();
+    }ctx.globalAlpha=1;}
+    ctx.restore();
+    if(t>=7200){
+      var darkness=clamp((t-7200)/600,0,.56);
+      ctx.fillStyle='rgba(0,6,26,'+darkness+')';ctx.fillRect(0,0,w,h);
+    }
   }
-  introEl.addEventListener('touchstart', armSting, { passive: true, once: true });
-  introEl.addEventListener('click', armSting, { once: true });
-
-  var finished = false;
-  function endIntro() {
-    if (finished) return;
-    finished = true;
-    introEl.classList.add('fade-out');
-    setTimeout(function(){ introEl.remove(); }, 600);
+  var segments=[
+    {t:0,round:'THE ARENA AWAITS',label:'WELCOME',sub:'A NEW CHALLENGE BEGINS',step:'01 / THE CHALLENGE'},
+    {t:650,round:'EXHIBITION MATCH',label:'RIVALS',sub:'TWO FIGHTERS. ONE WINNER.',step:'01 / THE CHALLENGE'},
+    {t:1580,round:'ROUND 01',label:'READY?',sub:'THE FIGHT IS ABOUT TO BEGIN',step:'02 / ROUND ONE'},
+    {t:2150,round:'ROUND 01',label:'FIGHT!',sub:'MAKE EVERY HIT COUNT',step:'02 / ROUND ONE',hot:true},
+    {t:2740,round:'FIRST BLOOD',label:'COMBO!',sub:'STRIKER LANDS THE FIRST HIT',step:'03 / THE EXCHANGE',during:true},
+    {t:3440,round:'COUNTER ATTACK',label:'REVERSAL!',sub:'RIVAL STRIKES BACK',step:'03 / THE EXCHANGE',during:true,hot:true},
+    {t:4240,round:'POWER LEVEL RISING',label:'ULTIMATE',sub:'ENERGY SURGING • FINISHING MOVE READY',step:'04 / FINAL STRIKE',during:true,ultra:true},
+    {t:5260,round:'FINAL EXCHANGE',label:'FINAL STRIKE!',sub:'FULL-POWER FINISHER',step:'04 / FINAL STRIKE',during:true,ultra:true},
+    {t:6220,round:'MATCH FINISHED',label:'K.O.!',sub:'THE FINAL BLOW',step:'05 / VICTORY',during:true,hot:true},
+    {t:7180,round:'',label:'',sub:'',step:'05 / VICTORY',winner:true}
+  ];
+  function uiFrame(t){
+    var section=0;
+    for(var i=1;i<segments.length;i++)if(t>=segments[i].t)section=i;
+    if(section!==currentSection){
+      currentSection=section;
+      var s=segments[section];
+      ui.round.textContent=s.round;ui.call.textContent=s.label;ui.sub.textContent=s.sub;ui.step.textContent=s.step;
+      ui.action.classList.toggle('cin-during',!!s.during);
+      ui.action.classList.toggle('cin-ultra',!!s.ultra);
+      ui.action.classList.toggle('cin-hot',!!s.hot);
+      ui.action.classList.toggle('cin-away',!!s.winner);
+      ui.winner.classList.toggle('cin-show',!!s.winner);
+      ui.winner.setAttribute('aria-hidden',s.winner?'false':'true');
+    }
+    var hp1=t<3440?100:t<3900?interp(t,3440,3900,100,83):83;
+    var hp2=t<2740?100:t<3240?interp(t,2740,3240,100,90):t<5540?90:t<6550?interp(t,5540,6550,90,0):0;
+    ui.hp1.style.width=hp1+'%';ui.hp2.style.width=hp2+'%';
+    ui.progress.style.width=(100*clamp(t/DURATION,0,1))+'%';
+    var flash=0;
+    for(var k=0;k<events.length;k++)flash=Math.max(flash,smoothPulse(t,events[k].t+24,85));
+    ui.flash.style.opacity=String(flash*.5);
   }
-
-  introEl.addEventListener('click', endIntro);
-  introEl.addEventListener('touchstart', endIntro, { passive: true });
-  setTimeout(endIntro, 2300);
+  function finish(){
+    if(isDone)return;
+    isDone=true;running=false;
+    cancelAnimationFrame(animationId);clearTimeout(exitTimer);
+    root.classList.add('fade-out');
+    exitTimer=setTimeout(function(){root.classList.add('cin-hidden');root.classList.remove('fade-out');},510);
+  }
+  function frame(now){
+    if(!running)return;
+    var t=Math.max(0,now-started);
+    try{scene(t);uiFrame(t);}catch(err){console.warn('Intro animation skipped:',err);finish();return;}
+    if(t>=DURATION){finish();return;}
+    animationId=requestAnimationFrame(frame);
+  }
+  function play(){
+    cancelAnimationFrame(animationId);clearTimeout(exitTimer);
+    root.classList.remove('cin-hidden','fade-out');
+    currentSection=-1;isDone=false;running=true;
+    ui.hp1.style.width='100%';ui.hp2.style.width='100%';
+    ui.winner.classList.remove('cin-show');ui.action.classList.remove('cin-away');
+    root.style.opacity='1';
+    started=performance.now();
+    if(reduceMotion){scene(7800);uiFrame(7800);exitTimer=setTimeout(finish,3000);}
+    else animationId=requestAnimationFrame(frame);
+  }
+  ui.skip.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();finish();});
+  document.addEventListener('keydown',function(e){if(running&&(e.code==='Escape'||e.code==='Enter'||e.code==='Space')){e.preventDefault();finish();}});
+  if(ui.replay)ui.replay.addEventListener('click',function(){play();});
+  window.StickmanWarsReplayIntro=play;
+  play();
 })();
+
 </script>
 
 <script>
@@ -7101,9 +8194,12 @@ startGame = function() {
 };
 
 document.getElementById('startBtn').removeEventListener('click', origStart);
-document.getElementById('startBtn').addEventListener('click', startGame);
+document.getElementById('startBtn').addEventListener('click', () => {
+  if (document.querySelector('.menu-panel[data-panel="ranked"].active')) startRankedMatch();
+  else { if (rankedActive || rankedLastMatch) cancelRankedMatch(); startGame(); }
+});
 document.getElementById('rematchBtn').removeEventListener('click', origStart);
-document.getElementById('rematchBtn').addEventListener('click', startGame);
+document.getElementById('rematchBtn').addEventListener('click', () => { if (rankedLastMatch) startRankedMatch(); else startGame(); });
 </script>
 
 
@@ -7129,168 +8225,144 @@ document.getElementById('rematchBtn').addEventListener('click', startGame);
 })();
 
 // =========================================================================
-// ⭐ COMPETITIVE RANKED SYSTEM
+// ⭐ RANKED MODE — stable queue, correct victory calculations and UI
 // =========================================================================
 const RANKED_TIERS = [
-  { id: 'bronze',   name: 'Bronze',   minRp: 0,    maxRp: 500,  icon: '🥉', color: '#cd7f32', diff: 'easy' },
-  { id: 'silver',   name: 'Silver',   minRp: 500,  maxRp: 1200, icon: '🥈', color: '#c0c0c0', diff: 'medium' },
-  { id: 'gold',     name: 'Gold',     minRp: 1200, maxRp: 2200, icon: '🥇', color: '#ffd700', diff: 'hard' },
-  { id: 'platinum', name: 'Platinum', minRp: 2200, maxRp: 3500, icon: '💠', color: '#00e5ff', diff: 'insane' },
-  { id: 'diamond',  name: 'Diamond',  minRp: 3500, maxRp: 5000, icon: '💎', color: '#b966ff', diff: 'nightmare' },
-  { id: 'master',   name: 'Master',   minRp: 5000, maxRp: 7000, icon: '👑', color: '#ff2255', diff: 'godlike' },
-  { id: 'grandmaster', name: 'Grandmaster', minRp: 7000, maxRp: 99999, icon: '🌟', color: '#ff00ff', diff: 'pro' },
+  { id:'bronze', name:'Bronze', minRp:0, icon:'🥉', color:'#cd7f32', diff:'easy' },
+  { id:'silver', name:'Silver', minRp:500, icon:'🥈', color:'#c0c0c0', diff:'medium' },
+  { id:'gold', name:'Gold', minRp:1200, icon:'🥇', color:'#ffd700', diff:'hard' },
+  { id:'platinum', name:'Platinum', minRp:2200, icon:'💠', color:'#00e5ff', diff:'insane' },
+  { id:'diamond', name:'Diamond', minRp:3500, icon:'💎', color:'#b966ff', diff:'nightmare' },
+  { id:'master', name:'Master', minRp:5000, icon:'👑', color:'#ff2255', diff:'godlike' },
+  { id:'grandmaster', name:'Grandmaster', minRp:7000, icon:'🌟', color:'#ff00ff', diff:'pro' },
 ];
-
 let rankedActive = false;
+let rankedLastMatch = false;
+let rankedSavedMatchSettings = null;
 let rankedPoints = 0;
 let rankedPeak = 0;
 let rankedWinStreak = 0;
 
+function cleanRankNumber(n) { return Number.isFinite(n) ? Math.max(0, Math.floor(n)) : 0; }
 function loadRankedData() {
   try {
     const s = JSON.parse(localStorage.getItem('rankedSaveData') || '{}');
-    rankedPoints = typeof s.rp === 'number' ? s.rp : 0;
-    rankedPeak = typeof s.peak === 'number' ? s.peak : rankedPoints;
-    rankedWinStreak = typeof s.streak === 'number' ? s.streak : 0;
-  } catch(e) {
-    rankedPoints = 0; rankedPeak = 0; rankedWinStreak = 0;
-  }
+    rankedPoints = cleanRankNumber(s.rp);
+    rankedPeak = Math.max(cleanRankNumber(s.peak),rankedPoints);
+    rankedWinStreak = cleanRankNumber(s.streak);
+  } catch(e) { rankedPoints=0;rankedPeak=0;rankedWinStreak=0; }
 }
-
 function saveRankedData() {
-  try {
-    localStorage.setItem('rankedSaveData', JSON.stringify({
-      rp: rankedPoints,
-      peak: Math.max(rankedPeak, rankedPoints),
-      streak: rankedWinStreak
-    }));
-  } catch(e) {}
+  try { localStorage.setItem('rankedSaveData', JSON.stringify({rp:rankedPoints,peak:rankedPeak,streak:rankedWinStreak})); } catch(e){}
 }
 loadRankedData();
 
 function getCurrentRankTier(rp) {
-  for (let i = RANKED_TIERS.length - 1; i >= 0; i--) {
-    if (rp >= RANKED_TIERS[i].minRp) return { tier: RANKED_TIERS[i], index: i };
-  }
-  return { tier: RANKED_TIERS[0], index: 0 };
+  for (let i=RANKED_TIERS.length-1;i>=0;i--) if (rp>=RANKED_TIERS[i].minRp) return {tier:RANKED_TIERS[i],index:i};
+  return {tier:RANKED_TIERS[0],index:0};
 }
-
 function updateRankedUI() {
-  const { tier, index } = getCurrentRankTier(rankedPoints);
-  const nextTier = RANKED_TIERS[index + 1] || null;
-
-  const badgeIcon = document.getElementById('rankedTierBadgeIcon');
-  const tierName = document.getElementById('rankedTierName');
-  const ptsLabel = document.getElementById('rankedPtsLabel');
-  const bar = document.getElementById('rankedBar');
-  const nextLabel = document.getElementById('rankedNextTierLabel');
-  const streakVal = document.getElementById('rankedStreakVal');
-  const peakVal = document.getElementById('rankedPeakVal');
-
-  if (badgeIcon) badgeIcon.textContent = tier.icon;
-  if (tierName) {
-    tierName.textContent = tier.name.toUpperCase();
-    tierName.style.color = tier.color;
+  const {tier,index} = getCurrentRankTier(rankedPoints);
+  const next = RANKED_TIERS[index+1];
+  const card=document.querySelector('.ranked-card');
+  if(card) card.style.setProperty('--rank-accent',tier.color);
+  const el=(id)=>document.getElementById(id);
+  const badge=el('rankedTierBadgeIcon'); if(badge) badge.textContent=tier.icon;
+  const name=el('rankedTierName'); if(name){name.textContent=tier.name.toUpperCase();name.style.color=tier.color;}
+  const pts=el('rankedPtsLabel'); if(pts) pts.textContent=rankedPoints.toLocaleString()+' RP';
+  const bar=el('rankedBar'); if(bar) {
+    const pct = next ? 100*(rankedPoints-tier.minRp)/(next.minRp-tier.minRp) : 100;
+    bar.style.width=Math.max(0,Math.min(100,pct))+'%';
+    bar.style.background=next ? `linear-gradient(90deg,${tier.color},#fff)`:'linear-gradient(90deg,#ff00ff,#ffd700)';
   }
-  if (ptsLabel) ptsLabel.textContent = rankedPoints.toLocaleString() + ' RP';
-
-  if (bar) {
-    if (nextTier) {
-      const range = nextTier.minRp - tier.minRp;
-      const current = rankedPoints - tier.minRp;
-      const pct = Math.min(100, Math.max(0, (current / range) * 100));
-      bar.style.width = pct + '%';
-      bar.style.background = `linear-gradient(90deg, ${tier.color}, #ffffff)`;
-    } else {
-      bar.style.width = '100%';
-      bar.style.background = 'linear-gradient(90deg, #ff00ff, #ffd700)';
-    }
-  }
-
-  if (nextLabel) {
-    if (nextTier) {
-      const needed = nextTier.minRp - rankedPoints;
-      nextLabel.textContent = `Next Tier: ${nextTier.name} (${needed} RP needed)`;
-    } else {
-      nextLabel.textContent = '🌟 MAX RANK REACHED! TOP OF THE LADDER!';
-    }
-  }
-
-  if (streakVal) streakVal.textContent = '🔥 ' + rankedWinStreak;
-  if (peakVal) {
-    const peakObj = getCurrentRankTier(rankedPeak).tier;
-    peakVal.textContent = `${peakObj.icon} ${peakObj.name.toUpperCase()}`;
-  }
+  const nextLabel=el('rankedNextTierLabel'); if(nextLabel) nextLabel.textContent=next ? `NEXT: ${next.name.toUpperCase()} • ${next.minRp-rankedPoints} RP to go` : '🌟 GRANDMASTER — MAX RANK';
+  const streak=el('rankedStreakVal'); if(streak) streak.textContent='🔥 '+rankedWinStreak;
+  const peak=el('rankedPeakVal'); if(peak){const p=getCurrentRankTier(rankedPeak).tier;peak.textContent=`${p.icon} ${p.name.toUpperCase()}`;}
 }
-
+function hideRankedBanner() {
+  const banner=document.getElementById('rankedHudBanner');if(banner) banner.style.display='none';
+}
+function restoreRankedMatchSettings() {
+  if(!rankedSavedMatchSettings) return;
+  difficulty=rankedSavedMatchSettings.difficulty;
+  cpuCount=rankedSavedMatchSettings.cpuCount;
+  currentStageIdx=rankedSavedMatchSettings.currentStageIdx;
+  rankedSavedMatchSettings=null;
+}
+function cancelRankedMatch() {
+  rankedActive=false;
+  rankedLastMatch=false;
+  hideRankedBanner();
+  restoreRankedMatchSettings();
+}
 function startRankedMatch() {
-  const { tier } = getCurrentRankTier(rankedPoints);
-  rankedActive = true;
-  difficulty = tier.diff;
-  cpuCount = 1;
-  currentStageIdx = Math.floor(Math.random() * STAGES.length);
-
+  if (gameState==='playing' || gameState==='paused') return;
+  if(!rankedSavedMatchSettings) rankedSavedMatchSettings={difficulty,cpuCount,currentStageIdx};
+  const {tier}=getCurrentRankTier(rankedPoints);
+  difficulty=tier.diff;
+  cpuCount=1;
+  currentStageIdx=Math.floor(Math.random()*STAGES.length);
+  rankedActive=true;
+  rankedLastMatch=true;
   startGame();
-
-  if (fighters && fighters[1]) {
-    fighters[1].name = `[RIVAL ${tier.name.toUpperCase()}]`;
-    fighters[1].color = tier.color;
+  const rival=fighters.find(f=>!f.isPlayer);
+  if(rival) {
+    rival.name=`${tier.name.toUpperCase()} RIVAL`;
+    rival.color=tier.color;
+    buildHUD(); // Ensure the HUD has the correct opponent label.
   }
-
-  let banner = document.getElementById('rankedHudBanner');
-  if (!banner) {
-    banner = document.createElement('div');
-    banner.id = 'rankedHudBanner';
-    banner.className = 'ranked-hud-banner';
-    document.body.appendChild(banner);
-  }
-  banner.textContent = `⚔️ RANKED 1v1: ${tier.name.toUpperCase()}`;
-  banner.style.display = 'block';
-
+  let banner=document.getElementById('rankedHudBanner');
+  if(!banner) {banner=document.createElement('div');banner.id='rankedHudBanner';document.body.appendChild(banner);}
+  banner.textContent=`⚔️ RANKED 1v1 • ${tier.name.toUpperCase()}`;
+  banner.style.display='block';
   showAnnouncer('RANKED BATTLE!', '#ffd700');
 }
+document.getElementById('rankedQueueBtn')?.addEventListener('click',startRankedMatch);
+document.querySelector('.menu-tab[data-menutab="ranked"]')?.addEventListener('click',updateRankedUI);
 
-document.getElementById('rankedQueueBtn')?.addEventListener('click', startRankedMatch);
-
-document.querySelectorAll('.menu-tab').forEach(tab => {
-  if (tab.dataset.menutab === 'ranked') {
-    tab.addEventListener('click', updateRankedUI);
-  }
-});
-
-const prevCheckGameOver = checkGameOver;
-checkGameOver = function() {
-  const alive = fighters ? fighters.filter(f => !f.dead) : [];
-  if ((alive.length <= 1 || stageTimer <= 0) && gameState === 'playing' && rankedActive) {
-    const playerWon = alive.length === 1 && alive[0].isPlayer;
-    const isDraw = alive.length === 0;
-
-    let rpChange = 0;
-    if (playerWon) {
+// Use the same winner calculation as the actual game-over screen, including timeouts.
+function getRankedMatchResult() {
+  const alive=fighters.filter(f=>!f.dead);
+  if(alive.length>1 && stageTimer>0) return null;
+  if(alive.length===0) return 'draw';
+  const winner=alive.length===1 ? alive[0] : [...alive].sort((a,b)=>(b.stocks*1000-b.damage)-(a.stocks*1000-a.damage))[0];
+  return winner.isPlayer ? 'win' : 'loss';
+}
+const originalRankedCheckGameOver=checkGameOver;
+checkGameOver=function() {
+  const result=rankedActive && gameState==='playing' ? getRankedMatchResult() : null;
+  const resultOfOriginal=originalRankedCheckGameOver.call(this);
+  if(result!==null) {
+    const oldRp=rankedPoints;
+    let change=0;
+    if(result==='win') {
       rankedWinStreak++;
-      const streakBonus = Math.min(25, rankedWinStreak * 5);
-      rpChange = 30 + Math.floor(Math.random() * 15) + streakBonus;
-      rankedPoints += rpChange;
-      rankedPeak = Math.max(rankedPeak, rankedPoints);
-      setTimeout(() => showAnnouncer(`+${rpChange} RP GAINED!`, '#00ffaa'), 700);
-      spawnPopup(window.innerWidth/2, 240, `+${rpChange} RP`, { color: '#00ffaa', size: 30 });
-    } else if (!isDraw) {
-      rankedWinStreak = 0;
-      rpChange = 18 + Math.floor(Math.random() * 8);
-      rankedPoints = Math.max(0, rankedPoints - rpChange);
-      setTimeout(() => showAnnouncer(`-${rpChange} RP LOST`, '#ff4466'), 700);
-      spawnPopup(window.innerWidth/2, 240, `-${rpChange} RP`, { color: '#ff4466', size: 28 });
+      change=30+Math.floor(Math.random()*15)+Math.min(25,rankedWinStreak*5);
+      rankedPoints+=change;
+    } else if(result==='loss') {
+      rankedWinStreak=0;
+      rankedPoints=Math.max(0,rankedPoints-(18+Math.floor(Math.random()*8)));
+      change=rankedPoints-oldRp;
     }
-
+    rankedPeak=Math.max(rankedPeak,rankedPoints);
     saveRankedData();
     updateRankedUI();
-
-    const banner = document.getElementById('rankedHudBanner');
-    if (banner) banner.style.display = 'none';
-    rankedActive = false;
+    hideRankedBanner();
+    rankedActive=false; // Stop scoring; keep rankedLastMatch for the REMATCH button.
+    const screen=document.getElementById('game-over-screen');
+    let box=document.getElementById('rankedMatchResult');
+    if(!box) {box=document.createElement('div');box.id='rankedMatchResult';box.className='ranked-result';screen.appendChild(box);}
+    const tier=getCurrentRankTier(rankedPoints).tier;
+    const label=result==='draw'?'DRAW • 0 RP':`${result==='win'?'VICTORY':'DEFEAT'} • ${change>0?'+':''}${change} RP`;
+    box.textContent=`🏆 ${label} — ${tier.name.toUpperCase()} (${rankedPoints} RP)`;
+    box.style.display='block';
+    const sub=document.getElementById('go-sub');
+    if(sub) sub.textContent=(sub.textContent||'')+` | ${label}`;
+    // Original match difficulty and arena are restored on exit from ranked.
+  } else if(gameState==='gameover' && !rankedLastMatch) {
+    const box=document.getElementById('rankedMatchResult');if(box) box.style.display='none';
   }
-
-  return prevCheckGameOver.call(this);
+  return resultOfOriginal;
 };
 
 // =========================================================================
@@ -7640,6 +8712,288 @@ Fighter.prototype.update = function(dt, enemies) {
 setTimeout(updateRankedUI, 120);
 </script>
 
+<button id="awakeningTouchBtn" type="button" aria-label="Activate Awakening">AWAKEN</button>
+<script>
+(function(){
+  const b=document.getElementById('awakeningTouchBtn');
+  if(!b)return;
+  b.addEventListener('pointerdown',function(e){
+    e.preventDefault();
+    if(typeof fighters!=='undefined' && typeof activateAwakening==='function') {
+      const f=fighters.find(x=>x.isPlayer&&!x.dead);
+      if(f)activateAwakening(f);
+    }
+  });
+  setInterval(function(){b.style.display=(matchMedia('(pointer:coarse)').matches && typeof gameState!=='undefined' && gameState==='playing')?'block':'none';},250);
+})();
+</script>
+
+<script>
+const COLLECTION_KEY='stickman_collection_v1';
+let collectionData={wins:0,awards:[],eventWins:{},rolls:[],completed:0};
+try{
+ const saved=JSON.parse(localStorage.getItem(COLLECTION_KEY)||'null');
+ if(saved&&typeof saved==='object') collectionData=Object.assign(collectionData,saved);
+}catch(e){}
+function collectionOwned(id){
+ const ch=CHARACTERS.find(x=>x.id===id);
+ return !ch || !ch.collectible || collectionData.wins>=ch.requiredWins || (Array.isArray(collectionData.rolls) && collectionData.rolls.includes(id));
+}
+function collectionSave(){try{localStorage.setItem(COLLECTION_KEY,JSON.stringify(collectionData));}catch(e){}}
+const COLLECTION_EVENTS=[
+ {name:'⚡ Neon Arena Week',desc:'Win a match on Cyber City to collect the Neon Champion badge.',stage:'cybercity',badge:'Neon Champion'},
+ {name:'🌙 Lunar Clash Week',desc:'Win a match on Moon Base to collect the Moon Walker badge.',stage:'moonbase',badge:'Moon Walker'},
+ {name:'🔥 Forge Clash Week',desc:'Win a match on Magma Forge to collect the Flame Guardian badge.',stage:'magmaforge',badge:'Flame Guardian'},
+ {name:'💎 Crystal Challenge Week',desc:'Win a match in Crystal Cavern to collect the Crystal Master badge.',stage:'crystal',badge:'Crystal Master'}
+];
+function collectionCurrentEvent(){
+ const week=Math.floor(Date.now()/604800000);
+ return COLLECTION_EVENTS[((week%COLLECTION_EVENTS.length)+COLLECTION_EVENTS.length)%COLLECTION_EVENTS.length];
+}
+function collectionMatchFinished(won){
+ collectionData.completed = (collectionData.completed || 0) + 1;
+ if(won){
+  collectionData.wins++;
+  const event=collectionCurrentEvent();
+  const stage=typeof getStage==='function'?getStage():null;
+  if(stage && stage.id===event.stage && !collectionData.awards.includes(event.badge)){
+   collectionData.awards.push(event.badge);
+   if(typeof showAnnouncer==='function')showAnnouncer('BADGE UNLOCKED: '+event.badge.toUpperCase()+'!', '#ffe18c');
+  }
+ }
+ collectionSave();
+ if(typeof buildCharSelect==='function')buildCharSelect();
+}
+function collectionRender(){
+ const roster=CHARACTERS.filter(c=>c.collectible);
+ const wins=Math.max(0,collectionData.wins||0);
+ const owned=roster.filter(c=>collectionOwned(c.id)).length;
+ document.getElementById('collectionStats').innerHTML=
+  '<div class="collectionStatBox"><span class="collectionStatIcon">🏆</span><div><strong>'+wins+'</strong><small>VICTORIES</small></div></div>'+
+  '<div class="collectionStatBox"><span class="collectionStatIcon">✨</span><div><strong>'+owned+'/'+roster.length+'</strong><small>FIGHTERS</small></div></div>'+
+  '<div class="collectionStatBox"><span class="collectionStatIcon">🪙</span><div><strong>'+Math.max(0,Math.floor(coins)).toLocaleString()+'</strong><small>COINS</small></div></div>';
+ const filter=document.getElementById('collectionFilter').value;
+ const filtered=roster.filter(ch=>filter==='all'||(filter==='owned'?collectionOwned(ch.id):!collectionOwned(ch.id)));
+ document.getElementById('collectionGrid').innerHTML=filtered.map(ch=>{
+  const unlocked=collectionOwned(ch.id),remaining=Math.max(0,ch.requiredWins-wins);
+  return '<div class="collectionItem '+(unlocked?'owned':'')+'" data-rarity="'+ch.rarity+'"><div class="collectIcon">'+ch.icon+'</div><strong>'+ch.name+'</strong><small>'+ch.rarity+'<br>'+(unlocked?'✓ UNLOCKED':'🔒 '+remaining+' more win'+(remaining===1?'':'s')+' or Gacha')+'</small><div class="collectionProgress"><div style="width:'+Math.min(100,wins/ch.requiredWins*100)+'%"></div></div></div>';
+ }).join('') || '<p class="loot-fine">No fighters match this filter.</p>';
+ const ev=collectionCurrentEvent();
+ document.getElementById('collectionEvent').innerHTML='<div class="collectionItem"><strong>'+ev.name+'</strong><small>'+ev.desc+'</small><p style="margin:7px 0;color:#ffe3a0">'+(collectionData.awards.includes(ev.badge)?'✓ Badge collected':'Badge available to earn')+'</p></div><p class="collectionNote">YOUR BADGES: '+(collectionData.awards.length?collectionData.awards.join(' · '):'None yet')+'</p>';
+}
+document.getElementById('collectionFilter').addEventListener('change',collectionRender);
+document.querySelector('.menu-tab[data-menutab="collection"]').addEventListener('click',collectionRender);
+</script>
+
+<script>
+(function(){
+  'use strict';
+  const ROLL_COST = 1500;
+  // Category weights when every reward category is still available.
+  const CATEGORY_WEIGHTS = { COINS:35, PASS_XP:20, COSMETIC:35, FIGHTER:10 };
+  const FIGHTER_RARITY_WEIGHTS = { RARE:7, EPIC:2, LEGENDARY:0.8, MYTHIC:0.2 };
+  const COSMETIC_RARITY_WEIGHTS = { common:55, rare:30, epic:12, legendary:3, mythic:1 };
+  const RARITY_COLORS={COMMON:'#b9c8df',RARE:'#6ac9ff',EPIC:'#d6a0ff',LEGENDARY:'#ffe29a',MYTHIC:'#ff8dd8'};
+  const tabBtn=document.querySelector('.menu-tab[data-menutab="gacha"]');
+  const rollBtn=document.getElementById('gachaRoll');
+  const skipBtn=document.getElementById('gachaSkip');
+  const track=document.getElementById('gachaTrack');
+  const windowEl=document.getElementById('gachaReelWindow');
+  const resultEl=document.getElementById('gachaResult');
+  const oddsEl=document.getElementById('gachaOdds');
+  let busy=false, completionTimer=null, pendingPrize=null;
+  function randomFloat(){
+    if(window.crypto && window.crypto.getRandomValues){
+      const n=new Uint32Array(1);window.crypto.getRandomValues(n);return n[0]/4294967296;
+    }
+    return Math.random();
+  }
+  function randIndex(length){return Math.min(length-1,Math.floor(randomFloat()*length));}
+  function weightedPick(items,weightFn){
+    const total=items.reduce((sum,item)=>sum+Math.max(0,weightFn(item)),0);
+    if(!items.length)return null;
+    if(total<=0)return items[randIndex(items.length)];
+    let r=randomFloat()*total;
+    for(const item of items){r-=Math.max(0,weightFn(item));if(r<0)return item;}
+    return items[items.length-1];
+  }
+  function availableFighters(){return CHARACTERS.filter(ch=>ch.collectible&&!collectionOwned(ch.id));}
+  function availableCosmetics(){
+    const items=[];
+    (SKINS||[]).filter(x=>x.id!=='default'&&!ownedItems.skins.includes(x.id)).forEach(x=>items.push({type:'skin',id:x.id,name:x.name+' Skin',icon:'🥋',rarity:String(x.rarity||'common').toUpperCase(),item:x}));
+    (TRAILS||[]).filter(x=>x.id!=='none'&&!ownedItems.trails.includes(x.id)).forEach(x=>items.push({type:'trail',id:x.id,name:x.name+' Trail',icon:'✨',rarity:String(x.rarity||'common').toUpperCase(),item:x}));
+    (CAPES||[]).filter(x=>x.id!=='none'&&!(ownedItems.capes||[]).includes(x.id)).forEach(x=>items.push({type:'cape',id:x.id,name:x.name,icon:x.icon||'🧥',rarity:String(x.rarity||'common').toUpperCase(),item:x}));
+    (TITLES||[]).filter(x=>x.id!=='none'&&x.price>0&&x.source==='shop'&&!ownedTitles.includes(x.id)).forEach(x=>items.push({type:'title',id:x.id,name:x.name+' Title',icon:x.icon||'🏅',rarity:String(x.rarity||'common').toUpperCase(),item:x}));
+    (POWERUPS||[]).filter(x=>!(ownedItems.powerups||[]).includes(x.id)).forEach(x=>items.push({type:'powerup',id:x.id,name:x.name,icon:x.icon||'⚡',rarity:'EPIC',item:x}));
+    return items;
+  }
+  function getActiveCategories(){
+    const cats=[];
+    cats.push({id:'COINS',weight:CATEGORY_WEIGHTS.COINS});
+    if(passTier<PASS_MAX_TIER)cats.push({id:'PASS_XP',weight:CATEGORY_WEIGHTS.PASS_XP});
+    if(availableCosmetics().length)cats.push({id:'COSMETIC',weight:CATEGORY_WEIGHTS.COSMETIC});
+    if(availableFighters().length)cats.push({id:'FIGHTER',weight:CATEGORY_WEIGHTS.FIGHTER});
+    return cats;
+  }
+  function categoryOdds(){
+    const cats=getActiveCategories();
+    const total=cats.reduce((sum,c)=>sum+c.weight,0)||1;
+    return Object.fromEntries(cats.map(c=>[c.id,c.weight/total]));
+  }
+  function fighterTierOdds(pool){
+    const active=Object.keys(FIGHTER_RARITY_WEIGHTS).filter(t=>pool.some(c=>String(c.rarity).toUpperCase()===t));
+    const total=active.reduce((sum,t)=>sum+FIGHTER_RARITY_WEIGHTS[t],0)||1;
+    return Object.fromEntries(Object.keys(FIGHTER_RARITY_WEIGHTS).map(t=>[t,active.includes(t)?FIGHTER_RARITY_WEIGHTS[t]/total:0]));
+  }
+  function allOdds(){
+    const cat=categoryOdds(),fighters=availableFighters(),tiers=fighterTierOdds(fighters);
+    return [
+      {label:'COINS',chance:cat.COINS||0,color:'#ffd66b'},
+      {label:'PASS XP',chance:cat.PASS_XP||0,color:'#91c8ff'},
+      {label:'COSMETICS',chance:cat.COSMETIC||0,color:'#b7f59c'},
+      {label:'RARE FIGHTER',chance:(cat.FIGHTER||0)*(tiers.RARE||0),color:RARITY_COLORS.RARE},
+      {label:'EPIC FIGHTER',chance:(cat.FIGHTER||0)*(tiers.EPIC||0),color:RARITY_COLORS.EPIC},
+      {label:'LEGENDARY',chance:(cat.FIGHTER||0)*(tiers.LEGENDARY||0),color:RARITY_COLORS.LEGENDARY},
+      {label:'MYTHIC',chance:(cat.FIGHTER||0)*(tiers.MYTHIC||0),color:RARITY_COLORS.MYTHIC}
+    ];
+  }
+  function pickFighter(pool){
+    const tiers=fighterTierOdds(pool);
+    const tier=weightedPick(Object.keys(FIGHTER_RARITY_WEIGHTS).filter(t=>pool.some(c=>String(c.rarity).toUpperCase()===t)),t=>tiers[t]);
+    const choices=pool.filter(c=>String(c.rarity).toUpperCase()===tier);
+    const ch=choices[randIndex(choices.length)];
+    return {type:'fighter',id:ch.id,name:ch.name,icon:ch.icon,rarity:String(ch.rarity).toUpperCase(),category:'FIGHTER'};
+  }
+  function pickCosmetic(items){
+    const item=weightedPick(items,x=>COSMETIC_RARITY_WEIGHTS[String(x.rarity).toLowerCase()]||5);
+    return item?Object.assign({},item,{category:'COSMETIC'}):null;
+  }
+  function pickPrize(){
+    const cats=getActiveCategories();
+    const category=weightedPick(cats,c=>c.weight);
+    if(!category)return {type:'coins',name:'500 Coins',icon:'🪙',amount:500,rarity:'COMMON',category:'COINS'};
+    if(category.id==='COINS'){
+      const p=weightedPick([{amount:250,w:25},{amount:500,w:35},{amount:900,w:23},{amount:1500,w:12},{amount:3000,w:5}],x=>x.w);
+      return {type:'coins',name:p.amount.toLocaleString()+' Coins',icon:'🪙',amount:p.amount,rarity:'COMMON',category:'COINS'};
+    }
+    if(category.id==='PASS_XP'){
+      const p=weightedPick([{amount:25,w:45},{amount:50,w:30},{amount:100,w:20},{amount:200,w:5}],x=>x.w);
+      return {type:'xp',name:p.amount+' Fight Pass XP',icon:'⭐',amount:p.amount,rarity:p.amount>=200?'LEGENDARY':p.amount>=100?'EPIC':'RARE',category:'PASS XP'};
+    }
+    if(category.id==='COSMETIC')return pickCosmetic(availableCosmetics());
+    return pickFighter(availableFighters());
+  }
+  function createTile(item){
+    const el=document.createElement('div');el.className='gachaTile';el.dataset.rarity=String(item.rarity||'COMMON').toUpperCase();
+    const emoji=document.createElement('span');emoji.className='gachaEmoji';emoji.textContent=item.icon||'🎁';
+    const title=document.createElement('b');title.textContent=item.name;
+    const rarity=document.createElement('small');rarity.textContent=item.rarity||item.category||'REWARD';rarity.style.color=RARITY_COLORS[String(item.rarity||'COMMON').toUpperCase()]||'#d8e5ff';
+    el.append(emoji,title,rarity);return el;
+  }
+  function makePreviewPool(){
+    const fighters=availableFighters().slice(0,5).map(ch=>({type:'fighter',id:ch.id,name:ch.name,icon:ch.icon,rarity:String(ch.rarity).toUpperCase(),category:'FIGHTER'}));
+    const cosmetics=availableCosmetics().slice(0,4).map(x=>Object.assign({},x,{category:'COSMETIC'}));
+    return [
+      {type:'coins',name:'500 Coins',icon:'🪙',amount:500,rarity:'COMMON',category:'COINS'},
+      {type:'xp',name:'50 Fight Pass XP',icon:'⭐',amount:50,rarity:'RARE',category:'PASS XP'},
+      ...cosmetics,...fighters
+    ];
+  }
+  function updateUI(){
+    const pool=availableFighters(),total=CHARACTERS.filter(c=>c.collectible).length;
+    const owned=total-pool.length,coinBalance=Math.max(0,Math.floor(coins));
+    document.getElementById('gachaTicketCount').textContent=coinBalance.toLocaleString()+' COINS';
+    document.getElementById('gachaOwnedCount').textContent=owned+'/'+total+' FIGHTERS';
+    rollBtn.disabled=busy||coinBalance<ROLL_COST;
+    rollBtn.textContent=coinBalance<ROLL_COST?'🪙 NEED '+(ROLL_COST-coinBalance).toLocaleString()+' MORE COINS':'🪙 ROLL FOR 1,500 COINS';
+    oddsEl.replaceChildren(...allOdds().map(o=>{
+      const cell=document.createElement('div');
+      const name=document.createElement('b');name.textContent=o.label;name.style.color=o.color;
+      const chance=document.createElement('span');chance.textContent=(o.chance*100).toFixed(o.chance>0&&o.chance<.01?2:1)+'%';
+      const bar=document.createElement('span');bar.className='loot-chance-track';const fill=document.createElement('i');fill.style.width=(o.chance*100)+'%';fill.style.background=o.color;bar.appendChild(fill);
+      cell.append(name,chance,bar);return cell;
+    }));
+    if(!busy && !getActiveCategories().some(c=>c.id==='FIGHTER'))resultEl.textContent='🎁 All fighters collected! Rolls can still award coins, XP, and cosmetics.';
+  }
+  function applyPrize(prize){
+    if(!prize)return;
+    if(prize.type==='fighter'){
+      if(!Array.isArray(collectionData.rolls))collectionData.rolls=[];
+      if(!collectionData.rolls.includes(prize.id))collectionData.rolls.push(prize.id);
+      collectionSave();
+      if(typeof buildCharSelect==='function')buildCharSelect();
+    }else if(prize.type==='coins'){
+      coins+=prize.amount;
+    }else if(prize.type==='xp'){
+      addPassXp(prize.amount);
+    }else if(prize.type==='skin'){
+      if(!ownedItems.skins.includes(prize.id))ownedItems.skins.push(prize.id);
+    }else if(prize.type==='trail'){
+      if(!ownedItems.trails.includes(prize.id))ownedItems.trails.push(prize.id);
+    }else if(prize.type==='cape'){
+      if(!ownedItems.capes)ownedItems.capes=['none'];
+      if(!ownedItems.capes.includes(prize.id))ownedItems.capes.push(prize.id);
+    }else if(prize.type==='title'){
+      if(!ownedTitles.includes(prize.id))ownedTitles.push(prize.id);
+    }else if(prize.type==='powerup'){
+      if(!ownedItems.powerups)ownedItems.powerups=[];
+      if(!ownedItems.powerups.includes(prize.id))ownedItems.powerups.push(prize.id);
+    }
+    saveShop();updateCoinsUI();
+    if(typeof renderShop==='function')renderShop();
+    if(typeof collectionRender==='function')collectionRender();
+  }
+  function finishRoll(){
+    if(!busy)return;
+    if(completionTimer!==null){clearTimeout(completionTimer);completionTimer=null;}
+    track.style.transition='none';
+    const card=track.children[35];
+    if(card){const left=(windowEl.clientWidth-card.offsetWidth)/2-card.offsetLeft;track.style.transform='translateX('+left+'px)';}
+    busy=false;skipBtn.style.display='none';
+    if(pendingPrize){
+      const prize=pendingPrize;
+      resultEl.textContent='🎉 '+prize.name.toUpperCase()+' · '+(prize.rarity||prize.category||'REWARD');
+      resultEl.style.color=RARITY_COLORS[String(prize.rarity||'COMMON').toUpperCase()]||'#fff2bb';
+      pendingPrize=null;
+    }
+    updateUI();
+  }
+  function roll(){
+    if(busy)return;
+    if(coins<ROLL_COST){updateUI();return;}
+    const prize=pickPrize();
+    if(!prize){updateUI();return;}
+    coins-=ROLL_COST;
+    busy=true;pendingPrize=prize;
+    // Grant and save the real reward before the animation so closing or switching tabs cannot lose it.
+    applyPrize(prize);
+    resultEl.textContent='✨ Revealing your reward…';resultEl.style.color='#fff0bb';
+    updateUI();
+    const preview=makePreviewPool();
+    track.replaceChildren();
+    for(let i=0;i<39;i++)track.appendChild(createTile(i===35?prize:preview[randIndex(preview.length)]));
+    track.style.transition='none';track.style.transform='translateX(0px)';
+    skipBtn.style.display='inline-block';
+    const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if(reduced){finishRoll();return;}
+    track.getBoundingClientRect();
+    const card=track.children[35];
+    const endX=(windowEl.clientWidth-card.offsetWidth)/2-card.offsetLeft;
+    track.style.transition='transform 2300ms cubic-bezier(.10,.80,.12,1)';
+    track.style.transform='translateX('+endX+'px)';
+    completionTimer=setTimeout(finishRoll,2400);
+  }
+  function open(){
+    updateUI();
+    if(!busy&&!track.children.length)track.replaceChildren(...makePreviewPool().map(createTile));
+  }
+  tabBtn.addEventListener('click',open);
+  rollBtn.addEventListener('click',roll);
+  skipBtn.addEventListener('click',finishRoll);
+  document.querySelectorAll('.menu-tab').forEach(t=>{if(t!==tabBtn)t.addEventListener('click',()=>{if(busy)finishRoll();});});
+  window.stickmanGachaTest={availableFighters,availableCosmetics,categoryOdds,fighterTierOdds,allOdds,pickPrize,updateUI,roll,finishRoll,open,ROLL_COST};
+})();
+</script>
 </body>
 
 </html>
