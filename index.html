@@ -2686,19 +2686,17 @@ body.is-phone #hud{padding:max(8px,env(safe-area-inset-top)) 8px 0;gap:5px}body.
       <div style="max-width:620px; width:100%; text-align:left; margin:0 auto; padding:8px;">
         <h2 style="font-family:'Bangers',cursive; font-size:2.4rem; color:#ffdd44; letter-spacing:2px; margin-bottom:14px; text-shadow:0 0 14px rgba(255,200,0,0.5);">📜 UPDATE CHANGELOG</h2>
 
-        <div style="background:rgba(255,255,255,0.06); border:2px solid rgba(0,212,255,0.4); border-radius:18px; padding:20px; margin-bottom:14px; box-shadow:0 8px 30px rgba(0,0,0,0.4);">
+        <div style="background:rgba(255,255,255,0.06); border:2px solid #ff3366; border-radius:18px; padding:20px; margin-bottom:14px; box-shadow:0 8px 30px rgba(255,51,102,0.3);">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:6px;">
-            <span style="font-family:'Bangers',cursive; font-size:1.4rem; color:#00e5ff;">⚡ v2.6 · HIGH-SPEED COMBAT OVERHAUL</span>
-            <span style="font-size:0.75rem; background:rgba(0,229,255,0.18); color:#00e5ff; padding:3px 10px; border-radius:10px; font-weight:800;">LATEST</span>
+            <span style="font-family:'Bangers',cursive; font-size:1.4rem; color:#ffdd44;">❄️ v2.7 · BALANCED SPEED & NOVEMBER HOLIDAY SHOP</span>
+            <span style="font-size:0.75rem; background:rgba(255,51,102,0.25); color:#ff6688; padding:3px 10px; border-radius:10px; font-weight:800;">LATEST</span>
           </div>
           <ul style="padding-left:18px; line-height:1.7; font-size:0.95rem; color:#e0efff;">
-            <li><b>Turbo Movement Speed:</b> Base speed increased to 780 (+26% boost) with high-traction ground momentum.</li>
-            <li><b>Hyper-Responsive Attacks:</b> Punch & kick startup frames cut in half with instant combo cancel windows.</li>
-            <li><b>Faster Specials:</b> Special cooldown reduced from 1.35s to 0.75s — double the special attacks!</li>
-            <li><b>Lightning Mobility:</b> High-velocity air jumps (-890 vel) and 3.3x fast-fall dive for aggressive aerial pressure.</li>
-            <li><b>Turbo Meters:</b> Ultimates and Awakenings build nearly twice as fast on hit and damage taken.</li>
-            <li><b>Instant Respawn:</b> Knockout respawn delay cut from 1.5s down to 0.55s — zero downtime!</li>
-            <li><b>Aggressive AI:</b> CPUs react quicker, close distance relentlessly, and contest the neutral game.</li>
+            <li><b>Combat Speed Reverted:</b> Restored original smooth, balanced physics and responsive, controllable attack timing.</li>
+            <li><b>🎄 November Christmas Limited Event:</b> Exclusive festive items available throughout November (Santa Striker, Holiday Elf, Jack Frost, Santa's Cloak, Blizzard Flakes, Holiday Gift Box). <b>Automatically removed when December arrives!</b></li>
+            <li><b>Permanent Shop Expansion:</b> 6 new permanent fighter skins (Cyber Ninja, Molten Beast, Obsidian Knight, Toxic Glow, Solar Flare, Ghost Phantom).</li>
+            <li><b>4 New Capes & 4 New Trails:</b> Cyber Scarf, Phoenix Mantle, Royal Velvet, Cyber Matrix, Supernova, and Starlight Nebula.</li>
+            <li><b>3 New Power-Ups:</b> Armor Plating (12% damage reduction), Aero Wings (+15% air control), and Combo Multiplier bonus.</li>
           </ul>
         </div>
       </div>
@@ -2783,8 +2781,9 @@ body.is-phone #hud{padding:max(8px,env(safe-area-inset-top)) 8px 0;gap:5px}body.
     <button class="shop-tab" data-tab="trails">✨ Trails</button>
     <button class="shop-tab" data-tab="powerups">⚡ Power-ups</button>
     <button class="shop-tab" data-tab="titles">🏅 Titles</button>
+    <button class="shop-tab" data-tab="holiday" style="color:#ff4466;">🎄 Holiday (Nov Only)</button>
     <button class="shop-tab" data-tab="customchars">🎨 Custom Characters</button>
-        <button class="shop-tab" data-tab="boxes">📦 Boxes</button>
+    <button class="shop-tab" data-tab="boxes">📦 Boxes</button>
   </div>
   <div class="shop-body"><div class="shop-featured-banner" id="shopFeaturedBanner"></div><div id="shopBody"></div></div>
 </div>
@@ -3112,25 +3111,25 @@ function renderCareerMap() {
 })();
 
 // ─── CONFIG ─────────────────────────────────────────────────────────────────
-const GRAVITY = 2100;
-const PLAYER_SPEED = 780;
-const JUMP_VEL = -890;
-const DOUBLE_JUMP_VEL = -800;
-const FASTFALL_MULT = 3.3;
+const GRAVITY = 1850;
+const PLAYER_SPEED = 620; // moderate base speed increase (dialed back from 690 — that combined with portrait multiplier felt too fast)
+const JUMP_VEL = -820;
+const DOUBLE_JUMP_VEL = -720;
+const FASTFALL_MULT = 2.6;
 const MAX_STOCKS = 3;
 const STAGE_W = 1280;
 const STAGE_H = 720;
 const BLAST_ZONE = { left: -60, right: STAGE_W+60, top: -180, bottom: STAGE_H+60 };
 
 const DIFF = {
-  easy:       { react: 0.55, aggro: 0.45, jumpChance: 0.018, specialChance: 0.010, label:'Easy',       color:'#44ff88' },
-  medium:     { react: 0.78, aggro: 0.72, jumpChance: 0.028, specialChance: 0.020, label:'Medium',     color:'#ffaa00' },
-  hard:       { react: 0.90, aggro: 0.88, jumpChance: 0.038, specialChance: 0.030, label:'Hard',       color:'#ff4466' },
-  insane:     { react: 0.96, aggro: 0.98, jumpChance: 0.050, specialChance: 0.042, label:'Insane',     color:'#aa44ff' },
-  nightmare:  { react: 0.98, aggro: 1.05, jumpChance: 0.065, specialChance: 0.055, label:'Nightmare',  color:'#ff2200' },
-  godlike:    { react: 1.00, aggro: 1.15, jumpChance: 0.085, specialChance: 0.075, label:'Godlike',    color:'#ff0055' },
-  impossible: { react: 1.05, aggro: 1.25, jumpChance: 0.110, specialChance: 0.095, label:'Impossible', color:'#ffffff' },
-  pro:        { react: 1.15, aggro: 1.55, jumpChance: 0.160, specialChance: 0.140, label:'PRO',        color:'#ffcc00' },
+  easy:       { react: 0.38, aggro: 0.22, jumpChance: 0.010, specialChance: 0.004, label:'Easy',       color:'#44ff88' },
+  medium:     { react: 0.62, aggro: 0.48, jumpChance: 0.017, specialChance: 0.009, label:'Medium',     color:'#ffaa00' },
+  hard:       { react: 0.80, aggro: 0.70, jumpChance: 0.024, specialChance: 0.015, label:'Hard',       color:'#ff4466' },
+  insane:     { react: 0.94, aggro: 0.92, jumpChance: 0.036, specialChance: 0.026, label:'Insane',     color:'#aa44ff' },
+  nightmare:  { react: 0.97, aggro: 0.95, jumpChance: 0.050, specialChance: 0.040, label:'Nightmare',  color:'#ff2200' },
+  godlike:    { react: 0.99, aggro: 0.98, jumpChance: 0.070, specialChance: 0.055, label:'Godlike',    color:'#ff0055' },
+  impossible: { react: 1.00, aggro: 1.00, jumpChance: 0.090, specialChance: 0.070, label:'Impossible', color:'#ffffff' },
+  pro:        { react: 1.05, aggro: 1.35, jumpChance: 0.130, specialChance: 0.110, label:'PRO',        color:'#ffcc00' },
 };
 
 const ULT_METER_MAX = 100;
@@ -3834,22 +3833,23 @@ class Fighter {
     if (attackType === 'dashhit') baseDmg = 6;
     if (attackType === 'projectile') baseDmg = 10;
     if (attackType === 'ultimate') baseDmg = 38;
-    const dmgRoll = (baseDmg + Math.random()*4 - 2) * (attacker.char ? attacker.char.dmgMult : 1) * (attacker.awakeningTime > 0 ? 1.22 : 1);
+    let dmgRoll = (baseDmg + Math.random()*4 - 2) * (attacker.char ? attacker.char.dmgMult : 1) * (attacker.awakeningTime > 0 ? 1.22 : 1);
+    if (this.isPlayer && ownedItems.powerups.includes('shield_armor')) dmgRoll *= 0.88;
     this.damage = Math.min(999, this.damage + dmgRoll);
     this.totalDamageTaken = (this.totalDamageTaken||0) + dmgRoll;
-    gainAwakening(attacker, dmgRoll * 1.6);
-    gainAwakening(this, dmgRoll * 1.3);
-    // ── Fast-Paced Ultimate meter ──
+    gainAwakening(attacker, dmgRoll * 1.0);
+    gainAwakening(this, dmgRoll * 0.8);
+    // ── Smash-style Ultimate meter: both dealing AND taking damage builds toward a devastating Ultimate ──
     if (attackType !== 'ultimate') {
-      gainUltMeter(attacker, dmgRoll * 1.5);
-      gainUltMeter(this, dmgRoll * 1.8);
+      gainUltMeter(attacker, dmgRoll * 0.85);
+      gainUltMeter(this, dmgRoll * 1.15);
     }
     const rage = 1 + Math.min(attacker.damage, 150) * 0.0035;
     const pctFactor = 0.35 + Math.pow(this.damage / 100, 1.6) * 0.9;
     const kb = pctFactor * (attackType === 'ultimate' ? 3.1 : attackType === 'special' ? 1.9 : 1) * rage;
     this.vx = dirAway * kb * 1150;
     this.vy = -kb * 680;
-    this.stunTimer = 0.13 + this.damage * 0.0005;
+    this.stunTimer = 0.18 + this.damage * 0.0008;
     this.hitFlash = 0.25;
     // Recoil lean + airborne tumble spin — sells the impact instead of the body staying rigid.
     this.hitLean = -dirAway * Math.min(1.4, 0.6 + kb * 0.5);
@@ -3905,7 +3905,7 @@ class Fighter {
       if (this.stocks <= 0) {
         this.dead = true;
       } else {
-        this.respawnTimer = 0.55;
+        this.respawnTimer = 1.5;
         this.x = 300 + this.id * 200;
         this.y = -200;
         this.vx = 0; this.vy = 0;
@@ -3975,7 +3975,7 @@ class Fighter {
     }
 
     if (this.grounded && this.stunTimer <= 0) {
-      this.vx *= 0.85;
+      this.vx *= 0.80;
     }
 
     this.applyGravity(dt);
@@ -4111,8 +4111,8 @@ class Fighter {
         this.attackCooldown = 0.07;
         if (this.gunAmmo <= 0) this.hasGun = false;
       }
-      else if (justPressed['KeyJ']) this.doAttack('punch', enemies, 0.07, 0.08);
-      else if (justPressed['KeyK']) this.doAttack('kick', enemies, 0.09, 0.10);
+      else if (justPressed['KeyJ']) this.doAttack('punch', enemies, 0.10, 0.12);
+      else if (justPressed['KeyK']) this.doAttack('kick', enemies, 0.13, 0.16);
       else if (justPressed['KeyL'] && this.specialCooldown <= 0) {
         this.useSpecial(enemies);
       }
@@ -4125,7 +4125,7 @@ class Fighter {
       return;
     }
     const sp = this.char.special;
-    this.specialCooldown = MODS.noUltCooldown ? 0 : 0.75;
+    this.specialCooldown = MODS.noUltCooldown ? 0 : 1.35;
     if (sp === 'counter') {
       this.counterActive = true;
       this.counterTimer = 0.6;
@@ -4188,7 +4188,7 @@ class Fighter {
       spawnImpactRing(this.cx, this.feet, '#ff5533', { maxRadius: 80, lineWidth: 7, life: 0.35 });
       spawnParticles(this.cx, this.feet, '#ff5533', 16);
       showAnnouncer(this.char.specialName.toUpperCase() + '!', '#ff5533');
-      this.vx = this.facing * 940;
+      this.vx = this.facing * 700;
       playSFX(220, 0.12, 'square');
     } else if (sp === 'flyingkick') {
       this.attackType = 'special'; this.attackTimer = 0.32; this.attackDuration = 0.32; this.attackCooldown = 0.15;
@@ -4199,10 +4199,10 @@ class Fighter {
       spawnImpactRing(this.cx, this.cy, '#33ccff', { maxRadius: 65, lineWidth: 5, life: 0.3 });
       spawnParticles(this.cx, this.cy, '#33ccff', 12);
       showAnnouncer(this.char.specialName.toUpperCase() + '!', '#33ccff');
-      this.vx = this.facing * 1180;
-      this.vy = this.grounded ? -340 : this.vy - 180;
+      this.vx = this.facing * 900;
+      this.vy = this.grounded ? -300 : this.vy - 150;
       this.grounded = false;
-      this.doAttack('special', enemies, 0.22, 0.10);
+      this.doAttack('special', enemies, 0.32, 0.15);
       playSFX(260, 0.13, 'triangle');
     } else {
       this.doAttack('special', enemies, 0.24, 0.0);
@@ -4213,7 +4213,7 @@ class Fighter {
     // ── Super Smash Bros-style Final Smash: consumes the full meter for one huge, screen-shaking hit ──
     this.ultReady = false;
     this.ultMeter = 0;
-    this.specialCooldown = MODS.noUltCooldown ? 0 : 0.75;
+    this.specialCooldown = MODS.noUltCooldown ? 0 : 1.35;
     this.invincible = true;
     this.invincibleTimer = 0.5;
     this.attackType = 'ultimate';
@@ -4305,16 +4305,16 @@ class Fighter {
       const r = Math.random();
       if (r < d.specialChance && this.specialCooldown <= 0) {
         this.useSpecial(enemies);
-        this.specialCooldown = MODS.noUltCooldown ? 0 : (isPro ? 0.35 : 0.65) / Math.max(0.6, d.react);
+        this.specialCooldown = MODS.noUltCooldown ? 0 : (isPro ? 0.55 : 1.1) / Math.max(0.6, d.react);
       } else if (this.hasGun && r < d.aggro * 0.5) {
         spawnGunBullet(this);
         this.gunAmmo--;
         this.attackCooldown = 0.09;
         if (this.gunAmmo <= 0) this.hasGun = false;
-      } else if (r < d.aggro * 0.22) {
-        this.doAttack('kick', enemies, 0.09, 0.10);
-      } else if (r < d.aggro * 0.40) {
-        this.doAttack('punch', enemies, 0.07, 0.08);
+      } else if (r < d.aggro * 0.16) {
+        this.doAttack('kick', enemies, 0.13, 0.16);
+      } else if (r < d.aggro * 0.30) {
+        this.doAttack('punch', enemies, 0.10, 0.12);
       }
     }
 
@@ -4774,7 +4774,7 @@ function spawnGunBullet(owner) {
 let projectiles = [];
 function spawnProjectile(owner) {
   projectiles.push({
-    x: owner.cx + owner.facing*30, y: owner.cy - 10, vx: owner.facing * 920, vy: 0,
+    x: owner.cx + owner.facing*30, y: owner.cy - 10, vx: owner.facing * 620, vy: 0,
     dir: owner.facing, owner, life: 1.4, w: 34, h: 22, color: owner.color,
   });
 }
@@ -5177,7 +5177,7 @@ function registerComboHit(attacker, defender, dmgRoll, attackType) {
   }
   attacker.comboHits = (attacker.comboHits || 0) + 1;
   attacker.bestCombo = Math.max(attacker.bestCombo||0, attacker.comboHits);
-  attacker.comboResetTimer = 1.35;
+  attacker.comboResetTimer = 1.1;
   if (attacker.isPlayer && attacker.comboHits >= 3) {
     addPassXp(passXpForCombo(attacker.comboHits));
     addMasteryXp(attacker.char.id, masteryXpForCombo(attacker.comboHits));
@@ -5395,19 +5395,26 @@ let equipped = { skin: 'default', trail: 'none' };
 
 // ─── TITLES ──────────────────────────────────────────────────────────────────
 const TITLES = [
-  { id:'none',        name:'—',                 icon:'',   color:'#8888aa', desc:'No title equipped', rarity:'common',    price:0,    source:'default' },
-  { id:'rookie',      name:'Rookie',             icon:'🔰', color:'#88ff88', desc:'Everyone starts somewhere', rarity:'common',    price:0,    source:'shop' },
-  { id:'brawler',     name:'Brawler',            icon:'👊', color:'#ffaa00', desc:'You throw hands with style', rarity:'common',    price:250,  source:'shop' },
-  { id:'ironwill',    name:'Iron Will',          icon:'🛡️', color:'#8899ff', desc:'Never backs down from a fight', rarity:'rare',      price:500,  source:'shop' },
-  { id:'combomaster', name:'Combo Master',       icon:'🔗', color:'#ff66cc', desc:'Strings hits together like a pro', rarity:'rare',      price:650,  source:'shop' },
-  { id:'stormbringer',name:'Stormbringer',       icon:'⛈️', color:'#66ccff', desc:'Brings chaos wherever they land', rarity:'epic',      price:1200, source:'shop' },
-  { id:'reaper',      name:'The Reaper',         icon:'💀', color:'#cc4444', desc:'Collector of stocks and souls', rarity:'epic',      price:1500, source:'shop' },
-  { id:'legend',      name:'Living Legend',      icon:'🌟', color:'#ffd700', desc:'Whispered about in the lobby', rarity:'legendary', price:3000, source:'shop' },
-  { id:'godslayer',   name:'Godslayer',          icon:'⚔️', color:'#ff2255', desc:'Felled the unbeatable', rarity:'legendary', price:4500, source:'shop' },
-  { id:'pro',         name:'PRO',                icon:'🔥', color:'#ffcc00', desc:'Proved it on PRO difficulty. Are you a pro? Yes.', rarity:'legendary', price:0, source:'pro_win' },
-  { id:'admin',       name:'Administrator',      icon:'🔐', color:'#ff4466', desc:'Behind the curtain. Knows things.', rarity:'legendary', price:0, source:'admin' },
-  { id:'paytowin',    name:'Pay To Win',          icon:'💳', color:'#00ff88', desc:'Maxed the Premium Pass. Wallet: empty. Ego: full.', rarity:'legendary', price:0, source:'pass_premium' },
-  { id:'brokeboi',    name:"Doesn't Have Money",  icon:'🥲', color:'#aaaaaa', desc:'Grinded the Free Pass to the very end. Respect.', rarity:'legendary', price:0, source:'pass_free' },
+  { id:'none',          name:'—',                 icon:'',   color:'#8888aa', desc:'No title equipped', rarity:'common',    price:0,    source:'default' },
+  { id:'rookie',        name:'Rookie',             icon:'🔰', color:'#88ff88', desc:'Everyone starts somewhere', rarity:'common',    price:0,    source:'shop' },
+  { id:'brawler',       name:'Brawler',            icon:'👊', color:'#ffaa00', desc:'You throw hands with style', rarity:'common',    price:250,  source:'shop' },
+  { id:'ironwill',      name:'Iron Will',          icon:'🛡️', color:'#8899ff', desc:'Never backs down from a fight', rarity:'rare',      price:500,  source:'shop' },
+  { id:'combomaster',   name:'Combo Master',       icon:'🔗', color:'#ff66cc', desc:'Strings hits together like a pro', rarity:'rare',      price:650,  source:'shop' },
+  { id:'speedster',     name:'Speed Demon',        icon:'⚡', color:'#ffe600', desc:'Faster than the human eye', rarity:'rare',      price:450,  source:'shop' },
+  { id:'warmonger',     name:'Warmonger',          icon:'⚔️', color:'#ff2a2a', desc:'Lives and breathes the arena', rarity:'epic',      price:800,  source:'shop' },
+  { id:'stormbringer',  name:'Stormbringer',       icon:'⛈️', color:'#66ccff', desc:'Brings chaos wherever they land', rarity:'epic',      price:1200, source:'shop' },
+  { id:'reaper',        name:'The Reaper',         icon:'💀', color:'#cc4444', desc:'Collector of stocks and souls', rarity:'epic',      price:1500, source:'shop' },
+  { id:'untouchable',   name:'Untouchable',        icon:'💨', color:'#00e5ff', desc:'Dodges everything thrown at them', rarity:'legendary', price:1500, source:'shop' },
+  { id:'legend',        name:'Living Legend',      icon:'🌟', color:'#ffd700', desc:'Whispered about in the lobby', rarity:'legendary', price:3000, source:'shop' },
+  { id:'godslayer',     name:'Godslayer',          icon:'⚔️', color:'#ff2255', desc:'Felled the unbeatable', rarity:'legendary', price:4500, source:'shop' },
+  { id:'pro',           name:'PRO',                icon:'🔥', color:'#ffcc00', desc:'Proved it on PRO difficulty. Are you a pro? Yes.', rarity:'legendary', price:0, source:'pro_win' },
+  { id:'admin',         name:'Administrator',      icon:'🔐', color:'#ff4466', desc:'Behind the curtain. Knows things.', rarity:'legendary', price:0, source:'admin' },
+  { id:'paytowin',      name:'Pay To Win',          icon:'💳', color:'#00ff88', desc:'Maxed the Premium Pass. Wallet: empty. Ego: full.', rarity:'legendary', price:0, source:'pass_premium' },
+  { id:'brokeboi',      name:"Doesn't Have Money",  icon:'🥲', color:'#aaaaaa', desc:'Grinded the Free Pass to the very end. Respect.', rarity:'legendary', price:0, source:'pass_free' },
+
+  // ─── ❄️ NOVEMBER CHRISTMAS LIMITED (REMOVED IN DECEMBER!) ───
+  { id:'secret_santa',  name:'Secret Santa',       icon:'🎅', color:'#ff385c', desc:'❄️ [NOV CHRISTMAS LIMITED] Exclusive holiday title. Removes in Dec!', rarity:'legendary', price:500, source:'shop', isHoliday:true },
+  { id:'frost_monarch', name:'Frost Monarch',      icon:'❄️', color:'#70e0ff', desc:'❄️ [NOV CHRISTMAS LIMITED] Ruler of winter. Removes in Dec!', rarity:'epic', price:400, source:'shop', isHoliday:true },
 ];
 let ownedTitles = ['none'];
 let equippedTitle = 'none';
@@ -5568,39 +5575,69 @@ const PASS_PREMIUM_REWARDS = [];
 })();
 
 const SKINS = [
-  { id:'default',  name:'Classic',   price:0,    color:'#00d4ff', desc:'The original look', rarity:'common' },
-  { id:'crimson',  name:'Crimson',   price:150,  color:'#ff2244', desc:'Bold red fighter', rarity:'common' },
-  { id:'emerald',  name:'Emerald',   price:150,  color:'#22ff77', desc:'Sharp green style', rarity:'common' },
-  { id:'violet',   name:'Violet',    price:200,  color:'#aa44ff', desc:'Deep purple aura', rarity:'rare' },
-  { id:'gold',     name:'Golden',    price:400,  color:'#ffd700', desc:'Champion gold', rarity:'epic' },
-  { id:'shadow',   name:'Shadow',    price:350,  color:'#3a3a4a', desc:'Stealthy dark tone', rarity:'rare' },
-  { id:'inferno',  name:'Inferno',   price:500,  color:'#ff6600', desc:'Blazing orange', rarity:'epic' },
-  { id:'frost',    name:'Frost',     price:500,  color:'#88ddff', desc:'Icy cool tone', rarity:'epic' },
-  { id:'mythic_phoenix', name:'Phoenix', price:900, color:'#ff3388', desc:'Rare mythic flame aura', rarity:'legendary' },
+  { id:'default',        name:'Classic',         price:0,    color:'#00d4ff', desc:'The original look', rarity:'common' },
+  { id:'crimson',        name:'Crimson',         price:150,  color:'#ff2244', desc:'Bold red fighter', rarity:'common' },
+  { id:'emerald',        name:'Emerald',         price:150,  color:'#22ff77', desc:'Sharp green style', rarity:'common' },
+  { id:'violet',         name:'Violet',          price:200,  color:'#aa44ff', desc:'Deep purple aura', rarity:'rare' },
+  { id:'gold',           name:'Golden',          price:400,  color:'#ffd700', desc:'Champion gold', rarity:'epic' },
+  { id:'shadow',         name:'Shadow',          price:350,  color:'#3a3a4a', desc:'Stealthy dark tone', rarity:'rare' },
+  { id:'inferno',        name:'Inferno',         price:500,  color:'#ff6600', desc:'Blazing orange', rarity:'epic' },
+  { id:'frost',          name:'Frost',           price:500,  color:'#88ddff', desc:'Icy cool tone', rarity:'epic' },
+  { id:'cyber_ninja',    name:'Cyber Ninja',     price:650,  color:'#12f3d6', desc:'Neon cybernetic assassin', rarity:'epic' },
+  { id:'molten',         name:'Molten Beast',    price:750,  color:'#ff3b00', desc:'Forged in subterranean magma', rarity:'epic' },
+  { id:'obsidian',       name:'Obsidian Knight', price:800,  color:'#2b263e', desc:'Heavy dark-armored warrior', rarity:'legendary' },
+  { id:'toxic',          name:'Toxic Glow',      price:450,  color:'#39ff14', desc:'Radioactive bio-luminescence', rarity:'rare' },
+  { id:'solar',          name:'Solar Flare',     price:550,  color:'#ffa600', desc:'Blinding coronal fire', rarity:'rare' },
+  { id:'phantom_white',  name:'Ghost Phantom',   price:700,  color:'#e6f0fa', desc:'Ethereal specter warrior', rarity:'epic' },
+  { id:'mythic_phoenix', name:'Phoenix',         price:900,  color:'#ff3388', desc:'Rare mythic flame aura', rarity:'legendary' },
+
+  // ─── ❄️ NOVEMBER CHRISTMAS LIMITED (REMOVED IN DECEMBER!) ───
+  { id:'santa_striker',  name:'Santa Striker',   price:750,  color:'#d91b34', desc:'🎅 [NOV CHRISTMAS LIMITED] Festive ruby suit. Removes in December!', rarity:'legendary', isHoliday:true },
+  { id:'holiday_elf',    name:'Holiday Elf',     price:450,  color:'#1ea84b', desc:'🧝 [NOV CHRISTMAS LIMITED] Merry pine & gold elf. Removes in December!', rarity:'epic', isHoliday:true },
+  { id:'jack_frost',     name:'Jack Frost',      price:550,  color:'#94ebff', desc:'❄️ [NOV CHRISTMAS LIMITED] Glacial frosty warrior. Removes in December!', rarity:'epic', isHoliday:true },
 ];
 
 const CAPES = [
-  { id:'none',     name:'No Cape',       price:0,   icon:'🧣', color:'transparent', desc:'Classic fighter look with no cape equipped.', rarity:'common' },
-  { id:'crimson',  name:'Crimson Cape',  price:250, icon:'🧣', color:'#ff2244',     desc:'Bold royal crimson cape that flows dynamically.', rarity:'common' },
-  { id:'shadow',   name:'Shadow Cloak',  price:350, icon:'🖤', color:'#222233',     desc:'Stealthy phantom dark cape rippling in the shadows.', rarity:'rare' },
-  { id:'frost',    name:'Frost Mantle',  price:400, icon:'❄️', color:'#00d4ff',     desc:'Gleaming crystalline azure cape with icy highlights.', rarity:'rare' },
-  { id:'gold',     name:'Golden Shroud', price:550, icon:'✨', color:'#ffd700',     desc:'Opulent golden mantle worn only by champions.', rarity:'epic' },
-  { id:'void',     name:'Void Cape',     price:750, icon:'🌌', color:'#8800ff',     desc:'Cosmic dimensional cloak radiating purple starlight.', rarity:'legendary' },
+  { id:'none',           name:'No Cape',              price:0,   icon:'🧣', color:'transparent', desc:'Classic fighter look with no cape equipped.', rarity:'common' },
+  { id:'crimson',        name:'Crimson Cape',         price:250, icon:'🧣', color:'#ff2244',     desc:'Bold royal crimson cape that flows dynamically.', rarity:'common' },
+  { id:'shadow',         name:'Shadow Cloak',         price:350, icon:'🖤', color:'#222233',     desc:'Stealthy phantom dark cape rippling in the shadows.', rarity:'rare' },
+  { id:'frost',          name:'Frost Mantle',         price:400, icon:'❄️', color:'#00d4ff',     desc:'Gleaming crystalline azure cape with icy highlights.', rarity:'rare' },
+  { id:'cyber_scarf',    name:'Cyber Scarf',          price:400, icon:'🧣', color:'#00f0ff',     desc:'Futuristic neon cyan light scarf.', rarity:'rare' },
+  { id:'emerald_cape',   name:'Emerald Shroud',        price:350, icon:'🍃', color:'#22ff77',     desc:'Silken green woodland battle cloak.', rarity:'rare' },
+  { id:'gold',           name:'Golden Shroud',        price:550, icon:'✨', color:'#ffd700',     desc:'Opulent golden mantle worn only by champions.', rarity:'epic' },
+  { id:'phoenix_wings',  name:'Phoenix Mantle',       price:650, icon:'🔥', color:'#ff6a00',     desc:'Woven from immortal radiant fire plumes.', rarity:'epic' },
+  { id:'royalty',        name:'Royal Velvet',         price:800, icon:'👑', color:'#7d26cd',     desc:'Majestic deep velvet trimmed with royal gold.', rarity:'legendary' },
+  { id:'void',           name:'Void Cape',            price:750, icon:'🌌', color:'#8800ff',     desc:'Cosmic dimensional cloak radiating purple starlight.', rarity:'legendary' },
+
+  // ─── ❄️ NOVEMBER CHRISTMAS LIMITED (REMOVED IN DECEMBER!) ───
+  { id:'santa_cloak',    name:"Santa's Velvet Cloak", price:500, icon:'🧣', color:'#d91b34',     desc:'🎅 [NOV CHRISTMAS LIMITED] Festive crimson velvet. Removes in Dec!', rarity:'legendary', isHoliday:true },
+  { id:'tinsel_garland', name:"Tinsel Garland",       price:350, icon:'🎄', color:'#ffd700',     desc:'🎄 [NOV CHRISTMAS LIMITED] Sparkling holiday garland. Removes in Dec!', rarity:'rare', isHoliday:true },
 ];
 
 const TRAILS = [
-  { id:'none',    name:'None',      price:0,   grad:'linear-gradient(90deg,#333,#555)', rarity:'common' },
-  { id:'spark',   name:'Spark',     price:120, grad:'linear-gradient(90deg,#ffee00,#ff8800)', rarity:'common' },
-  { id:'ember',   name:'Ember',     price:180, grad:'linear-gradient(90deg,#ff3300,#ffaa00)', rarity:'rare' },
-  { id:'aqua',    name:'Aqua',      price:180, grad:'linear-gradient(90deg,#00ccff,#00ffcc)', rarity:'rare' },
-  { id:'rainbow', name:'Rainbow',   price:450, grad:'linear-gradient(90deg,#f00,#ff8800,#0f0,#00f,#ee82ee)', rarity:'legendary' },
-  { id:'void',    name:'Void',      price:400, grad:'linear-gradient(90deg,#1a0030,#6600aa)', rarity:'epic' },
+  { id:'none',        name:'None',              price:0,   grad:'linear-gradient(90deg,#333,#555)', rarity:'common' },
+  { id:'spark',       name:'Spark',             price:120, grad:'linear-gradient(90deg,#ffee00,#ff8800)', rarity:'common' },
+  { id:'ember',       name:'Ember',             price:180, grad:'linear-gradient(90deg,#ff3300,#ffaa00)', rarity:'rare' },
+  { id:'aqua',        name:'Aqua',              price:180, grad:'linear-gradient(90deg,#00ccff,#00ffcc)', rarity:'rare' },
+  { id:'toxic_fumes', name:'Toxic Fumes',       price:250, grad:'linear-gradient(90deg,#39ff14,#00aa55)', rarity:'rare' },
+  { id:'matrix',      name:'Cyber Matrix',      price:320, grad:'linear-gradient(90deg,#00f0ff,#39ff14)', rarity:'rare' },
+  { id:'supernova',   name:'Supernova',         price:500, grad:'linear-gradient(90deg,#ffffff,#ffd700,#ff4500)', rarity:'epic' },
+  { id:'void',        name:'Void',              price:400, grad:'linear-gradient(90deg,#1a0030,#6600aa)', rarity:'epic' },
+  { id:'starlight',   name:'Starlight Nebula',  price:600, grad:'linear-gradient(90deg,#ff66cc,#aa44ff,#00d4ff)', rarity:'legendary' },
+  { id:'rainbow',     name:'Rainbow',           price:450, grad:'linear-gradient(90deg,#f00,#ff8800,#0f0,#00f,#ee82ee)', rarity:'legendary' },
+
+  // ─── ❄️ NOVEMBER CHRISTMAS LIMITED (REMOVED IN DECEMBER!) ───
+  { id:'blizzard',    name:'Blizzard Flakes',   price:350, grad:'linear-gradient(90deg,#ffffff,#aae7ff,#ffffff)', rarity:'epic', isHoliday:true },
+  { id:'candy_cane',  name:'Candy Cane Spark',  price:280, grad:'linear-gradient(90deg,#ff1e40,#ffffff,#ff1e40)', rarity:'rare', isHoliday:true },
 ];
 
 const POWERUPS = [
-  { id:'coinboost',  name:'Coin Boost',   price:600,  icon:'🪙', desc:'+25% coins earned per match, forever', max:1 },
-  { id:'ragestart',  name:'Rage Starter', price:800,  icon:'🔥', desc:'Start every match with +20% rage', max:1 },
-  { id:'extralife',  name:'Extra Stock',  price:1000, icon:'❤️', desc:'Start with 4 stocks instead of 3', max:1 },
+  { id:'coinboost',    name:'Coin Boost',       price:600,  icon:'🪙', desc:'+25% coins earned per match, forever', max:1 },
+  { id:'ragestart',    name:'Rage Starter',     price:800,  icon:'🔥', desc:'Start every match with +20% rage', max:1 },
+  { id:'extralife',    name:'Extra Stock',      price:1000, icon:'❤️', desc:'Start with 4 stocks instead of 3', max:1 },
+  { id:'shield_armor', name:'Armor Plating',    price:900,  icon:'🛡️', desc:'Permanent 12% damage reduction from all enemy hits', max:1 },
+  { id:'air_boost',    name:'Aero Wings',       price:750,  icon:'🪶', desc:'+15% horizontal mid-air maneuverability', max:1 },
+  { id:'combo_bonus',  name:'Combo Multiplier', price:850,  icon:'⚡', desc:'+50% bonus coins awarded on landing 3+ hit combos', max:1 },
 ];
 
 const BOXES = [
@@ -5616,6 +5653,10 @@ const BOXES = [
     contains:'400-1000 coins or an epic skin/trail',
     pool:[{type:'coins',val:400,w:15},{type:'coins',val:700,w:10},{type:'coins',val:1000,w:5},
           {type:'skin',val:'gold',w:12},{type:'skin',val:'inferno',w:12},{type:'skin',val:'frost',w:12},{type:'trail',val:'rainbow',w:10},{type:'trail',val:'void',w:10}] },
+  { id:'holiday_gift', name:'Holiday Gift Box', rarity:'legendary', icon:'🎁', coinCost:450, isHoliday:true,
+    contains:'❄️ [NOV ONLY] 300-1200 coins or exclusive holiday skins/trails!',
+    pool:[{type:'coins',val:300,w:20},{type:'coins',val:600,w:15},{type:'coins',val:1200,w:10},
+          {type:'skin',val:'santa_striker',w:10},{type:'skin',val:'holiday_elf',w:12},{type:'trail',val:'blizzard',w:15},{type:'trail',val:'candy_cane',w:18}] },
 ];
 
 function loadShopSave() {
@@ -5736,6 +5777,30 @@ function getEquippedSkinColor() {
   return s ? s.color : '#00d4ff';
 }
 
+
+// ─── ❄️ NOVEMBER CHRISTMAS SEASON CHECK ───────────────────────────────────────
+// In JS, getMonth() returns 0 for Jan ... 10 for November, 11 for December.
+// During November (month 10), Christmas limited items are active in the shop!
+// In December (month 11) or later, unowned limited items disappear automatically!
+function isNovemberSeason() {
+  const now = new Date();
+  return now.getMonth() === 10;
+}
+function shouldShowHolidayItem(item) {
+  if (!item.isHoliday) return true;
+  // If player already bought it, they get to keep it forever!
+  const isSkin = SKINS.includes(item);
+  const isCape = CAPES.includes(item);
+  const isTrail = TRAILS.includes(item);
+  const isTitle = TITLES.includes(item);
+  if (isSkin && ownedItems.skins.includes(item.id)) return true;
+  if (isCape && ownedItems.capes && ownedItems.capes.includes(item.id)) return true;
+  if (isTrail && ownedItems.trails.includes(item.id)) return true;
+  if (isTitle && ownedTitles.includes(item.id)) return true;
+  // Otherwise, only available while November is active:
+  return isNovemberSeason();
+}
+
 let activeShopTab = 'skins';
 function getFeaturedOffer() {
   const dayIdx = Math.floor(Date.now() / (1000*60*60*24));
@@ -5793,10 +5858,84 @@ function renderShop() {
   renderFeaturedBanner();
   const body = document.getElementById('shopBody');
   body.innerHTML = '';
+
+  if (activeShopTab === 'holiday') {
+    const isNov = isNovemberSeason();
+    const daysLeft = isNov ? (30 - new Date().getDate()) : 0;
+    body.innerHTML = `
+      <div style="background:linear-gradient(135deg, #1c0812 0%, #0d1a24 100%); border:2px solid #ff3366; border-radius:18px; padding:18px 22px; max-width:900px; margin:0 auto 18px; text-align:center; box-shadow:0 6px 28px rgba(255,51,102,0.3);">
+        <div style="font-size:2rem; margin-bottom:4px;">🎅🎄❄️</div>
+        <h2 style="font-family:'Bangers',cursive; font-size:1.8rem; color:#ffdd44; letter-spacing:2px; margin:0;">NOVEMBER CHRISTMAS LIMITED EVENT</h2>
+        <p style="font-size:0.85rem; color:#ffb3c6; margin:6px 0 0; line-height:1.5;">
+          ${isNov ? `Grab festive holiday skins, capes, trails & titles now! <b>REMOVED WHEN DECEMBER ARRIVES (${daysLeft} days left!)</b>` : `<b>EVENT ENDED!</b> November limited items are no longer available in the shop. You keep any items you purchased!`}
+        </p>
+      </div>
+      <div class="shop-grid" id="shopGrid"></div>
+    `;
+    const grid = document.getElementById('shopGrid');
+    const holidayItems = [
+      ...SKINS.filter(s => s.isHoliday).map(x => ({ ...x, type: 'skin' })),
+      ...CAPES.filter(c => c.isHoliday).map(x => ({ ...x, type: 'cape' })),
+      ...TRAILS.filter(t => t.isHoliday).map(x => ({ ...x, type: 'trail' })),
+      ...TITLES.filter(ti => ti.isHoliday).map(x => ({ ...x, type: 'title' })),
+      ...BOXES.filter(b => b.isHoliday).map(x => ({ ...x, type: 'box' }))
+    ];
+    holidayItems.forEach(item => {
+      const owned = item.type === 'skin' ? ownedItems.skins.includes(item.id) :
+                    item.type === 'cape' ? (ownedItems.capes && ownedItems.capes.includes(item.id)) :
+                    item.type === 'trail' ? ownedItems.trails.includes(item.id) :
+                    item.type === 'title' ? ownedTitles.includes(item.id) : false;
+      const isEq = item.type === 'skin' ? equipped.skin === item.id :
+                   item.type === 'cape' ? equipped.cape === item.id :
+                   item.type === 'trail' ? equipped.trail === item.id :
+                   item.type === 'title' ? equippedTitle === item.id : false;
+      const card = document.createElement('div');
+      const rarity = item.rarity || 'legendary';
+      card.className = 'shop-card rarity-' + rarity + (owned ? ' owned' : '') + (isEq ? ' equipped' : '');
+      const swatchHtml = item.type === 'cape' ? `<div class="shop-card-swatch" style="background:${item.color};"></div>` :
+                         item.type === 'skin' ? `<div class="shop-card-swatch" style="background:${item.color};"></div>` :
+                         item.type === 'trail' ? `<div class="shop-card-swatch" style="background:${item.grad};"></div>` :
+                         `<div class="shop-card-icon">${item.icon || '🎁'}</div>`;
+      card.innerHTML = `
+        ${swatchHtml}
+        <div class="shop-rarity-tag rarity-${rarity}">❄️ ${rarity}</div>
+        <div class="shop-card-name">${item.name}</div>
+        <div class="shop-card-desc">${item.desc || item.contains}</div>
+        ${isEq ? '<div class="shop-card-badge badge-equipped">ON</div>' : owned ? '<div class="shop-card-badge badge-owned">OWNED</div>' : ''}
+        <button class="shop-card-btn ${owned ? 'equip-btn' : ''}">${isEq ? 'Equipped' : owned ? 'Equip' : '🪙 ' + (item.price || item.coinCost)}</button>
+      `;
+      card.querySelector('button').onclick = () => {
+        if (item.type === 'box') {
+          openBox(item, true);
+          return;
+        }
+        if (owned) {
+          if (item.type === 'skin') equipped.skin = item.id;
+          else if (item.type === 'cape') equipped.cape = item.id;
+          else if (item.type === 'trail') equipped.trail = item.id;
+          else if (item.type === 'title') equippedTitle = item.id;
+          saveShop(); renderShop();
+        } else if (coins >= item.price) {
+          coins -= item.price;
+          if (item.type === 'skin') { ownedItems.skins.push(item.id); equipped.skin = item.id; }
+          else if (item.type === 'cape') { if (!ownedItems.capes) ownedItems.capes = ['none']; ownedItems.capes.push(item.id); equipped.cape = item.id; }
+          else if (item.type === 'trail') { ownedItems.trails.push(item.id); equipped.trail = item.id; }
+          else if (item.type === 'title') { ownedTitles.push(item.id); equippedTitle = item.id; }
+          saveShop(); updateCoinsUI(); renderShop();
+          showReward(item.icon || '❄️', 'Holiday Special Unlocked: ' + item.name + '!');
+        } else {
+          showReward('❌', 'Need ' + (item.price - coins) + ' more coins!');
+        }
+      };
+      grid.appendChild(card);
+    });
+    return;
+  }
   if (activeShopTab === 'capes') {
+
     body.innerHTML = '<div class="shop-section-label">EQUIP A FLOWING COSMETIC CAPE</div><div class="shop-grid" id="shopGrid"></div>';
     const grid = document.getElementById('shopGrid');
-    CAPES.forEach(item => {
+    CAPES.filter(shouldShowHolidayItem).forEach(item => {
       const owned = ownedItems.capes && ownedItems.capes.includes(item.id);
       const isEq = equipped.cape === item.id;
       const card = document.createElement('div');
@@ -5836,7 +5975,7 @@ function renderShop() {
   } else if (activeShopTab === 'skins') {
     body.innerHTML = '<div class="shop-section-label">EQUIP A SKIN COLOR</div><div class="shop-grid" id="shopGrid"></div>';
     const grid = document.getElementById('shopGrid');
-    SKINS.forEach(item => {
+    SKINS.filter(shouldShowHolidayItem).forEach(item => {
       const owned = ownedItems.skins.includes(item.id);
       const isEq = equipped.skin === item.id;
       const card = document.createElement('div');
@@ -5860,7 +5999,7 @@ function renderShop() {
   } else if (activeShopTab === 'trails') {
     body.innerHTML = '<div class="shop-section-label">EQUIP A HIT-EFFECT TRAIL</div><div class="shop-grid" id="shopGrid"></div>';
     const grid = document.getElementById('shopGrid');
-    TRAILS.forEach(item => {
+    TRAILS.filter(shouldShowHolidayItem).forEach(item => {
       const owned = ownedItems.trails.includes(item.id);
       const isEq = equipped.trail === item.id;
       const card = document.createElement('div');
@@ -5904,7 +6043,7 @@ function renderShop() {
   } else if (activeShopTab === 'titles') {
     body.innerHTML = '<div class="shop-section-label">EQUIP A TITLE — SHOWN UNDER YOUR NAME</div><div class="shop-grid" id="shopGrid"></div>';
     const grid = document.getElementById('shopGrid');
-    TITLES.filter(t => t.id !== 'none').forEach(item => {
+    TITLES.filter(t => t.id !== 'none' && shouldShowHolidayItem(t)).forEach(item => {
       const owned = ownedTitles.includes(item.id);
       const isEq = equippedTitle === item.id;
       const locked = !owned && item.source !== 'shop';
@@ -5954,7 +6093,7 @@ function renderShop() {
   } else if (activeShopTab === 'boxes') {
     body.innerHTML = '<div class="shop-section-label">OPEN A FREE BOX EVERY MINUTE, OR BUY ONE INSTANTLY</div><div class="shop-grid" id="shopGrid"></div>';
     const grid = document.getElementById('shopGrid');
-    BOXES.forEach(box => {
+    BOXES.filter(shouldShowHolidayItem).forEach(box => {
       const cdLeft = Math.max(0, (boxCooldowns[box.id]||0) + FREE_BOX_CD - Date.now());
       const card = document.createElement('div');
       card.className = 'shop-card box-card ' + box.rarity;
