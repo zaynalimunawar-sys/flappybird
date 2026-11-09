@@ -2526,75 +2526,7 @@ body.is-phone #hud{padding:max(8px,env(safe-area-inset-top)) 8px 0;gap:5px}body.
 
 </style>
 
-<style>
-.rc-section{width:min(700px,100%);padding:18px;border:2px solid #405d8b;border-radius:18px;background:linear-gradient(145deg,#12284b,#0a142c);box-shadow:0 12px 30px #0005}
-.rc-section h2,.clubs-page h2{font:32px Bangers,Impact,sans-serif;letter-spacing:1.6px;color:#fff0a8}
-.rc-section p{font-size:12px;line-height:1.6;color:#acc5e6;margin:7px 0}
-.rc-head{display:flex;justify-content:space-between;align-items:center;gap:12px}
-.rc-head span{font-size:11px;color:#ffe08c;font-weight:800}
-.rc-art{--accent:#d8a067;position:relative;overflow:hidden;isolation:isolate;border:3px solid var(--accent);border-radius:14px;background:radial-gradient(ellipse at 78% 48%,color-mix(in srgb,var(--accent) 40%,transparent),transparent 75%),linear-gradient(130deg,#203d68,#091429);box-shadow:inset 0 0 0 3px #08152a88,0 7px 0 #030b1c}
-.rc-art:before{content:'';position:absolute;inset:-50%;z-index:-1;background:repeating-conic-gradient(from 14deg at 70% 50%,#ffffff0d 0deg 12deg,transparent 12deg 30deg);transform:rotate(-10deg)}
-.rc-art:after{content:'';position:absolute;width:150%;height:20px;background:#ffffff0a;left:-20%;top:30%;transform:rotate(-35deg);pointer-events:none}
-.rc-showcase{min-height:188px;display:grid;grid-template-columns:1fr 128px;align-items:center;gap:12px;padding:22px;margin:18px 0}
-.rc-owner{font:800 11px Rajdhani,Arial;letter-spacing:2px;color:#b9cbe1}
-.rc-title{font:clamp(27px,5vw,43px)/1.03 Bangers,Impact;letter-spacing:2px;color:var(--accent);text-shadow:2px 3px #050d20;overflow-wrap:anywhere;margin:8px 0}
-.rc-player{font:800 16px Rajdhani,Arial;color:white;overflow-wrap:anywhere}
-.rc-caption{font-size:10px;color:#c0d4ed;letter-spacing:1px;margin-top:7px}
-.rc-crest{position:relative;display:grid;place-items:center;filter:drop-shadow(0 6px 0 #04112a88);width:118px;height:135px}
-.rc-crest svg{width:100%;height:100%;overflow:visible}
-.rc-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:15px 0}
-.rc-choice{padding:0;background:none;border:0;text-align:inherit;cursor:pointer;min-width:0;color:white;touch-action:manipulation}
-.rc-choice .rc-art{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 6px;min-height:165px;border-width:2px;border-radius:10px}
-.rc-choice .rc-crest{width:67px;height:75px}
-.rc-choice strong{font:17px Bangers,Impact;letter-spacing:.8px;color:var(--accent);margin:6px 0}
-.rc-choice small{font:700 10px Rajdhani,Arial;color:#c7d9ed;line-height:1.5;text-align:center}
-.rc-choice .rc-state{color:#ffe8a4;margin-top:7px;letter-spacing:1px}
-.rc-choice[aria-pressed=true] .rc-art{outline:2px solid #fff1a6;outline-offset:3px;box-shadow:0 0 22px #ffe58235}
-.rc-choice:disabled{cursor:default}
-.rc-choice:disabled .rc-art{filter:saturate(.18);opacity:.55}
-.rc-choice:not(:disabled):hover .rc-art{transform:translateY(-3px)}
-.rc-choice:focus-visible{outline:3px solid #fff;outline-offset:7px;border-radius:12px}
-.rc-progress{width:90%;height:5px;background:#071229;border-radius:5px;overflow:hidden;margin-top:7px}
-.rc-progress i{display:block;height:100%;background:var(--accent)}
-#rcStatus{min-height:18px;color:#b5f0d8;font-size:12px}
-.rc-result{width:min(370px,88vw);margin:12px auto}
-.rc-result .rc-showcase{min-height:105px;padding:13px;margin:0;grid-template-columns:1fr 65px}
-.rc-result .rc-crest{width:65px;height:75px}
-.rc-result .rc-title{font-size:25px}
-.rc-result .rc-owner{font-size:9px}
-.rc-result .rc-caption{display:none}
-.clubs-page{width:100%;max-width:700px}
-.clubs-page>p,.clubs-page label{color:#b7cee8;font-size:13px;line-height:1.6;margin:12px 0;display:block}
-.clubs-page input[type=range]{width:100%;accent-color:#a4e7d2;margin-top:10px}
-#clubsSummary{padding:15px;background:#172d46;border:1px solid #435c7c;border-radius:12px;color:#b6f2d9;font-size:13px;margin:14px 0}
-#clubsFilters{display:flex;gap:8px;margin:15px 0}
-#clubsFilters button{background:#213957;color:#cfe4ff;border:1px solid #6583a5;border-radius:20px;padding:8px 16px;cursor:pointer}
-#clubsFilters button[aria-pressed=true]{background:#b8edda;color:#123337}
-#clubsGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.club-clean{--accent:#e3b17f;padding:18px;border:1px solid #456080;border-top:3px solid var(--accent);background:linear-gradient(145deg,#203451,#101d33);border-radius:14px;display:flex;flex-direction:column;text-align:left}
-.club-clean h3{font:26px Bangers,Impact;color:var(--accent);margin:6px 0}
-.club-clean p{color:#c5d8ec;font-size:12px;line-height:1.7;margin:10px 0}
-.club-perk{display:flex;align-items:center;gap:10px;margin:8px 0}
-.club-perk b{font-size:22px;color:var(--accent)}
-.club-perk span{font-size:11px;color:#b3cbe5}
-.club-clean details{font-size:12px;color:#acc6e5;line-height:1.6;margin:10px 0}
-.club-clean summary{cursor:pointer;padding:6px 0}
-.club-clean button{margin-top:auto;background:linear-gradient(#ffe8a6,#ebbd64);color:#2e201a;border:1px solid #fff0ba;border-radius:8px;padding:10px;font:800 13px Rajdhani,Arial;cursor:pointer}
-.club-clean button:disabled{background:#23413e;color:#b3e9d0;border-color:#4f7b6e;cursor:default}
-.club-clean .club-cancel{margin-top:7px;background:#263c58;color:white;border-color:#8da3bd}
-.rc-log{padding:22px;background:#13243d;border:1px solid #43698f;border-radius:15px;text-align:left;line-height:1.7}
-.rc-log ul{padding-left:18px}
-#admin-panel-screen .admin-box{max-height:90dvh;overflow-y:auto}
-@media(max-width:500px){
-  .rc-section{padding:13px}
-  .rc-showcase{grid-template-columns:1fr 85px;padding:16px;min-height:162px}
-  .rc-showcase>.rc-crest{width:85px;height:105px}
-  .rc-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
-  .rc-choice .rc-art{min-height:155px}
-  #clubsGrid{grid-template-columns:1fr}
-}
-@media(prefers-reduced-motion:reduce){.rc-choice:hover .rc-art{transform:none!important}}
-</style></head>
+</head>
 <body>
 <!-- DEVICE PICKER: choose the layout and controls before entering the game -->
 <div id="device-picker" role="dialog" aria-modal="true" aria-labelledby="device-picker-title">
@@ -2654,7 +2586,6 @@ body.is-phone #hud{padding:max(8px,env(safe-area-inset-top)) 8px 0;gap:5px}body.
       <button class="menu-tab" data-menutab="gacha">🎲 Gacha</button>
       <button class="menu-tab" data-menutab="collection">🏆 Collection</button>
       <button class="menu-tab" data-menutab="mods">🔧 Mods</button>
-      <button class="menu-tab" data-menutab="memberships">Memberships</button>
       <button class="menu-tab" data-menutab="changelog">📜 Changelog</button>
       </div>
 
@@ -2751,39 +2682,26 @@ body.is-phone #hud{padding:max(8px,env(safe-area-inset-top)) 8px 0;gap:5px}body.
     </div>
 
 
-    <section class="menu-panel" data-panel="memberships">
-      <div id="clubsPage" class="clubs-page">
-        <small>PERMANENT COIN UPGRADES</small>
-        <h2>Join the club.</h2>
-        <p>Seven memberships. No real money, renewal, or automatic sales popups.</p>
-        <div id="clubsSummary"></div>
-        <label>Preview base match reward: <output id="clubPreviewBase">100</output> coins
-          <input id="clubPreviewRange" type="range" min="20" max="300" value="100" step="10">
-        </label>
-        <p id="clubPreviewResult"></p>
-        <div id="clubsFilters">
-          <button data-filter="all" aria-pressed="true">All</button>
-          <button data-filter="available" aria-pressed="false">Available</button>
-          <button data-filter="owned" aria-pressed="false">Owned</button>
-        </div>
-        <div id="clubsGrid"></div>
-        <p id="clubsStatus" role="status"></p>
-      </div>
-    </section>
-
     <section class="menu-panel" data-panel="changelog">
-      <article class="rc-log">
-        <time datetime="2026-11-09">November 9, 2026</time>
-        <h2>Ranked Cards &amp; Full System Updates</h2>
-        <ul>
-          <li><b>Ranked Cards (Brawl Stars Style):</b> Added 7 collectible rank cards (Bronze → Grandmaster) to Profile with geometric crests, showcase banners, and post-match victory cards.</li>
-          <li><b>Permanent Unlocks:</b> Cards unlock based on your highest peak RP and stay unlocked forever even after losing matches.</li>
-          <li><b>Admin Panel Rank Controls:</b> Added instant tier selector (Bronze to Grandmaster) and exact custom RP input.</li>
-          <li><b>Fast Ranked Progression:</b> Wins award +200 RP base (up to +300 with streak); losses deduct 100 RP.</li>
-          <li><b>Clean Memberships:</b> 7 coin-priced clubs with match bonuses, Fight Pass bonus XP, and interactive bonus calculator.</li>
-          <li><b>No Automatic Popups:</b> Memberships and cosmetics only open when you choose them from the menu.</li>
-        </ul>
-      </article>
+      <div style="max-width:620px; width:100%; text-align:left; margin:0 auto; padding:8px;">
+        <h2 style="font-family:'Bangers',cursive; font-size:2.4rem; color:#ffdd44; letter-spacing:2px; margin-bottom:14px; text-shadow:0 0 14px rgba(255,200,0,0.5);">📜 UPDATE CHANGELOG</h2>
+
+        <div style="background:rgba(255,255,255,0.06); border:2px solid rgba(0,212,255,0.4); border-radius:18px; padding:20px; margin-bottom:14px; box-shadow:0 8px 30px rgba(0,0,0,0.4);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:6px;">
+            <span style="font-family:'Bangers',cursive; font-size:1.4rem; color:#00e5ff;">⚡ v2.6 · HIGH-SPEED COMBAT OVERHAUL</span>
+            <span style="font-size:0.75rem; background:rgba(0,229,255,0.18); color:#00e5ff; padding:3px 10px; border-radius:10px; font-weight:800;">LATEST</span>
+          </div>
+          <ul style="padding-left:18px; line-height:1.7; font-size:0.95rem; color:#e0efff;">
+            <li><b>Turbo Movement Speed:</b> Base speed increased to 780 (+26% boost) with high-traction ground momentum.</li>
+            <li><b>Hyper-Responsive Attacks:</b> Punch & kick startup frames cut in half with instant combo cancel windows.</li>
+            <li><b>Faster Specials:</b> Special cooldown reduced from 1.35s to 0.75s — double the special attacks!</li>
+            <li><b>Lightning Mobility:</b> High-velocity air jumps (-890 vel) and 3.3x fast-fall dive for aggressive aerial pressure.</li>
+            <li><b>Turbo Meters:</b> Ultimates and Awakenings build nearly twice as fast on hit and damage taken.</li>
+            <li><b>Instant Respawn:</b> Knockout respawn delay cut from 1.5s down to 0.55s — zero downtime!</li>
+            <li><b>Aggressive AI:</b> CPUs react quicker, close distance relentlessly, and contest the neutral game.</li>
+          </ul>
+        </div>
+      </div>
     </section>
     <!-- GACHA AND COLLECTION ARE NORMAL MENU TABS, NOT SCREEN-COVERING POPUPS. -->
     <section class="menu-panel loot-tab-panel" data-panel="gacha" aria-label="Gacha fighter rewards">
@@ -3194,25 +3112,25 @@ function renderCareerMap() {
 })();
 
 // ─── CONFIG ─────────────────────────────────────────────────────────────────
-const GRAVITY = 1850;
-const PLAYER_SPEED = 620; // moderate base speed increase (dialed back from 690 — that combined with portrait multiplier felt too fast)
-const JUMP_VEL = -820;
-const DOUBLE_JUMP_VEL = -720;
-const FASTFALL_MULT = 2.6;
+const GRAVITY = 2100;
+const PLAYER_SPEED = 780;
+const JUMP_VEL = -890;
+const DOUBLE_JUMP_VEL = -800;
+const FASTFALL_MULT = 3.3;
 const MAX_STOCKS = 3;
 const STAGE_W = 1280;
 const STAGE_H = 720;
 const BLAST_ZONE = { left: -60, right: STAGE_W+60, top: -180, bottom: STAGE_H+60 };
 
 const DIFF = {
-  easy:       { react: 0.38, aggro: 0.22, jumpChance: 0.010, specialChance: 0.004, label:'Easy',       color:'#44ff88' },
-  medium:     { react: 0.62, aggro: 0.48, jumpChance: 0.017, specialChance: 0.009, label:'Medium',     color:'#ffaa00' },
-  hard:       { react: 0.80, aggro: 0.70, jumpChance: 0.024, specialChance: 0.015, label:'Hard',       color:'#ff4466' },
-  insane:     { react: 0.94, aggro: 0.92, jumpChance: 0.036, specialChance: 0.026, label:'Insane',     color:'#aa44ff' },
-  nightmare:  { react: 0.97, aggro: 0.95, jumpChance: 0.050, specialChance: 0.040, label:'Nightmare',  color:'#ff2200' },
-  godlike:    { react: 0.99, aggro: 0.98, jumpChance: 0.070, specialChance: 0.055, label:'Godlike',    color:'#ff0055' },
-  impossible: { react: 1.00, aggro: 1.00, jumpChance: 0.090, specialChance: 0.070, label:'Impossible', color:'#ffffff' },
-  pro:        { react: 1.05, aggro: 1.35, jumpChance: 0.130, specialChance: 0.110, label:'PRO',        color:'#ffcc00' },
+  easy:       { react: 0.55, aggro: 0.45, jumpChance: 0.018, specialChance: 0.010, label:'Easy',       color:'#44ff88' },
+  medium:     { react: 0.78, aggro: 0.72, jumpChance: 0.028, specialChance: 0.020, label:'Medium',     color:'#ffaa00' },
+  hard:       { react: 0.90, aggro: 0.88, jumpChance: 0.038, specialChance: 0.030, label:'Hard',       color:'#ff4466' },
+  insane:     { react: 0.96, aggro: 0.98, jumpChance: 0.050, specialChance: 0.042, label:'Insane',     color:'#aa44ff' },
+  nightmare:  { react: 0.98, aggro: 1.05, jumpChance: 0.065, specialChance: 0.055, label:'Nightmare',  color:'#ff2200' },
+  godlike:    { react: 1.00, aggro: 1.15, jumpChance: 0.085, specialChance: 0.075, label:'Godlike',    color:'#ff0055' },
+  impossible: { react: 1.05, aggro: 1.25, jumpChance: 0.110, specialChance: 0.095, label:'Impossible', color:'#ffffff' },
+  pro:        { react: 1.15, aggro: 1.55, jumpChance: 0.160, specialChance: 0.140, label:'PRO',        color:'#ffcc00' },
 };
 
 const ULT_METER_MAX = 100;
@@ -3919,19 +3837,19 @@ class Fighter {
     const dmgRoll = (baseDmg + Math.random()*4 - 2) * (attacker.char ? attacker.char.dmgMult : 1) * (attacker.awakeningTime > 0 ? 1.22 : 1);
     this.damage = Math.min(999, this.damage + dmgRoll);
     this.totalDamageTaken = (this.totalDamageTaken||0) + dmgRoll;
-    gainAwakening(attacker, dmgRoll * 1.0);
-    gainAwakening(this, dmgRoll * 0.8);
-    // ── Smash-style Ultimate meter: both dealing AND taking damage builds toward a devastating Ultimate ──
+    gainAwakening(attacker, dmgRoll * 1.6);
+    gainAwakening(this, dmgRoll * 1.3);
+    // ── Fast-Paced Ultimate meter ──
     if (attackType !== 'ultimate') {
-      gainUltMeter(attacker, dmgRoll * 0.85);
-      gainUltMeter(this, dmgRoll * 1.15);
+      gainUltMeter(attacker, dmgRoll * 1.5);
+      gainUltMeter(this, dmgRoll * 1.8);
     }
     const rage = 1 + Math.min(attacker.damage, 150) * 0.0035;
     const pctFactor = 0.35 + Math.pow(this.damage / 100, 1.6) * 0.9;
     const kb = pctFactor * (attackType === 'ultimate' ? 3.1 : attackType === 'special' ? 1.9 : 1) * rage;
     this.vx = dirAway * kb * 1150;
     this.vy = -kb * 680;
-    this.stunTimer = 0.18 + this.damage * 0.0008;
+    this.stunTimer = 0.13 + this.damage * 0.0005;
     this.hitFlash = 0.25;
     // Recoil lean + airborne tumble spin — sells the impact instead of the body staying rigid.
     this.hitLean = -dirAway * Math.min(1.4, 0.6 + kb * 0.5);
@@ -3987,7 +3905,7 @@ class Fighter {
       if (this.stocks <= 0) {
         this.dead = true;
       } else {
-        this.respawnTimer = 1.5;
+        this.respawnTimer = 0.55;
         this.x = 300 + this.id * 200;
         this.y = -200;
         this.vx = 0; this.vy = 0;
@@ -4057,7 +3975,7 @@ class Fighter {
     }
 
     if (this.grounded && this.stunTimer <= 0) {
-      this.vx *= 0.80;
+      this.vx *= 0.85;
     }
 
     this.applyGravity(dt);
@@ -4193,8 +4111,8 @@ class Fighter {
         this.attackCooldown = 0.07;
         if (this.gunAmmo <= 0) this.hasGun = false;
       }
-      else if (justPressed['KeyJ']) this.doAttack('punch', enemies, 0.10, 0.12);
-      else if (justPressed['KeyK']) this.doAttack('kick', enemies, 0.13, 0.16);
+      else if (justPressed['KeyJ']) this.doAttack('punch', enemies, 0.07, 0.08);
+      else if (justPressed['KeyK']) this.doAttack('kick', enemies, 0.09, 0.10);
       else if (justPressed['KeyL'] && this.specialCooldown <= 0) {
         this.useSpecial(enemies);
       }
@@ -4207,7 +4125,7 @@ class Fighter {
       return;
     }
     const sp = this.char.special;
-    this.specialCooldown = MODS.noUltCooldown ? 0 : 1.35;
+    this.specialCooldown = MODS.noUltCooldown ? 0 : 0.75;
     if (sp === 'counter') {
       this.counterActive = true;
       this.counterTimer = 0.6;
@@ -4270,7 +4188,7 @@ class Fighter {
       spawnImpactRing(this.cx, this.feet, '#ff5533', { maxRadius: 80, lineWidth: 7, life: 0.35 });
       spawnParticles(this.cx, this.feet, '#ff5533', 16);
       showAnnouncer(this.char.specialName.toUpperCase() + '!', '#ff5533');
-      this.vx = this.facing * 700;
+      this.vx = this.facing * 940;
       playSFX(220, 0.12, 'square');
     } else if (sp === 'flyingkick') {
       this.attackType = 'special'; this.attackTimer = 0.32; this.attackDuration = 0.32; this.attackCooldown = 0.15;
@@ -4281,10 +4199,10 @@ class Fighter {
       spawnImpactRing(this.cx, this.cy, '#33ccff', { maxRadius: 65, lineWidth: 5, life: 0.3 });
       spawnParticles(this.cx, this.cy, '#33ccff', 12);
       showAnnouncer(this.char.specialName.toUpperCase() + '!', '#33ccff');
-      this.vx = this.facing * 900;
-      this.vy = this.grounded ? -300 : this.vy - 150;
+      this.vx = this.facing * 1180;
+      this.vy = this.grounded ? -340 : this.vy - 180;
       this.grounded = false;
-      this.doAttack('special', enemies, 0.32, 0.15);
+      this.doAttack('special', enemies, 0.22, 0.10);
       playSFX(260, 0.13, 'triangle');
     } else {
       this.doAttack('special', enemies, 0.24, 0.0);
@@ -4295,7 +4213,7 @@ class Fighter {
     // ── Super Smash Bros-style Final Smash: consumes the full meter for one huge, screen-shaking hit ──
     this.ultReady = false;
     this.ultMeter = 0;
-    this.specialCooldown = MODS.noUltCooldown ? 0 : 1.35;
+    this.specialCooldown = MODS.noUltCooldown ? 0 : 0.75;
     this.invincible = true;
     this.invincibleTimer = 0.5;
     this.attackType = 'ultimate';
@@ -4387,16 +4305,16 @@ class Fighter {
       const r = Math.random();
       if (r < d.specialChance && this.specialCooldown <= 0) {
         this.useSpecial(enemies);
-        this.specialCooldown = MODS.noUltCooldown ? 0 : (isPro ? 0.55 : 1.1) / Math.max(0.6, d.react);
+        this.specialCooldown = MODS.noUltCooldown ? 0 : (isPro ? 0.35 : 0.65) / Math.max(0.6, d.react);
       } else if (this.hasGun && r < d.aggro * 0.5) {
         spawnGunBullet(this);
         this.gunAmmo--;
         this.attackCooldown = 0.09;
         if (this.gunAmmo <= 0) this.hasGun = false;
-      } else if (r < d.aggro * 0.16) {
-        this.doAttack('kick', enemies, 0.13, 0.16);
-      } else if (r < d.aggro * 0.30) {
-        this.doAttack('punch', enemies, 0.10, 0.12);
+      } else if (r < d.aggro * 0.22) {
+        this.doAttack('kick', enemies, 0.09, 0.10);
+      } else if (r < d.aggro * 0.40) {
+        this.doAttack('punch', enemies, 0.07, 0.08);
       }
     }
 
@@ -4856,7 +4774,7 @@ function spawnGunBullet(owner) {
 let projectiles = [];
 function spawnProjectile(owner) {
   projectiles.push({
-    x: owner.cx + owner.facing*30, y: owner.cy - 10, vx: owner.facing * 620, vy: 0,
+    x: owner.cx + owner.facing*30, y: owner.cy - 10, vx: owner.facing * 920, vy: 0,
     dir: owner.facing, owner, life: 1.4, w: 34, h: 22, color: owner.color,
   });
 }
@@ -5259,7 +5177,7 @@ function registerComboHit(attacker, defender, dmgRoll, attackType) {
   }
   attacker.comboHits = (attacker.comboHits || 0) + 1;
   attacker.bestCombo = Math.max(attacker.bestCombo||0, attacker.comboHits);
-  attacker.comboResetTimer = 1.1;
+  attacker.comboResetTimer = 1.35;
   if (attacker.isPlayer && attacker.comboHits >= 3) {
     addPassXp(passXpForCombo(attacker.comboHits));
     addMasteryXp(attacker.char.id, masteryXpForCombo(attacker.comboHits));
@@ -8480,11 +8398,11 @@ checkGameOver=function() {
     let change=0;
     if(result==='win') {
       rankedWinStreak++;
-      change=200;
+      change=30+Math.floor(Math.random()*15)+Math.min(25,rankedWinStreak*5);
       rankedPoints+=change;
     } else if(result==='loss') {
       rankedWinStreak=0;
-      rankedPoints=Math.max(0,rankedPoints-100);
+      rankedPoints=Math.max(0,rankedPoints-(18+Math.floor(Math.random()*8)));
       change=rankedPoints-oldRp;
     }
     rankedPeak=Math.max(rankedPeak,rankedPoints);
@@ -9158,254 +9076,6 @@ document.querySelector('.menu-tab[data-menutab="collection"]').addEventListener(
  }
  pc.addEventListener('click',()=>choose('pc'));
  phone.addEventListener('click',()=>choose('phone'));
-})();
-</script>
-
-
-<script id="ranked-cards-and-clubs">
-(function(){
-const CARD_KEY='stickman_rank_cards_v1',CLUB_KEY='stickman_clubs_v1';
-let cards={unlocked:['bronze'],equipped:'bronze'},owned=[],pending=null,filter='all';
-try{
-  const d=JSON.parse(localStorage.getItem(CARD_KEY)||'null');
-  if(d&&Array.isArray(d.unlocked))cards={unlocked:[...new Set(d.unlocked.filter(id=>RANKED_TIERS.some(t=>t.id===id)))],equipped:d.equipped};
-}catch(e){}
-
-const clubs=[
-  ['bronze','Bronze',600,5,0,'#d9ad88'],
-  ['silver','Silver',1200,7,1,'#d0e2ed'],
-  ['gold','Gold',2200,10,2,'#ffe09b'],
-  ['diamond','Diamond',3500,12,3,'#91e7f1'],
-  ['royal','Royal',5000,15,4,'#c5a3ed'],
-  ['cosmic','Cosmic',7500,18,5,'#eda7d1'],
-  ['ultimate','Ultimate',10000,25,8,'#ffc58f']
-].map(([id,name,cost,bonus,xp,color])=>({id,name:name+' Club',cost,bonus,xp,color}));
-
-try{
-  const d=JSON.parse(localStorage.getItem(CLUB_KEY)||'{}');
-  if(Array.isArray(d.owned))owned=[...new Set(d.owned.filter(id=>clubs.some(c=>c.id===id)))];
-}catch(e){}
-
-function saveCards(){try{localStorage.setItem(CARD_KEY,JSON.stringify(cards));}catch(e){}}
-function saveClubs(){try{localStorage.setItem(CLUB_KEY,JSON.stringify({owned,offers:false}));}catch(e){}}
-
-function unlock(){
-  for(const t of RANKED_TIERS){
-    if(Math.max(rankedPeak,rankedPoints)>=t.minRp&&!cards.unlocked.includes(t.id))cards.unlocked.push(t.id);
-  }
-  if(!cards.unlocked.includes(cards.equipped))cards.equipped='bronze';
-  saveCards();
-}
-
-function crest(t){
-  const n=RANKED_TIERS.indexOf(t);
-  const jewels=Array.from({length:Math.min(5,n+1)},(_,i)=>'<path d="M'+(25+i*13)+' 112 l4 -6 4 6 -4 6Z" fill="'+t.color+'"/>').join('');
-  return '<div class="rc-crest" aria-hidden="true"><svg viewBox="0 0 120 140"><path d="M10 37 L32 26 60 8 88 26 110 37 101 92 60 127 19 92Z" fill="#08172c" stroke="'+t.color+'" stroke-width="4"/><path d="M21 42 L60 19 99 42 90 85 60 111 30 85Z" fill="'+t.color+'" opacity=".23"/><path d="M8 63 L0 51 21 56 25 83 8 75Z M112 63 L120 51 99 56 95 83 112 75Z" fill="'+t.color+'"/><path d="M60 35 L68 52 86 55 73 68 76 87 60 78 44 87 47 68 34 55 52 52Z" fill="'+t.color+'" stroke="#fff1c7" stroke-width="1.5"/><path d="M60 40 L60 73 47 81 50 66 40 57 54 55Z" fill="#ffffff44"/>'+jewels+'</svg></div>';
-}
-
-function art(t,root){
-  root.className='rc-art rc-showcase';
-  root.style.setProperty('--accent',t.color);
-  const info=document.createElement('div');
-  info.innerHTML='<div class="rc-owner">RANKED BATTLE CARD</div><div class="rc-title">'+t.name.toUpperCase()+'</div><div class="rc-player"></div><div class="rc-caption">PERMANENT TIER COLLECTION</div>';
-  info.querySelector('.rc-player').textContent=playerUsername||'Player';
-  root.append(info);
-  const wrap=document.createElement('div');
-  wrap.innerHTML=crest(t);
-  root.append(wrap.firstChild);
-}
-
-const section=document.createElement('section');
-section.className='rc-section';
-section.innerHTML='<div class="rc-head"><h2>RANKED CARDS</h2><span id="rcCount"></span></div><p>Your best rank earns permanent cards. Equip any unlocked design; it does not change your actual rank.</p><div id="rcShowcase"></div><p id="rcActual"></p><div id="rcGrid" class="rc-grid"></div><p id="rcStatus" role="status" aria-live="polite"></p>';
-document.querySelector('#profile-screen .profile-body').insertBefore(section,document.getElementById('profileStatsGrid'));
-
-let resultCard=document.createElement('div');
-resultCard.className='rc-result';
-document.querySelector('#game-over-screen .go-content').insertBefore(resultCard,document.querySelector('#game-over-screen .go-btn-row'));
-
-function renderCards(){
-  unlock();
-  const t=RANKED_TIERS.find(t=>t.id===cards.equipped)||RANKED_TIERS[0];
-  document.getElementById('rcCount').textContent=cards.unlocked.length+' / 7 OWNED';
-  const show=document.getElementById('rcShowcase');
-  show.replaceChildren();
-  art(t,show);
-  resultCard.replaceChildren();
-  const inner=document.createElement('div');
-  art(t,inner);
-  resultCard.append(inner);
-  document.getElementById('rcActual').textContent='Current: '+getCurrentRankTier(rankedPoints).tier.name+' · '+rankedPoints.toLocaleString()+' RP | Peak: '+getCurrentRankTier(Math.max(rankedPeak,rankedPoints)).tier.name+' · '+Math.max(rankedPeak,rankedPoints).toLocaleString()+' RP';
-  const grid=document.getElementById('rcGrid');
-  grid.replaceChildren();
-  for(const tier of RANKED_TIERS){
-    const owned=cards.unlocked.includes(tier.id);
-    const b=document.createElement('button');
-    b.type='button';
-    b.className='rc-choice';
-    b.disabled=!owned;
-    b.setAttribute('aria-pressed',String(cards.equipped===tier.id));
-    b.setAttribute('aria-label',tier.name+' card, '+(owned?'unlocked':'locked, requires '+tier.minRp+' RP'));
-    const box=document.createElement('div');
-    box.className='rc-art';
-    box.style.setProperty('--accent',tier.color);
-    box.innerHTML=crest(tier)+'<strong>'+tier.name.toUpperCase()+'</strong><small>'+(owned?'PERMANENT UNLOCK':tier.minRp.toLocaleString()+' RP REQUIRED')+'</small><div class="rc-progress"><i style="width:'+(owned?100:Math.min(100,Math.max(rankedPeak,rankedPoints)/Math.max(1,tier.minRp)*100))+'%"></i></div><small class="rc-state">'+(cards.equipped===tier.id?'EQUIPPED':owned?'TAP TO EQUIP':'LOCKED')+'</small>';
-    b.append(box);
-    b.onclick=()=>{
-      cards.equipped=tier.id;
-      saveCards();
-      renderCards();
-      document.getElementById('rcStatus').textContent=tier.name+' card equipped.';
-    };
-    grid.append(b);
-  }
-}
-
-const profile=renderProfile;
-renderProfile=function(){const r=profile.apply(this,arguments);renderCards();return r;};
-const rankSave=saveRankedData;
-saveRankedData=function(){rankSave();unlock();if(document.getElementById('profile-screen').classList.contains('active'))renderCards();};
-
-for(const c of clubs){
-  const id='club_'+c.id;
-  if(!TITLES.some(t=>t.id===id))TITLES.push({id,name:c.name+' Member',icon:'✦',color:c.color,desc:'Own '+c.name+'.',rarity:c.cost>=5000?'legendary':'epic',price:0,source:'club'});
-  if(owned.includes(c.id)&&!ownedTitles.includes(id))ownedTitles.push(id);
-}
-
-function perks(){return clubs.filter(c=>owned.includes(c.id)).reduce((a,c)=>({bonus:a.bonus+c.bonus,xp:a.xp+c.xp}),{bonus:0,xp:0});}
-
-function preview(){
-  const p=perks(),base=Number(document.getElementById('clubPreviewRange').value);
-  document.getElementById('clubPreviewBase').textContent=base;
-  document.getElementById('clubPreviewResult').textContent='Your reward: '+base+' base + '+Math.floor(base*p.bonus/100)+' club bonus = '+(base+Math.floor(base*p.bonus/100))+' coins (example).';
-}
-
-function renderClubs(){
-  const p=perks();
-  document.getElementById('clubsSummary').textContent=owned.length+' / 7 owned · +'+p.bonus+'% match coins · +'+p.xp+' regular Fight Pass XP per match · Balance: '+coins.toLocaleString()+' coins';
-  preview();
-  document.querySelectorAll('#clubsFilters button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.filter===filter)));
-  const grid=document.getElementById('clubsGrid');
-  grid.replaceChildren();
-  for(const c of clubs.filter(c=>filter==='all'||(filter==='owned'?owned.includes(c.id):!owned.includes(c.id)))){
-    const card=document.createElement('article');
-    card.className='club-clean';
-    card.style.setProperty('--accent',c.color);
-    card.innerHTML='<h3>'+c.name+'</h3><div class="club-perk"><b>+'+c.bonus+'%</b><span>base match coins</span></div><div class="club-perk"><b>+'+c.xp+'</b><span>Fight Pass XP / match</span></div><details><summary>Explore benefits</summary><p>A 100-coin match earns '+c.bonus+' extra coins with this club alone. Bonuses stack across clubs. XP goes to the regular Fight Pass. Your permanent title is “'+c.name+' Member”—equip it in Shop → Titles.</p></details><p>'+c.cost.toLocaleString()+' coins · One-time unlock</p>';
-    const b=document.createElement('button');
-    b.type='button';
-    b.disabled=owned.includes(c.id);
-    b.textContent=b.disabled?'MEMBERSHIP ACTIVE':pending===c.id?'CONFIRM '+c.cost.toLocaleString()+' COINS':'UNLOCK CLUB';
-    b.onclick=()=>{
-      if(owned.includes(c.id))return;
-      if(coins<c.cost){document.getElementById('clubsStatus').textContent='Need '+(c.cost-coins).toLocaleString()+' more coins.';return;}
-      if(pending!==c.id){
-        pending=c.id;
-        renderClubs();
-        document.getElementById('clubsStatus').textContent='Confirm '+c.name+'. Remaining balance: '+(coins-c.cost).toLocaleString()+' coins.';
-        return;
-      }
-      coins-=c.cost;
-      owned.push(c.id);
-      if(!ownedTitles.includes('club_'+c.id))ownedTitles.push('club_'+c.id);
-      pending=null;
-      saveClubs();
-      saveShop();
-      updateCoinsUI();
-      renderClubs();
-      document.getElementById('clubsStatus').textContent=c.name+' unlocked!';
-    };
-    card.append(b);
-    if(pending===c.id){
-      const cancel=document.createElement('button');
-      cancel.type='button';
-      cancel.className='club-cancel';
-      cancel.textContent='CANCEL';
-      cancel.onclick=()=>{pending=null;renderClubs();document.getElementById('clubsStatus').textContent='Purchase cancelled.';};
-      card.append(cancel);
-    }
-    grid.append(card);
-  }
-  if(!grid.children.length)grid.textContent='No clubs in this filter.';
-}
-
-document.querySelectorAll('#clubsFilters button').forEach(b=>b.onclick=()=>{filter=b.dataset.filter;pending=null;renderClubs();});
-document.getElementById('clubPreviewRange').addEventListener('input',preview);
-document.querySelector('[data-menutab="memberships"]').addEventListener('click',()=>{pending=null;renderClubs();});
-
-const check=checkGameOver;
-checkGameOver=function(){
-  const before=gameState,r=check.apply(this,arguments);
-  if(before==='playing'&&gameState==='gameover'){
-    const p=perks(),base=Number(document.getElementById('goCoinsVal').textContent)||0,bonus=Math.floor(base*p.bonus/100);
-    coins+=bonus;
-    if(bonus)document.getElementById('goCoinsVal').textContent=base+bonus;
-    if(p.xp)addPassXp(p.xp);
-    saveShop();
-    updateCoinsUI();
-    renderCards();
-    renderClubs();
-  }
-  return r;
-};
-
-// Admin Panel Rank Controls
-const row=document.createElement('div');
-row.className='admin-field-row';
-row.innerHTML='<label>Set Ranked Tier</label><select class="admin-num-input" style="background:#16243a;color:white"></select><label>Exact RP</label><input type="number" class="admin-num-input" min="0" max="999999999" step="1"><button type="button" class="admin-btn primary">SET RANK</button><p role="status"></p>';
-const admin=document.querySelector('#admin-panel-screen .admin-box');
-admin.insertBefore(row,admin.querySelector('.admin-btn-row'));
-const sel=row.querySelector('select'),input=row.querySelector('input'),status=row.querySelector('[role="status"]');
-
-for(const t of RANKED_TIERS){
-  const o=document.createElement('option');
-  o.value=t.minRp;
-  o.textContent=t.name+' · '+t.minRp.toLocaleString()+' RP';
-  sel.append(o);
-}
-sel.onchange=()=>input.value=sel.value;
-
-const openAdmin=openAdminPanel;
-openAdminPanel=function(){
-  openAdmin();
-  input.value=rankedPoints;
-  sel.value=String(getCurrentRankTier(rankedPoints).tier.minRp);
-  status.textContent='Current: '+rankedPoints.toLocaleString()+' RP';
-};
-
-row.querySelector('button').onclick=()=>{
-  if(!adminUnlocked)return;
-  if(gameState==='playing'||gameState==='paused'||rankedActive){status.textContent='Finish or leave the match first.';return;}
-  const n=Number(input.value);
-  if(!input.value.trim()||!Number.isSafeInteger(n)||n<0||n>999999999){status.textContent='Enter a valid whole RP value.';return;}
-  rankedPoints=n;
-  rankedPeak=Math.max(rankedPeak,n);
-  rankedWinStreak=0;
-  saveRankedData();
-  updateRankedUI();
-  renderCards();
-  status.textContent='Saved rank. Eligible cards unlocked.';
-};
-
-const shop=renderShop;
-renderShop=function(){
-  const r=shop.apply(this,arguments);
-  if(activeShopTab==='titles')document.querySelectorAll('#shopBody .shop-card').forEach(card=>{
-    const name=card.querySelector('.shop-card-name')?.textContent,b=card.querySelector('button');
-    if(b?.disabled&&clubs.some(c=>name===c.name+' Member'))b.textContent='Unlock in Memberships';
-  });
-  return r;
-};
-
-const reset=executeDeleteAccount;
-executeDeleteAccount=function(){
-  try{localStorage.removeItem(CARD_KEY);localStorage.removeItem(CLUB_KEY);}catch(e){}
-  return reset.apply(this,arguments);
-};
-
-renderCards();
-renderClubs();
-saveClubs();
 })();
 </script>
 
