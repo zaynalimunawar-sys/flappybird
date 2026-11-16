@@ -9657,8 +9657,6 @@ document.addEventListener('keydown',e=>{
 </script>
 
 <script id="hitfx-script">
-/* HIT FX v1 — layered, punchier impacts: starburst + speed streaks, directional sparks, damage numbers,
-   pitch-rising layered sound (sub thump + noise crack), longer hit-stop, zoom punch, guard clang, KO blast. */
 (function(){
 'use strict';
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),R=Math.random;
@@ -9758,6 +9756,169 @@ function drawBursts(){
 const _dir=drawImpactRings;
 drawImpactRings=function(){_dir.apply(this,arguments);drawBursts();};
 window.HITFX={bursts,juice,koBlast};
+})();
+</script>
+
+<style id="gofit-style">
+@media (max-height:560px){
+ #game-over-screen{overflow-y:auto;justify-content:safe center;padding:6px 10px;box-sizing:border-box}
+ #game-over-screen .go-content{max-width:100%}
+ .go-badge{font-size:2.2rem!important;margin:0!important;filter:drop-shadow(0 0 14px rgba(255,215,0,.5))}
+ #game-over-screen h2{font-size:2rem!important;margin-bottom:0!important;letter-spacing:2px!important}
+ #game-over-screen .winner-text{font-size:.85rem!important;margin-bottom:6px!important}
+ .go-stats{gap:8px!important;margin-bottom:6px!important;flex-wrap:nowrap!important;max-width:100%!important}
+ .go-stat-card{padding:5px 10px!important;min-width:68px!important;border-radius:10px!important}
+ .go-stat-val{font-size:1.1rem!important}.go-stat-label{font-size:.55rem!important;letter-spacing:1px!important}
+ .go-coins-earn{margin-bottom:6px!important;padding:3px 12px!important;font-size:.9rem!important}
+ .rr-result{margin:4px auto!important;width:min(300px,80vw)!important}
+ .rr-result .rr-banner{min-height:54px!important;padding:6px 10px!important}
+ .rr-result .rr-banner strong{font-size:18px!important}.rr-result .rr-banner b{margin:2px 0!important;font-size:13px!important}
+ .rr-result .rr-banner small{font-size:8px!important}.rr-result svg{width:36px!important;height:42px!important}
+ .go-btn{padding:8px 18px!important;font-size:1rem!important;margin:2px!important}
+}
+</style>
+<script id="gofit-script">
+(function(){
+'use strict';
+const scr=document.getElementById('game-over-screen'),box=scr&&scr.querySelector('.go-content');if(!box)return;
+function fit(){
+  if(getComputedStyle(scr).display==='none')return;
+  box.style.zoom='';
+  const h=box.offsetHeight,w=box.offsetWidth,vh=innerHeight-12,vw=innerWidth-12;
+  const z=Math.min(1,vh/Math.max(1,h),vw/Math.max(1,w));
+  if(z<.995)box.style.zoom=z.toFixed(3);
+}
+const later=()=>{fit();setTimeout(fit,120);setTimeout(fit,650);};
+new MutationObserver(later).observe(scr,{attributes:true,attributeFilter:['style','class']});
+addEventListener('resize',later);addEventListener('orientationchange',()=>setTimeout(later,250));
+if(window.visualViewport)visualViewport.addEventListener('resize',later);
+window.GOFIT={fit};
+})();
+</script>
+
+<style id="overpriced-style">
+.shop-tabs{display:flex!important;flex-wrap:wrap;min-height:45px}
+.shop-tab{display:block!important;flex:1 1 auto!important;white-space:nowrap;padding:12px 14px!important}
+.shop-tab.op-tab{color:#ffd34d!important;font-weight:800;text-shadow:0 0 10px rgba(255,200,60,.5)}
+.shop-tab.op-tab.active{color:#fff!important;border-bottom-color:#ffd34d!important;text-shadow:0 0 12px rgba(255,210,70,.9)}
+.op-hero{max-width:900px;margin:0 auto 22px;border-radius:20px;padding:20px 22px;text-align:center;position:relative;overflow:hidden;
+ background:linear-gradient(120deg,#5a0b1f 0%,#b3122f 45%,#e8a21a 100%);box-shadow:0 8px 30px rgba(255,60,60,.35),inset 0 1px 0 rgba(255,255,255,.3)}
+.op-hero::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(45deg,rgba(255,255,255,.08) 0 10px,transparent 10px 20px)}
+.op-hero::after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.35),transparent);transform:skewX(-18deg);animation:opShine 3.6s ease-in-out infinite}
+@keyframes opShine{0%,55%{left:-60%}100%{left:140%}}
+.op-title{position:relative;z-index:1;font-family:Bangers,Impact,sans-serif;font-size:clamp(1.8rem,6vw,2.8rem);letter-spacing:3px;color:#fff;text-shadow:0 3px 0 #6b0a1a,0 0 22px rgba(255,220,100,.6)}
+.op-sub{position:relative;z-index:1;font-size:.85rem;color:#ffe9c4;font-weight:700;margin-top:4px}
+.op-bal{position:relative;z-index:1;display:inline-block;margin-top:10px;padding:6px 16px;border-radius:16px;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.3);font-weight:800;color:#ffe27a;letter-spacing:1px}
+.op-bal b{color:#fff}
+.op-grid{grid-template-columns:repeat(auto-fill,minmax(190px,1fr))!important}
+.op-card{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
+.op-card .shop-card-icon{font-size:3rem;filter:drop-shadow(0 4px 8px rgba(0,0,0,.5))}
+.op-off{position:absolute;top:8px;right:8px;background:#ff2255;color:#fff;font-size:.62rem;font-weight:900;padding:3px 7px;border-radius:8px;transform:rotate(6deg);box-shadow:0 2px 8px rgba(255,34,85,.6)}
+.op-prices{display:flex;flex-direction:column;align-items:center;gap:0;margin:2px 0}
+.op-was{text-decoration:line-through;color:#ff8c8c;font-size:.75rem;font-weight:700}
+.op-now{font-family:Bangers,Impact,sans-serif;font-size:1.35rem;letter-spacing:1px;color:#ffe27a;text-shadow:0 0 12px rgba(255,200,60,.5)}
+.op-card .shop-card-btn.op-confirm{background:linear-gradient(#7dffb0,#27c46a)!important;color:#052414!important;animation:opPulse 1s ease-in-out infinite}
+.op-card .shop-card-btn.op-poor{opacity:.6}
+@keyframes opPulse{50%{box-shadow:0 0 16px #5dff9a}}
+.op-fine{max-width:900px;margin:20px auto 0;text-align:center;font-size:.72rem;color:#8a9bbd;letter-spacing:.5px}
+@media (prefers-reduced-motion:reduce){.op-hero::after,.op-card .shop-card-btn.op-confirm{animation:none}}
+</style>
+<script id="overpriced-script">
+(function(){
+'use strict';
+const KEY='sw_overpriced_v1',R=Math.random;
+let st={owned:[],skin:null,skinBase:null,fx:false};
+try{Object.assign(st,JSON.parse(localStorage.getItem(KEY)||'{}'));}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(st));}catch(e){}};
+const ITEMS=[
+{id:'op_rock',icon:'🪨',name:'A Rock',type:'junk',price:100000,was:999999,rarity:'common',desc:'It is a rock. It does nothing. You own a rock.'},
+{id:'op_toast',icon:'🍞',name:'Premium Toast',type:'junk',price:250000,was:1250000,rarity:'common',desc:'Artisanal. Lightly toasted. Cannot be equipped.'},
+{id:'op_gold',icon:'🥇',name:'Liquid Gold Skin',type:'skin',color:'#ffd21f',price:500000,was:2000000,rarity:'rare',desc:'Your fighter, but unreasonably shiny.'},
+{id:'op_onepct',icon:'🎩',name:'"The One Percent"',type:'title',color:'#ffd34d',price:750000,was:3000000,rarity:'epic',desc:'A title that proves you have too many coins.'},
+{id:'op_ice',icon:'🧊',name:'Ice Cube',type:'junk',price:999999,was:1000000,rarity:'rare',desc:'Costs 999,999 coins. Coins are not refunded when it melts.'},
+{id:'op_diamond',icon:'💎',name:'Pure Diamond Skin',type:'skin',color:'#a8f0ff',price:1000000,was:5000000,rarity:'epic',desc:'Flawless. Sparkly. Mostly expensive.'},
+{id:'op_whale',icon:'🐋',name:'"Certified Whale"',type:'title',color:'#66ccff',price:1500000,was:6000000,rarity:'epic',desc:'Big spender energy, shown under your name.'},
+{id:'op_money',icon:'🤑',name:'Money Shower Hits',type:'fx',price:2000000,was:9000000,rarity:'legendary',desc:'Every hit you land rains gold coins and $ signs.'},
+{id:'op_rainbow',icon:'🌈',name:'Billionaire Rainbow Skin',type:'skin',rainbow:true,price:2500000,was:12000000,rarity:'legendary',desc:'Your fighter cycles through every color. Because why not.'},
+{id:'op_receipt',icon:'🧾',name:'Receipt For Everything',type:'junk',price:3000000,was:3000001,rarity:'rare',desc:'Proof that you spent all of this. Smells like regret.'},
+{id:'op_nolimit',icon:'💸',name:'"Money Is No Object"',type:'title',color:'#7dffb0',price:5000000,was:20000000,rarity:'legendary',desc:'The most expensive sentence in the game.'},
+{id:'op_moon',icon:'🌙',name:'Deed To The Moon',type:'junk',price:10000000,was:99999999,rarity:'legendary',desc:'You now technically own the moon. No refunds. No moon.'}
+];
+const BY={};ITEMS.forEach(i=>BY[i.id]=i);
+const own=id=>st.owned.includes(id);
+ITEMS.filter(i=>i.type==='title').forEach(i=>{TITLES.push({id:i.id,name:i.name.replace(/"/g,''),icon:i.icon,color:i.color,desc:i.desc,rarity:i.rarity,price:0,source:'overpriced'});if(own(i.id)&&!ownedTitles.includes(i.id))ownedTitles.push(i.id);});
+function hslHex(h){h=((h%360)+360)%360;const s=.9,l=.6,c=(1-Math.abs(2*l-1))*s,x=c*(1-Math.abs((h/60)%2-1)),m=l-c/2;let r=0,g=0,b=0;
+  if(h<60){r=c;g=x}else if(h<120){r=x;g=c}else if(h<180){g=c;b=x}else if(h<240){g=x;b=c}else if(h<300){r=x;b=c}else{r=c;b=x}
+  const H=v=>Math.round((v+m)*255).toString(16).padStart(2,'0');return '#'+H(r)+H(g)+H(b);}
+const _skin=getEquippedSkinColor;
+getEquippedSkinColor=function(){
+  const o=st.skin&&BY[st.skin];
+  if(o&&own(o.id)){if(st.skinBase===equipped.skin)return o.rainbow?hslHex(Date.now()/12):o.color;st.skin=null;save();}
+  return _skin.apply(this,arguments);
+};
+setInterval(()=>{if(gameState==='playing'&&st.skin==='op_rainbow'&&fighters[0]&&!fighters[0].customData&&st.skinBase===equipped.skin)fighters[0].color=hslHex(Date.now()/12);},70);
+function goldBurst(v){
+  for(let i=0;i<18;i++)particles.push({x:v.cx,y:v.cy,vx:(R()-.5)*700,vy:-200-R()*500,life:.7+R()*.5,maxLife:1.1,color:i%3?'#ffd21f':'#fff3a0',size:4+R()*5});
+  try{spawnPopup(v.cx+(R()-.5)*40,v.cy-70,['$$$','💰','+$','🪙'][Math.floor(R()*4)],{color:'#ffd21f',size:26,vy:-90,life:.8,scale:1.2,startScale:.4});}catch(e){}
+  try{playSFX(1400,.07,'triangle');playSFX(1900,.09,'triangle');}catch(e){}
+}
+const _h=Fighter.prototype.hit;
+Fighter.prototype.hit=function(t,a){const d0=this.damage;const r=_h.apply(this,arguments);
+  try{if(st.fx&&own('op_money')&&a&&a.isPlayer&&a!==this&&this.damage>d0+3.6)goldBurst(this);}catch(e){}return r;};
+let pend=null;
+function equipped_(i){return i.type==='skin'?(st.skin===i.id&&st.skinBase===equipped.skin):i.type==='title'?equippedTitle===i.id:i.type==='fx'?!!st.fx:false;}
+function toggle(i){
+  if(i.type==='skin'){if(st.skin===i.id&&st.skinBase===equipped.skin)st.skin=null;else{st.skin=i.id;st.skinBase=equipped.skin;}}
+  else if(i.type==='title'){equippedTitle=(equippedTitle===i.id)?'none':i.id;saveShop();try{renderProfile();}catch(e){}}
+  else if(i.type==='fx')st.fx=!st.fx;
+  save();
+}
+function render(){
+  const body=document.getElementById('shopBody'),ban=document.getElementById('shopFeaturedBanner');if(ban)ban.style.display='none';
+  body.innerHTML='<div class="op-hero"><div class="op-title">💸 SUPER OVERPRICED</div><div class="op-sub">Limited-time deals nobody asked for. The prices are not a mistake.</div><div class="op-bal">YOU HAVE 🪙 <b>'+Math.floor(coins).toLocaleString()+'</b></div></div><div class="shop-grid op-grid" id="opGrid"></div><div class="op-fine">All sales final. No refunds. The moon is not included.</div>';
+  const grid=document.getElementById('opGrid');
+  ITEMS.forEach(i=>{
+    const has=own(i.id),eq=has&&equipped_(i),bal=Math.floor(coins),can=bal>=i.price,off=Math.round((1-i.price/i.was)*100);
+    const card=document.createElement('div');card.className='shop-card op-card rarity-'+i.rarity+(has?' owned':'')+(eq?' equipped':'');
+    card.innerHTML=(has?'':'<div class="op-off">'+Math.max(1,off)+'% OFF!</div>')+'<div class="shop-card-icon">'+i.icon+'</div><div class="shop-rarity-tag rarity-'+i.rarity+'">'+i.rarity+'</div><div class="shop-card-name"'+(i.color?' style="color:'+i.color+'"':'')+'>'+i.name+'</div><div class="shop-card-desc">'+i.desc+'</div>'+
+      (has?'':'<div class="op-prices"><div class="op-was">🪙 '+i.was.toLocaleString()+'</div><div class="op-now">🪙 '+i.price.toLocaleString()+'</div></div>')+
+      (eq?'<div class="shop-card-badge badge-equipped">ON</div>':has?'<div class="shop-card-badge badge-owned">OWNED</div>':'');
+    const b=document.createElement('button');b.className='shop-card-btn';b.type='button';
+    if(has){if(i.type==='junk'){b.textContent='Owned (lol)';b.disabled=true;}else{b.className+=' equip-btn';b.textContent=eq?'Unequip':'Equip';}}
+    else if(pend===i.id){b.textContent='CONFIRM · 🪙 '+i.price.toLocaleString();b.className+=' op-confirm';}
+    else if(!can){b.textContent='Need '+(i.price-bal).toLocaleString()+' more';b.className+=' op-poor';}
+    else b.textContent='BUY';
+    b.onclick=()=>{
+      if(has){if(i.type!=='junk'){toggle(i);render();}return;}
+      const now=Math.floor(coins);
+      if(now<i.price){pend=null;try{showReward('❌','Need '+(i.price-now).toLocaleString()+' more coins!');}catch(e){}render();return;}
+      if(pend!==i.id){pend=i.id;render();return;}
+      coins-=i.price;st.owned.push(i.id);if(i.type==='title'&&!ownedTitles.includes(i.id))ownedTitles.push(i.id);
+      pend=null;save();saveShop();updateCoinsUI();
+      if(i.type!=='junk')toggle(i);
+      render();try{showReward(i.icon,'You paid '+i.price.toLocaleString()+' coins for '+i.name+'. Why?');}catch(e){}
+    };
+    card.appendChild(b);grid.appendChild(card);
+  });
+}
+const _rs=renderShop;
+renderShop=function(){
+  const ban=document.getElementById('shopFeaturedBanner');
+  if(activeShopTab==='overpriced'){render();return;}
+  if(ban)ban.style.display='';
+  if(activeShopTab==='titles'){
+    const hide=TITLES.filter(t=>t.source==='overpriced'&&!ownedTitles.includes(t.id));
+    hide.forEach(t=>TITLES.splice(TITLES.indexOf(t),1));
+    try{return _rs.apply(this,arguments);}finally{hide.forEach(t=>TITLES.push(t));}
+  }
+  return _rs.apply(this,arguments);
+};
+const tabs=document.querySelector('.shop-tabs');
+if(tabs){
+  const tb=document.createElement('button');tb.className='shop-tab op-tab';tb.dataset.tab='overpriced';tb.type='button';tb.textContent='💸 Overpriced';tabs.append(tb);
+  tb.addEventListener('click',()=>{document.querySelectorAll('.shop-tab').forEach(t=>t.classList.remove('active'));tb.classList.add('active');activeShopTab='overpriced';pend=null;renderShop();});
+}
+window.OVERPRICED={ITEMS,st};
 })();
 </script>
 
