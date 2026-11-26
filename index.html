@@ -5650,9 +5650,11 @@ const BOXES = [
           {type:'skin',val:'gold',w:12},{type:'skin',val:'inferno',w:12},{type:'skin',val:'frost',w:12},{type:'trail',val:'rainbow',w:10},{type:'trail',val:'void',w:10}] },
 ];
 
+let savedAdminFlag = false;
 function loadShopSave() {
   try {
     const s = JSON.parse(localStorage.getItem('tf_save') || '{}');
+    savedAdminFlag = s.adminUnlocked === true;
     coins = s.coins || 0;
     ownedItems = s.ownedItems || { skins:['default'], trails:['none'], capes:['none'], powerups:[] };
     if (!ownedItems.capes) ownedItems.capes = ['none'];
@@ -5688,7 +5690,7 @@ function loadShopSave() {
   if (!ownedTitles.includes('none')) ownedTitles.push('none');
 }
 function saveShop() {
-  try { localStorage.setItem('tf_save', JSON.stringify({ coins, ownedItems, equipped, boxCooldowns, passXp, passTier, passPremiumOwned, passClaimedFree, passClaimedPremium, dailyStreak, lastLoginDate, trophies, highestTrophies, matchesPlayed, matchesWon, bestComboEver, playerUsername, mastery, ownedTitles, equippedTitle, starterPackClaimed, lastStarterOfferDate, customCharacterOwned, customCharacter })); } catch(e) {}
+  try { localStorage.setItem('tf_save', JSON.stringify({ coins, ownedItems, equipped, boxCooldowns, passXp, passTier, passPremiumOwned, passClaimedFree, passClaimedPremium, dailyStreak, lastLoginDate, trophies, highestTrophies, matchesPlayed, matchesWon, bestComboEver, playerUsername, mastery, ownedTitles, equippedTitle, starterPackClaimed, lastStarterOfferDate, customCharacterOwned, customCharacter, adminUnlocked: typeof adminUnlocked !== 'undefined' && adminUnlocked })); } catch(e) {}
 }
 function savePassData() { saveShop(); }
 loadShopSave();
@@ -6517,12 +6519,21 @@ function updateTrophyUI() {
 // ─── ADMIN PANEL ──────────────────────────────────────────────────────────────
 const ADMIN_PASSWORD = 'ZAYN2015';
 const adminSaveKey='stickman_admin_verified_v1';
-let adminUnlocked=false;try{adminUnlocked=localStorage.getItem(adminSaveKey)==='yes';}catch(e){}
+let adminUnlocked=savedAdminFlag;try{adminUnlocked=adminUnlocked||localStorage.getItem(adminSaveKey)==='yes';if(adminUnlocked)localStorage.setItem(adminSaveKey,'yes');}catch(e){}
+function restoreAdminUnlock(){
+  if(adminUnlocked)return true;
+  try{
+    const saved=JSON.parse(localStorage.getItem('tf_save')||'{}');
+    adminUnlocked=saved.adminUnlocked===true||localStorage.getItem(adminSaveKey)==='yes';
+    if(adminUnlocked)localStorage.setItem(adminSaveKey,'yes');
+  }catch(e){}
+  return adminUnlocked;
+}
 let adminTapCount = 0;
 let adminTapTimer = null;
 
 function openAdminLogin() {
-  if(adminUnlocked)return openAdminPanel();
+  if(restoreAdminUnlock())return openAdminPanel();
   document.getElementById('adminPasswordInput').value = '';
   document.getElementById('adminLoginError').style.display = 'none';
   document.getElementById('admin-login-screen').classList.add('active');
@@ -6536,6 +6547,7 @@ function tryAdminLogin() {
   if (val === ADMIN_PASSWORD) {
     adminUnlocked = true;
     try{localStorage.setItem(adminSaveKey,'yes');}catch(e){}
+    saveShop();
     if(window.registerAdminUser)window.registerAdminUser(typeof playerUsername==='string'&&playerUsername.trim()?playerUsername.trim():'Player');
     const _ab=document.getElementById('savedAdminBtn');if(_ab)_ab.hidden=false;
     unlockTitle('admin', true);
@@ -6548,7 +6560,7 @@ function tryAdminLogin() {
   }
 }
 function openAdminPanel() {
-  if(!adminUnlocked)return;
+  if(!restoreAdminUnlock())return;
   if(window.renderAdminRoster)window.renderAdminRoster();
   document.getElementById('adminCurrentCoins').textContent = coins.toLocaleString();
   document.getElementById('adminCurrentTrophies').textContent = trophies.toLocaleString();
@@ -9628,7 +9640,7 @@ async function pollGifts(){if(!sb||giftBusy||banned)return;giftBusy=true;try{if(
 const {data,error}=await sb.from('gifts').select('id,coins,message').gt('id',lastGift).order('id',{ascending:true}).limit(50);if(error){console.warn('Gift poll error',error.message);}else if(data&&data.length){const total=data.reduce((a,g)=>a+g.coins,0);lastGift=data[data.length-1].id;localStorage.setItem('sw_last_gift',String(lastGift));coins+=total;try{updateCoinsUI();}catch(e){}try{saveShop();}catch(e){}try{showRewardPopup('🎁','+'+total.toLocaleString()+' coins from the admins!');}catch(e){}showAdminBroadcast(data[data.length-1].message||('Free gift: +'+total.toLocaleString()+' coins for everyone!'),'Gift');}}catch(e){console.warn(e);}giftBusy=false;}
 function handleRow(r){if(!r||r.id==null)return;if(lastId!==null&&r.id<=lastId)return;lastId=r.id;showAdminBroadcast(r.message,r.sender);}
 async function pollNew(){if(!sb||polling)return;if(lastId===null)return;polling=true;try{const {data,error}=await sb.from('announcements').select('id,message,sender').gt('id',lastId).order('id',{ascending:true}).limit(5);if(error)console.warn('Announcements poll error',error.message);else if(data&&data.length){const top=data[data.length-1];lastId=top.id;if(!banned)showAdminBroadcast(top.message,top.sender);}}catch(e){console.warn(e);}polling=false;}
-function revokeLocal(){if(!adminUnlocked)return;adminUnlocked=false;try{localStorage.removeItem(adminSaveKey);localStorage.removeItem('sw_admin_key');}catch(e){}const b=by('savedAdminBtn');if(b)b.hidden=true;try{closeAdminPanel();}catch(e){}showAdminBroadcast('Your admin access has been removed.','Admin');}
+function revokeLocal(){if(!adminUnlocked)return;adminUnlocked=false;try{localStorage.removeItem(adminSaveKey);localStorage.removeItem('sw_admin_key');}catch(e){}try{saveShop();}catch(e){}const b=by('savedAdminBtn');if(b)b.hidden=true;try{closeAdminPanel();}catch(e){}showAdminBroadcast('Your admin access has been removed.','Admin');}
 async function serverRegister(){if(!sb||!adminUnlocked)return;const name=typeof playerUsername==='string'&&playerUsername.trim()?playerUsername.trim():'Player';try{const {data,error}=await sb.rpc('register_admin',{p_device:deviceId,p_name:name});if(error){console.warn('register_admin',error.message);return;}if(data&&data.revoked)revokeLocal();}catch(e){console.warn(e);}}
 async function checkRevoked(){if(!sb||!adminUnlocked)return;try{const {data,error}=await sb.rpc('check_admin',{p_device:deviceId});if(!error&&data===true)revokeLocal();}catch(e){}}
 async function checkBan(){if(!sb)return;try{const {data,error}=await sb.rpc('check_ban',{p_device:deviceId});if(error){return;}if(data&&data.banned){showBan(data.reason||'');}else{try{localStorage.removeItem('sw_banned');}catch(e){}if(banned)location.reload();}}catch(e){}}
@@ -9703,7 +9715,7 @@ const btn=document.createElement('button');btn.type='button';btn.className='admi
 btn.onclick=async()=>{if(u.is_owner){showOwnerWarning(u.name);return;}const rr=await adminCall('set_admin_revoked',{p_id:u.id,p_revoked:!u.revoked});setStatus(rr.ok?(u.revoked?'Restored ':'Demoted ')+u.name+'.':'Failed: '+rr.msg);if(rr.ok)window.renderAdminRoster();};
 row.append(info,btn);el.append(row);}};
 by('adminRosterRefresh')?.addEventListener('click',()=>window.renderAdminRoster());
-const ab=by('savedAdminBtn');ab.hidden=!adminUnlocked;ab.onclick=()=>{if(by('admin-panel-screen').classList.contains('active'))closeAdminPanel();else openAdminPanel();};
+const ab=by('savedAdminBtn');ab.hidden=!restoreAdminUnlock();ab.onclick=()=>{if(!restoreAdminUnlock()){openAdminLogin();return;}if(by('admin-panel-screen').classList.contains('active'))closeAdminPanel();else openAdminPanel();};
 const ready=()=>[...PASS_FREE_REWARDS.filter(r=>r.tier<=passTier&&!passClaimedFree.includes(r.tier)).map(r=>[r,false]),...PASS_PREMIUM_REWARDS.filter(r=>passPremiumOwned&&r.tier<=passTier&&!passClaimedPremium.includes(r.tier)).map(r=>[r,true])];
 renderPassTrack=(id,rewards,claimed,premium)=>{const track=by(id);if(!track)return;track.replaceChildren();for(const r of rewards){const done=claimed.includes(r.tier),can=!done&&r.tier<=passTier&&(!premium||passPremiumOwned);const t=document.createElement('div');t.dataset.tier=r.tier;t.className='npTile'+(can?' ready':'')+(premium&&r.tier%5===0?' gold':'');const tag=document.createElement('small');tag.textContent='Tier '+r.tier;const b=document.createElement('button');b.type='button';b.disabled=!can;b.title=r.name;const ic=document.createElement('span');ic.textContent=done?'✓':r.icon;b.append(ic,r.type==='coins'?'×'+r.amount:'Title');b.onclick=()=>claimPassReward(r,premium);t.append(tag,b);track.append(t);}};
 window.refreshPassRework=()=>{const n=ready().length;by('passSummary').textContent=n+' ready to claim';const b=by('passClaimAllBtn');b.disabled=!n;b.textContent=n?'Claim All ('+n+')':'Claim All';};
