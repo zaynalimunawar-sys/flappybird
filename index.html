@@ -2880,8 +2880,20 @@ body.is-phone #hud{padding:max(8px,env(safe-area-inset-top)) 8px 0;gap:5px}body.
       <button class="admin-btn" id="adminLogoutBtn">Close Panel</button>
     </div>
 
+    <div class="adm-tabs" id="admTabs"><button type="button" class="adm-tabbtn on" data-tab="main">📢 Broadcast</button><button type="button" class="adm-tabbtn" data-tab="players">💰 Players</button><button type="button" class="adm-tabbtn" data-tab="everyone">💥 Everyone</button><button type="button" class="adm-tabbtn" data-tab="admins">🛡️ Admins</button></div>
+    <div class="adm-tab on" data-tab="main">
     <div class="admin-broadcast-section"><div class="admin-roster-head"><span>📢 Admin Announcement</span><small>Sent to every player</small></div>
       <div class="admin-roster-add"><input type="text" id="adminBroadcastInput" placeholder="Type announcement for players..." maxlength="120" autocomplete="off"><button type="button" class="admin-btn primary" id="adminBroadcastBtn">Broadcast</button></div></div>
+    <div class="admin-broadcast-section"><div class="admin-roster-head"><span>🎁 Gift Coins To Everyone</span><small>One time per player</small></div>
+      <div class="admin-roster-add admin-wrap"><button type="button" class="admin-btn primary adminGiftBtn" data-gift="1000">+1,000</button><button type="button" class="admin-btn primary adminGiftBtn" data-gift="5000">+5,000</button></div>
+      <div class="admin-roster-add" style="margin-top:8px"><input type="number" id="adminGiftCustom" placeholder="Custom amount" min="1" max="1000000"><button type="button" class="admin-btn primary" id="adminGiftCustomBtn">Gift</button></div></div>
+    <div class="admin-broadcast-section"><div class="admin-roster-head"><span>⚡ Admin Abuse Event</span><small>Multiplies coins &amp; trophies won</small></div>
+      <div class="admin-roster-add admin-wrap"><button type="button" class="admin-btn adminMultQuick" data-m="2">2x</button><button type="button" class="admin-btn adminMultQuick" data-m="3">3x</button><button type="button" class="admin-btn adminMultQuick" data-m="5">5x</button></div>
+      <div class="admin-roster-add" style="margin-top:8px"><input type="number" id="adminEvtMult" value="2" min="2" max="10" step="1" title="Multiplier"><input type="number" id="adminEvtMins" value="30" min="1" max="43200" title="Minutes"></div>
+      <small class="admin-hint">Multiplier (2–10) and minutes.</small>
+      <div class="admin-roster-add" style="margin-top:8px"><button type="button" class="admin-btn primary" id="adminEvtStart">Start Event</button><button type="button" class="admin-btn" id="adminEvtStop">Stop Event</button></div></div>
+    </div>
+    <div class="adm-tab" data-tab="players">
     <div class="admin-broadcast-section"><div class="admin-roster-head"><span>💰 Player Economy &amp; Bans</span><small>Search a player, then act</small></div>
       <div class="admin-roster-add"><input type="text" id="econSearchInput" placeholder="Search player name (blank = recent)" maxlength="24" autocomplete="off"><button type="button" class="admin-btn primary" id="econSearchBtn">Search</button></div>
       <div id="econResults" class="admin-roster-list" style="margin-top:8px"></div>
@@ -2894,17 +2906,21 @@ body.is-phone #hud{padding:max(8px,env(safe-area-inset-top)) 8px 0;gap:5px}body.
         <div class="admin-roster-add" style="margin-top:8px"><button type="button" class="admin-btn danger" id="econBan">Ban Player</button><button type="button" class="admin-btn primary" id="econUnban">Unban Player</button></div>
         <small class="admin-hint">Changes apply within seconds if the player is online, or when they next open the game.</small>
       </div></div>
-    <div class="admin-broadcast-section"><div class="admin-roster-head"><span>🎁 Gift Coins To Everyone</span><small>One time per player</small></div>
-      <div class="admin-roster-add admin-wrap"><button type="button" class="admin-btn primary adminGiftBtn" data-gift="1000">+1,000</button><button type="button" class="admin-btn primary adminGiftBtn" data-gift="5000">+5,000</button></div>
-      <div class="admin-roster-add" style="margin-top:8px"><input type="number" id="adminGiftCustom" placeholder="Custom amount" min="1" max="1000000"><button type="button" class="admin-btn primary" id="adminGiftCustomBtn">Gift</button></div></div>
-    <div class="admin-broadcast-section"><div class="admin-roster-head"><span>⚡ Admin Abuse Event</span><small>Multiplies coins &amp; trophies won</small></div>
-      <div class="admin-roster-add admin-wrap"><button type="button" class="admin-btn adminMultQuick" data-m="2">2x</button><button type="button" class="admin-btn adminMultQuick" data-m="3">3x</button><button type="button" class="admin-btn adminMultQuick" data-m="5">5x</button></div>
-      <div class="admin-roster-add" style="margin-top:8px"><input type="number" id="adminEvtMult" value="2" min="2" max="10" step="1" title="Multiplier"><input type="number" id="adminEvtMins" value="30" min="1" max="43200" title="Minutes"></div>
-      <small class="admin-hint">Multiplier (2–10) and minutes.</small>
-      <div class="admin-roster-add" style="margin-top:8px"><button type="button" class="admin-btn primary" id="adminEvtStart">Start Event</button><button type="button" class="admin-btn" id="adminEvtStop">Stop Event</button></div></div>
+    </div>
+    <div class="adm-tab" data-tab="everyone">
+    <div class="admin-broadcast-section mass-box"><div class="admin-roster-head"><span>💥 Everyone's Coins</span><small>Hits every account at once</small></div>
+      <div class="admin-roster-add"><input type="number" id="massAmount" placeholder="Coins amount" min="1" max="1000000000"></div>
+      <label class="mass-check"><input type="checkbox" id="massSkipAdmins"> Skip admins</label>
+      <div class="admin-roster-add admin-wrap" style="margin-top:8px"><button type="button" class="admin-btn danger" id="massRemove">Remove From Everyone</button><button type="button" class="admin-btn primary" id="massGive">Give To Everyone</button></div>
+      <div class="admin-roster-add" style="margin-top:8px"><button type="button" class="admin-btn danger" id="massZero">Set Everyone To 0 Coins</button></div>
+      <small class="admin-hint">Applies to every account that has opened this version (online players within seconds, offline players when they next open the game). Coins never go below 0. This cannot be undone.</small>
+    </div>
+    </div>
+    <div class="adm-tab" data-tab="admins">
     <div class="admin-roster-section"><div class="admin-roster-head"><span>🛡️ Admin Access Roster</span><button type="button" class="admin-demote-btn" id="adminRosterRefresh" style="border-color:#8a56c4;background:#2a1747;color:#e9d4ff">Refresh</button></div>
       <small class="admin-hint" style="margin:0 0 8px">Everyone who entered the admin code on any device. Demote removes their panel.</small>
       <div id="adminOwnerWarn" class="admin-owner-warn" hidden role="alert"></div><div id="adminRosterList" class="admin-roster-list"></div></div>
+    </div>
     <p class="admin-status" id="adminStatusMsg"></p>
   </div>
 </div>
@@ -9358,6 +9374,9 @@ for(const p of particles){p.life-=dt;if(p.life<=0)continue;p.x+=p.vx*dt;p.y+=p.v
 #banScreen{position:fixed;inset:0;z-index:2147483000;display:none;align-items:center;justify-content:center;flex-direction:column;gap:14px;text-align:center;padding:24px;background:radial-gradient(ellipse at 50% 30%,#5a0c22,#13040a 70%);color:#ffd6e0;font-family:'Rajdhani',Arial,sans-serif}
 #banScreen.on{display:flex}#banScreen .ban-icon{font-size:72px;filter:drop-shadow(0 0 24px #ff4d79)}#banScreen h1{margin:0;font-size:clamp(30px,6vw,56px);letter-spacing:4px;color:#ff6b8b;text-shadow:0 0 22px #ff2d5a}
 #banScreen p{margin:0;max-width:520px;font-size:16px;line-height:1.4;color:#ffc2d0}#banScreen .ban-reason{padding:10px 16px;border-radius:10px;border:1px solid #ff6b8b88;background:#2a0812;font-weight:800;color:#fff}
+.adm-tabs{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0 4px}.adm-tabbtn{flex:1;min-width:84px;padding:9px 8px;border-radius:10px;border:1px solid #8655b3;background:#24133d;color:#f1defc;font-weight:800;font-size:12px;cursor:pointer}
+.adm-tabbtn.on{background:linear-gradient(120deg,#9328e8,#6b19b8);border-color:#e3a8ff;box-shadow:0 0 12px #b655ff77}.adm-tab{display:none}.adm-tab.on{display:block}
+.mass-box{border-color:#ff6b8b88!important}.mass-check{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:12px;color:#f0d8ff}
 .admin-panel-box{max-height:90vh;overflow-y:auto}.admin-broadcast-section,.admin-roster-section{margin:14px 0 8px;padding:12px;border-radius:12px;border:1px solid #8a56c477;background:#120922b8;text-align:left}
 .admin-wrap{flex-wrap:wrap}.admin-hint{display:block;margin-top:4px;font-size:10px;color:#b89cd9}
 .admin-roster-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-weight:800;font-size:13px;color:#f2d8ff}.admin-roster-head small{font-size:10px;color:#b89cd9}
@@ -9426,13 +9445,14 @@ const ITEM_LISTS={skins:()=>SKINS,trails:()=>TRAILS,capes:()=>CAPES,powerups:()=
 const EQ_KEY={skins:'skin',trails:'trail',capes:'cape'},EQ_DEFAULT={skins:'default',trails:'none',capes:'none'};
 function itemName(t,id){try{const f=(ITEM_LISTS[t]()||[]).find(x=>x.id===id);return f?f.name:id;}catch(e){return id;}}
 async function syncPlayer(){if(!sb)return;try{const nm=(typeof playerUsername==='string'&&playerUsername.trim())||'Player';await sb.rpc('upsert_player',{p_device:deviceId,p_name:nm,p_coins:Math.max(0,Math.floor(coins)||0),p_trophies:Math.max(0,Math.floor(trophies)||0)});}catch(e){}}
-function applyActions(list){const msgs=[];for(const a of list){try{
-if(a.kind==='coins'){const n=Math.trunc(Number(a.amount)||0);coins=Math.max(0,coins+n);msgs.push((n>=0?'+':'-')+Math.abs(n).toLocaleString()+' coins');}
+function applyActions(list){const msgs=[];let coinNet=0,coinSeen=false;for(const a of list){try{
+if(a.kind==='coins'){const n=Math.trunc(Number(a.amount)||0);const before=coins;coins=Math.max(0,coins+n);coinNet+=coins-before;coinSeen=true;}
 else if(a.kind==='item_give'||a.kind==='item_take'){const t=a.item_type,id=a.item_id;if(!ITEM_LISTS[t]||!id||id==='default'||id==='none')continue;const give=a.kind==='item_give';
 if(t==='titles'){const i=ownedTitles.indexOf(id);if(give&&i<0)ownedTitles.push(id);if(!give&&i>=0){ownedTitles.splice(i,1);if(equippedTitle===id)equippedTitle='none';}}
 else{if(!Array.isArray(ownedItems[t]))ownedItems[t]=[];const i=ownedItems[t].indexOf(id);if(give&&i<0)ownedItems[t].push(id);if(!give&&i>=0){ownedItems[t].splice(i,1);if(EQ_KEY[t]&&equipped[EQ_KEY[t]]===id)equipped[EQ_KEY[t]]=EQ_DEFAULT[t];}}
 msgs.push((give?'Received ':'Lost ')+itemName(t,id));}
 }catch(e){console.warn('action failed',e);}}
+if(coinSeen)msgs.unshift((coinNet>=0?'+':'-')+Math.abs(coinNet).toLocaleString()+' coins');
 if(!msgs.length)return;try{saveShop();}catch(e){}try{updateCoinsUI();}catch(e){}try{renderShop();}catch(e){}try{renderProfile();}catch(e){}try{showRewardPopup('💰',msgs.slice(0,3).join(' · ')+(msgs.length>3?' …':''));}catch(e){}showAdminBroadcast(msgs.slice(0,3).join(' · '),'Admin');syncPlayer();}
 async function claimActions(){if(!sb||banned)return;try{const {data,error}=await sb.rpc('claim_actions',{p_device:deviceId});if(error){console.warn('claim_actions',error.message);return;}if(Array.isArray(data)&&data.length)applyActions(data);}catch(e){}}
 async function initSupabase(){if(!SB_READY||!window.supabase)return;try{sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
@@ -9445,6 +9465,8 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden){checkBan(
 if(SB_READY){const sc=document.createElement('script');sc.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';sc.onload=initSupabase;sc.onerror=()=>console.warn('Could not load Supabase library');document.head.appendChild(sc);}else console.warn('Supabase key not set: paste your publishable key at the top of index.html');
 async function adminCall(fn,args){if(!sb)return {ok:false,msg:'Supabase is not connected (check your URL and key).'};const key=localStorage.getItem('sw_admin_key')||prompt('Admin key:');if(!key)return {ok:false,msg:'Cancelled.'};const {data,error}=await sb.rpc(fn,Object.assign({p_key:key},args));if(error){if(/key|auth|forbid|invalid|secret/i.test(error.message))localStorage.removeItem('sw_admin_key');return {ok:false,msg:error.message};}localStorage.setItem('sw_admin_key',key);return {ok:true,data};}
 const setStatus=t=>{const st=by('adminStatusMsg');if(st)st.textContent=t;};
+/* ---- admin panel tabs ---- */
+document.querySelectorAll('.adm-tabbtn').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.adm-tabbtn').forEach(x=>x.classList.toggle('on',x===b));document.querySelectorAll('.adm-tab').forEach(t=>t.classList.toggle('on',t.dataset.tab===b.dataset.tab));}));
 async function sendAdminBroadcast(){const inp=by('adminBroadcastInput');if(!inp)return;const msg=inp.value.trim();if(!msg)return;const sender=typeof playerUsername==='string'&&playerUsername.trim()?playerUsername.trim():'Admin';
 if(sb){const r=await adminCall('post_announcement',{p_message:msg,p_sender:sender});setStatus(r.ok?'Announcement sent to ALL players!':'Not authorized: wrong admin key.');if(r.ok){inp.value='';setTimeout(pollNew,400);}return;}
 const payload={msg,sender,ts:Date.now()};showAdminBroadcast(msg,sender);try{if(bc)bc.postMessage(payload);}catch(e){}try{localStorage.setItem(BCAST_KEY,JSON.stringify(payload));}catch(e){}inp.value='';setStatus(SB_READY?'Supabase still loading; sent locally only.':'Sent locally. Paste your Supabase key at the top of the file.');}
@@ -9462,7 +9484,7 @@ function fillItemSelect(){const t=by('econItemType').value,sel=by('econItemId');
 by('econItemType')?.addEventListener('change',fillItemSelect);fillItemSelect();
 function selectPlayer(p){econSel=p;by('econSelected').hidden=false;by('econSelName').textContent='Selected: '+p.name+' · '+Number(p.coins).toLocaleString()+' coins'+(p.banned?' · 🚫 BANNED'+(p.ban_reason?' ('+p.ban_reason+')':''):'');renderEconResults();}
 function renderEconResults(){const el=by('econResults');el.replaceChildren();if(!econRows.length){el.textContent='No players found.';return;}for(const p of econRows){const row=document.createElement('div');row.className='admin-roster-row pick'+(econSel&&econSel.device_id===p.device_id?' sel':'')+(p.banned?' banned':'');const meta=document.createElement('div');meta.className='admin-roster-meta';const nm=document.createElement('span');nm.className='admin-roster-name';nm.textContent=p.name;const sm=document.createElement('small');sm.textContent=Number(p.coins).toLocaleString()+' coins · '+Number(p.trophies).toLocaleString()+' trophies · seen '+ago(p.last_seen);meta.append(nm,sm);row.append(meta);if(p.banned){const tg=document.createElement('span');tg.className='admin-role-tag banned';tg.textContent='Banned';row.append(tg);}row.onclick=()=>selectPlayer(p);el.append(row);}}
-async function econSearch(keep){const q=by('econSearchInput').value.trim();by('econResults').textContent='Searching...';const r=await adminCall('search_players',{p_query:q});if(!r.ok){by('econResults').textContent='Search failed: '+r.msg;return;}econRows=Array.isArray(r.data)?r.data:[];if(econSel){const f=econRows.find(x=>x.device_id===econSel.device_id);if(f){selectPlayer(f);return;}}renderEconResults();}
+async function econSearch(){const q=by('econSearchInput').value.trim();by('econResults').textContent='Searching...';const r=await adminCall('search_players',{p_query:q});if(!r.ok){by('econResults').textContent='Search failed: '+r.msg;return;}econRows=Array.isArray(r.data)?r.data:[];if(econSel){const f=econRows.find(x=>x.device_id===econSel.device_id);if(f){selectPlayer(f);return;}}renderEconResults();}
 by('econSearchBtn')?.addEventListener('click',()=>econSearch());by('econSearchInput')?.addEventListener('keydown',e=>{if(e.key==='Enter')econSearch();});
 async function econSend(kind,amount,itemType,itemId,label){if(!econSel){setStatus('Select a player first.');return;}const r=await adminCall('send_action',{p_device:econSel.device_id,p_kind:kind,p_amount:amount,p_item_type:itemType,p_item_id:itemId});setStatus(r.ok?label+' → '+econSel.name+' (applies next time they are online).':'Failed: '+r.msg);}
 function econAmt(){const n=Math.floor(Number(by('econAmount').value));if(!(n>=1&&n<=1000000000)){setStatus('Enter 1 to 1,000,000,000 coins.');return null;}return n;}
@@ -9472,6 +9494,12 @@ by('econGiveItem')?.addEventListener('click',()=>{const t=by('econItemType').val
 by('econTakeItem')?.addEventListener('click',()=>{const t=by('econItemType').value,id=by('econItemId').value;if(!id){setStatus('Pick an item.');return;}econSend('item_take',0,t,id,'Removed '+itemName(t,id));});
 async function econBan(on){if(!econSel){setStatus('Select a player first.');return;}if(on&&!confirm('Ban '+econSel.name+'?'))return;const r=await adminCall('set_ban',{p_device:econSel.device_id,p_banned:on,p_reason:on?by('econBanReason').value.trim().slice(0,80):''});setStatus(r.ok?(on?'Banned ':'Unbanned ')+econSel.name+'.':'Failed: '+r.msg);if(r.ok)econSearch();}
 by('econBan')?.addEventListener('click',()=>econBan(true));by('econUnban')?.addEventListener('click',()=>econBan(false));
+/* ---- everyone tab ---- */
+async function massCoins(amount,word,confirmWord){const skip=by('massSkipAdmins').checked;const typed=prompt('This affects EVERY account'+(skip?' (except admins)':'')+'.\nType '+confirmWord+' to confirm:');if(typed!==confirmWord){setStatus('Cancelled.');return;}const r=await adminCall('mass_coins',{p_amount:amount,p_skip_admins:skip});setStatus(r.ok?word+' queued for '+Number(r.data).toLocaleString()+' players.':'Failed: '+r.msg);}
+function massAmt(){const n=Math.floor(Number(by('massAmount').value));if(!(n>=1&&n<=1000000000)){setStatus('Enter 1 to 1,000,000,000 coins.');return null;}return n;}
+by('massRemove')?.addEventListener('click',()=>{const n=massAmt();if(n)massCoins(-n,'Removing '+n.toLocaleString()+' coins','REMOVE');});
+by('massGive')?.addEventListener('click',()=>{const n=massAmt();if(n)massCoins(n,'Giving '+n.toLocaleString()+' coins','GIVE');});
+by('massZero')?.addEventListener('click',()=>massCoins(-1000000000000,'Setting coins to 0','WIPE'));
 window.registerAdminUser=function(name,role){const clean=(name||'Player').trim().slice(0,24)||'Player';const l=loadRoster();if(!l.some(u=>u.name.toLowerCase()===clean.toLowerCase())){l.push({name:clean,role:role||(l.length===0?'owner':'admin'),since:new Date().toLocaleDateString()});saveRoster(l);}serverRegister();if(window.renderAdminRoster)window.renderAdminRoster();};
 if(adminUnlocked&&loadRoster().length===0)window.registerAdminUser(typeof playerUsername==='string'&&playerUsername.trim()?playerUsername.trim():'Owner','owner');
 let warnTimer=null;
@@ -9494,7 +9522,7 @@ by('passClaimAllBtn').onclick=()=>{const j=ready();j.forEach(([r,p])=>claimPassR
 by('passNextBtn').onclick=()=>{by('npPass').click();const l=ready().map(([r])=>r.tier);const n=l.length?Math.min(...l):Math.min(PASS_MAX_TIER,passTier+1);const t=by('passTrackPremium').querySelector('[data-tier="'+n+'"]'),sc=by('npScroll');if(t&&sc)sc.scrollTo({left:Math.max(0,t.offsetLeft-sc.clientWidth/2+t.offsetWidth/2),behavior:'smooth'});};
 const setTab=c=>{by('npPage').hidden=c;by('passGiveawayBanner').style.display=c?'block':'none';by('npPass').classList.toggle('active',!c);by('npCodes').classList.toggle('active',c);if(c)by('passGiveawayInput').focus();};
 by('npPass').onclick=()=>setTab(false);by('npCodes').onclick=()=>setTab(true);by('npShop').onclick=()=>{closePass();openShop();};setTab(false);updatePassUI();
-window._swTest={showBan,get banned(){return banned;}};
+window._swTest={applyActions};
 })();
 </script>
 </body>
