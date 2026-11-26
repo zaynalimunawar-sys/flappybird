@@ -2581,6 +2581,10 @@ body.is-phone #hud{padding:max(8px,env(safe-area-inset-top)) 8px 0;gap:5px}body.
 .rr-club-status{min-height:1.3em;margin:0;font-size:.82rem;font-weight:800;color:#a9c0e4}.rr-club-status.ok{color:#7dffb0}.rr-club-status.warn{color:#ffb38a}
 @media (max-width:520px){#rrClubs.rr-clubs-grid{grid-template-columns:1fr!important}.rr-clubs h2{font-size:1.8rem}}
 </style>
+<style id="owner-crown-css">
+#claimCrownBtn{background:linear-gradient(135deg,#6a0dad,#b44cff)!important;border-color:gold!important;box-shadow:0 0 18px #b44cff;color:#fff}
+.owner-badge{color:gold!important;border-color:gold!important;box-shadow:0 0 16px #b44cff;display:inline-flex}
+</style>
 </head>
 <body>
 <!-- DEVICE PICKER: choose the layout and controls before entering the game -->
@@ -2896,6 +2900,8 @@ body.is-phone #hud{padding:max(8px,env(safe-area-inset-top)) 8px 0;gap:5px}body.
     <div class="adm-tab on" data-tab="main">
     <div class="admin-broadcast-section"><div class="admin-roster-head"><span>📢 Admin Announcement</span><small>Sent to every player</small></div>
       <div class="admin-roster-add"><input type="text" id="adminBroadcastInput" placeholder="Type announcement for players..." maxlength="120" autocomplete="off"><button type="button" class="admin-btn primary" id="adminBroadcastBtn">Broadcast</button></div></div>
+    <div class="admin-broadcast-section" id="crownSection"><div class="admin-roster-head"><span>👑 The Crown</span><small>First admin to claim wins OWNER</small></div>
+      <div class="admin-roster-add admin-wrap"><button type="button" class="admin-btn primary" id="claimCrownBtn" style="display:none">👑 Claim the Crown</button><button type="button" class="admin-btn" id="equipOwnerBtn" style="display:none">Equip / hide OWNER</button><small id="crownInfo" style="color:#8888aa"></small></div></div>
     <div class="admin-broadcast-section"><div class="admin-roster-head"><span>🎁 Gift Coins To Everyone</span><small>One time per player</small></div>
       <div class="admin-roster-add admin-wrap"><button type="button" class="admin-btn primary adminGiftBtn" data-gift="1000">+1,000</button><button type="button" class="admin-btn primary adminGiftBtn" data-gift="5000">+5,000</button></div>
       <div class="admin-roster-add" style="margin-top:8px"><input type="number" id="adminGiftCustom" placeholder="Custom amount" min="1" max="1000000"><button type="button" class="admin-btn primary" id="adminGiftCustomBtn">Gift</button></div></div>
@@ -6593,6 +6599,12 @@ function executeDeleteAccount() {
     ];
     keysToDelete.forEach(k => localStorage.removeItem(k));
   } catch(e) { console.warn('localStorage clear issue:', e); }
+  try {
+    adminUnlocked = false;
+    ['stickman_admin_verified_v1','sw_admin_key','adminSaveKey','stickman_admin_roster_v1','swOwnerOn','swlastgift'].forEach(k => localStorage.removeItem(k));
+    const sb2 = document.getElementById('savedAdminBtn'); if (sb2) sb2.hidden = true;
+    ['admin-login-screen','admin-panel-screen'].forEach(id => { const e = document.getElementById(id); if (e) e.classList.remove('active'); });
+  } catch(e) {}
   coins = 0;
   trophies = 0;
   highestTrophies = 0;
@@ -9650,6 +9662,52 @@ by('onLeaveBtn')?.addEventListener('click',()=>{if(online&&online.started&&!onli
 window.swOnlineLeave=function(){if(online){if(online.started&&!online.over)sendCtl({t:'end',res:'lose',why:'Opponent left the match'});endSession();}};
 window._swOnTest={begin(role,opp,tx){window._swTx=tx;window._swTxKeep=true;online={role,room:'t',opp,iceQ:[],remoteSet:false,rt:0,joined:true,started:false,over:false,gotState:false,restoreStage:currentStageIdx,lastRx:performance.now()};startHandshake();},recv:onGame,get online(){return online;}};
 window._swTest={applyActions};
+
+/* ===== OWNER CROWN (first admin to claim wins) ===== */
+let crownOwner=null;
+function iHaveCrown(){return !!crownOwner&&crownOwner.device_id===deviceId;}
+function ownerShown(){try{return localStorage.getItem('swOwnerOn')!=='0';}catch(e){return true;}}
+function refreshOwnerBadge(){
+  let el=document.getElementById('ownerBadge');
+  const show=iHaveCrown()&&ownerShown();
+  if(!show){if(el)el.remove();return;}
+  if(el)return;
+  const host=document.getElementById('profileRankBadge');
+  if(!host||!host.parentNode)return;
+  el=document.createElement('div');
+  el.id='ownerBadge';el.className='profile-title-badge owner-badge';el.textContent='👑 OWNER';
+  host.parentNode.insertBefore(el,host);
+}
+async function loadCrown(){
+  if(!sb)return;
+  try{
+    const {data,error}=await sb.from('crown_claim').select('device_id,winner_name').eq('id',1).maybeSingle();
+    if(error){console.warn('crown',error.message);return;}
+    crownOwner=data||null;
+  }catch(e){return;}
+  const c=document.getElementById('claimCrownBtn'),q=document.getElementById('equipOwnerBtn'),i=document.getElementById('crownInfo');
+  if(c)c.style.display=(adminUnlocked&&!crownOwner)?'block':'none';
+  if(q)q.style.display=iHaveCrown()?'block':'none';
+  if(i)i.textContent=crownOwner?'Crown claimed.':'';
+  refreshOwnerBadge();
+}
+document.getElementById('claimCrownBtn')?.addEventListener('click',async()=>{
+  const b=document.getElementById('claimCrownBtn');b.disabled=true;
+  const r=await adminCall('claimcrown',{pdevice:deviceId,pname:(typeof playerUsername==='string'&&playerUsername.trim())||'Admin'});
+  b.disabled=false;
+  if(!r.ok){setStatus('Claim failed: '+r.msg);return;}
+  await loadCrown();
+  setStatus(r.data?'👑 You claimed the crown! OWNER is yours.':'The crown has already been claimed.');
+  if(r.data){try{showRewardPopup('👑','You are the OWNER!');}catch(e){}}
+});
+document.getElementById('equipOwnerBtn')?.addEventListener('click',()=>{
+  try{localStorage.setItem('swOwnerOn',ownerShown()?'0':'1');}catch(e){}
+  refreshOwnerBadge();
+});
+setInterval(loadCrown,15000);
+setInterval(refreshOwnerBadge,1000);
+setTimeout(loadCrown,1500);
+document.querySelectorAll('.adm-tabbtn').forEach(b=>b.addEventListener('click',loadCrown));
 
 })();
 </script>
