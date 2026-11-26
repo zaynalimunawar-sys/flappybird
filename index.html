@@ -9582,15 +9582,15 @@ function endSession(msg){const o=online;if(o){clearInterval(o.hsTimer);clearTime
 online=null;window.swOnline=false;clearInterval(netTimer);window._swTx=window._swTx&&window._swTxKeep?window._swTx:null;showOverlay('',false);by('onLeaveBtn').classList.remove('on');
 ['rematchBtn','goShopBtn','goCoinsEarned'].forEach(i=>{const e=by(i);if(e)e.style.display='';});
 if(msg){setOnStatus(msg);showAdminBroadcast(msg,'Multiplayer');}else if(myPid)setOnStatus('🟢 Online as '+myName());by('onInviteBtn').disabled=!(onSel&&onSel.online&&myPid);}
-by('onInviteBtn')?.addEventListener('click',async()=>{if(!onSel||online||!myPid||!sb)return;if(gameState==='playing'||gameState==='paused'){setOnStatus('Finish your current match first.');return;}
+by('onInviteBtn')?.addEventListener('click',async()=>{if(!onSel||online||!myPid||!sb)return;if(gameState==='playing'||gameState==='paused'){try{goToMenu();}catch(e){}}
 const room=Math.random().toString(36).slice(2,10)+Date.now().toString(36);const tgt=onSel;startSession('host',room,{id:tgt.public_id,name:tgt.name});showOverlay('Waiting for '+tgt.name+' to accept...');
 const ok=await sendTo('inbox:'+tgt.public_id,'invite',{room,from_id:myPid,from_name:myName()});if(!ok&&online&&online.room===room){endSession('Could not reach '+tgt.name+'.');return;}
 if(online&&online.room===room)online.inviteTimer=setTimeout(()=>{if(online&&online.room===room&&!online.joined)endSession(tgt.name+' did not answer.');},45000);});
 by('onOverlayCancel')?.addEventListener('click',()=>{const o=online;if(!o||o.started)return;if(o.joined||o.role==='guest')sig({t:'abort'});else sendTo('inbox:'+o.opp.id,'cancel',{room:o.room});endSession('Cancelled.');});
 function closeInvite(){if(pendingInvite){clearTimeout(pendingInvite.t);pendingInvite=null;}by('onInvite').classList.remove('on');}
-function onInvite(p){if(!p||!p.room||!p.from_id||banned)return;if(online||pendingInvite||gameState==='playing'||gameState==='paused'){sendTo('inbox:'+p.from_id,'decline',{room:p.room,busy:true});return;}
+function onInvite(p){if(!p||!p.room||!p.from_id||banned)return;if(pendingInvite)closeInvite();
 pendingInvite={room:p.room,from_id:p.from_id,from_name:String(p.from_name||'A player').slice(0,24)};by('onInviteText').textContent='🥋 '+pendingInvite.from_name+' invited you to a 1v1!';by('onInvite').classList.add('on');try{playSFX(700,.1,'triangle');}catch(e){}pendingInvite.t=setTimeout(closeInvite,40000);}
-by('onAccept')?.addEventListener('click',()=>{const p=pendingInvite;if(!p||online)return;closeInvite();startSession('guest',p.room,{id:p.from_id,name:p.from_name});showOverlay('Connecting to '+p.from_name+'...');});
+by('onAccept')?.addEventListener('click',()=>{const p=pendingInvite;if(!p)return;closeInvite();if(online||gameState==='playing'||gameState==='paused'){try{goToMenu();}catch(e){}}startSession('guest',p.room,{id:p.from_id,name:p.from_name});showOverlay('Connecting to '+p.from_name+'...');});
 by('onDecline')?.addEventListener('click',()=>{const p=pendingInvite;if(!p)return;closeInvite();sendTo('inbox:'+p.from_id,'decline',{room:p.room});});
 function onDecline(p){if(online&&p&&online.room===p.room&&!online.joined)endSession(online.opp.name+(p.busy?' is busy right now.':' declined your invite.'));}
 function onCancelInvite(p){if(pendingInvite&&p&&pendingInvite.room===p.room)closeInvite();}
