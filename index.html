@@ -2625,7 +2625,19 @@ body.is-phone #hud{padding:max(8px,env(safe-area-inset-top)) 8px 0;gap:5px}body.
       <button class="menu-tab" data-menutab="weapons">⚔️ Weapons</button>
       <button class="menu-tab" data-menutab="gacha">🎲 Gacha</button>
       <button class="menu-tab" data-menutab="mods">🔧 Mods</button>
+      <button class="menu-tab" data-menutab="online">🌐 Multiplayer</button>
       </div>
+
+    <div class="menu-panel" data-panel="online">
+      <div class="on-box">
+        <h3>🌐 Play With A Friend</h3>
+        <p class="on-sub" id="onStatus">Connecting...</p>
+        <div class="on-search"><input type="text" id="onSearchInput" placeholder="Search a username..." maxlength="24" autocomplete="off"><button type="button" class="on-btn" id="onSearchBtn">Search</button></div>
+        <div class="on-results" id="onResults"></div>
+        <div class="on-selected"><span id="onSelName">No player selected</span><button type="button" class="on-btn go" id="onInviteBtn" disabled>⚔️ Invite</button></div>
+        <small class="on-hint">Casual 1v1 · no coins or trophies · the player must have the game open to get your invite.</small>
+      </div>
+    </div>
 
     <div class="menu-panel active" data-panel="fighter">
       <div class="char-select-row" id="charSelectRow"></div>
@@ -4804,7 +4816,7 @@ function updateProjectiles(dt, enemiesAll) {
     p.x += p.vx*dt; p.life -= dt;
     let hit = false;
     for (const e of enemiesAll) {
-      if (e === p.owner || e.dead || !e.visible) continue;
+      if (e === p.owner || p.visual || e.dead || !e.visible) continue;
       if (rectsOverlapSimple(p, { x:e.x, y:e.y, w:e.w, h:e.h })) {
         e.hit('projectile', p.owner);
         e.facing = -p.dir;
@@ -6864,6 +6876,7 @@ function startGame() {
 }
 
 function goToMenu() {
+  if (window.swOnlineLeave) window.swOnlineLeave();
   if (rankedActive || rankedLastMatch) cancelRankedMatch();
   gameState = 'menu';
   document.getElementById('menu').style.display = 'block';
@@ -6875,6 +6888,7 @@ function goToMenu() {
 }
 
 function togglePause() {
+  if (window.swOnline) return;
   if (gameState === 'playing') {
     gameState = 'paused';
     document.getElementById('pause-overlay').classList.add('active');
@@ -6886,6 +6900,7 @@ function togglePause() {
 }
 
 function checkGameOver() {
+  if (window.swOnline) { if (window.swOnlineCheck) window.swOnlineCheck(); return; }
   const alive = fighters.filter(f => !f.dead);
   if (alive.length <= 1 || stageTimer <= 0) {
     gameState = 'gameover';
@@ -9374,6 +9389,21 @@ for(const p of particles){p.life-=dt;if(p.life<=0)continue;p.x+=p.vx*dt;p.y+=p.v
 #banScreen{position:fixed;inset:0;z-index:2147483000;display:none;align-items:center;justify-content:center;flex-direction:column;gap:14px;text-align:center;padding:24px;background:radial-gradient(ellipse at 50% 30%,#5a0c22,#13040a 70%);color:#ffd6e0;font-family:'Rajdhani',Arial,sans-serif}
 #banScreen.on{display:flex}#banScreen .ban-icon{font-size:72px;filter:drop-shadow(0 0 24px #ff4d79)}#banScreen h1{margin:0;font-size:clamp(30px,6vw,56px);letter-spacing:4px;color:#ff6b8b;text-shadow:0 0 22px #ff2d5a}
 #banScreen p{margin:0;max-width:520px;font-size:16px;line-height:1.4;color:#ffc2d0}#banScreen .ban-reason{padding:10px 16px;border-radius:10px;border:1px solid #ff6b8b88;background:#2a0812;font-weight:800;color:#fff}
+.on-box{max-width:620px;margin:0 auto;padding:16px;border-radius:16px;border:1px solid #a76bd89c;background:linear-gradient(150deg,#2b1744,#150c24);text-align:left;color:#f3e3ff}
+.on-box h3{margin:0 0 4px;font-size:20px;color:#fff}.on-sub{margin:0 0 10px;font-size:13px;color:#d9b8ff}
+.on-search{display:flex;gap:8px}.on-search input{flex:1;min-width:0;padding:10px 12px;border-radius:10px;border:1px solid #8a56c4;background:#0e071a;color:#fff;font-size:14px}
+.on-btn{padding:10px 16px;border-radius:10px;border:1px solid #d9a2ff;background:linear-gradient(120deg,#7729bd,#a63fe6);color:#fff;font-weight:800;cursor:pointer;font-size:13px}.on-btn.go{background:linear-gradient(120deg,#16a05a,#2bd47f);border-color:#9bffc8;color:#052a16}.on-btn:disabled{opacity:.4;cursor:not-allowed}
+.on-results{display:flex;flex-direction:column;gap:7px;margin:10px 0;max-height:240px;overflow-y:auto;font-size:13px;color:#cdb3ea}
+.on-row{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;border:1px solid #6b419e88;background:#21123a;cursor:pointer}.on-row:hover,.on-row.sel{border-color:#e3a8ff;background:#331d57}
+.on-dot{width:10px;height:10px;border-radius:50%;background:#6b5a85;flex:none}.on-dot.on{background:#55ffaa;box-shadow:0 0 8px #55ffaa}.on-name{font-weight:800;color:#fff;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.on-row small{color:#a98ccc}
+.on-selected{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:10px;background:#120922;border:1px dashed #8a56c4;font-weight:800}
+.on-hint{display:block;margin-top:8px;font-size:11px;color:#a98ccc}
+#onOverlay{position:fixed;inset:0;z-index:99990;display:none;align-items:center;justify-content:center;background:rgba(8,3,18,.82);backdrop-filter:blur(6px)}#onOverlay.on{display:flex}
+.on-card{min-width:min(86vw,360px);padding:22px;border-radius:18px;text-align:center;border:1.5px solid #e3a8ff;background:linear-gradient(150deg,#35204f,#150b25);color:#fff;font-family:'Rajdhani',Arial,sans-serif;box-shadow:0 0 40px #b655ff77}
+.on-card p{margin:0 0 14px;font-size:18px;font-weight:800}.on-spin{width:34px;height:34px;margin:0 auto 12px;border-radius:50%;border:4px solid #7f4cb8;border-top-color:#ffd878;animation:onSpin 1s linear infinite}@keyframes onSpin{to{transform:rotate(360deg)}}
+#onInvite{position:fixed;left:50%;bottom:24px;transform:translate(-50%,160%);z-index:99995;display:flex;align-items:center;gap:14px;padding:14px 18px;border-radius:16px;border:1.5px solid #ffd878;background:linear-gradient(120deg,#2a1247,#5a1fa0);color:#fff;font-family:'Rajdhani',Arial,sans-serif;font-weight:800;box-shadow:0 0 34px #c45effaa;transition:transform .35s cubic-bezier(.2,.9,.2,1);max-width:94vw}
+#onInvite.on{transform:translate(-50%,0)}#onInvite span{font-size:16px}
+#onLeaveBtn{position:fixed;left:12px;top:12px;z-index:9400;display:none;padding:8px 12px;border-radius:10px;border:1px solid #ff6b8b;background:#4a1326cc;color:#ffd0dc;font-weight:800;cursor:pointer;font-size:12px}#onLeaveBtn.on{display:block}
 .adm-tabs{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0 4px}.adm-tabbtn{flex:1;min-width:84px;padding:9px 8px;border-radius:10px;border:1px solid #8655b3;background:#24133d;color:#f1defc;font-weight:800;font-size:12px;cursor:pointer}
 .adm-tabbtn.on{background:linear-gradient(120deg,#9328e8,#6b19b8);border-color:#e3a8ff;box-shadow:0 0 12px #b655ff77}.adm-tab{display:none}.adm-tab.on{display:block}
 .mass-box{border-color:#ff6b8b88!important}.mass-check{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:12px;color:#f0d8ff}
@@ -9407,6 +9437,9 @@ for(const p of particles){p.life-=dt;if(p.life<=0)continue;p.x+=p.vx*dt;p.y+=p.v
 </style>
 <div id="banScreen" role="alertdialog" aria-live="assertive"><div class="ban-icon">🚫</div><h1>YOU ARE BANNED</h1><p>An admin has banned this account from Stickman Wars.</p><div class="ban-reason" id="banReason" hidden></div><p style="font-size:12px;opacity:.7">If you think this is a mistake, contact the game owner.</p></div>
 <div id="eventBadge" role="status"></div>
+<div id="onOverlay"><div class="on-card"><div class="on-spin"></div><p id="onOverlayText">Connecting...</p><button type="button" class="on-btn" id="onOverlayCancel">Cancel</button></div></div>
+<div id="onInvite"><span id="onInviteText"></span><button type="button" class="on-btn go" id="onAccept">Accept</button><button type="button" class="on-btn" id="onDecline">Decline</button></div>
+<button type="button" id="onLeaveBtn">🚪 Leave match</button>
 <div id="adminBroadcastBanner" role="status" aria-live="assertive"><span class="ab-icon">📢</span><div class="ab-body"><span class="ab-label" id="abLabel">ADMIN ANNOUNCEMENT</span><span class="ab-msg" id="abMsg"></span></div><button type="button" class="ab-close" id="abClose" aria-label="Dismiss">✕</button></div>
 <button id="savedAdminBtn" type="button" hidden aria-label="Open Admin Panel"><span class="adm-shield">🛡️</span><span class="adm-text"><span class="adm-title">ADMIN</span><span class="adm-sub">PANEL READY</span></span><span class="adm-dot"></span></button>
 <script id="cyborg-pass-admin-script">
@@ -9421,14 +9454,14 @@ function showBan(reason){banned=true;try{localStorage.setItem('sw_banned','1');}
 ['keydown','keyup','keypress'].forEach(ev=>window.addEventListener(ev,e=>{if(banned){e.stopImmediatePropagation();e.preventDefault();}},true));
 try{if(localStorage.getItem('sw_banned')==='1')showBan('');}catch(e){}
 let bcastTimer=null;
-function showAdminBroadcast(msg,sender){const b=by('adminBroadcastBanner');if(!b||!msg)return;by('abLabel').textContent='ADMIN ANNOUNCEMENT'+(sender?' · '+String(sender).toUpperCase():'');by('abMsg').textContent=msg;b.classList.remove('show');void b.offsetWidth;b.classList.add('show');clearTimeout(bcastTimer);bcastTimer=setTimeout(()=>b.classList.remove('show'),7000);try{playSFX(660,.12,'triangle');setTimeout(()=>{try{playSFX(880,.16,'triangle');}catch(e){}},110);}catch(e){}}
+function showAdminBroadcast(msg,sender){const b=by('adminBroadcastBanner');if(!b||!msg)return;by('abLabel').textContent=(sender==='Multiplayer'?'MULTIPLAYER':'ADMIN ANNOUNCEMENT'+(sender?' · '+String(sender).toUpperCase():''));by('abMsg').textContent=msg;b.classList.remove('show');void b.offsetWidth;b.classList.add('show');clearTimeout(bcastTimer);bcastTimer=setTimeout(()=>b.classList.remove('show'),7000);try{playSFX(660,.12,'triangle');setTimeout(()=>{try{playSFX(880,.16,'triangle');}catch(e){}},110);}catch(e){}}
 by('abClose')?.addEventListener('click',()=>by('adminBroadcastBanner').classList.remove('show'));
 let bc=null;try{bc=new BroadcastChannel('stickman_wars_admin_broadcast');bc.onmessage=e=>{if(e.data&&e.data.msg)showAdminBroadcast(e.data.msg,e.data.sender);};}catch(e){}
 const SUPABASE_URL=String(window.SW_SUPABASE_URL||'').trim().replace(/\/+$/,'').replace(/\/(rest|auth)\/v1.*$/,''),SUPABASE_ANON_KEY=String(window.SW_SUPABASE_KEY||'').trim();
 const SB_READY=/^https:\/\/.+\.supabase\.co$/.test(SUPABASE_URL)&&SUPABASE_ANON_KEY.length>20&&!/PASTE_/.test(SUPABASE_ANON_KEY);
 let sb=null,lastId=null,polling=false;
 let evt=null,evtSeen=null,lastGift=null,giftBusy=false;
-window.swEventMult=function(){const e=evt;if(banned)return 1;if(e&&Number(e.multiplier)>1&&e.ends_at&&Date.parse(e.ends_at)>Date.now())return Number(e.multiplier);return 1;};
+window.swEventMult=function(){const e=evt;if(banned||window.swOnline)return 1;if(e&&Number(e.multiplier)>1&&e.ends_at&&Date.parse(e.ends_at)>Date.now())return Number(e.multiplier);return 1;};
 function fmtLeft(ms){const t=Math.max(0,Math.floor(ms/1000)),h=Math.floor(t/3600),m=Math.floor(t%3600/60),s=t%60,p=n=>String(n).padStart(2,'0');return h?h+':'+p(m)+':'+p(s):m+':'+p(s);}
 function tickBadge(){const el=by('eventBadge');if(!el)return;const m=window.swEventMult();if(m>1){el.textContent='⚡ '+((evt&&evt.label)||'ADMIN ABUSE')+' '+m+'x · '+fmtLeft(Date.parse(evt.ends_at)-Date.now());el.classList.add('on');}else el.classList.remove('on');}
 setInterval(tickBadge,1000);
@@ -9460,12 +9493,11 @@ checkBan();setInterval(checkBan,8000);
 const {data}=await sb.from('announcements').select('id').order('id',{ascending:false}).limit(1);lastId=(data&&data[0])?data[0].id:0;
 sb.channel('announcements-live').on('postgres_changes',{event:'INSERT',schema:'public',table:'announcements'},p=>{if(!banned)handleRow(p.new);}).subscribe(st=>console.log('Announcements realtime:',st));
 setInterval(pollNew,3000);pollEvent();pollGifts();setInterval(pollEvent,5000);setInterval(pollGifts,5000);serverRegister();setInterval(checkRevoked,10000);
-claimActions().then(syncPlayer);setInterval(claimActions,8000);setInterval(()=>{if(!banned)syncPlayer();},30000);
+claimActions().then(syncPlayer).then(setupOnline);setInterval(()=>{if(!myPid)setupOnline();},20000);setInterval(claimActions,8000);setInterval(()=>{if(!banned)syncPlayer();},30000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){checkBan();pollNew();pollEvent();pollGifts();checkRevoked();claimActions();}});}catch(e){console.warn('Supabase init failed',e);}}
 if(SB_READY){const sc=document.createElement('script');sc.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';sc.onload=initSupabase;sc.onerror=()=>console.warn('Could not load Supabase library');document.head.appendChild(sc);}else console.warn('Supabase key not set: paste your publishable key at the top of index.html');
 async function adminCall(fn,args){if(!sb)return {ok:false,msg:'Supabase is not connected (check your URL and key).'};const key=localStorage.getItem('sw_admin_key')||prompt('Admin key:');if(!key)return {ok:false,msg:'Cancelled.'};const {data,error}=await sb.rpc(fn,Object.assign({p_key:key},args));if(error){if(/key|auth|forbid|invalid|secret/i.test(error.message))localStorage.removeItem('sw_admin_key');return {ok:false,msg:error.message};}localStorage.setItem('sw_admin_key',key);return {ok:true,data};}
 const setStatus=t=>{const st=by('adminStatusMsg');if(st)st.textContent=t;};
-/* ---- admin panel tabs ---- */
 document.querySelectorAll('.adm-tabbtn').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.adm-tabbtn').forEach(x=>x.classList.toggle('on',x===b));document.querySelectorAll('.adm-tab').forEach(t=>t.classList.toggle('on',t.dataset.tab===b.dataset.tab));}));
 async function sendAdminBroadcast(){const inp=by('adminBroadcastInput');if(!inp)return;const msg=inp.value.trim();if(!msg)return;const sender=typeof playerUsername==='string'&&playerUsername.trim()?playerUsername.trim():'Admin';
 if(sb){const r=await adminCall('post_announcement',{p_message:msg,p_sender:sender});setStatus(r.ok?'Announcement sent to ALL players!':'Not authorized: wrong admin key.');if(r.ok){inp.value='';setTimeout(pollNew,400);}return;}
@@ -9478,7 +9510,6 @@ by('adminGiftCustomBtn')?.addEventListener('click',()=>sendGift(by('adminGiftCus
 document.querySelectorAll('.adminMultQuick').forEach(b=>b.addEventListener('click',()=>{by('adminEvtMult').value=b.dataset.m;}));
 by('adminEvtStart')?.addEventListener('click',async()=>{const m=Math.floor(Number(by('adminEvtMult').value)),mins=Number(by('adminEvtMins').value);if(!(m>=2&&m<=10)){setStatus('Multiplier must be 2 to 10.');return;}if(!(mins>=1&&mins<=43200)){setStatus('Minutes must be 1 to 43200.');return;}const r=await adminCall('set_event',{p_multiplier:m,p_hours:mins/60,p_label:'ADMIN ABUSE',p_kind:'admin_abuse'});setStatus(r.ok?'Admin Abuse '+m+'x started for '+mins+' min!':'Event failed: '+r.msg);if(r.ok)setTimeout(pollEvent,400);});
 by('adminEvtStop')?.addEventListener('click',async()=>{const r=await adminCall('set_event',{p_multiplier:1,p_hours:0,p_label:'',p_kind:'multiplier'});setStatus(r.ok?'Event stopped.':'Stop failed: '+r.msg);if(r.ok)setTimeout(pollEvent,400);});
-/* ---- player economy & bans (admin) ---- */
 let econSel=null,econRows=[];
 function fillItemSelect(){const t=by('econItemType').value,sel=by('econItemId');sel.replaceChildren();let list=[];try{list=ITEM_LISTS[t]()||[];}catch(e){}for(const it of list){if(it.id==='default'||it.id==='none')continue;const o=document.createElement('option');o.value=it.id;o.textContent=it.name+' ('+it.id+')';sel.append(o);}}
 by('econItemType')?.addEventListener('change',fillItemSelect);fillItemSelect();
@@ -9494,7 +9525,6 @@ by('econGiveItem')?.addEventListener('click',()=>{const t=by('econItemType').val
 by('econTakeItem')?.addEventListener('click',()=>{const t=by('econItemType').value,id=by('econItemId').value;if(!id){setStatus('Pick an item.');return;}econSend('item_take',0,t,id,'Removed '+itemName(t,id));});
 async function econBan(on){if(!econSel){setStatus('Select a player first.');return;}if(on&&!confirm('Ban '+econSel.name+'?'))return;const r=await adminCall('set_ban',{p_device:econSel.device_id,p_banned:on,p_reason:on?by('econBanReason').value.trim().slice(0,80):''});setStatus(r.ok?(on?'Banned ':'Unbanned ')+econSel.name+'.':'Failed: '+r.msg);if(r.ok)econSearch();}
 by('econBan')?.addEventListener('click',()=>econBan(true));by('econUnban')?.addEventListener('click',()=>econBan(false));
-/* ---- everyone tab ---- */
 async function massCoins(amount,word,confirmWord){const skip=by('massSkipAdmins').checked;const typed=prompt('This affects EVERY account'+(skip?' (except admins)':'')+'.\nType '+confirmWord+' to confirm:');if(typed!==confirmWord){setStatus('Cancelled.');return;}const r=await adminCall('mass_coins',{p_amount:amount,p_skip_admins:skip});setStatus(r.ok?word+' queued for '+Number(r.data).toLocaleString()+' players.':'Failed: '+r.msg);}
 function massAmt(){const n=Math.floor(Number(by('massAmount').value));if(!(n>=1&&n<=1000000000)){setStatus('Enter 1 to 1,000,000,000 coins.');return null;}return n;}
 by('massRemove')?.addEventListener('click',()=>{const n=massAmt();if(n)massCoins(-n,'Removing '+n.toLocaleString()+' coins','REMOVE');});
@@ -9522,7 +9552,105 @@ by('passClaimAllBtn').onclick=()=>{const j=ready();j.forEach(([r,p])=>claimPassR
 by('passNextBtn').onclick=()=>{by('npPass').click();const l=ready().map(([r])=>r.tier);const n=l.length?Math.min(...l):Math.min(PASS_MAX_TIER,passTier+1);const t=by('passTrackPremium').querySelector('[data-tier="'+n+'"]'),sc=by('npScroll');if(t&&sc)sc.scrollTo({left:Math.max(0,t.offsetLeft-sc.clientWidth/2+t.offsetWidth/2),behavior:'smooth'});};
 const setTab=c=>{by('npPage').hidden=c;by('passGiveawayBanner').style.display=c?'block':'none';by('npPass').classList.toggle('active',!c);by('npCodes').classList.toggle('active',c);if(c)by('passGiveawayInput').focus();};
 by('npPass').onclick=()=>setTab(false);by('npCodes').onclick=()=>setTab(true);by('npShop').onclick=()=>{closePass();openShop();};setTab(false);updatePassUI();
+
+/* ================= ONLINE 1v1 ================= */
+let myPid=null,inboxCh=null,online=null,onSel=null,onRows=[],pendingInvite=null,netTimer=null;
+const RTC_CFG={iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun1.l.google.com:19302'}]};
+const NET_FIELDS=['x','y','vx','vy','facing','grounded','stocks','damage','attackTimer','attackType','attackDuration','blocking','blockTimer','airDodging','airDodgeTimer','visible','dead','respawnTimer','hitFlash','stunTimer','awakeningTime','ultFlashTimer','counterActive','counterTimer','fastFalling','invincible','invincibleTimer','jumps','tumbleAngle','tumbleSpin','hitLean','ultReady','ultMeter'];
+const HIT_TYPES=['punch','kick','special','ultimate','dashhit','projectile'];
+const myName=()=>(typeof playerUsername==='string'&&playerUsername.trim())||'Player';
+const setOnStatus=t=>{const e=by('onStatus');if(e)e.textContent=t;};
+function showOverlay(t,show=true){by('onOverlayText').textContent=t;by('onOverlay').classList.toggle('on',show);}
+async function setupOnline(){if(!sb||myPid)return;try{const {data,error}=await sb.rpc('my_public_id',{p_device:deviceId});if(error){setOnStatus('Multiplayer setup missing: run the multiplayer SQL in Supabase.');return;}if(!data)return;myPid=data;inboxCh=sb.channel('inbox:'+myPid).on('broadcast',{event:'invite'},m=>onInvite(m.payload)).on('broadcast',{event:'decline'},m=>onDecline(m.payload)).on('broadcast',{event:'cancel'},m=>onCancelInvite(m.payload)).subscribe();setOnStatus('🟢 Online as '+myName());onSearch();}catch(e){console.warn(e);}}
+if(!SB_READY)setOnStatus('Multiplayer needs the Supabase key at the top of index.html.');else setOnStatus('Connecting...');
+function sendTo(topic,event,payload){return new Promise(res=>{if(!sb){res(false);return;}const ch=sb.channel(topic);let done=false;const fin=v=>{if(!done){done=true;res(v);}};ch.subscribe(st=>{if(st==='SUBSCRIBED'){ch.send({type:'broadcast',event,payload}).then(()=>{setTimeout(()=>{try{sb.removeChannel(ch);}catch(e){}},800);fin(true);}).catch(()=>fin(false));}else if(st==='CHANNEL_ERROR'||st==='TIMED_OUT'||st==='CLOSED')fin(false);});setTimeout(()=>fin(false),6000);});}
+function renderOnRows(){const el=by('onResults');el.replaceChildren();if(!onRows.length){el.textContent=by('onSearchInput').value.trim()?'No players found.':'Nobody else is online right now. Search a username.';return;}
+for(const p of onRows){const row=document.createElement('div');row.className='on-row'+(onSel&&onSel.public_id===p.public_id?' sel':'');const d=document.createElement('span');d.className='on-dot'+(p.online?' on':'');const n=document.createElement('span');n.className='on-name';n.textContent=p.name;const st=document.createElement('small');st.textContent=p.online?'Online':'Offline';row.append(d,n,st);row.onclick=()=>{onSel=p;by('onSelName').textContent=p.name+(p.online?' (online)':' (offline)');by('onInviteBtn').disabled=!p.online||!!online||!myPid;renderOnRows();};el.append(row);}}
+async function onSearch(){if(!sb){setOnStatus('Not connected to Supabase.');return;}const q=by('onSearchInput').value.trim();const {data,error}=await sb.rpc('find_players',{p_device:deviceId,p_query:q});if(error){by('onResults').textContent='Search failed: '+error.message;return;}onRows=Array.isArray(data)?data:[];renderOnRows();}
+by('onSearchBtn')?.addEventListener('click',onSearch);
+let onSearchT=null;by('onSearchInput')?.addEventListener('input',()=>{clearTimeout(onSearchT);onSearchT=setTimeout(onSearch,350);});
+by('onSearchInput')?.addEventListener('keydown',e=>{e.stopPropagation();if(e.key==='Enter')onSearch();});
+['keyup','keypress'].forEach(ev=>by('onSearchInput')?.addEventListener(ev,e=>e.stopPropagation()));
+document.querySelector('.menu-tab[data-menutab="online"]')?.addEventListener('click',()=>{if(sb)onSearch();});
+function sig(o){try{if(online&&online.mch)online.mch.send({type:'broadcast',event:'m',payload:o});}catch(e){}}
+function relay(o){try{if(online&&online.mch)online.mch.send({type:'broadcast',event:'g',payload:o});}catch(e){}}
+function sendCtl(o){if(window._swTx){window._swTx(o);return;}const c=online&&online.ctl;if(c&&c.readyState==='open')c.send(JSON.stringify(o));else relay(o);}
+function sendState(o){if(window._swTx){window._swTx(o);return;}const c=online&&online.st;if(c&&c.readyState==='open')c.send(JSON.stringify(o));else if(online&&(++online.rt%3===0))relay(o);}
+function startSession(role,room,opp){online={role,room,opp,iceQ:[],remoteSet:false,rt:0,joined:false,started:false,over:false,gotState:false,restoreStage:currentStageIdx,lastRx:performance.now()};
+online.mch=sb.channel('match:'+room,{config:{broadcast:{self:false}}}).on('broadcast',{event:'m'},m=>onSig(m.payload)).on('broadcast',{event:'g'},m=>onGame(m.payload)).subscribe(st=>{if(st==='SUBSCRIBED'&&online&&online.role==='guest'&&!online.joinSent){online.joinSent=true;sig({t:'join'});startHandshake();}});}
+function endSession(msg){const o=online;if(o){clearInterval(o.hsTimer);clearTimeout(o.inviteTimer);try{o.pc&&o.pc.close();}catch(e){}try{o.mch&&sb&&sb.removeChannel(o.mch);}catch(e){}if(o.started){try{currentStageIdx=o.restoreStage;}catch(e){}}}
+online=null;window.swOnline=false;clearInterval(netTimer);window._swTx=window._swTx&&window._swTxKeep?window._swTx:null;showOverlay('',false);by('onLeaveBtn').classList.remove('on');
+['rematchBtn','goShopBtn','goCoinsEarned'].forEach(i=>{const e=by(i);if(e)e.style.display='';});
+if(msg){setOnStatus(msg);showAdminBroadcast(msg,'Multiplayer');}else if(myPid)setOnStatus('🟢 Online as '+myName());by('onInviteBtn').disabled=!(onSel&&onSel.online&&myPid);}
+by('onInviteBtn')?.addEventListener('click',async()=>{if(!onSel||online||!myPid||!sb)return;if(gameState==='playing'||gameState==='paused'){setOnStatus('Finish your current match first.');return;}
+const room=Math.random().toString(36).slice(2,10)+Date.now().toString(36);const tgt=onSel;startSession('host',room,{id:tgt.public_id,name:tgt.name});showOverlay('Waiting for '+tgt.name+' to accept...');
+const ok=await sendTo('inbox:'+tgt.public_id,'invite',{room,from_id:myPid,from_name:myName()});if(!ok&&online&&online.room===room){endSession('Could not reach '+tgt.name+'.');return;}
+if(online&&online.room===room)online.inviteTimer=setTimeout(()=>{if(online&&online.room===room&&!online.joined)endSession(tgt.name+' did not answer.');},45000);});
+by('onOverlayCancel')?.addEventListener('click',()=>{const o=online;if(!o||o.started)return;if(o.joined||o.role==='guest')sig({t:'abort'});else sendTo('inbox:'+o.opp.id,'cancel',{room:o.room});endSession('Cancelled.');});
+function closeInvite(){if(pendingInvite){clearTimeout(pendingInvite.t);pendingInvite=null;}by('onInvite').classList.remove('on');}
+function onInvite(p){if(!p||!p.room||!p.from_id||banned)return;if(online||pendingInvite||gameState==='playing'||gameState==='paused'){sendTo('inbox:'+p.from_id,'decline',{room:p.room,busy:true});return;}
+pendingInvite={room:p.room,from_id:p.from_id,from_name:String(p.from_name||'A player').slice(0,24)};by('onInviteText').textContent='🥋 '+pendingInvite.from_name+' invited you to a 1v1!';by('onInvite').classList.add('on');try{playSFX(700,.1,'triangle');}catch(e){}pendingInvite.t=setTimeout(closeInvite,40000);}
+by('onAccept')?.addEventListener('click',()=>{const p=pendingInvite;if(!p||online)return;closeInvite();startSession('guest',p.room,{id:p.from_id,name:p.from_name});showOverlay('Connecting to '+p.from_name+'...');});
+by('onDecline')?.addEventListener('click',()=>{const p=pendingInvite;if(!p)return;closeInvite();sendTo('inbox:'+p.from_id,'decline',{room:p.room});});
+function onDecline(p){if(online&&p&&online.room===p.room&&!online.joined)endSession(online.opp.name+(p.busy?' is busy right now.':' declined your invite.'));}
+function onCancelInvite(p){if(pendingInvite&&p&&pendingInvite.room===p.room)closeInvite();}
+function wireDC(ch){ch.onmessage=e=>{try{onGame(JSON.parse(e.data));}catch(x){}};}
+function makePC(){const o=online;const pc=new RTCPeerConnection(RTC_CFG);o.pc=pc;pc.onicecandidate=e=>{if(e.candidate)sig({t:'ice',c:e.candidate.toJSON?e.candidate.toJSON():e.candidate});};
+if(o.role==='host'){o.st=pc.createDataChannel('s',{ordered:false,maxRetransmits:0});o.ctl=pc.createDataChannel('c');wireDC(o.st);wireDC(o.ctl);}else pc.ondatachannel=e=>{if(e.channel.label==='s')o.st=e.channel;else o.ctl=e.channel;wireDC(e.channel);};return pc;}
+async function flushIce(){const o=online;if(!o||!o.pc)return;const q=o.iceQ;o.iceQ=[];for(const c of q)await o.pc.addIceCandidate(c).catch(()=>{});}
+async function onSig(m){const o=online;if(!o||!m)return;try{
+if(m.t==='abort'){endSession(o.opp.name+' cancelled.');return;}
+if(m.t==='join'&&o.role==='host'){if(o.joined)return;o.joined=true;clearTimeout(o.inviteTimer);showOverlay('Connecting to '+o.opp.name+'...');startHandshake();const pc=makePC();const off=await pc.createOffer();await pc.setLocalDescription(off);sig({t:'offer',d:{type:off.type,sdp:off.sdp}});return;}
+if(m.t==='offer'&&o.role==='guest'){const pc=o.pc||makePC();await pc.setRemoteDescription(m.d);o.remoteSet=true;await flushIce();const ans=await pc.createAnswer();await pc.setLocalDescription(ans);sig({t:'answer',d:{type:ans.type,sdp:ans.sdp}});return;}
+if(m.t==='answer'&&o.role==='host'){await o.pc.setRemoteDescription(m.d);o.remoteSet=true;await flushIce();return;}
+if(m.t==='ice'){if(o.pc&&o.remoteSet)await o.pc.addIceCandidate(m.c).catch(()=>{});else o.iceQ.push(m.c);}
+}catch(e){console.warn('signal error',e);}}
+function startHandshake(){const o=online;if(!o||o.hsTimer)return;o.t0=performance.now();
+const hello=()=>{let ch=null,col=null;try{ch=getChar().id;}catch(e){}try{col=getEquippedSkinColor();}catch(e){}return {t:'hello',host:o.role==='host',name:myName(),char:ch,color:col,cape:(equipped&&equipped.cape)||'none',stage:currentStageIdx};};
+o.hsTimer=setInterval(()=>{if(online!==o||o.gotState||o.over){clearInterval(o.hsTimer);return;}if(performance.now()-o.t0>20000){clearInterval(o.hsTimer);endSession('Could not connect to '+o.opp.name+'.');return;}sendCtl(hello());},600);}
+function onGame(m){const o=online;if(!o||!m)return;o.lastRx=performance.now();
+if(m.t==='hello'){o.oppInfo=m;if(!o.started&&(o.role==='host'||m.host))startOnlineMatch();}
+else if(m.t==='s'){o.pkt=m;o.fresh=true;o.gotState=true;}
+else if(m.t==='hit'){if(o.started&&!o.over&&HIT_TYPES.includes(m.type)){const me=fighters[0],pu=fighters[1];if(me&&pu&&!me.dead&&me.visible)me.hit(m.type,pu);}}
+else if(m.t==='proj'){if(o.started&&!o.over&&fighters[1])projectiles.push({x:m.x,y:m.y,vx:m.vx,vy:m.vy||0,dir:m.dir,owner:fighters[1],life:m.life,w:m.w,h:m.h,color:m.color,isBullet:!!m.isBullet,visual:true});}
+else if(m.t==='end'){if(!o.over)finishOnline(m.res==='win'?'lose':m.res==='lose'?'win':'draw',m.why,true);}}
+function applyNet(pu){const o=online;if(!o||!o.fresh||!o.pkt)return;o.fresh=false;const p=o.pkt;
+const snap=Math.abs(p.x-pu.x)>220||Math.abs(p.y-pu.y)>220||p.visible!==pu.visible||p.respawnTimer>0;
+for(const k of NET_FIELDS){if(k==='x'||k==='y')continue;if(p[k]!==undefined)pu[k]=p[k];}
+if(snap){pu.x=p.x;pu.y=p.y;}else{pu.x+=(p.x-pu.x)*0.6;pu.y+=(p.y-pu.y)*0.6;}}
+function startOnlineMatch(){const o=online;if(!o||o.started)return;o.started=true;showOverlay('',false);window.swOnline=true;
+const oi=o.oppInfo||{};const savedCpu=cpuCount;currentStageIdx=(o.role==='host')?currentStageIdx:((typeof oi.stage==='number')?oi.stage:currentStageIdx);cpuCount=1;
+try{startGame();}finally{cpuCount=savedCpu;}
+const me=fighters[0],old=fighters[1];const oc=CHARACTERS.find(c=>c.id===oi.char)||CHARACTERS[0];
+const pu=new Fighter(1,old.x,false,'easy',oc);pu.name=String(oi.name||o.opp.name||'Player').slice(0,16).toUpperCase();pu.color=(oi.color&&oi.color!==me.color)?oi.color:(me.color==='#ff5566'?'#55aaff':'#ff5566');pu.equippedCape=oi.cape||'none';pu.facing=-1;pu.isRemote=true;
+pu.handleAI=function(){};pu.checkBlastZone=function(){};
+pu.hit=function(type){if(this.dead||!this.visible||o.over)return;sendCtl({t:'hit',type});spawnParticles(this.cx,this.cy,'#ffffff',6);try{playSFX(350,.06,'square');}catch(e){}hitStop=Math.max(hitStop,0.04);this.hitFlash=0.12;};
+const upd=Fighter.prototype.update;pu.update=function(dt,en){applyNet(this);upd.call(this,dt,en);};
+fighters[1]=pu;if(o.role==='guest'){const lx=me.x;me.x=pu.x;pu.x=lx;me.facing=-1;pu.facing=1;}
+guns.length=0;gunSpawnTimer=1e9;try{meleeClock=1e9;meleeDrops=[];}catch(e){}
+buildHUD();by('onLeaveBtn').classList.add('on');showAdminBroadcast('Match vs '+pu.name+' — good luck!','Multiplayer');
+clearInterval(netTimer);netTimer=setInterval(netTick,33);}
+function netTick(){const o=online;if(!o||!o.started||o.over||gameState!=='playing')return;const me=fighters[0];if(!me)return;const p={t:'s'};for(const k of NET_FIELDS){const v=me[k];p[k]=typeof v==='number'?+v.toFixed(2):v;}sendState(p);
+for(const pr of projectiles){if(pr.owner===me&&!pr._sent&&!pr.visual){pr._sent=true;sendCtl({t:'proj',x:pr.x,y:pr.y,vx:pr.vx,vy:pr.vy||0,dir:pr.dir,life:pr.life,w:pr.w,h:pr.h,color:pr.color,isBullet:!!pr.isBullet});}}
+if(performance.now()-o.lastRx>10000)finishOnline('win','Opponent disconnected',true);}
+window.swOnlineCheck=function(){const o=online;if(!o||o.over||!o.started)return;const me=fighters[0],op=fighters[1];if(!me||!op)return;let res=null;
+if(me.dead&&op.dead)res='draw';else if(me.dead)res='lose';else if(op.dead)res='win';
+else if(stageTimer<=0){if(me.stocks!==op.stocks)res=me.stocks>op.stocks?'win':'lose';else if(Math.abs(me.damage-op.damage)<1)res='draw';else res=me.damage<op.damage?'win':'lose';}
+if(res)finishOnline(res);};
+function finishOnline(res,why,fromRemote){const o=online;if(!o||o.over)return;o.over=true;if(!fromRemote)sendCtl({t:'end',res,why});
+gameState='gameover';const me=fighters[0]||{},op=fighters[1]||{};
+const title=by('go-title');title.textContent=res==='win'?'YOU WIN!':res==='lose'?'YOU LOSE':'DRAW!';title.style.color=res==='win'?'#ffd700':res==='lose'?'#ff5566':'#ffffff';
+by('go-sub').textContent=why||('Online match vs '+o.opp.name);by('go-badge').textContent=res==='win'?'🏆':res==='lose'?'💀':'🤝';
+const st=[{l:'Your Stocks',v:me.stocks!==undefined?Math.max(0,me.stocks):0},{l:'Their Stocks',v:op.stocks!==undefined?Math.max(0,op.stocks):0},{l:'Your Damage',v:Math.round(me.damage||0)+'%'},{l:'Their Damage',v:Math.round(op.damage||0)+'%'}];
+by('go-stats').innerHTML=st.map((x,i)=>'<div class="go-stat-card" style="animation-delay:'+(0.15+i*0.08)+'s"><div class="go-stat-val">'+x.v+'</div><div class="go-stat-label">'+x.l+'</div></div>').join('');
+['rematchBtn','goShopBtn','goCoinsEarned'].forEach(i=>{const e=by(i);if(e)e.style.display='none';});
+by('game-over-screen').style.display='flex';by('game-wrap').style.display='none';by('hud').style.display='none';by('onLeaveBtn').classList.remove('on');
+try{if(res==='win')launchConfetti();}catch(e){}}
+by('onLeaveBtn')?.addEventListener('click',()=>{if(online&&online.started&&!online.over&&confirm('Leave the match? You will lose.'))finishOnline('lose','You left the match');});
+window.swOnlineLeave=function(){if(online){if(online.started&&!online.over)sendCtl({t:'end',res:'lose',why:'Opponent left the match'});endSession();}};
+window._swOnTest={begin(role,opp,tx){window._swTx=tx;window._swTxKeep=true;online={role,room:'t',opp,iceQ:[],remoteSet:false,rt:0,joined:true,started:false,over:false,gotState:false,restoreStage:currentStageIdx,lastRx:performance.now()};startHandshake();},recv:onGame,get online(){return online;}};
 window._swTest={applyActions};
+
 })();
 </script>
 </body>
