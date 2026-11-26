@@ -9624,7 +9624,7 @@ try{startGame();}finally{cpuCount=savedCpu;}
 const me=fighters[0],old=fighters[1];const oc=CHARACTERS.find(c=>c.id===oi.char)||CHARACTERS[0];
 const pu=new Fighter(1,old.x,false,'easy',oc);pu.name=String(oi.name||o.opp.name||'Player').slice(0,16).toUpperCase();pu.color=(oi.color&&oi.color!==me.color)?oi.color:(me.color==='#ff5566'?'#55aaff':'#ff5566');pu.equippedCape=oi.cape||'none';pu.facing=-1;pu.isRemote=true;
 pu.handleAI=function(){};pu.checkBlastZone=function(){};
-pu.hit=function(type){if(this.dead||!this.visible||o.over)return;sendCtl({t:'hit',type});spawnParticles(this.cx,this.cy,'#ffffff',6);try{playSFX(350,.06,'square');}catch(e){}hitStop=Math.max(hitStop,0.04);this.hitFlash=0.12;};
+const baseHit=Fighter.prototype.hit;pu.hit=function(type,attacker){if(this.dead||!this.visible||o.over)return;sendCtl({t:'hit',type});const sc=this.counterActive;this.counterActive=false;try{baseHit.call(this,type,attacker||fighters[0]);}catch(e){spawnParticles(this.cx,this.cy,'#ffffff',6);}this.counterActive=sc;};
 const upd=Fighter.prototype.update;pu.update=function(dt,en){applyNet(this);upd.call(this,dt,en);};
 fighters[1]=pu;if(o.role==='guest'){const lx=me.x;me.x=pu.x;pu.x=lx;me.facing=-1;pu.facing=1;}
 guns.length=0;gunSpawnTimer=1e9;try{meleeClock=1e9;meleeDrops=[];}catch(e){}
