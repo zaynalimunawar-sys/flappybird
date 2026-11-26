@@ -9773,6 +9773,80 @@ window._swTest={applyActions};
 
 })();
 </script>
-</body>
+<style id="shop-pass-polish">
+/* SHOP: clearer browsing, reward rarity, and lively cards */
+#shop-screen{background:radial-gradient(ellipse at 50% -10%,#253978 0%,#17102e 42%,#090b18 100%)}
+#shop-screen.active{animation:shopScreenIn .36s ease-out both}
+.shop-topbar{background:rgba(8,12,29,.9);border-bottom:1px solid #7bbdff55;box-shadow:0 8px 26px #0005}
+.shop-title{color:#b8f5ff;text-shadow:0 0 8px #00d4ff,0 0 26px #00aaff99;animation:shopTitleGlow 2.4s ease-in-out infinite}
+.shop-coins{box-shadow:0 0 18px #ffbd3b2e,inset 0 1px #fff4;transition:transform .2s,box-shadow .2s}
+.shop-coins:hover{transform:translateY(-2px) scale(1.04);box-shadow:0 0 26px #ffc94f77,inset 0 1px #fff8}
+.shop-close-btn{transition:transform .18s,border-color .18s,background .18s}
+.shop-close-btn:hover{transform:rotate(-3deg) scale(1.04);background:#00d4ff1c}
+.shop-tabs{gap:6px;padding-top:8px;padding-bottom:4px;border-bottom:1px solid #627fc433}
+.shop-tab{position:relative;border-radius:12px 12px 4px 4px;transition:color .2s,background .2s,transform .2s,border-color .2s}
+.shop-tab:hover{background:#ffffff10;transform:translateY(-2px)}
+.shop-tab.active{background:linear-gradient(180deg,#00d4ff1b,transparent);text-shadow:0 0 12px currentColor}
+.shop-tab.active::after{content:"";position:absolute;left:18%;right:18%;bottom:-2px;height:3px;border-radius:9px;background:linear-gradient(90deg,#00d4ff,#bb76ff);box-shadow:0 0 14px #00d4ff;animation:shopTabGlow 1.8s ease-in-out infinite}
+.shop-grid{gap:18px;max-width:1040px}
+.shop-card{isolation:isolate;animation:shopCardIn .34s cubic-bezier(.2,.8,.2,1) both;border-color:#ffffff20;box-shadow:0 10px 24px #0003,inset 0 1px #ffffff12;transition:transform .24s cubic-bezier(.2,.8,.2,1),border-color .2s,box-shadow .2s,background .2s}
+.shop-card::before{content:"";position:absolute;z-index:-1;inset:-30% auto -30% -70%;width:46%;transform:skewX(-18deg);background:linear-gradient(90deg,transparent,#ffffff26,transparent);pointer-events:none}
+.shop-card:hover{transform:translateY(-7px) scale(1.025);border-color:#ffffff66;box-shadow:0 18px 32px #0007,0 0 20px #67baff2e,inset 0 1px #ffffff30}
+.shop-card:hover::before{animation:shopCardShine .72s ease-out}
+.shop-card.rarity-rare:hover{box-shadow:0 18px 32px #0007,0 0 24px #3ca0ff77}
+.shop-card.rarity-epic:hover{box-shadow:0 18px 32px #0007,0 0 26px #be3cff88}
+.shop-card.rarity-legendary:hover{box-shadow:0 18px 32px #0007,0 0 30px #ffbe28aa}
+.shop-card-icon{transition:transform .28s cubic-bezier(.2,.8,.2,1),filter .2s}
+.shop-card:hover .shop-card-icon{transform:translateY(-4px) rotate(-5deg) scale(1.13);filter:drop-shadow(0 0 14px currentColor)}
+.shop-card-btn{transition:transform .16s,filter .16s,box-shadow .16s}
+.shop-card-btn:hover{transform:translateY(-2px) scale(1.035);filter:brightness(1.15);box-shadow:0 5px 16px #00aaff55}
+.shop-card-btn:active{transform:scale(.97)}
+.shop-featured-banner{animation:featuredBannerIn .48s cubic-bezier(.2,.8,.2,1) both;box-shadow:0 12px 36px #ff3c9666,inset 0 1px #ffffff5c}
+.shop-featured-price:hover{box-shadow:0 0 24px #fff8}
+.op-hero{animation:featuredBannerIn .48s cubic-bezier(.2,.8,.2,1) both}
+.op-card{animation:shopCardIn .38s cubic-bezier(.2,.8,.2,1) both}
+.op-card:nth-child(2){animation-delay:.04s}.op-card:nth-child(3){animation-delay:.08s}.op-card:nth-child(4){animation-delay:.12s}.op-card:nth-child(5){animation-delay:.16s}
+
+/* PASS: make season progress and reward tracks feel like one event hub */
+#pass-screen{background:radial-gradient(ellipse at 78% 0%,#55247f 0%,#190e31 42%,#080b18 100%)!important}
+#pass-screen.active{animation:shopScreenIn .38s ease-out both}
+.new-pass-bar{position:sticky;top:0;z-index:10;padding:10px 0 12px;background:linear-gradient(180deg,#100c21f2,#100c21df);backdrop-filter:blur(16px);border-bottom:1px solid #c273ff66;box-shadow:0 8px 24px #0005}
+.new-pass-bar button{transition:transform .18s,filter .18s,box-shadow .18s!important}
+.new-pass-bar button:hover{transform:translateY(-2px);filter:brightness(1.18);box-shadow:0 6px 18px #a84dff55}
+.new-pass-bar .np-tab.active{box-shadow:0 0 20px #bd69ff77,inset 0 1px #ffffff55}
+.new-pass-hero section{position:relative;overflow:hidden;box-shadow:0 14px 30px #0004,inset 0 1px #ffffff24;transition:transform .22s,box-shadow .22s}
+.new-pass-hero section:hover{transform:translateY(-3px);box-shadow:0 18px 38px #0006,0 0 22px #a449ee4d,inset 0 1px #ffffff35}
+.new-pass-hero section::after{content:"";position:absolute;top:-40%;bottom:-40%;left:-65%;width:30%;transform:skewX(-20deg);background:linear-gradient(90deg,transparent,#ffffff1c,transparent);pointer-events:none;animation:passHeroSweep 5s ease-in-out infinite}
+.npCrown{animation:passCrownFloat 2.3s ease-in-out infinite;filter:drop-shadow(0 0 16px #e568ff77)}
+.np-ben-card{transition:transform .2s,border-color .2s,box-shadow .2s}
+.np-ben-card:hover{transform:translateY(-4px);border-color:#e2a6ff;box-shadow:0 8px 20px #ba58ff33}
+.npProgress{padding:12px 14px;border:1px solid #9d5ad255;border-radius:14px;background:linear-gradient(100deg,#1b1231dd,#140d24dd);box-shadow:inset 0 1px #ffffff12}
+.np-tier-badge{color:#ffe6a0;border-color:#d492ff;background:linear-gradient(135deg,#412157,#241139);box-shadow:0 0 16px #b35bff44}
+.npProgress .pass-xp-bar-wrap{height:12px;border:1px solid #d9a2ff66;box-shadow:0 0 14px #ad50ff55}
+.npProgress .pass-xp-bar{position:relative;overflow:hidden}
+.npProgress .pass-xp-bar::after{content:"";position:absolute;inset:0;width:40%;background:linear-gradient(90deg,transparent,#ffffffb5,transparent);animation:passXpShine 2s ease-in-out infinite}
+#passSummary{color:#ffe194;font-weight:900}
+#npScroll{scroll-behavior:smooth;scrollbar-width:thin;scrollbar-color:#c36aff #201333}
+#npScroll>div{padding:4px 2px}
+.npTile{transition:transform .2s,filter .2s}
+.npTile:hover{transform:translateY(-4px);filter:brightness(1.16)}
+.npTile button{position:relative;overflow:hidden;transition:transform .18s,border-color .18s,box-shadow .18s!important}
+.npTile button:hover:not(:disabled){transform:scale(1.08);box-shadow:0 0 24px #dc9affaa}
+.npTile.ready button{animation:passReadyPulse 1.6s ease-in-out infinite}
+.npTile.gold button{background:linear-gradient(145deg,#583c15,#281b0b)!important;border-color:#ffe28a!important}
+#pass-screen .pass-track-scroll{display:none!important}
+@keyframes shopScreenIn{from{opacity:0}to{opacity:1}}
+@keyframes shopTitleGlow{50%{text-shadow:0 0 13px #00d4ff,0 0 34px #00aaff}}
+@keyframes shopTabGlow{50%{opacity:.55;box-shadow:0 0 22px #bd6aff}}
+@keyframes shopCardShine{to{left:130%}}
+@keyframes shopCardIn{from{opacity:0;transform:translateY(14px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes featuredBannerIn{from{opacity:0;transform:translateY(10px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes passHeroSweep{0%,65%{left:-65%}100%{left:135%}}
+@keyframes passCrownFloat{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-7px) rotate(3deg)}}
+@keyframes passXpShine{0%,35%{transform:translateX(-130%)}75%,100%{transform:translateX(280%)}}
+@keyframes passReadyPulse{50%{box-shadow:0 0 20px #f5c759bb,0 0 30px #bb68ff55}}
+@media(max-width:680px){.shop-tabs{overflow-x:auto;flex-wrap:nowrap!important;scrollbar-width:none}.shop-tab{flex:0 0 auto!important}.shop-grid{grid-template-columns:repeat(auto-fill,minmax(142px,1fr))}}
+@media(prefers-reduced-motion:reduce){#shop-screen.active,#pass-screen.active,.shop-title,.shop-featured-banner,.op-hero,.op-card,.shop-card,.new-pass-hero section::after,.npCrown,.npProgress .pass-xp-bar::after,.npTile.ready button{animation:none!important}.shop-card,.shop-featured-price,.new-pass-bar button,.new-pass-hero section,.np-ben-card,.npTile,.npTile button{transition:none!important}}
+</style></body>
 
 </html>
