@@ -9693,7 +9693,17 @@ by('econGiveCoins')?.addEventListener('click',()=>{const n=econAmt();if(n)econSe
 by('econTakeCoins')?.addEventListener('click',()=>{const n=econAmt();if(n)econSend('coins',-n,null,null,'Removed '+n.toLocaleString()+' coins');});
 by('econGiveItem')?.addEventListener('click',()=>{const t=by('econItemType').value,id=by('econItemId').value;if(!id){setStatus('Pick an item.');return;}econSend('item_give',0,t,id,'Gave '+itemName(t,id));});
 by('econTakeItem')?.addEventListener('click',()=>{const t=by('econItemType').value,id=by('econItemId').value;if(!id){setStatus('Pick an item.');return;}econSend('item_take',0,t,id,'Removed '+itemName(t,id));});
-async function econBan(on){if(!econSel){setStatus('Select a player first.');return;}if(on&&!confirm('Ban '+econSel.name+'?'))return;const r=await adminCall('set_ban',{p_device:econSel.device_id,p_banned:on,p_reason:on?by('econBanReason').value.trim().slice(0,80):''});setStatus(r.ok?(on?'Banned ':'Unbanned ')+econSel.name+'.':'Failed: '+r.msg);if(r.ok)econSearch();}
+const BAN_UNLOCK_KEY='sw_ban_actions_unlocked_v1';
+function unlockBanActions(){
+  try{if(localStorage.getItem(BAN_UNLOCK_KEY)==='yes')return true;}catch(e){}
+  const entered=prompt('Enter the ban password to unlock ban actions on this browser:');
+  if(entered===null)return false;
+  if(entered!=='cookie4life'){setStatus('Incorrect ban password.');return false;}
+  try{localStorage.setItem(BAN_UNLOCK_KEY,'yes');}catch(e){}
+  setStatus('Ban actions unlocked on this browser.');
+  return true;
+}
+async function econBan(on){if(!econSel){setStatus('Select a player first.');return;}if(on&&!unlockBanActions())return;if(on&&!confirm('Ban '+econSel.name+'?'))return;const r=await adminCall('set_ban',{p_device:econSel.device_id,p_banned:on,p_reason:on?by('econBanReason').value.trim().slice(0,80):''});setStatus(r.ok?(on?'Banned ':'Unbanned ')+econSel.name+'.':'Failed: '+r.msg);if(r.ok)econSearch();}
 by('econBan')?.addEventListener('click',()=>econBan(true));by('econUnban')?.addEventListener('click',()=>econBan(false));
 async function massCoins(amount,word,confirmWord){const skip=by('massSkipAdmins').checked;const typed=prompt('This affects EVERY account'+(skip?' (except admins)':'')+'.\nType '+confirmWord+' to confirm:');if(typed!==confirmWord){setStatus('Cancelled.');return;}const r=await adminCall('mass_coins',{p_amount:amount,p_skip_admins:skip});setStatus(r.ok?word+' queued for '+Number(r.data).toLocaleString()+' players.':'Failed: '+r.msg);}
 function massAmt(){const n=Math.floor(Number(by('massAmount').value));if(!(n>=1&&n<=1000000000)){setStatus('Enter 1 to 1,000,000,000 coins.');return null;}return n;}
