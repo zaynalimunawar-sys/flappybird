@@ -2575,7 +2575,7 @@ body.is-phone #hud{padding:max(8px,env(safe-area-inset-top)) 8px 0;gap:5px}body.
 <body>
 <!-- ===== SUPABASE SETTINGS: paste your two values between the quotes ===== -->
 <script>
-window.SW_SUPABASE_URL = 'https://askienwfsobbcbirvxyn.supabase.co';
+window.SW_SUPABASE_URL = 'https://askienwfsobbcbirvxyn.supabase.co/';
 window.SW_SUPABASE_KEY = 'sb_publishable_-yVcznlqJ5IoTjrK_oXSfQ_dGegqjXU';
 </script>
 
@@ -9312,7 +9312,7 @@ for(const p of particles){p.life-=dt;if(p.life<=0)continue;p.x+=p.vx*dt;p.y+=p.v
 #savedAdminBtn .adm-shield{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;background:linear-gradient(145deg,#d27bff,#7e22ce);font-size:15px}
 #savedAdminBtn .adm-text{display:flex;flex-direction:column;align-items:flex-start;line-height:1.05}#savedAdminBtn .adm-title{font-size:14px;font-weight:900;letter-spacing:1.8px}#savedAdminBtn .adm-sub{font-size:9px;font-weight:700;letter-spacing:1.4px;color:#d9b8ff}
 #savedAdminBtn .adm-dot{width:8px;height:8px;border-radius:50%;background:#55ffaa;box-shadow:0 0 10px #55ffaa;animation:adm-pulse 2.2s ease-in-out infinite}@keyframes adm-pulse{50%{opacity:.55;transform:scale(.85)}}
-#adminBroadcastBanner{position:fixed;top:max(14px,env(safe-area-inset-top));left:50%;transform:translate(-50%,-130%);z-index:9999;min-width:min(92vw,560px);max-width:94vw;display:flex;align-items:center;gap:12px;padding:13px 18px;border-radius:16px;background:linear-gradient(115deg,#2c0f4d,#5f1c9c 50%,#260c42);border:1.5px solid #ebb8ff;color:#fff;box-shadow:0 0 32px #c45effaa,0 12px 30px rgba(0,0,0,.65);opacity:0;pointer-events:none;transition:transform .38s cubic-bezier(.2,.9,.2,1),opacity .28s;font-family:'Rajdhani',Arial,sans-serif}
+#adminBroadcastBanner{position:fixed;top:max(14px,env(safe-area-inset-top));left:50%;transform:translate(-50%,-130%);z-index:99999;min-width:min(92vw,560px);max-width:94vw;display:flex;align-items:center;gap:12px;padding:13px 18px;border-radius:16px;background:linear-gradient(115deg,#2c0f4d,#5f1c9c 50%,#260c42);border:1.5px solid #ebb8ff;color:#fff;box-shadow:0 0 32px #c45effaa,0 12px 30px rgba(0,0,0,.65);opacity:0;pointer-events:none;transition:transform .38s cubic-bezier(.2,.9,.2,1),opacity .28s;font-family:'Rajdhani',Arial,sans-serif}
 #adminBroadcastBanner.show{transform:translate(-50%,0);opacity:1;pointer-events:auto}#adminBroadcastBanner .ab-icon{font-size:22px}#adminBroadcastBanner .ab-body{display:flex;flex-direction:column;min-width:0;flex:1}#adminBroadcastBanner .ab-label{font-size:10px;font-weight:900;letter-spacing:2.2px;color:#ffd878}#adminBroadcastBanner .ab-msg{font-size:16px;font-weight:800;word-break:break-word}#adminBroadcastBanner .ab-close{background:none;border:0;color:#e5c5ff;font-size:16px;cursor:pointer}
 .admin-panel-box{max-height:90vh;overflow-y:auto}.admin-broadcast-section,.admin-roster-section{margin:14px 0 8px;padding:12px;border-radius:12px;border:1px solid #8a56c477;background:#120922b8;text-align:left}
 .admin-roster-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-weight:800;font-size:13px;color:#f2d8ff}.admin-roster-head small{font-size:10px;color:#b89cd9}
@@ -9347,17 +9347,22 @@ const ROSTER_KEY='stickman_admin_roster_v1',BCAST_KEY='stickman_admin_broadcast_
 const loadRoster=()=>{try{const d=JSON.parse(localStorage.getItem(ROSTER_KEY)||'[]');return Array.isArray(d)?d:[];}catch(e){return [];}};
 const saveRoster=l=>{try{localStorage.setItem(ROSTER_KEY,JSON.stringify(l));}catch(e){}};
 let bcastTimer=null;
-function showAdminBroadcast(msg,sender){const b=by('adminBroadcastBanner');if(!b||!msg)return;by('abLabel').textContent='ADMIN ANNOUNCEMENT'+(sender?' · '+String(sender).toUpperCase():'');by('abMsg').textContent=msg;b.classList.add('show');clearTimeout(bcastTimer);bcastTimer=setTimeout(()=>b.classList.remove('show'),6500);try{playSFX(660,.12,'triangle');setTimeout(()=>{try{playSFX(880,.16,'triangle');}catch(e){}},110);}catch(e){}}
+function showAdminBroadcast(msg,sender){const b=by('adminBroadcastBanner');if(!b||!msg)return;by('abLabel').textContent='ADMIN ANNOUNCEMENT'+(sender?' · '+String(sender).toUpperCase():'');by('abMsg').textContent=msg;b.classList.add('show');clearTimeout(bcastTimer);bcastTimer=setTimeout(()=>b.classList.remove('show'),7000);try{playSFX(660,.12,'triangle');setTimeout(()=>{try{playSFX(880,.16,'triangle');}catch(e){}},110);}catch(e){}}
 by('abClose')?.addEventListener('click',()=>by('adminBroadcastBanner').classList.remove('show'));
 let bc=null;try{bc=new BroadcastChannel('stickman_wars_admin_broadcast');bc.onmessage=e=>{if(e.data&&e.data.msg)showAdminBroadcast(e.data.msg,e.data.sender);};}catch(e){}
-const SUPABASE_URL=String(window.SW_SUPABASE_URL||''),SUPABASE_ANON_KEY=String(window.SW_SUPABASE_KEY||'');
-const SB_READY=/^https:\/\/.+\.supabase\.co/.test(SUPABASE_URL)&&SUPABASE_ANON_KEY.length>20&&!/PASTE_/.test(SUPABASE_ANON_KEY);
-let sb=null;
-function initSupabase(){if(!SB_READY||!window.supabase)return;try{sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);sb.channel('announcements').on('postgres_changes',{event:'INSERT',schema:'public',table:'announcements'},p=>{if(p.new&&p.new.message)showAdminBroadcast(p.new.message,p.new.sender);}).subscribe();}catch(e){console.warn('Supabase init failed',e);}}
-if(SB_READY){const sc=document.createElement('script');sc.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';sc.onload=initSupabase;document.head.appendChild(sc);}
+const SUPABASE_URL=String(window.SW_SUPABASE_URL||'').trim().replace(/\/+$/,'').replace(/\/(rest|auth)\/v1.*$/,''),SUPABASE_ANON_KEY=String(window.SW_SUPABASE_KEY||'').trim();
+const SB_READY=/^https:\/\/.+\.supabase\.co$/.test(SUPABASE_URL)&&SUPABASE_ANON_KEY.length>20&&!/PASTE_/.test(SUPABASE_ANON_KEY);
+let sb=null,lastId=null,polling=false;
+function handleRow(r){if(!r||r.id==null)return;if(lastId!==null&&r.id<=lastId)return;lastId=r.id;showAdminBroadcast(r.message,r.sender);}
+async function pollNew(){if(!sb||polling||lastId===null)return;polling=true;try{const {data,error}=await sb.from('announcements').select('id,message,sender').gt('id',lastId).order('id',{ascending:true}).limit(5);if(error)console.warn('Announcements poll error',error.message);else if(data&&data.length){const top=data[data.length-1];lastId=top.id;showAdminBroadcast(top.message,top.sender);}}catch(e){console.warn(e);}polling=false;}
+async function initSupabase(){if(!SB_READY||!window.supabase)return;try{sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+const {data}=await sb.from('announcements').select('id').order('id',{ascending:false}).limit(1);lastId=(data&&data[0])?data[0].id:0;
+sb.channel('announcements-live').on('postgres_changes',{event:'INSERT',schema:'public',table:'announcements'},p=>handleRow(p.new)).subscribe(st=>console.log('Announcements realtime:',st));
+setInterval(pollNew,3000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)pollNew();});}catch(e){console.warn('Supabase init failed',e);}}
+if(SB_READY){const sc=document.createElement('script');sc.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';sc.onload=initSupabase;sc.onerror=()=>console.warn('Could not load Supabase library');document.head.appendChild(sc);}
 async function sendGlobalAnnouncement(msg,sender){if(!sb)return false;let key=localStorage.getItem('sw_admin_key')||prompt('Admin key:');if(!key)return false;const {error}=await sb.rpc('post_announcement',{p_key:key,p_message:msg,p_sender:sender});if(error){localStorage.removeItem('sw_admin_key');return false;}localStorage.setItem('sw_admin_key',key);return true;}
 async function sendAdminBroadcast(){const inp=by('adminBroadcastInput');if(!inp)return;const msg=inp.value.trim();if(!msg)return;const sender=typeof playerUsername==='string'&&playerUsername.trim()?playerUsername.trim():'Admin';const st=by('adminStatusMsg');
-if(sb){const ok=await sendGlobalAnnouncement(msg,sender);if(st)st.textContent=ok?'Announcement sent to ALL players!':'Not authorized: wrong admin key.';if(ok)inp.value='';return;}
+if(sb){const ok=await sendGlobalAnnouncement(msg,sender);if(st)st.textContent=ok?'Announcement sent to ALL players!':'Not authorized: wrong admin key.';if(ok){inp.value='';setTimeout(pollNew,400);}return;}
 const payload={msg,sender,ts:Date.now()};showAdminBroadcast(msg,sender);try{if(bc)bc.postMessage(payload);}catch(e){}try{localStorage.setItem(BCAST_KEY,JSON.stringify(payload));}catch(e){}inp.value='';if(st)st.textContent=SB_READY?'Supabase still loading; sent locally only.':'Sent locally. Paste your Supabase URL and key at the top of the file.';}
 by('adminBroadcastBtn')?.addEventListener('click',sendAdminBroadcast);
 by('adminBroadcastInput')?.addEventListener('keydown',e=>{if(e.key==='Enter')sendAdminBroadcast();});
