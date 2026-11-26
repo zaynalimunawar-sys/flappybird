@@ -2778,6 +2778,7 @@ body.is-phone #hud{padding:max(8px,env(safe-area-inset-top)) 8px 0;gap:5px}body.
     <div class="menu-btn-row">
       <button class="shop-open-btn" id="shopOpenBtn">🛒 SHOP</button>
       <button class="pass-open-btn" id="passOpenBtn">🎫 PASS</button>
+      <button class="quick-open-btn" id="howToPlayBtn">❔ HOW TO PLAY</button>
       <button class="quick-open-btn" id="quickProfileBtn">⭐ PROFILE</button>
       
     </div>
@@ -9645,7 +9646,8 @@ by('econGiveItem')?.addEventListener('click',()=>{const t=by('econItemType').val
 by('econTakeItem')?.addEventListener('click',()=>{const t=by('econItemType').value,id=by('econItemId').value;if(!id){setStatus('Pick an item.');return;}econSend('item_take',0,t,id,'Removed '+itemName(t,id));});
 async function econBan(on){if(!econSel){setStatus('Select a player first.');return;}if(on&&!confirm('Ban '+econSel.name+'?'))return;const r=await adminCall('set_ban',{p_device:econSel.device_id,p_banned:on,p_reason:on?by('econBanReason').value.trim().slice(0,80):''});setStatus(r.ok?(on?'Banned ':'Unbanned ')+econSel.name+'.':'Failed: '+r.msg);if(r.ok)econSearch();}
 by('econBan')?.addEventListener('click',()=>econBan(true));by('econUnban')?.addEventListener('click',()=>econBan(false));
-async function massCoins(amount,word,confirmWord){const skip=by('massSkipAdmins').checked;const typed=prompt('This affects EVERY account'+(skip?' (except admins)':'')+'.\nType '+confirmWord+' to confirm:');if(typed!==confirmWord){setStatus('Cancelled.');return;}const r=await adminCall('mass_coins',{p_amount:amount,p_skip_admins:skip});setStatus(r.ok?word+' queued for '+Number(r.data).toLocaleString()+' players.':'Failed: '+r.msg);}
+async function massCoins(amount,word,confirmWord){const skip=by('massSkipAdmins').checked;const typed=prompt('This affects EVERY account'+(skip?' (except admins)':'')+'.
+Type '+confirmWord+' to confirm:');if(typed!==confirmWord){setStatus('Cancelled.');return;}const r=await adminCall('mass_coins',{p_amount:amount,p_skip_admins:skip});setStatus(r.ok?word+' queued for '+Number(r.data).toLocaleString()+' players.':'Failed: '+r.msg);}
 function massAmt(){const n=Math.floor(Number(by('massAmount').value));if(!(n>=1&&n<=1000000000)){setStatus('Enter 1 to 1,000,000,000 coins.');return null;}return n;}
 by('massRemove')?.addEventListener('click',()=>{const n=massAmt();if(n)massCoins(-n,'Removing '+n.toLocaleString()+' coins','REMOVE');});
 by('massGive')?.addEventListener('click',()=>{const n=massAmt();if(n)massCoins(n,'Giving '+n.toLocaleString()+' coins','GIVE');});
@@ -9926,6 +9928,62 @@ const doAttackOriginal=Fighter.prototype.doAttack;Fighter.prototype.doAttack=fun
 // Remove the seasonal cosmetics from the everyday catalog; they are still equipped normally.
 let holidayWasOpen=eventOpen();
 const countdownTimer=setInterval(()=>{if(activeShopTab!=='holiday'||!document.getElementById('shop-screen').classList.contains('active'))return;const nowOpen=eventOpen();if(nowOpen!==holidayWasOpen){holidayWasOpen=nowOpen;renderHolidayShop();return;}const el=document.getElementById('holidayCountdown');if(!el)return;const left=Math.max(0,END_AT-Date.now()),d=Math.floor(left/86400000),h=Math.floor(left%86400000/3600000),m=Math.floor(left%3600000/60000),sec=Math.floor(left%60000/1000);el.textContent=nowOpen?`ENDS IN ${d}D ${String(h).padStart(2,'0')}H ${String(m).padStart(2,'0')}M ${String(sec).padStart(2,'0')}S`:'EVENT ENDED · DEC 31, 2027';},1000);
+})();
+</script><style id="first-run-tutorial-style">
+#firstRunTutorial{position:fixed;inset:0;z-index:11001;display:none;align-items:center;justify-content:center;padding:max(18px,env(safe-area-inset-top)) 16px max(18px,env(safe-area-inset-bottom));background:rgba(5,8,20,.84);backdrop-filter:blur(12px);}
+#firstRunTutorial.open{display:flex;animation:tutorialBackdrop .24s ease-out both}
+#firstRunTutorial .tutorial-card{width:min(540px,100%);max-height:min(88dvh,720px);overflow:auto;padding:clamp(20px,5vw,34px);border:1px solid #8fdfff88;border-radius:24px;background:radial-gradient(ellipse at 90% 0%,#294a7a88,transparent 42%),linear-gradient(155deg,#162342,#0b1020 70%);box-shadow:0 26px 90px #000b,0 0 38px #45cfff2a;animation:tutorialCardIn .36s cubic-bezier(.2,.8,.2,1) both;color:#f4f7ff;font-family:'Rajdhani',Arial,sans-serif;}
+#firstRunTutorial .tutorial-kicker{color:#89dcff;font-size:.72rem;font-weight:900;letter-spacing:3px;text-transform:uppercase}
+#firstRunTutorial h2{margin:4px 0 4px;font:clamp(2rem,7vw,3rem) Bangers,Impact,sans-serif;letter-spacing:2px;color:#fff;text-shadow:0 0 22px #48caff88}
+#firstRunTutorial .tutorial-step-label{color:#b8cbe9;font-size:.8rem;font-weight:800;letter-spacing:1px}
+#firstRunTutorial .tutorial-progress{height:6px;margin:14px 0 20px;border-radius:99px;background:#ffffff18;overflow:hidden}
+#firstRunTutorial .tutorial-progress i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#39dbff,#af83ff);box-shadow:0 0 14px #4bcaff;transition:width .28s ease}
+#firstRunTutorial .tutorial-copy{margin:0 0 16px;color:#d7e4f8;font-size:1rem;line-height:1.45}
+#firstRunTutorial .tutorial-controls{display:grid;gap:9px}
+#firstRunTutorial .tutorial-control{display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid #ffffff18;border-radius:12px;background:#ffffff08}
+#firstRunTutorial kbd{min-width:70px;padding:6px 9px;border:1px solid #7edbff88;border-bottom-width:3px;border-radius:8px;background:#102744;color:#c9f4ff;text-align:center;font:900 .85rem Rajdhani,Arial,sans-serif;white-space:nowrap}
+#firstRunTutorial .tutorial-control span{color:#eff5ff;font-weight:700;line-height:1.25}
+#firstRunTutorial .tutorial-tip{margin:14px 0 0;padding:10px 12px;border-left:3px solid #b387ff;border-radius:0 10px 10px 0;background:#a46cff14;color:#d9caff;font-size:.84rem;line-height:1.35}
+#firstRunTutorial .tutorial-actions{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:22px}
+#firstRunTutorial button{min-height:42px;padding:9px 16px;border:1px solid #ffffff2b;border-radius:11px;background:#ffffff0d;color:#edf4ff;font:800 .9rem Rajdhani,Arial,sans-serif;cursor:pointer;transition:transform .16s,filter .16s,box-shadow .16s;touch-action:manipulation}
+#firstRunTutorial button:hover{transform:translateY(-2px);filter:brightness(1.15)}
+#firstRunTutorial #tutorialNext{border:0;background:linear-gradient(120deg,#35d7f7,#7d78ff);color:#071326;box-shadow:0 6px 20px #36cfff44;font-weight:900}
+#firstRunTutorial #tutorialBack:disabled{opacity:.35;cursor:default;transform:none}
+@keyframes tutorialBackdrop{from{opacity:0}to{opacity:1}}@keyframes tutorialCardIn{from{opacity:0;transform:translateY(12px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+@media(max-width:430px){#firstRunTutorial .tutorial-card{padding:20px 16px}#firstRunTutorial .tutorial-control{padding:9px}#firstRunTutorial kbd{min-width:62px;font-size:.78rem}}
+@media(prefers-reduced-motion:reduce){#firstRunTutorial.open,#firstRunTutorial .tutorial-card{animation:none!important}#firstRunTutorial .tutorial-progress i,#firstRunTutorial button{transition:none!important}}
+</style>
+<script id="first-run-tutorial-script">
+(function(){
+'use strict';
+const KEY='stickman_wars_first_tutorial_v1';
+const overlay=document.createElement('div');overlay.id='firstRunTutorial';overlay.setAttribute('role','dialog');overlay.setAttribute('aria-modal','true');overlay.setAttribute('aria-labelledby','tutorialTitle');
+overlay.innerHTML='<section class="tutorial-card"><span class="tutorial-kicker">FIRST-TIME PLAYER GUIDE</span><h2 id="tutorialTitle"></h2><div class="tutorial-step-label" id="tutorialStepLabel"></div><div class="tutorial-progress"><i id="tutorialProgressFill"></i></div><p class="tutorial-copy" id="tutorialCopy"></p><div class="tutorial-controls" id="tutorialControls"></div><p class="tutorial-tip" id="tutorialTip"></p><div class="tutorial-actions"><button type="button" id="tutorialSkip">Skip tutorial</button><div><button type="button" id="tutorialBack">Back</button> <button type="button" id="tutorialNext">Next</button></div></div></section>';
+document.body.appendChild(overlay);
+const phone=()=>document.body.classList.contains('is-phone');
+const pcSteps=[
+ {title:'Move and jump',copy:'Learn to move around the arena and get above your opponent.',rows:[['A / D','Move left and right'],['W or SPACE','Jump; press again in the air for a double jump'],['S / ↓','Fast-fall while airborne']],tip:'Stay on the platforms and watch your position near the edge.'},
+ {title:'Attack and defend',copy:'Use a mix of attacks, and block when your opponent swings.',rows:[['J','Punch'],['K','Kick'],['SHIFT','Hold to block on the ground; tap in the air to dodge']],tip:'Face your opponent before attacking so your hits go the right way.'},
+ {title:'Use your powers',copy:'Every fighter has a unique special move. Build your ultimate meter by fighting.',rows:[['L','Use your fighter’s special move; use your ultimate when it is ready'],['Q','Activate Awakening when available']],tip:'Try different fighters to discover their special moves.'},
+ {title:'Ready to fight?',copy:'Pick a fighter and stage, then choose Match for a CPU battle or Training to practice against a dummy.',rows:[['TIP','Start on Easy if you are new. You can change the difficulty any time.']],tip:'You can open the controls again from the menu’s How to Play button.'}
+];
+const phoneSteps=[
+ {title:'Move and jump',copy:'Use the on-screen controls to move around and reach higher platforms.',rows:[['JOYSTICK','Move left and right'],['JUMP','Tap to jump; tap again in the air for a double jump']],tip:'Hold the joystick toward the arena to stay on the platforms.'},
+ {title:'Attack and defend',copy:'The action buttons sit on the right side of your screen.',rows:[['PUNCH','Quick close-range attack'],['KICK','A stronger kick'],['BLOCK','Defend against attacks']],tip:'Face your opponent before attacking so your hits go the right way.'},
+ {title:'Use your powers',copy:'Each fighter has a unique special. Build your ultimate meter while fighting.',rows:[['SPECIAL','Use your fighter’s special move; use your ultimate when ready'],['AWAKEN','Tap the purple button when Awakening is available']],tip:'Try different fighters to discover their special moves.'},
+ {title:'Ready to fight?',copy:'Pick a fighter and stage, then choose Match for a CPU battle or Training to practice against a dummy.',rows:[['TIP','Start on Easy if you are new. You can change the difficulty any time.']],tip:'Hold the joystick and tap attack buttons together for moving attacks.'}
+];
+let step=0,steps=pcSteps;
+function close(){overlay.classList.remove('open');try{localStorage.setItem(KEY,'1')}catch(e){};}
+function draw(){const s=steps[step];document.getElementById('tutorialTitle').textContent=s.title;document.getElementById('tutorialStepLabel').textContent='STEP '+(step+1)+' OF '+steps.length;document.getElementById('tutorialProgressFill').style.width=((step+1)/steps.length*100)+'%';document.getElementById('tutorialCopy').textContent=s.copy;document.getElementById('tutorialTip').textContent=s.tip;const rows=document.getElementById('tutorialControls');rows.replaceChildren();s.rows.forEach(([key,text])=>{const row=document.createElement('div');row.className='tutorial-control';const k=document.createElement('kbd');k.textContent=key;const label=document.createElement('span');label.textContent=text;row.append(k,label);rows.appendChild(row);});document.getElementById('tutorialBack').disabled=step===0;document.getElementById('tutorialNext').textContent=step===steps.length-1?'START PLAYING':'NEXT';}
+function openIfFirst(force){let done=false;try{done=localStorage.getItem(KEY)==='1'}catch(e){}if((done&&!force)||!document.body.classList.contains('is-pc')&&!document.body.classList.contains('is-phone'))return;steps=phone()?phoneSteps:pcSteps;step=0;draw();overlay.classList.add('open');setTimeout(()=>document.getElementById('tutorialNext').focus(),30);}
+document.getElementById('tutorialNext').addEventListener('click',()=>{if(step<steps.length-1){step++;draw()}else close()});
+document.getElementById('tutorialBack').addEventListener('click',()=>{if(step>0){step--;draw()}});
+document.getElementById('tutorialSkip').addEventListener('click',close);
+document.addEventListener('keydown',e=>{if(!overlay.classList.contains('open'))return;if(e.key==='Escape'){e.preventDefault();close()}else if(e.key==='ArrowRight'&&step<steps.length-1){step++;draw()}else if(e.key==='ArrowLeft'&&step>0){step--;draw()}},true);
+window.openGameTutorial=()=>openIfFirst(true);
+['choosePC','choosePhone'].forEach(id=>document.getElementById(id)?.addEventListener('click',()=>setTimeout(()=>openIfFirst(false),40)));
+document.getElementById('howToPlayBtn')?.addEventListener('click',()=>openIfFirst(true));
 })();
 </script></body>
 
