@@ -2573,10 +2573,10 @@ body.is-phone #hud{padding:max(8px,env(safe-area-inset-top)) 8px 0;gap:5px}body.
 </style>
 </head>
 <body>
-<!-- ===== SUPABASE SETTINGS: paste your two values between the quotes ===== -->
+<!-- ===== SUPABASE SETTINGS: paste your publishable key between the quotes ===== -->
 <script>
-window.SW_SUPABASE_URL = 'https://askienwfsobbcbirvxyn.supabase.co/';
-window.SW_SUPABASE_KEY = 'sb_publishable_-yVcznlqJ5IoTjrK_oXSfQ_dGegqjXU';
+window.SW_SUPABASE_URL = 'https://askienwfsobbcbirvxyn.supabase.co';
+window.SW_SUPABASE_KEY = 'PASTE_PUBLISHABLE_KEY_HERE';
 </script>
 
 <!-- DEVICE PICKER: choose the layout and controls before entering the game -->
@@ -2878,6 +2878,14 @@ window.SW_SUPABASE_KEY = 'sb_publishable_-yVcznlqJ5IoTjrK_oXSfQ_dGegqjXU';
 
     <div class="admin-broadcast-section"><div class="admin-roster-head"><span>📢 Admin Announcement</span><small>Sent to every player</small></div>
       <div class="admin-roster-add"><input type="text" id="adminBroadcastInput" placeholder="Type announcement for players..." maxlength="120" autocomplete="off"><button type="button" class="admin-btn primary" id="adminBroadcastBtn">Broadcast</button></div></div>
+    <div class="admin-broadcast-section"><div class="admin-roster-head"><span>🎁 Gift Coins To Everyone</span><small>One time per player</small></div>
+      <div class="admin-roster-add admin-wrap"><button type="button" class="admin-btn primary adminGiftBtn" data-gift="1000">+1,000</button><button type="button" class="admin-btn primary adminGiftBtn" data-gift="5000">+5,000</button></div>
+      <div class="admin-roster-add" style="margin-top:8px"><input type="number" id="adminGiftCustom" placeholder="Custom amount" min="1" max="1000000"><button type="button" class="admin-btn primary" id="adminGiftCustomBtn">Gift</button></div></div>
+    <div class="admin-broadcast-section"><div class="admin-roster-head"><span>⚡ Admin Abuse Event</span><small>Multiplies coins &amp; trophies won</small></div>
+      <div class="admin-roster-add admin-wrap"><button type="button" class="admin-btn adminMultQuick" data-m="2">2x</button><button type="button" class="admin-btn adminMultQuick" data-m="3">3x</button><button type="button" class="admin-btn adminMultQuick" data-m="5">5x</button></div>
+      <div class="admin-roster-add" style="margin-top:8px"><input type="number" id="adminEvtMult" value="2" min="2" max="10" step="1" title="Multiplier"><input type="number" id="adminEvtMins" value="30" min="1" max="43200" title="Minutes"></div>
+      <small class="admin-hint">Multiplier (2–10) and minutes.</small>
+      <div class="admin-roster-add" style="margin-top:8px"><button type="button" class="admin-btn primary" id="adminEvtStart">Start Event</button><button type="button" class="admin-btn" id="adminEvtStop">Stop Event</button></div></div>
     <div class="admin-roster-section"><div class="admin-roster-head"><span>🛡️ Admin Access Roster</span><small>Tracked on this device</small></div>
       <div id="adminOwnerWarn" class="admin-owner-warn" hidden role="alert"></div><div id="adminRosterList" class="admin-roster-list"></div>
       <div class="admin-roster-add"><input type="text" id="adminAddNameInput" placeholder="Add admin name..." maxlength="24" autocomplete="off"><button type="button" class="admin-btn primary" id="adminAddBtn">Add</button></div></div>
@@ -6894,6 +6902,7 @@ function checkGameOver() {
     let earned = 30 + Math.floor(Math.random()*20);
     if (playerWon) earned += 50;
     if (ownedItems.powerups.includes('coinboost')) earned = Math.floor(earned * 1.25);
+    earned = Math.floor(earned * (window.swEventMult ? window.swEventMult() : 1));
     coins += earned;
     addPassXp(playerWon ? passXpForWin() : passXpForLoss());
     matchesPlayed++;
@@ -6902,7 +6911,8 @@ function checkGameOver() {
     const p1 = fighters.find(f => f.isPlayer);
     if (p1) addMasteryXp(p1.char.id, playerWon ? masteryXpForWin() : masteryXpForLoss());
     if (p1 && p1.bestCombo) bestComboEver = Math.max(bestComboEver, p1.bestCombo);
-    const trophyChange = playerWon ? trophiesForWin() : (isDraw ? 0 : trophiesForLoss());
+    let trophyChange = playerWon ? trophiesForWin() : (isDraw ? 0 : trophiesForLoss());
+    if (trophyChange > 0 && window.swEventMult) trophyChange = Math.floor(trophyChange * window.swEventMult());
     trophies = Math.max(0, trophies + trophyChange);
     highestTrophies = Math.max(highestTrophies, trophies);
     saveShop();
@@ -9312,9 +9322,25 @@ for(const p of particles){p.life-=dt;if(p.life<=0)continue;p.x+=p.vx*dt;p.y+=p.v
 #savedAdminBtn .adm-shield{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;background:linear-gradient(145deg,#d27bff,#7e22ce);font-size:15px}
 #savedAdminBtn .adm-text{display:flex;flex-direction:column;align-items:flex-start;line-height:1.05}#savedAdminBtn .adm-title{font-size:14px;font-weight:900;letter-spacing:1.8px}#savedAdminBtn .adm-sub{font-size:9px;font-weight:700;letter-spacing:1.4px;color:#d9b8ff}
 #savedAdminBtn .adm-dot{width:8px;height:8px;border-radius:50%;background:#55ffaa;box-shadow:0 0 10px #55ffaa;animation:adm-pulse 2.2s ease-in-out infinite}@keyframes adm-pulse{50%{opacity:.55;transform:scale(.85)}}
-#adminBroadcastBanner{position:fixed;top:max(14px,env(safe-area-inset-top));left:50%;transform:translate(-50%,-130%);z-index:99999;min-width:min(92vw,560px);max-width:94vw;display:flex;align-items:center;gap:12px;padding:13px 18px;border-radius:16px;background:linear-gradient(115deg,#2c0f4d,#5f1c9c 50%,#260c42);border:1.5px solid #ebb8ff;color:#fff;box-shadow:0 0 32px #c45effaa,0 12px 30px rgba(0,0,0,.65);opacity:0;pointer-events:none;transition:transform .38s cubic-bezier(.2,.9,.2,1),opacity .28s;font-family:'Rajdhani',Arial,sans-serif}
-#adminBroadcastBanner.show{transform:translate(-50%,0);opacity:1;pointer-events:auto}#adminBroadcastBanner .ab-icon{font-size:22px}#adminBroadcastBanner .ab-body{display:flex;flex-direction:column;min-width:0;flex:1}#adminBroadcastBanner .ab-label{font-size:10px;font-weight:900;letter-spacing:2.2px;color:#ffd878}#adminBroadcastBanner .ab-msg{font-size:16px;font-weight:800;word-break:break-word}#adminBroadcastBanner .ab-close{background:none;border:0;color:#e5c5ff;font-size:16px;cursor:pointer}
+#eventBadge{position:fixed;top:max(10px,env(safe-area-inset-top));right:max(10px,env(safe-area-inset-right));z-index:9500;display:none;align-items:center;gap:8px;padding:8px 14px;border-radius:12px;border:1.5px solid #ffd878;background:linear-gradient(120deg,#4b1d00,#a14a00 55%,#4b1d00);color:#fff3cc;font-family:'Rajdhani',Arial,sans-serif;font-weight:900;font-size:14px;letter-spacing:1px;box-shadow:0 0 22px #ffae3baa;animation:evtPulse 1.8s ease-in-out infinite;pointer-events:none}
+#eventBadge.on{display:inline-flex}@keyframes evtPulse{50%{box-shadow:0 0 36px #ffd878}}
+#adminBroadcastBanner{position:fixed;top:max(16px,env(safe-area-inset-top));left:50%;transform:translate(-50%,-140%);z-index:99999;min-width:min(92vw,620px);max-width:94vw;display:flex;align-items:center;gap:16px;padding:16px 20px 18px;border-radius:18px;overflow:hidden;background:linear-gradient(115deg,rgba(255,255,255,.10),transparent 38%),linear-gradient(120deg,#1a0833,#4a1a80 52%,#1d0a36);border:1.5px solid #f0c4ff;color:#fff;box-shadow:0 0 38px #c45effaa,0 18px 40px rgba(0,0,0,.7),inset 0 1px rgba(255,255,255,.4);opacity:0;pointer-events:none;transition:transform .42s cubic-bezier(.2,.9,.2,1),opacity .28s;font-family:'Rajdhani',Arial,sans-serif;backdrop-filter:blur(8px)}
+#adminBroadcastBanner.show{transform:translate(-50%,0);opacity:1;pointer-events:auto;animation:abGlow 2.4s ease-in-out infinite}
+@keyframes abGlow{50%{box-shadow:0 0 56px #dd8affcc,0 18px 40px rgba(0,0,0,.7),inset 0 1px rgba(255,255,255,.4)}}
+#adminBroadcastBanner::before{content:'';position:absolute;top:0;bottom:0;width:70px;left:-90px;background:linear-gradient(100deg,transparent,rgba(255,255,255,.28),transparent);transform:skewX(-20deg);pointer-events:none}
+#adminBroadcastBanner.show::before{animation:abShine 1.1s .35s ease-out 1}@keyframes abShine{to{left:115%}}
+#adminBroadcastBanner::after{content:'';position:absolute;left:0;bottom:0;height:4px;width:100%;background:linear-gradient(90deg,#ffd878,#ff7ad9,#b45cff);transform-origin:left;transform:scaleX(0)}
+#adminBroadcastBanner.show::after{animation:abTimer 7s linear forwards}@keyframes abTimer{from{transform:scaleX(1)}to{transform:scaleX(0)}}
+#adminBroadcastBanner .ab-icon{flex:none;width:46px;height:46px;display:grid;place-items:center;font-size:24px;border-radius:14px;background:linear-gradient(145deg,#e08aff,#7b22d1);box-shadow:0 0 16px #d27bffaa,inset 0 1px rgba(255,255,255,.5)}
+#adminBroadcastBanner.show .ab-icon{animation:abPing 1.6s ease-in-out infinite}@keyframes abPing{50%{transform:scale(1.1) rotate(-6deg)}}
+#adminBroadcastBanner .ab-body{display:flex;flex-direction:column;min-width:0;flex:1}
+#adminBroadcastBanner .ab-label{font-size:11px;font-weight:900;letter-spacing:3px;color:#ffd878;text-shadow:0 0 10px #ffb93a88;margin-bottom:3px}
+#adminBroadcastBanner .ab-msg{font-size:19px;font-weight:800;line-height:1.2;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.5);word-break:break-word}
+#adminBroadcastBanner .ab-close{flex:none;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);color:#f3dcff;font-size:15px;cursor:pointer;transition:background .15s,transform .15s}
+#adminBroadcastBanner .ab-close:hover{background:rgba(255,255,255,.25);transform:scale(1.1)}
+@media(max-width:520px){#adminBroadcastBanner{padding:12px 14px 15px;gap:11px}#adminBroadcastBanner .ab-msg{font-size:16px}#adminBroadcastBanner .ab-icon{width:38px;height:38px;font-size:20px}}
 .admin-panel-box{max-height:90vh;overflow-y:auto}.admin-broadcast-section,.admin-roster-section{margin:14px 0 8px;padding:12px;border-radius:12px;border:1px solid #8a56c477;background:#120922b8;text-align:left}
+.admin-wrap{flex-wrap:wrap}.admin-hint{display:block;margin-top:4px;font-size:10px;color:#b89cd9}
 .admin-roster-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-weight:800;font-size:13px;color:#f2d8ff}.admin-roster-head small{font-size:10px;color:#b89cd9}
 .admin-owner-warn{margin:0 0 10px;padding:10px 12px;border-radius:9px;background:linear-gradient(135deg,#5a0c22,#2e0713);border:1.5px solid #ff4d79;color:#ffd6e0;font-size:12px;font-weight:800}.admin-owner-warn[hidden]{display:none!important}
 .admin-roster-list{display:flex;flex-direction:column;gap:7px;max-height:140px;overflow-y:auto;margin-bottom:10px}.admin-roster-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 10px;border-radius:9px;background:#21123a;border:1px solid #6b419e66;font-size:12px}
@@ -9338,6 +9364,7 @@ for(const p of particles){p.life-=dt;if(p.life<=0)continue;p.x+=p.vx*dt;p.y+=p.v
 .npTile.ready button,.npTile.gold button{border-color:#f5cf66;box-shadow:0 0 12px #f5c75977}.npTile button:disabled{opacity:.72;cursor:default}#passTrackFree .npTile button{background:linear-gradient(150deg,#1a1733,#110f24);border-color:#68558c}.npTile small{font-size:10px;color:#cdbce4;font-weight:700}
 @media(max-width:680px){.new-pass-hero{grid-template-columns:1fr}.npTracks{grid-template-columns:64px minmax(0,1fr)}}
 </style>
+<div id="eventBadge" role="status"></div>
 <div id="adminBroadcastBanner" role="status" aria-live="assertive"><span class="ab-icon">📢</span><div class="ab-body"><span class="ab-label" id="abLabel">ADMIN ANNOUNCEMENT</span><span class="ab-msg" id="abMsg"></span></div><button type="button" class="ab-close" id="abClose" aria-label="Dismiss">✕</button></div>
 <button id="savedAdminBtn" type="button" hidden aria-label="Open Admin Panel"><span class="adm-shield">🛡️</span><span class="adm-text"><span class="adm-title">ADMIN</span><span class="adm-sub">PANEL READY</span></span><span class="adm-dot"></span></button>
 <script id="cyborg-pass-admin-script">
@@ -9347,25 +9374,41 @@ const ROSTER_KEY='stickman_admin_roster_v1',BCAST_KEY='stickman_admin_broadcast_
 const loadRoster=()=>{try{const d=JSON.parse(localStorage.getItem(ROSTER_KEY)||'[]');return Array.isArray(d)?d:[];}catch(e){return [];}};
 const saveRoster=l=>{try{localStorage.setItem(ROSTER_KEY,JSON.stringify(l));}catch(e){}};
 let bcastTimer=null;
-function showAdminBroadcast(msg,sender){const b=by('adminBroadcastBanner');if(!b||!msg)return;by('abLabel').textContent='ADMIN ANNOUNCEMENT'+(sender?' · '+String(sender).toUpperCase():'');by('abMsg').textContent=msg;b.classList.add('show');clearTimeout(bcastTimer);bcastTimer=setTimeout(()=>b.classList.remove('show'),7000);try{playSFX(660,.12,'triangle');setTimeout(()=>{try{playSFX(880,.16,'triangle');}catch(e){}},110);}catch(e){}}
+function showAdminBroadcast(msg,sender){const b=by('adminBroadcastBanner');if(!b||!msg)return;by('abLabel').textContent='ADMIN ANNOUNCEMENT'+(sender?' · '+String(sender).toUpperCase():'');by('abMsg').textContent=msg;b.classList.remove('show');void b.offsetWidth;b.classList.add('show');clearTimeout(bcastTimer);bcastTimer=setTimeout(()=>b.classList.remove('show'),7000);try{playSFX(660,.12,'triangle');setTimeout(()=>{try{playSFX(880,.16,'triangle');}catch(e){}},110);}catch(e){}}
 by('abClose')?.addEventListener('click',()=>by('adminBroadcastBanner').classList.remove('show'));
 let bc=null;try{bc=new BroadcastChannel('stickman_wars_admin_broadcast');bc.onmessage=e=>{if(e.data&&e.data.msg)showAdminBroadcast(e.data.msg,e.data.sender);};}catch(e){}
 const SUPABASE_URL=String(window.SW_SUPABASE_URL||'').trim().replace(/\/+$/,'').replace(/\/(rest|auth)\/v1.*$/,''),SUPABASE_ANON_KEY=String(window.SW_SUPABASE_KEY||'').trim();
 const SB_READY=/^https:\/\/.+\.supabase\.co$/.test(SUPABASE_URL)&&SUPABASE_ANON_KEY.length>20&&!/PASTE_/.test(SUPABASE_ANON_KEY);
 let sb=null,lastId=null,polling=false;
+let evt=null,evtSeen=null,lastGift=null,giftBusy=false;
+window.swEventMult=function(){const e=evt;if(e&&Number(e.multiplier)>1&&e.ends_at&&Date.parse(e.ends_at)>Date.now())return Number(e.multiplier);return 1;};
+function fmtLeft(ms){const t=Math.max(0,Math.floor(ms/1000)),h=Math.floor(t/3600),m=Math.floor(t%3600/60),s=t%60,p=n=>String(n).padStart(2,'0');return h?h+':'+p(m)+':'+p(s):m+':'+p(s);}
+function tickBadge(){const el=by('eventBadge');if(!el)return;const m=window.swEventMult();if(m>1){el.textContent='⚡ '+((evt&&evt.label)||'ADMIN ABUSE')+' '+m+'x · '+fmtLeft(Date.parse(evt.ends_at)-Date.now());el.classList.add('on');}else el.classList.remove('on');}
+setInterval(tickBadge,1000);
+async function pollEvent(){if(!sb)return;try{const {data,error}=await sb.from('game_event').select('*').eq('id',1).maybeSingle();if(error){console.warn('Event poll error',error.message);return;}if(!data)return;evt=data;if(evtSeen===null)evtSeen=data.updated_at;else if(data.updated_at!==evtSeen){evtSeen=data.updated_at;const m=window.swEventMult();if(m>1){const mins=Math.max(1,Math.round((Date.parse(data.ends_at)-Date.now())/60000));showAdminBroadcast((data.label||'ADMIN ABUSE')+': '+m+'x coins & trophies for '+mins+' min!','Event');}else showAdminBroadcast('The bonus event has ended.','Event');}tickBadge();}catch(e){console.warn(e);}}
+async function pollGifts(){if(!sb||giftBusy)return;giftBusy=true;try{if(lastGift===null){const v=localStorage.getItem('sw_last_gift');if(v!==null)lastGift=Number(v)||0;else{const {data}=await sb.from('gifts').select('id').order('id',{ascending:false}).limit(1);lastGift=(data&&data[0])?data[0].id:0;localStorage.setItem('sw_last_gift',String(lastGift));}}
+const {data,error}=await sb.from('gifts').select('id,coins,message').gt('id',lastGift).order('id',{ascending:true}).limit(50);if(error){console.warn('Gift poll error',error.message);}else if(data&&data.length){const total=data.reduce((a,g)=>a+g.coins,0);lastGift=data[data.length-1].id;localStorage.setItem('sw_last_gift',String(lastGift));coins+=total;try{updateCoinsUI();}catch(e){}try{saveShop();}catch(e){}try{showRewardPopup('🎁','+'+total.toLocaleString()+' coins from the admins!');}catch(e){}showAdminBroadcast(data[data.length-1].message||('Free gift: +'+total.toLocaleString()+' coins for everyone!'),'Gift');}}catch(e){console.warn(e);}giftBusy=false;}
 function handleRow(r){if(!r||r.id==null)return;if(lastId!==null&&r.id<=lastId)return;lastId=r.id;showAdminBroadcast(r.message,r.sender);}
 async function pollNew(){if(!sb||polling||lastId===null)return;polling=true;try{const {data,error}=await sb.from('announcements').select('id,message,sender').gt('id',lastId).order('id',{ascending:true}).limit(5);if(error)console.warn('Announcements poll error',error.message);else if(data&&data.length){const top=data[data.length-1];lastId=top.id;showAdminBroadcast(top.message,top.sender);}}catch(e){console.warn(e);}polling=false;}
 async function initSupabase(){if(!SB_READY||!window.supabase)return;try{sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 const {data}=await sb.from('announcements').select('id').order('id',{ascending:false}).limit(1);lastId=(data&&data[0])?data[0].id:0;
 sb.channel('announcements-live').on('postgres_changes',{event:'INSERT',schema:'public',table:'announcements'},p=>handleRow(p.new)).subscribe(st=>console.log('Announcements realtime:',st));
-setInterval(pollNew,3000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)pollNew();});}catch(e){console.warn('Supabase init failed',e);}}
+setInterval(pollNew,3000);pollEvent();pollGifts();setInterval(pollEvent,5000);setInterval(pollGifts,5000);document.addEventListener('visibilitychange',()=>{if(!document.hidden){pollNew();pollEvent();pollGifts();}});}catch(e){console.warn('Supabase init failed',e);}}
 if(SB_READY){const sc=document.createElement('script');sc.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';sc.onload=initSupabase;sc.onerror=()=>console.warn('Could not load Supabase library');document.head.appendChild(sc);}
-async function sendGlobalAnnouncement(msg,sender){if(!sb)return false;let key=localStorage.getItem('sw_admin_key')||prompt('Admin key:');if(!key)return false;const {error}=await sb.rpc('post_announcement',{p_key:key,p_message:msg,p_sender:sender});if(error){localStorage.removeItem('sw_admin_key');return false;}localStorage.setItem('sw_admin_key',key);return true;}
-async function sendAdminBroadcast(){const inp=by('adminBroadcastInput');if(!inp)return;const msg=inp.value.trim();if(!msg)return;const sender=typeof playerUsername==='string'&&playerUsername.trim()?playerUsername.trim():'Admin';const st=by('adminStatusMsg');
-if(sb){const ok=await sendGlobalAnnouncement(msg,sender);if(st)st.textContent=ok?'Announcement sent to ALL players!':'Not authorized: wrong admin key.';if(ok){inp.value='';setTimeout(pollNew,400);}return;}
-const payload={msg,sender,ts:Date.now()};showAdminBroadcast(msg,sender);try{if(bc)bc.postMessage(payload);}catch(e){}try{localStorage.setItem(BCAST_KEY,JSON.stringify(payload));}catch(e){}inp.value='';if(st)st.textContent=SB_READY?'Supabase still loading; sent locally only.':'Sent locally. Paste your Supabase URL and key at the top of the file.';}
+async function adminRpc(fn,args){if(!sb)return {ok:false,msg:'Supabase is not connected (check your URL and key).'};const key=localStorage.getItem('sw_admin_key')||prompt('Admin key:');if(!key)return {ok:false,msg:'Cancelled.'};const {error}=await sb.rpc(fn,Object.assign({p_key:key},args));if(error){if(/key|auth|forbid|invalid|secret/i.test(error.message))localStorage.removeItem('sw_admin_key');return {ok:false,msg:error.message};}localStorage.setItem('sw_admin_key',key);return {ok:true};}
+const setStatus=t=>{const st=by('adminStatusMsg');if(st)st.textContent=t;};
+async function sendGlobalAnnouncement(msg,sender){const r=await adminRpc('post_announcement',{p_message:msg,p_sender:sender});return r.ok;}
+async function sendAdminBroadcast(){const inp=by('adminBroadcastInput');if(!inp)return;const msg=inp.value.trim();if(!msg)return;const sender=typeof playerUsername==='string'&&playerUsername.trim()?playerUsername.trim():'Admin';
+if(sb){const ok=await sendGlobalAnnouncement(msg,sender);setStatus(ok?'Announcement sent to ALL players!':'Not authorized: wrong admin key.');if(ok){inp.value='';setTimeout(pollNew,400);}return;}
+const payload={msg,sender,ts:Date.now()};showAdminBroadcast(msg,sender);try{if(bc)bc.postMessage(payload);}catch(e){}try{localStorage.setItem(BCAST_KEY,JSON.stringify(payload));}catch(e){}inp.value='';setStatus(SB_READY?'Supabase still loading; sent locally only.':'Sent locally. Paste your Supabase key at the top of the file.');}
 by('adminBroadcastBtn')?.addEventListener('click',sendAdminBroadcast);
 by('adminBroadcastInput')?.addEventListener('keydown',e=>{if(e.key==='Enter')sendAdminBroadcast();});
+async function sendGift(n){n=Math.floor(Number(n));if(!(n>=1&&n<=1000000)){setStatus('Gift must be 1 to 1,000,000 coins.');return;}const r=await adminRpc('send_gift',{p_coins:n,p_message:'Free gift: +'+n.toLocaleString()+' coins for everyone!'});setStatus(r.ok?'Gift of '+n.toLocaleString()+' coins sent to ALL players!':'Gift failed: '+r.msg);if(r.ok)setTimeout(pollGifts,400);}
+document.querySelectorAll('.adminGiftBtn').forEach(b=>b.addEventListener('click',()=>sendGift(b.dataset.gift)));
+by('adminGiftCustomBtn')?.addEventListener('click',()=>sendGift(by('adminGiftCustom').value));
+document.querySelectorAll('.adminMultQuick').forEach(b=>b.addEventListener('click',()=>{by('adminEvtMult').value=b.dataset.m;}));
+by('adminEvtStart')?.addEventListener('click',async()=>{const m=Math.floor(Number(by('adminEvtMult').value)),mins=Number(by('adminEvtMins').value);if(!(m>=2&&m<=10)){setStatus('Multiplier must be 2 to 10.');return;}if(!(mins>=1&&mins<=43200)){setStatus('Minutes must be 1 to 43200.');return;}const r=await adminRpc('set_event',{p_multiplier:m,p_hours:mins/60,p_label:'ADMIN ABUSE',p_kind:'admin_abuse'});setStatus(r.ok?'Admin Abuse '+m+'x started for '+mins+' min!':'Event failed: '+r.msg);if(r.ok)setTimeout(pollEvent,400);});
+by('adminEvtStop')?.addEventListener('click',async()=>{const r=await adminRpc('set_event',{p_multiplier:1,p_hours:0,p_label:'',p_kind:'multiplier'});setStatus(r.ok?'Event stopped.':'Stop failed: '+r.msg);if(r.ok)setTimeout(pollEvent,400);});
 window.registerAdminUser=function(name,role){const clean=(name||'Player').trim().slice(0,24)||'Player';const l=loadRoster();if(!l.some(u=>u.name.toLowerCase()===clean.toLowerCase())){l.push({name:clean,role:role||(l.length===0?'owner':'admin'),since:new Date().toLocaleDateString()});saveRoster(l);}if(window.renderAdminRoster)window.renderAdminRoster();};
 if(adminUnlocked&&loadRoster().length===0)window.registerAdminUser(typeof playerUsername==='string'&&playerUsername.trim()?playerUsername.trim():'Owner','owner');
 let warnTimer=null;
@@ -9373,9 +9416,9 @@ function showOwnerWarning(n){const w=by('adminOwnerWarn');if(!w)return;w.textCon
 window.renderAdminRoster=function(){const el=by('adminRosterList');if(!el)return;const l=loadRoster();el.replaceChildren();
 for(const u of l){const row=document.createElement('div');row.className='admin-roster-row';const info=document.createElement('div');info.className='admin-roster-info';const bd=document.createElement('span');bd.className='admin-role-tag '+u.role;bd.textContent=u.role==='owner'?'👑 Owner':'Admin';const nm=document.createElement('span');nm.className='admin-roster-name';nm.textContent=u.name;info.append(bd,nm);
 const btn=document.createElement('button');btn.type='button';btn.className='admin-demote-btn';btn.textContent=u.role==='owner'?'Demote':'Remove';
-btn.onclick=()=>{if(u.role==='owner'){showOwnerWarning(u.name);return;}saveRoster(loadRoster().filter(x=>x.name.toLowerCase()!==u.name.toLowerCase()));const cur=(typeof playerUsername==='string'?playerUsername.trim():'').toLowerCase();if(cur&&cur===u.name.toLowerCase()){adminUnlocked=false;try{localStorage.removeItem(adminSaveKey);}catch(e){}by('savedAdminBtn').hidden=true;closeAdminPanel();}window.renderAdminRoster();const st=by('adminStatusMsg');if(st)st.textContent='Removed '+u.name+' from Admin access.';};
+btn.onclick=()=>{if(u.role==='owner'){showOwnerWarning(u.name);return;}saveRoster(loadRoster().filter(x=>x.name.toLowerCase()!==u.name.toLowerCase()));const cur=(typeof playerUsername==='string'?playerUsername.trim():'').toLowerCase();if(cur&&cur===u.name.toLowerCase()){adminUnlocked=false;try{localStorage.removeItem(adminSaveKey);}catch(e){}by('savedAdminBtn').hidden=true;closeAdminPanel();}window.renderAdminRoster();setStatus('Removed '+u.name+' from Admin access.');};
 row.append(info,btn);el.append(row);}};
-by('adminAddBtn')?.addEventListener('click',()=>{const i=by('adminAddNameInput');const v=i.value.trim();if(!v)return;window.registerAdminUser(v,'admin');i.value='';const st=by('adminStatusMsg');if(st)st.textContent='Added '+v+' as Admin.';});
+by('adminAddBtn')?.addEventListener('click',()=>{const i=by('adminAddNameInput');const v=i.value.trim();if(!v)return;window.registerAdminUser(v,'admin');i.value='';setStatus('Added '+v+' as Admin.');});
 const ab=by('savedAdminBtn');ab.hidden=!adminUnlocked;ab.onclick=()=>{if(by('admin-panel-screen').classList.contains('active'))closeAdminPanel();else openAdminPanel();};
 const ready=()=>[...PASS_FREE_REWARDS.filter(r=>r.tier<=passTier&&!passClaimedFree.includes(r.tier)).map(r=>[r,false]),...PASS_PREMIUM_REWARDS.filter(r=>passPremiumOwned&&r.tier<=passTier&&!passClaimedPremium.includes(r.tier)).map(r=>[r,true])];
 renderPassTrack=(id,rewards,claimed,premium)=>{const track=by(id);if(!track)return;track.replaceChildren();for(const r of rewards){const done=claimed.includes(r.tier),can=!done&&r.tier<=passTier&&(!premium||passPremiumOwned);const t=document.createElement('div');t.dataset.tier=r.tier;t.className='npTile'+(can?' ready':'')+(premium&&r.tier%5===0?' gold':'');const tag=document.createElement('small');tag.textContent='Tier '+r.tier;const b=document.createElement('button');b.type='button';b.disabled=!can;b.title=r.name;const ic=document.createElement('span');ic.textContent=done?'✓':r.icon;b.append(ic,r.type==='coins'?'×'+r.amount:'Title');b.onclick=()=>claimPassReward(r,premium);t.append(tag,b);track.append(t);}};
