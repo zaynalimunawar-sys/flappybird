@@ -2619,6 +2619,7 @@ body.is-phone #hud{padding:max(8px,env(safe-area-inset-top)) 8px 0;gap:5px}body.
     <div class="menu-tabs">
       <button class="menu-tab active" data-menutab="fighter">🥋 Fighter</button>
       <button class="menu-tab" data-menutab="match">⚔️ Match</button>
+      <button class="menu-tab" data-menutab="training">🎯 Training</button>
       <button class="menu-tab" data-menutab="stage">🗺️ Stage</button>
       <button class="menu-tab" data-menutab="career">🏆 Career</button>
       <button class="menu-tab" data-menutab="ranked">⭐ Ranked</button>
@@ -2667,6 +2668,10 @@ body.is-phone #hud{padding:max(8px,env(safe-area-inset-top)) 8px 0;gap:5px}body.
           <button class="cpu-btn" data-count="3">3</button>
         </div>
       </div>
+    </div>
+
+    <div class="menu-panel" data-panel="training">
+      <div class="menu-subsection"><h3>Training Mode</h3><p class="controls-hint" style="margin-top:0">Practice your moves against a dummy that will not fight back. There is no timer or knockout, so you can train as long as you want. Choose your fighter and stage in the other tabs, then start training.</p></div>
     </div>
 
     <div class="menu-panel" data-panel="stage">
@@ -3222,6 +3227,7 @@ let particles = [];
 let impactRings = [];
 let camera = { x: 0, y: 0, shake: 0 };
 let stageTimer = 180;
+let trainingMode = false;
 let timerAccum = 0;
 let lastTime = 0;
 let rafId = null;
@@ -6834,7 +6840,7 @@ function startGame() {
   fighters = [];
   particles = [];
   starKOs = [];
-  stageTimer = 180;
+  stageTimer = trainingMode ? 999999 : 180;
   timerAccum = 0;
   hitStop = 0;
   flashAlpha = 0;
@@ -6864,7 +6870,17 @@ function startGame() {
     const cpuChar = CHARACTERS[Math.floor(Math.random()*CHARACTERS.length)];
     fighters.push(new Fighter(i+1, spawnRightX - i*90, false, difficulty, cpuChar));
   }
-  if (fighters[0].customData) {
+  if (trainingMode && fighters[1]) {
+    const dummy = fighters[1];
+    dummy.name = "TRAINING DUMMY";
+    dummy.handleAI = function() { this.vx = 0; };
+    dummy.checkBlastZone = function() {
+      if (this.x + this.w < BLAST_ZONE.left || this.x > BLAST_ZONE.right || this.y > BLAST_ZONE.bottom || this.y + this.h < BLAST_ZONE.top) {
+        this.x = spawnRightX; this.y = -80; this.vx = 0; this.vy = 0; this.damage = 0;
+        this.visible = true; this.dead = false; this.respawnTimer = 0;
+      }
+    };
+  }  if (fighters[0].customData) {
     fighters[0].color = fighters[0].customData.colors.body;
   } else {
     fighters[0].color = getEquippedSkinColor();
@@ -6906,6 +6922,7 @@ function togglePause() {
 }
 
 function checkGameOver() {
+  if (trainingMode) return;
   if (window.swOnline) { if (window.swOnlineCheck) window.swOnlineCheck(); return; }
   const alive = fighters.filter(f => !f.dead);
   if (alive.length <= 1 || stageTimer <= 0) {
@@ -7077,8 +7094,10 @@ function gameLoop(timestamp) {
 
   if (hitStop > 0) { hitStop -= dt; dt *= 0.15; }
 
-  timerAccum += dt;
-  if (timerAccum >= 1) { stageTimer--; timerAccum -= 1; }
+  if (!trainingMode) {
+    timerAccum += dt;
+    if (timerAccum >= 1) { stageTimer--; timerAccum -= 1; }
+  }
   if (!timeWarnShown && stageTimer <= 20 && stageTimer > 0) {
     timeWarnShown = true;
     showAnnouncer("TIME'S TICKING!", '#ffaa00');
@@ -7218,6 +7237,8 @@ document.querySelectorAll('.menu-tab').forEach(tab => {
     document.querySelectorAll('.menu-panel').forEach(p => p.classList.remove('active'));
     tab.classList.add('active');
     document.querySelector(`.menu-panel[data-panel="${tab.dataset.menutab}"]`).classList.add('active');
+    const startBtn = document.getElementById('startBtn');
+    if (startBtn) startBtn.textContent = tab.dataset.menutab === 'training' ? 'START TRAINING' : 'FIGHT!';
     if (tab.dataset.menutab === 'career') renderCareerMap();
   });
 });
@@ -7300,8 +7321,13 @@ document.querySelectorAll('.cpu-btn').forEach(btn => {
   });
 });
 document.getElementById('startBtn').addEventListener('click', () => {
-  if (document.querySelector('.menu-panel[data-panel="ranked"].active')) startRankedMatch();
-  else { if (rankedActive || rankedLastMatch) cancelRankedMatch(); startGame(); }
+  if (document.querySelector('.menu-panel[data-panel="ranked"].active')) { trainingMode = false; startRankedMatch(); return; }
+  trainingMode = !!document.querySelector('.menu-panel[data-panel="training"].active');
+  if (rankedActive || rankedLastMatch) cancelRankedMatch();
+  const oldCount = cpuCount, oldDifficulty = difficulty;
+  if (trainingMode) { cpuCount = 1; difficulty = 'easy'; }
+  startGame();
+  cpuCount = oldCount; difficulty = oldDifficulty;
 });
 document.getElementById('resumeBtn').addEventListener('click', togglePause);
 document.getElementById('pauseMenuBtn').addEventListener('click', goToMenu);
@@ -9440,7 +9466,64 @@ for(const p of particles){p.life-=dt;if(p.life<=0)continue;p.x+=p.vx*dt;p.y+=p.v
 .npTile{display:grid;place-items:center;gap:4px;width:88px;flex:none;position:relative}.npTile button{width:80px;height:74px;border:1.5px solid #ac52f5;border-radius:12px;background:linear-gradient(150deg,#2d154d,#160b29);color:#f6eaff;font-weight:700;cursor:pointer}.npTile button span{display:block;font-size:22px}
 .npTile.ready button,.npTile.gold button{border-color:#f5cf66;box-shadow:0 0 12px #f5c75977}.npTile button:disabled{opacity:.72;cursor:default}#passTrackFree .npTile button{background:linear-gradient(150deg,#1a1733,#110f24);border-color:#68558c}.npTile small{font-size:10px;color:#cdbce4;font-weight:700}
 @media(max-width:680px){.new-pass-hero{grid-template-columns:1fr}.npTracks{grid-template-columns:64px minmax(0,1fr)}}
-</style>
+
+/* MENU MOTION POLISH */
+#menu .menu-tab { will-change: transform, box-shadow; }
+#menu .menu-tab:active { transform: translateY(1px) scale(.97) !important; }
+#menu .menu-tab.active { animation: menuTabSelect .34s cubic-bezier(.2,.85,.25,1.25) both; }
+#menu .menu-panel.active { transform-origin: top center; animation: menuPanelIn .42s cubic-bezier(.2,.75,.25,1) both; }
+#menu .menu-panel.active > .menu-subsection,
+#menu .menu-panel.active > .char-select-row,
+#menu .menu-panel.active > .char-desc,
+#menu .menu-panel.active > .stage-select-btns,
+#menu .menu-panel.active > .career-map-wrap,
+#menu .menu-panel.active > .ranked-card,
+#menu .menu-panel.active > .on-box {
+  animation: menuContentIn .38s cubic-bezier(.2,.75,.25,1) both;
+}
+#menu .menu-panel.active > :nth-child(2) { animation-delay: .06s; }
+#menu .menu-panel.active > :nth-child(3) { animation-delay: .11s; }
+@keyframes menuPanelIn {
+  from { opacity: 0; transform: translateY(14px) scale(.975); filter: blur(5px); }
+  to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+@keyframes menuContentIn {
+  from { opacity: 0; transform: translateY(9px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes menuTabSelect {
+  0% { transform: translateY(0) scale(.96); }
+  65% { transform: translateY(-3px) scale(1.07); }
+  100% { transform: translateY(-2px) scale(1.04); }
+}
+@media (prefers-reduced-motion: reduce) {
+  #menu .menu-tab.active, #menu .menu-panel.active,
+  #menu .menu-panel.active > .menu-subsection,
+  #menu .menu-panel.active > .char-select-row,
+  #menu .menu-panel.active > .char-desc,
+  #menu .menu-panel.active > .stage-select-btns,
+  #menu .menu-panel.active > .career-map-wrap,
+  #menu .menu-panel.active > .ranked-card,
+  #menu .menu-panel.active > .on-box { animation: none !important; }
+}
+/* ADMIN ABUSE EVENT INTRO */
+#abuseIntro{position:fixed;inset:0;z-index:100001;display:grid;place-items:center;overflow:hidden;pointer-events:none;background:rgba(5,0,18,0);opacity:0}
+#abuseIntro.active{animation:abIntroFlash 1.65s steps(1,end) both}
+#abuseIntro::before,#abuseIntro::after{content:"";position:absolute;inset:-20%;opacity:0;pointer-events:none}
+#abuseIntro::before{background:repeating-linear-gradient(0deg,transparent 0 7px,rgba(115,245,255,.16) 8px 9px);mix-blend-mode:screen}
+#abuseIntro::after{background:linear-gradient(115deg,transparent 25%,rgba(255,0,100,.26) 46%,rgba(0,235,255,.28) 51%,transparent 70%);transform:translateX(-100%) skewX(-16deg)}
+#abuseIntro.active::before{animation:abScanFlicker 1.1s steps(2,end) both}
+#abuseIntro.active::after{animation:abGlitchSweep .85s .08s ease-out both}
+#abuseIntro .ab-intro-card{position:relative;z-index:1;padding:clamp(22px,5vw,46px);text-align:center;transform:scale(.7) rotate(-2deg);opacity:0}
+#abuseIntro.active .ab-intro-card{animation:abTitleSlam .8s cubic-bezier(.15,.85,.2,1.3) .08s both}
+#abuseIntro .ab-intro-kicker{display:block;color:#82f6ff;font:900 clamp(12px,2vw,18px) Rajdhani,Arial,sans-serif;letter-spacing:.42em;text-shadow:0 0 15px #00eaff}
+#abuseIntro .ab-intro-title{display:block;margin:4px 0;color:#fff;font:900 clamp(42px,11vw,112px) Bangers,Impact,sans-serif;letter-spacing:.08em;line-height:.95;text-shadow:4px 0 #ff237c,-4px 0 #00eaff,0 0 28px #dc63ff,0 0 70px #8b24ff}
+#abuseIntro .ab-intro-meta{display:inline-block;margin-top:12px;padding:7px 18px;border:1px solid #fff9;border-radius:999px;background:#35105edb;color:#fff;font:800 clamp(14px,2.2vw,20px) Rajdhani,Arial,sans-serif;letter-spacing:.16em;box-shadow:0 0 28px #bb4dff99}
+@keyframes abIntroFlash{0%,100%{opacity:0;background:rgba(5,0,18,0)}8%{opacity:1;background:rgba(25,0,48,.76)}14%{background:rgba(0,220,255,.24)}21%{background:rgba(255,0,95,.28)}30%,75%{background:rgba(13,0,30,.72)}42%{background:rgba(255,255,255,.16)}54%{background:rgba(20,0,55,.68)} }
+@keyframes abScanFlicker{0%{opacity:0;transform:translateY(-3%)}15%,65%{opacity:.8}28%{opacity:.2;transform:translateY(2%)}100%{opacity:0;transform:translateY(5%)}}
+@keyframes abGlitchSweep{0%{opacity:0;transform:translateX(-100%) skewX(-16deg)}25%{opacity:1}100%{opacity:0;transform:translateX(100%) skewX(-16deg)}}
+@keyframes abTitleSlam{0%{opacity:0;transform:scale(.7) rotate(-2deg);filter:blur(12px)}55%{opacity:1;transform:scale(1.08) rotate(1deg);filter:blur(0)}72%{transform:scale(.97) rotate(-.5deg)}100%{opacity:1;transform:scale(1) rotate(0)}}
+@media(prefers-reduced-motion:reduce){#abuseIntro.active,#abuseIntro.active::before,#abuseIntro.active::after,#abuseIntro.active .ab-intro-card{animation-duration:.01ms!important;animation-iteration-count:1!important}}</style>
 <div id="banScreen" role="alertdialog" aria-live="assertive"><div class="ban-icon">🚫</div><h1>YOU ARE BANNED</h1><p>An admin has banned this account from Stickman Wars.</p><div class="ban-reason" id="banReason" hidden></div><p style="font-size:12px;opacity:.7">If you think this is a mistake, contact the game owner.</p></div>
 <div id="eventBadge" role="status"></div>
 <div id="onOverlay"><div class="on-card"><div class="on-spin"></div><p id="onOverlayText">Connecting...</p><button type="button" class="on-btn" id="onOverlayCancel">Cancel</button></div></div>
@@ -9469,9 +9552,10 @@ let sb=null,lastId=null,polling=false;
 let evt=null,evtSeen=null,lastGift=null,giftBusy=false;
 window.swEventMult=function(){const e=evt;if(banned||window.swOnline)return 1;if(e&&Number(e.multiplier)>1&&e.ends_at&&Date.parse(e.ends_at)>Date.now())return Number(e.multiplier);return 1;};
 function fmtLeft(ms){const t=Math.max(0,Math.floor(ms/1000)),h=Math.floor(t/3600),m=Math.floor(t%3600/60),s=t%60,p=n=>String(n).padStart(2,'0');return h?h+':'+p(m)+':'+p(s):m+':'+p(s);}
+function playAbuseIntro(mult,mins){let overlay=by('abuseIntro');if(!overlay){overlay=document.createElement('div');overlay.id='abuseIntro';overlay.setAttribute('aria-hidden','true');overlay.innerHTML='<div class="ab-intro-card"><span class="ab-intro-kicker">⚡ LIVE EVENT STARTING ⚡</span><strong class="ab-intro-title">ADMIN ABUSE</strong><span class="ab-intro-meta"></span></div>';document.body.appendChild(overlay);}overlay.querySelector('.ab-intro-meta').textContent=mult+'× REWARDS · '+mins+' MIN';overlay.classList.remove('active');void overlay.offsetWidth;overlay.classList.add('active');clearTimeout(overlay._hideTimer);overlay._hideTimer=setTimeout(()=>overlay.classList.remove('active'),1800);try{playSFX(180,.16,'sawtooth');setTimeout(()=>playSFX(620,.12,'square'),90);setTimeout(()=>playSFX(980,.2,'triangle'),190);}catch(e){}}
 function tickBadge(){const el=by('eventBadge');if(!el)return;const m=window.swEventMult();if(m>1){el.textContent='⚡ '+((evt&&evt.label)||'ADMIN ABUSE')+' '+m+'x · '+fmtLeft(Date.parse(evt.ends_at)-Date.now());el.classList.add('on');}else el.classList.remove('on');}
 setInterval(tickBadge,1000);
-async function pollEvent(){if(!sb)return;try{const {data,error}=await sb.from('game_event').select('*').eq('id',1).maybeSingle();if(error){console.warn('Event poll error',error.message);return;}if(!data)return;evt=data;if(evtSeen===null)evtSeen=data.updated_at;else if(data.updated_at!==evtSeen){evtSeen=data.updated_at;const m=window.swEventMult();if(m>1){const mins=Math.max(1,Math.round((Date.parse(data.ends_at)-Date.now())/60000));showAdminBroadcast((data.label||'ADMIN ABUSE')+': '+m+'x coins & trophies for '+mins+' min!','Event');}else showAdminBroadcast('The bonus event has ended.','Event');}tickBadge();}catch(e){console.warn(e);}}
+async function pollEvent(){if(!sb)return;try{const {data,error}=await sb.from('game_event').select('*').eq('id',1).maybeSingle();if(error){console.warn('Event poll error',error.message);return;}if(!data)return;evt=data;if(evtSeen===null)evtSeen=data.updated_at;else if(data.updated_at!==evtSeen){evtSeen=data.updated_at;const m=window.swEventMult();if(m>1){const mins=Math.max(1,Math.round((Date.parse(data.ends_at)-Date.now())/60000));playAbuseIntro(m,mins);showAdminBroadcast((data.label||'ADMIN ABUSE')+': '+m+'x coins & trophies for '+mins+' min!','Event');}else showAdminBroadcast('The bonus event has ended.','Event');}tickBadge();}catch(e){console.warn(e);}}
 async function pollGifts(){if(!sb||giftBusy||banned)return;giftBusy=true;try{if(lastGift===null){const v=localStorage.getItem('sw_last_gift');if(v!==null)lastGift=Number(v)||0;else{const {data}=await sb.from('gifts').select('id').order('id',{ascending:false}).limit(1);lastGift=(data&&data[0])?data[0].id:0;localStorage.setItem('sw_last_gift',String(lastGift));}}
 const {data,error}=await sb.from('gifts').select('id,coins,message').gt('id',lastGift).order('id',{ascending:true}).limit(50);if(error){console.warn('Gift poll error',error.message);}else if(data&&data.length){const total=data.reduce((a,g)=>a+g.coins,0);lastGift=data[data.length-1].id;localStorage.setItem('sw_last_gift',String(lastGift));coins+=total;try{updateCoinsUI();}catch(e){}try{saveShop();}catch(e){}try{showRewardPopup('🎁','+'+total.toLocaleString()+' coins from the admins!');}catch(e){}showAdminBroadcast(data[data.length-1].message||('Free gift: +'+total.toLocaleString()+' coins for everyone!'),'Gift');}}catch(e){console.warn(e);}giftBusy=false;}
 function handleRow(r){if(!r||r.id==null)return;if(lastId!==null&&r.id<=lastId)return;lastId=r.id;showAdminBroadcast(r.message,r.sender);}
