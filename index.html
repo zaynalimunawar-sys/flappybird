@@ -5770,7 +5770,7 @@ function getEquippedSkinColor() {
 let activeShopTab = 'skins';
 function getFeaturedOffer() {
   const dayIdx = Math.floor(Date.now() / (1000*60*60*24));
-  const pool = [...SKINS.filter(s=>s.price>0), ...TRAILS.filter(t=>t.price>0)];
+  const pool = [...SKINS.filter(s=>s.price>0&&!s.limitedEdition), ...TRAILS.filter(t=>t.price>0&&!t.limitedEdition)];
   const item = pool[dayIdx % pool.length];
   const isSkin = SKINS.includes(item);
   return { item, isSkin };
@@ -5867,7 +5867,7 @@ function renderShop() {
   } else if (activeShopTab === 'skins') {
     body.innerHTML = '<div class="shop-section-label">EQUIP A SKIN COLOR</div><div class="shop-grid" id="shopGrid"></div>';
     const grid = document.getElementById('shopGrid');
-    SKINS.forEach(item => {
+    SKINS.filter(item => !item.limitedEdition).forEach(item => {
       const owned = ownedItems.skins.includes(item.id);
       const isEq = equipped.skin === item.id;
       const card = document.createElement('div');
@@ -5891,7 +5891,7 @@ function renderShop() {
   } else if (activeShopTab === 'trails') {
     body.innerHTML = '<div class="shop-section-label">EQUIP A HIT-EFFECT TRAIL</div><div class="shop-grid" id="shopGrid"></div>';
     const grid = document.getElementById('shopGrid');
-    TRAILS.forEach(item => {
+    TRAILS.filter(item => !item.limitedEdition).forEach(item => {
       const owned = ownedItems.trails.includes(item.id);
       const isEq = equipped.trail === item.id;
       const card = document.createElement('div');
@@ -6389,15 +6389,15 @@ function generateStarterPack() {
   totalValue += coinAmt;
 
   // Random skin the player doesn't already own (falls back to a random owned-eligible one)
-  const unownedSkins = SKINS.filter(s => !ownedItems.skins.includes(s.id));
-  const skinPool = unownedSkins.length ? unownedSkins : SKINS;
+  const unownedSkins = SKINS.filter(s => !s.limitedEdition && !ownedItems.skins.includes(s.id));
+  const skinPool = unownedSkins.length ? unownedSkins : SKINS.filter(s => !s.limitedEdition);
   const skin = skinPool[Math.floor(Math.random() * skinPool.length)];
   items.push({ type: 'skin', icon: '🥋', name: skin.name, swatch: skin.color, rarity: skin.rarity, refId: skin.id });
   totalValue += skin.price || 150;
 
   // Random trail the player doesn't already own
-  const unownedTrails = TRAILS.filter(t => !ownedItems.trails.includes(t.id));
-  const trailPool = unownedTrails.length ? unownedTrails : TRAILS;
+  const unownedTrails = TRAILS.filter(t => !t.limitedEdition && !ownedItems.trails.includes(t.id));
+  const trailPool = unownedTrails.length ? unownedTrails : TRAILS.filter(t => !t.limitedEdition);
   const trail = trailPool[Math.floor(Math.random() * trailPool.length)];
   items.push({ type: 'trail', icon: '✨', name: trail.name, swatch: trail.grad, rarity: trail.rarity, refId: trail.id });
   totalValue += trail.price || 120;
@@ -9847,6 +9847,86 @@ window._swTest={applyActions};
 @keyframes passReadyPulse{50%{box-shadow:0 0 20px #f5c759bb,0 0 30px #bb68ff55}}
 @media(max-width:680px){.shop-tabs{overflow-x:auto;flex-wrap:nowrap!important;scrollbar-width:none}.shop-tab{flex:0 0 auto!important}.shop-grid{grid-template-columns:repeat(auto-fill,minmax(142px,1fr))}}
 @media(prefers-reduced-motion:reduce){#shop-screen.active,#pass-screen.active,.shop-title,.shop-featured-banner,.op-hero,.op-card,.shop-card,.new-pass-hero section::after,.npCrown,.npProgress .pass-xp-bar::after,.npTile.ready button{animation:none!important}.shop-card,.shop-featured-price,.new-pass-bar button,.new-pass-hero section,.np-ben-card,.npTile,.npTile button{transition:none!important}}
-</style></body>
+</style><style id="holiday-shop-style">
+.holiday-hero{position:relative;max-width:1040px;margin:0 auto 20px;padding:22px;border:1px solid #83ffd877;border-radius:22px;overflow:hidden;background:radial-gradient(circle at 90% 0%,#ed355d88,transparent 35%),linear-gradient(125deg,#092d2b,#122747 58%,#34143f);box-shadow:0 14px 36px #02071199,0 0 26px #40ffd333}
+.holiday-hero::after{content:"";position:absolute;inset:-40% auto -40% -40%;width:24%;background:linear-gradient(90deg,transparent,#ffffff33,transparent);transform:skewX(-20deg);animation:holidaySweep 4s ease-in-out infinite;pointer-events:none}
+.holiday-kicker{color:#a6ffe2;font-size:.72rem;font-weight:900;letter-spacing:3px;text-transform:uppercase}
+.holiday-title{margin:4px 0;font:clamp(1.8rem,5vw,3rem) Bangers,cursive;color:#fff2c2;letter-spacing:2px;text-shadow:0 3px 0 #a71b43,0 0 22px #f05897aa}
+.holiday-sub{color:#e1f7f1;font-size:.9rem;font-weight:700}.holiday-countdown{display:inline-flex;margin-top:12px;padding:7px 12px;border:1px solid #a6ffe288;border-radius:10px;background:#071c25bb;color:#baffdf;font-weight:900;letter-spacing:1px}
+.holiday-section-title{max-width:1040px;margin:22px auto 12px;color:#ffe4a3;font:1.45rem Bangers,cursive;letter-spacing:2px;text-shadow:0 0 14px #ffd45c55}
+.holiday-card{background:linear-gradient(155deg,#14323b,#101a31 70%,#291637)!important;border-color:#8ef5d366!important;min-height:245px}
+.holiday-card .shop-card-icon{font-size:52px;color:#fff0b6;text-shadow:0 0 22px #74ffe0;animation:holidayGiftFloat 2.2s ease-in-out infinite}
+.holiday-card .shop-card-name{color:#fff1c4;font-size:1rem}.holiday-card .shop-card-desc{min-height:2.4em}
+.holiday-card .shop-card-btn{background:linear-gradient(120deg,#3cf0b0,#13a7bc)!important;color:#062129!important;box-shadow:0 4px 16px #18dbba44}
+.holiday-card .shop-card-btn:disabled{background:#45535b!important;color:#bdc8c9!important;box-shadow:none!important}
+.holiday-quest-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;max-width:1040px;margin:0 auto 24px}
+.holiday-quest{position:relative;padding:16px;border:1px solid #87f2d44d;border-radius:17px;background:linear-gradient(150deg,#102b32,#12162c);box-shadow:0 8px 22px #0004;overflow:hidden;animation:holidayQuestIn .35s ease-out both}
+.holiday-quest h3{margin:0 0 6px;color:#f5e6ff;font:1.1rem Bangers,cursive;letter-spacing:1px}.holiday-quest p{margin:0 0 12px;color:#b7c8da;font-size:.8rem;line-height:1.35}
+.holiday-quest-progress{height:9px;border-radius:99px;overflow:hidden;background:#050d18;margin:9px 0 6px}.holiday-quest-progress i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#32e7b1,#b0ff81);box-shadow:0 0 12px #49ffc1;transition:width .35s ease}
+.holiday-quest-meta{display:flex;justify-content:space-between;align-items:center;color:#dce9f5;font-size:.75rem;font-weight:800}
+.holiday-quest button{width:100%;margin-top:12px;padding:9px;border:0;border-radius:10px;background:linear-gradient(120deg,#ffd96c,#ff9d3e);color:#311b06;font-weight:900;cursor:pointer;transition:transform .16s,filter .16s}
+.holiday-quest button:hover:not(:disabled){transform:translateY(-2px);filter:brightness(1.12)}.holiday-quest button:disabled{opacity:.5;cursor:default}
+.holiday-closed{max-width:1040px;margin:0 auto 14px;padding:12px;border:1px solid #ffb2b266;border-radius:12px;background:#4a182555;color:#ffd1d1;text-align:center;font-weight:800}
+@keyframes holidaySweep{0%,68%{left:-40%}100%{left:130%}}@keyframes holidayGiftFloat{50%{transform:translateY(-6px) rotate(4deg)}}@keyframes holidayQuestIn{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){.holiday-hero::after,.holiday-card .shop-card-icon,.holiday-quest{animation:none!important}.holiday-quest button{transition:none}}
+</style>
+<script id="holiday-shop-script">
+(function(){
+'use strict';
+const END_AT=new Date('2028-01-01T00:00:00');
+const ITEMS=[
+ {id:'holiday_frostflake',type:'skin',name:'Frostflake Fighter',icon:'❄️',color:'#9df5ff',price:650,rarity:'legendary',desc:'A shimmering winter-blue fighter skin.'},
+ {id:'holiday_candytrail',type:'trail',name:'Candy Cane Trail',icon:'🍬',grad:'linear-gradient(90deg,#ff3154 0 45%,#fff1d1 45% 60%,#ff3154 60%)',price:500,rarity:'epic',desc:'Red and snowy spark streaks on every hit.'},
+ {id:'holiday_northstar',type:'trail',name:'North Star Trail',icon:'🌟',grad:'linear-gradient(90deg,#fff2a1,#60dfff,#b67aff)',price:800,rarity:'legendary',desc:'A bright starburst trail for your attacks.'}
+];
+SKINS.push({id:ITEMS[0].id,name:ITEMS[0].name,price:ITEMS[0].price,color:ITEMS[0].color,desc:ITEMS[0].desc,rarity:ITEMS[0].rarity,limitedEdition:true});
+TRAILS.push(...ITEMS.filter(x=>x.type==='trail').map(x=>({id:x.id,name:x.name,price:x.price,grad:x.grad,desc:x.desc,rarity:x.rarity,limitedEdition:true})));
+const originalRenderShop=renderShop;
+const tabs=document.querySelector('.shop-tabs');
+const holidayTab=document.createElement('button');holidayTab.type='button';holidayTab.className='shop-tab holiday-shop-tab';holidayTab.dataset.tab='holiday';holidayTab.textContent='🎄 Christmas Gifts';tabs.appendChild(holidayTab);
+holidayTab.addEventListener('click',()=>{document.querySelectorAll('.shop-tab').forEach(t=>t.classList.remove('active'));holidayTab.classList.add('active');activeShopTab='holiday';renderShop();});
+const questKey='sw_holiday_quests_v1';
+const questDefs=[
+ {id:'matches',title:'Holiday Warm-Up',desc:'Finish matches and keep the arena lively.',goal:3,reward:350},
+ {id:'wins',title:'Gift Snatcher',desc:'Win matches to earn your place on the nice list.',goal:2,reward:500},
+ {id:'specials',title:'Star Power',desc:'Land special moves during matches.',goal:10,reward:300}
+];
+let questData={matches:0,wins:0,specials:0,claimed:[]};
+try{const saved=JSON.parse(localStorage.getItem(questKey)||'null');if(saved&&typeof saved==='object')questData={...questData,...saved,claimed:Array.isArray(saved.claimed)?saved.claimed:[]};}catch(e){}
+const saveQuests=()=>{try{localStorage.setItem(questKey,JSON.stringify(questData));}catch(e){}};
+const eventOpen=()=>Date.now()<END_AT.getTime();
+function renderHolidayShop(){
+ const body=document.getElementById('shopBody'),featured=document.getElementById('shopFeaturedBanner');if(featured)featured.style.display='none';
+ const remain=Math.max(0,END_AT-Date.now()),days=Math.floor(remain/86400000),hours=Math.floor(remain%86400000/3600000),mins=Math.floor(remain%3600000/60000),secs=Math.floor(remain%60000/1000);
+ body.replaceChildren();
+ const hero=document.createElement('section');hero.className='holiday-hero';hero.innerHTML='<div class="holiday-kicker">🎁 Seasonal event · limited edition</div><h2 class="holiday-title">Christmas Gifts Limited Edition</h2><div class="holiday-sub">Festive cosmetics and holiday quests. Items are available until December 31, 2027.</div><div class="holiday-countdown" id="holidayCountdown"></div>';body.appendChild(hero);
+ hero.querySelector('#holidayCountdown').textContent=eventOpen()?`ENDS IN ${days}D ${String(hours).padStart(2,'0')}H ${String(mins).padStart(2,'0')}M ${String(secs).padStart(2,'0')}S`:'EVENT ENDED · DEC 31, 2027';
+ if(!eventOpen()){const closed=document.createElement('div');closed.className='holiday-closed';closed.textContent='The holiday event has ended. Previously unlocked gifts stay in your collection.';body.appendChild(closed);}
+ const itemTitle=document.createElement('h3');itemTitle.className='holiday-section-title';itemTitle.textContent='🎄 LIMITED EDITION GIFTS';body.appendChild(itemTitle);
+ const grid=document.createElement('div');grid.className='shop-grid';body.appendChild(grid);
+ ITEMS.forEach(item=>{const owned=item.type==='skin'?ownedItems.skins.includes(item.id):ownedItems.trails.includes(item.id);const equippedNow=item.type==='skin'?equipped.skin===item.id:equipped.trail===item.id;const card=document.createElement('article');card.className='shop-card holiday-card rarity-'+item.rarity+(owned?' owned':'')+(equippedNow?' equipped':'');
+ const icon=document.createElement('div');icon.className='shop-card-icon';icon.textContent=item.icon;card.appendChild(icon);
+ const rarity=document.createElement('div');rarity.className='shop-rarity-tag rarity-'+item.rarity;rarity.textContent='LIMITED · '+item.rarity;card.appendChild(rarity);
+ const name=document.createElement('div');name.className='shop-card-name';name.textContent=item.name;card.appendChild(name);
+ const desc=document.createElement('div');desc.className='shop-card-desc';desc.textContent=item.desc;card.appendChild(desc);
+ if(owned){const badge=document.createElement('div');badge.className='shop-card-badge '+(equippedNow?'badge-equipped':'badge-owned');badge.textContent=equippedNow?'EQUIPPED':'OWNED';card.appendChild(badge);}
+ const btn=document.createElement('button');btn.type='button';btn.className='shop-card-btn'+(owned?' equip-btn':'');btn.textContent=owned?(equippedNow?'Equipped':'Equip'):'🪙 '+item.price.toLocaleString();btn.disabled=!owned&&!eventOpen();
+ btn.addEventListener('click',()=>{if(owned){if(item.type==='skin')equipped.skin=item.id;else equipped.trail=item.id;saveShop();renderShop();return;}if(!eventOpen())return;if(coins<item.price){showReward('❄️','Need '+(item.price-Math.floor(coins)).toLocaleString()+' more coins!');return;}coins-=item.price;if(item.type==='skin'){if(!ownedItems.skins.includes(item.id))ownedItems.skins.push(item.id);equipped.skin=item.id;}else{if(!ownedItems.trails.includes(item.id))ownedItems.trails.push(item.id);equipped.trail=item.id;}saveShop();updateCoinsUI();renderShop();showReward(item.icon,'Unlocked '+item.name+'!');});card.appendChild(btn);grid.appendChild(card);});
+ const qTitle=document.createElement('h3');qTitle.className='holiday-section-title';qTitle.textContent='✨ HOLIDAY QUESTS';body.appendChild(qTitle);
+ const qGrid=document.createElement('div');qGrid.className='holiday-quest-grid';body.appendChild(qGrid);
+ questDefs.forEach(q=>{const progress=Math.min(q.goal,Math.max(0,Number(questData[q.id])||0)),claimed=questData.claimed.includes(q.id),complete=progress>=q.goal;const card=document.createElement('article');card.className='holiday-quest';const h=document.createElement('h3');h.textContent=q.title;const p=document.createElement('p');p.textContent=q.desc;const bar=document.createElement('div');bar.className='holiday-quest-progress';const fill=document.createElement('i');fill.style.width=(progress/q.goal*100)+'%';bar.appendChild(fill);const meta=document.createElement('div');meta.className='holiday-quest-meta';meta.innerHTML='<span>'+progress+' / '+q.goal+'</span><span>🪙 '+q.reward+'</span>';const claim=document.createElement('button');claim.type='button';claim.disabled=!complete||claimed||!eventOpen();claim.textContent=claimed?'CLAIMED':complete?'CLAIM REWARD':'IN PROGRESS';claim.addEventListener('click',()=>{if(!complete||claimed||!eventOpen())return;questData.claimed.push(q.id);coins+=q.reward;saveQuests();saveShop();updateCoinsUI();renderHolidayShop();showReward('🎄','Quest complete! +'+q.reward+' coins.');});card.append(h,p,bar,meta,claim);qGrid.appendChild(card);});
+}
+renderShop=function(){if(activeShopTab==='holiday'){renderHolidayShop();return;}return originalRenderShop.apply(this,arguments);};
+// Keep seasonal cosmetics out of the regular store tabs while they remain usable after purchase.
+
+const checkGameOverOriginal=checkGameOver;let reported=false;
+const startGameOriginal=startGame;startGame=function(){reported=false;return startGameOriginal.apply(this,arguments);};
+checkGameOver=function(){const wasPlaying=gameState==='playing';const result=checkGameOverOriginal.apply(this,arguments);if(wasPlaying&&gameState==='gameover'&&!reported&&!window.swOnline&&!trainingMode&&eventOpen()){reported=true;questData.matches=Math.min(questDefs[0].goal,(Number(questData.matches)||0)+1);const title=(document.getElementById('go-title')?.textContent||'');if(title.includes('YOU WIN'))questData.wins=Math.min(questDefs[1].goal,(Number(questData.wins)||0)+1);saveQuests();if(activeShopTab==='holiday')renderHolidayShop();}return result;};
+const doAttackOriginal=Fighter.prototype.doAttack;Fighter.prototype.doAttack=function(type,enemies,duration,cooldown){const result=doAttackOriginal.apply(this,arguments);if(type==='special'&&this.isPlayer&&!trainingMode&&eventOpen()){questData.specials=Math.min(questDefs[2].goal,(Number(questData.specials)||0)+1);saveQuests();if(activeShopTab==='holiday')renderHolidayShop();}return result;};
+// Remove the seasonal cosmetics from the everyday catalog; they are still equipped normally.
+let holidayWasOpen=eventOpen();
+const countdownTimer=setInterval(()=>{if(activeShopTab!=='holiday'||!document.getElementById('shop-screen').classList.contains('active'))return;const nowOpen=eventOpen();if(nowOpen!==holidayWasOpen){holidayWasOpen=nowOpen;renderHolidayShop();return;}const el=document.getElementById('holidayCountdown');if(!el)return;const left=Math.max(0,END_AT-Date.now()),d=Math.floor(left/86400000),h=Math.floor(left%86400000/3600000),m=Math.floor(left%3600000/60000),sec=Math.floor(left%60000/1000);el.textContent=nowOpen?`ENDS IN ${d}D ${String(h).padStart(2,'0')}H ${String(m).padStart(2,'0')}M ${String(sec).padStart(2,'0')}S`:'EVENT ENDED · DEC 31, 2027';},1000);
+})();
+</script></body>
 
 </html>
