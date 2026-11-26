@@ -9538,24 +9538,22 @@ for(const p of particles){p.life-=dt;if(p.life<=0)continue;p.x+=p.vx*dt;p.y+=p.v
 @keyframes abIconRing{0%{opacity:.9;transform:scale(.8)}100%{opacity:0;transform:scale(1.55)}}
 @keyframes abMessageIn{from{opacity:0;transform:translateY(7px);filter:blur(3px)}to{opacity:1;transform:translateY(0);filter:blur(0)}}
 @media(prefers-reduced-motion:reduce){#adminBroadcastBanner.show,#adminBroadcastBanner.show::before,#adminBroadcastBanner.show::after,#adminBroadcastBanner.show .ab-icon,#adminBroadcastBanner.show .ab-icon::after,#adminBroadcastBanner.show .ab-msg{animation:none!important}}
-/* FULL-SCREEN ANNOUNCEMENT BURST */
-#announcementBurst{position:fixed;inset:0;z-index:99998;display:grid;place-items:center;padding:20px;overflow:hidden;pointer-events:none;opacity:0;background:radial-gradient(ellipse at center,rgba(113,26,190,.52),rgba(10,3,25,.88) 68%,rgba(4,1,12,.94));}
-#announcementBurst.show{animation:annScreenFlash 1.65s steps(1,end) both}
-#announcementBurst::before{content:"";position:absolute;inset:-60%;background:repeating-conic-gradient(from 0deg,rgba(255,255,255,.28) 0deg 1deg,transparent 1deg 13deg);mix-blend-mode:screen;opacity:0}
-#announcementBurst.show::before{animation:annRays 1.5s ease-out both}
-#announcementBurst::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,transparent 0 18%,rgba(255,35,160,.38) 19%,transparent 21%,rgba(0,225,255,.24) 30%,transparent 34%);opacity:0;transform:scale(.3)}
-#announcementBurst.show::after{animation:annShockwave 1.2s ease-out both}
-#announcementBurst .ann-burst-card{position:relative;z-index:1;width:min(760px,94vw);padding:clamp(24px,6vw,52px) clamp(20px,5vw,48px);text-align:center;border:2px solid #fff;background:linear-gradient(145deg,rgba(35,8,70,.94),rgba(10,16,48,.96));clip-path:polygon(3% 0,97% 0,100% 14%,100% 86%,97% 100%,3% 100%,0 86%,0 14%);box-shadow:0 0 25px #fff,0 0 60px #bb35ff,0 0 120px #5232ff;opacity:0;transform:scale(.55) rotate(-4deg)}
-#announcementBurst.show .ann-burst-card{animation:annCardSlam .8s cubic-bezier(.16,1,.3,1) both}
-#announcementBurst .ann-burst-kicker{display:block;color:#8ffaff;font:900 clamp(12px,2.2vw,20px) Rajdhani,Arial,sans-serif;letter-spacing:.4em;text-shadow:0 0 18px #00eaff}
-#announcementBurst .ann-burst-title{display:block;margin:8px 0 14px;color:#fff;font:900 clamp(34px,8vw,78px) Bangers,Impact,sans-serif;letter-spacing:.09em;line-height:1;text-shadow:3px 0 #ff1686,-3px 0 #00eaff,0 0 28px #fff,0 0 70px #bb35ff;animation:annTitleFlicker .22s steps(2,end) 3}
-#announcementBurst .ann-burst-message{display:block;max-height:28vh;overflow:hidden;color:#fff;font:800 clamp(18px,3.2vw,30px) Rajdhani,Arial,sans-serif;line-height:1.15;text-shadow:0 0 16px #d88cff;overflow-wrap:anywhere}
-@keyframes annScreenFlash{0%,100%{opacity:0}8%{opacity:1;background:rgba(255,255,255,.7)}16%{background:rgba(0,230,255,.42)}25%{background:radial-gradient(ellipse at center,rgba(125,20,255,.72),rgba(5,0,18,.92) 72%)}38%{background:rgba(255,35,150,.34)}52%,85%{background:radial-gradient(ellipse at center,rgba(113,26,190,.52),rgba(10,3,25,.88) 68%,rgba(4,1,12,.94))}}
-@keyframes annRays{0%{opacity:0;transform:rotate(-25deg) scale(.35)}20%{opacity:.9}100%{opacity:.22;transform:rotate(35deg) scale(1.15)}}
-@keyframes annShockwave{0%{opacity:.95;transform:scale(.25)}100%{opacity:0;transform:scale(1.8)}}
-@keyframes annCardSlam{0%{opacity:0;transform:scale(.55) rotate(-4deg);filter:blur(12px)}48%{opacity:1;transform:scale(1.07) rotate(1deg);filter:blur(0)}68%{transform:scale(.97) rotate(-.5deg)}100%{opacity:1;transform:scale(1) rotate(0)}}
-@keyframes annTitleFlicker{0%,100%{opacity:1;filter:none}50%{opacity:.72;filter:hue-rotate(70deg) brightness(1.8)}}
-@media(prefers-reduced-motion:reduce){#announcementBurst.show,#announcementBurst.show::before,#announcementBurst.show::after,#announcementBurst.show .ann-burst-card,#announcementBurst.show .ann-burst-title{animation-duration:.01ms!important;animation-iteration-count:1!important}}</style>
+
+/* LOCAL FLASHY ANNOUNCEMENT EFFECTS */
+#adminBroadcastBanner.show{animation:abSuperEnter .68s cubic-bezier(.16,1,.3,1) both,abBannerFlash 1.8s ease-out both,abGlow 2.2s 1.8s ease-in-out infinite}
+#adminBroadcastBanner.show::before{width:120px;left:-140px;background:linear-gradient(100deg,transparent,rgba(255,255,255,.85),rgba(120,245,255,.7),transparent);filter:drop-shadow(0 0 12px #ff94ff);animation:abLocalSweep .85s .12s ease-out 2}
+#adminBroadcastBanner.show::after{height:6px;box-shadow:0 0 16px #ff7ad9;animation:abTimer 7s linear forwards}
+#adminBroadcastBanner.show .ab-icon{animation:abIconFlash .48s ease-in-out 3,abPing 1.6s 1.45s ease-in-out infinite}
+#adminBroadcastBanner.show .ab-icon::after{content:"";position:absolute;inset:-8px;border:2px solid #fff;border-radius:19px;opacity:0;pointer-events:none;animation:abIconRing .65s ease-out 2}
+#adminBroadcastBanner.show .ab-label{animation:abLabelFlash .5s ease-in-out 2}
+#adminBroadcastBanner.show .ab-msg{animation:abMessageGlitch .42s steps(2,end) 1}
+@keyframes abBannerFlash{0%,100%{filter:none}12%{filter:brightness(2.1) saturate(1.8)}24%{filter:hue-rotate(45deg) brightness(1.35)}36%{filter:brightness(1.8)}55%{filter:none}}
+@keyframes abLocalSweep{0%{left:-140px}100%{left:115%}}
+@keyframes abIconFlash{0%,100%{filter:brightness(1);transform:scale(1)}45%{filter:brightness(2.2);transform:scale(1.18) rotate(-9deg)}}
+@keyframes abIconRing{0%{opacity:.95;transform:scale(.72)}100%{opacity:0;transform:scale(1.7)}}
+@keyframes abLabelFlash{0%,100%{filter:brightness(1)}50%{filter:brightness(2.2);text-shadow:0 0 18px #fff,0 0 26px #ffd878}}
+@keyframes abMessageGlitch{0%,100%{transform:translateX(0);text-shadow:0 2px 8px #0008}25%{transform:translateX(-3px);text-shadow:3px 0 #ff3bbf,-3px 0 #00eaff}50%{transform:translateX(2px);text-shadow:-2px 0 #ff3bbf,2px 0 #00eaff}75%{transform:translateX(-1px)}}
+@media(prefers-reduced-motion:reduce){#adminBroadcastBanner.show,#adminBroadcastBanner.show::before,#adminBroadcastBanner.show::after,#adminBroadcastBanner.show .ab-icon,#adminBroadcastBanner.show .ab-icon::after,#adminBroadcastBanner.show .ab-label,#adminBroadcastBanner.show .ab-msg{animation:none!important;filter:none!important}}</style>
 <div id="banScreen" role="alertdialog" aria-live="assertive"><div class="ban-icon">🚫</div><h1>YOU ARE BANNED</h1><p>An admin has banned this account from Stickman Wars.</p><div class="ban-reason" id="banReason" hidden></div><p style="font-size:12px;opacity:.7">If you think this is a mistake, contact the game owner.</p></div>
 <div id="eventBadge" role="status"></div>
 <div id="onOverlay"><div class="on-card"><div class="on-spin"></div><p id="onOverlayText">Connecting...</p><button type="button" class="on-btn" id="onOverlayCancel">Cancel</button></div></div>
@@ -9575,8 +9573,7 @@ function showBan(reason){banned=true;try{localStorage.setItem('sw_banned','1');}
 ['keydown','keyup','keypress'].forEach(ev=>window.addEventListener(ev,e=>{if(banned){e.stopImmediatePropagation();e.preventDefault();}},true));
 try{if(localStorage.getItem('sw_banned')==='1')showBan('');}catch(e){}
 let bcastTimer=null;
-function showAnnouncementBurst(msg,sender){let el=by('announcementBurst');if(!el){el=document.createElement('div');el.id='announcementBurst';el.setAttribute('aria-hidden','true');el.innerHTML='<div class="ann-burst-card"><span class="ann-burst-kicker"></span><strong class="ann-burst-title">ADMIN ALERT</strong><span class="ann-burst-message"></span></div>';document.body.appendChild(el);}el.querySelector('.ann-burst-kicker').textContent='⚡ '+(sender||'GAME')+' BROADCAST ⚡';el.querySelector('.ann-burst-message').textContent=String(msg).slice(0,180);el.classList.remove('show');void el.offsetWidth;el.classList.add('show');clearTimeout(el._burstTimer);el._burstTimer=setTimeout(()=>el.classList.remove('show'),1700);}
-function showAdminBroadcast(msg,sender){const b=by('adminBroadcastBanner');if(!b||!msg)return;showAnnouncementBurst(msg,sender);by('abLabel').textContent=(sender==='Multiplayer'?'MULTIPLAYER':'ADMIN ANNOUNCEMENT'+(sender?' · '+String(sender).toUpperCase():''));by('abMsg').textContent=msg;b.classList.remove('show');void b.offsetWidth;b.classList.add('show');clearTimeout(bcastTimer);bcastTimer=setTimeout(()=>b.classList.remove('show'),7000);try{playSFX(660,.12,'triangle');setTimeout(()=>{try{playSFX(880,.16,'triangle');}catch(e){}},110);}catch(e){}}
+function showAdminBroadcast(msg,sender){const b=by('adminBroadcastBanner');if(!b||!msg)return;by('abLabel').textContent=(sender==='Multiplayer'?'MULTIPLAYER':'ADMIN ANNOUNCEMENT'+(sender?' · '+String(sender).toUpperCase():''));by('abMsg').textContent=msg;b.classList.remove('show');void b.offsetWidth;b.classList.add('show');clearTimeout(bcastTimer);bcastTimer=setTimeout(()=>b.classList.remove('show'),7000);try{playSFX(660,.12,'triangle');setTimeout(()=>{try{playSFX(880,.16,'triangle');}catch(e){}},110);}catch(e){}}
 by('abClose')?.addEventListener('click',()=>by('adminBroadcastBanner').classList.remove('show'));
 let bc=null;try{bc=new BroadcastChannel('stickman_wars_admin_broadcast');bc.onmessage=e=>{if(e.data&&e.data.msg)showAdminBroadcast(e.data.msg,e.data.sender);};}catch(e){}
 const SUPABASE_URL=String(window.SW_SUPABASE_URL||'').trim().replace(/\/+$/,'').replace(/\/(rest|auth)\/v1.*$/,''),SUPABASE_ANON_KEY=String(window.SW_SUPABASE_KEY||'').trim();
