@@ -8373,6 +8373,43 @@ Fighter.prototype.draw = function(c) {
     // Call base renderer for limbs, afterimages & torso
     origDrawFighter.call(this, c);
 
+    // Show the equipped profile title above the player's fighter in matches.
+    if (this.isPlayer && typeof equippedTitle !== 'undefined' && equippedTitle !== 'none') {
+      const title = getTitle(equippedTitle);
+      if (title && title.id !== 'none') {
+        const label = (title.icon ? title.icon + ' ' : '') + title.name;
+        const maxWidth = Math.min(220 * s, (canvas && canvas._logicalW ? canvas._logicalW * 0.72 : 260 * s));
+        let fontSize = 13 * s;
+        c.save();
+        c.font = `900 ${fontSize}px Rajdhani, sans-serif`;
+        while (c.measureText(label).width > maxWidth - 18 * s && fontSize > 9 * s) {
+          fontSize -= s;
+          c.font = `900 ${fontSize}px Rajdhani, sans-serif`;
+        }
+        const textWidth = Math.min(c.measureText(label).width, maxWidth - 18 * s);
+        const badgeWidth = textWidth + 18 * s;
+        const badgeHeight = 20 * s;
+        const badgeX = cx - badgeWidth / 2;
+        const badgeY = y - 42 * s;
+        c.globalAlpha = 0.94;
+        c.fillStyle = 'rgba(8, 12, 28, 0.88)';
+        c.strokeStyle = title.color || '#ffffff';
+        c.lineWidth = Math.max(1, 1.5 * s);
+        c.shadowColor = title.color || '#ffffff';
+        c.shadowBlur = 12 * s;
+        c.beginPath();
+        c.roundRect(badgeX, badgeY, badgeWidth, badgeHeight, 8 * s);
+        c.fill();
+        c.stroke();
+        c.shadowBlur = 0;
+        c.fillStyle = title.color || '#ffffff';
+        c.textAlign = 'center';
+        c.textBaseline = 'middle';
+        c.fillText(label, cx, badgeY + badgeHeight / 2, maxWidth - 18 * s);
+        c.restore();
+      }
+    }
+
     // 2. Dynamic Stickman Face & Energy Trails (Headband + Fierce Glowing Eyes)
     c.save();
     // Flowing martial-arts headband tail fluttering in wind
