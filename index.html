@@ -2581,8 +2581,87 @@ body.is-phone #hud{padding:max(8px,env(safe-area-inset-top)) 8px 0;gap:5px}body.
 .rr-club-status{min-height:1.3em;margin:0;font-size:.82rem;font-weight:800;color:#a9c0e4}.rr-club-status.ok{color:#7dffb0}.rr-club-status.warn{color:#ffb38a}
 @media (max-width:520px){#rrClubs.rr-clubs-grid{grid-template-columns:1fr!important}.rr-clubs h2{font-size:1.8rem}}
 </style>
+<style id="local-account-system-style">
+#account-gate{display:none;position:fixed;inset:0;z-index:2147483000;align-items:center;justify-content:center;padding:18px;background:radial-gradient(ellipse at 50% 15%,#7c3aed55,transparent 55%),rgba(5,7,18,.94);backdrop-filter:blur(12px);color:#f7f1ff;font-family:'Rajdhani',Arial,sans-serif}
+#account-gate.open{display:flex}#account-gate .account-card{width:min(440px,94vw);max-height:90dvh;overflow:auto;padding:26px 22px;border:1px solid #d4a4ff88;border-radius:20px;background:linear-gradient(150deg,#25143a,#101426 72%);box-shadow:0 20px 70px #000b,0 0 36px #a855f755;text-align:center}
+#account-gate h1{margin:0;color:#fff;font:900 clamp(25px,7vw,36px) 'Bangers',Impact,Arial;letter-spacing:2px;text-shadow:0 0 20px #c084fc}
+#account-gate .account-copy{margin:8px 0 18px;color:#d6c6ea;font-size:14px;line-height:1.45}
+#account-gate label{display:block;margin:12px 0 5px;text-align:left;color:#e7d6ff;font-size:13px;font-weight:800}
+#account-gate input,#account-gate select{width:100%;min-height:44px;padding:10px 12px;border:1px solid #7957a1;border-radius:10px;background:#100d20;color:#fff;font:700 16px 'Rajdhani',Arial,sans-serif;outline:none}
+#account-gate input:focus,#account-gate select:focus{border-color:#e6bdff;box-shadow:0 0 0 3px #c084fc33}
+#account-gate .account-actions{display:flex;gap:10px;margin-top:16px}
+#account-gate button{min-height:44px;padding:10px 14px;border:1px solid #dcb8ff;border-radius:10px;background:linear-gradient(120deg,#7c3aed,#a855f7);color:#fff;font:900 15px 'Rajdhani',Arial,sans-serif;cursor:pointer;touch-action:manipulation}
+#account-gate .account-actions button{flex:1}#account-gate button.secondary{background:#201a30;border-color:#77648f;color:#e8def4}
+#account-gate .account-note{margin:14px 0 0;color:#a99bbd;font-size:11px;line-height:1.45}
+#account-gate .account-status{min-height:1.3em;margin:10px 0 0;color:#ffb8c4;font-size:13px;font-weight:800}
+@media(prefers-reduced-motion:no-preference){#account-gate.open .account-card{animation:account-arrive .28s cubic-bezier(.2,.8,.2,1) both}@keyframes account-arrive{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:none}}}
+</style>
 </head>
 <body>
+<div id="account-gate" class="open" role="dialog" aria-modal="true" aria-labelledby="account-gate-title">
+  <div class="account-card">
+    <h1 id="account-gate-title">PLAYER ACCOUNTS</h1>
+    <p class="account-copy">Sign in to your online player account, or create one to save progress across devices.</p>
+    <section id="account-login-form">
+      <label for="account-login-name">Player name</label>
+      <input id="account-login-name" type="text" maxlength="20" autocomplete="username" placeholder="Your account name">
+      <label for="account-login-password">Password</label>
+      <input id="account-login-password" type="password" autocomplete="current-password" maxlength="128" placeholder="Enter this profile's password">
+      <div class="account-actions"><button type="button" id="account-signin">SIGN IN</button><button type="button" class="secondary" id="account-show-create">CREATE PROFILE</button></div>
+    </section>
+    <section id="account-create-form" hidden>
+      <label for="account-new-name">Choose a player name</label>
+      <input id="account-new-name" type="text" maxlength="20" autocomplete="username" placeholder="3–20 letters, numbers or underscores">
+      <label for="account-new-password">Create a password</label>
+      <input id="account-new-password" type="password" minlength="8" maxlength="128" autocomplete="new-password" placeholder="At least 8 characters">
+      <label for="account-confirm-password">Confirm password</label>
+      <input id="account-confirm-password" type="password" minlength="8" maxlength="128" autocomplete="new-password" placeholder="Type it again">
+      <div class="account-actions"><button type="button" id="account-create">CREATE &amp; PLAY</button><button type="button" class="secondary" id="account-show-login">BACK</button></div>
+    </section>
+    <p id="account-status" class="account-status" role="status" aria-live="polite"></p>
+    <p class="account-note">Your password is checked by the game's Supabase database; the game does not store it as plain text. Keep it private. Password reset is not set up yet. Your saves sync online after the account SQL is installed.</p>
+    <button type="button" class="secondary" id="account-cancel" hidden>BACK TO GAME</button>
+  </div>
+</div>
+<script id="local-account-system">
+(function(){
+  const SESSION_KEY='sw_cloud_account_session_v1',OLD_REGISTRY_KEY='sw_local_accounts_v1',OLD_ACTIVE_KEY='sw_active_account_v1';
+  const SCOPED_KEYS=new Set(['tf_save','careerProgress','tkwMods','weaponToggles','rankedSaveData','stickman_rank_cards_v1','sw_overpriced_v1','sw_shopx_v1','sw_holiday_quests_v1','my_friend_code','friends_list','arsenalSettings','capesOwned','equippedCape']);
+  const rawGet=Storage.prototype.getItem,rawSet=Storage.prototype.setItem,rawRemove=Storage.prototype.removeItem;
+  const readSession=()=>{try{const s=JSON.parse(rawGet.call(localStorage,SESSION_KEY)||'null');return s&&typeof s.accountId==='string'&&typeof s.token==='string'?s:null}catch(e){return null}};
+  let session=readSession(),activeId=session?.accountId||'',syncEnabled=false,syncTimer=0,booting=false;
+  function scopedKey(key){const k=String(key);return this===localStorage&&activeId&&SCOPED_KEYS.has(k)?'sw_profile_'+activeId+'_'+k:k;}
+  function queueSync(){if(!syncEnabled||!session)return;clearTimeout(syncTimer);syncTimer=setTimeout(flushSync,900);}
+  Storage.prototype.getItem=function(key){return rawGet.call(this,scopedKey.call(this,key));};
+  Storage.prototype.setItem=function(key,value){const out=rawSet.call(this,scopedKey.call(this,key),value);if(this===localStorage&&SCOPED_KEYS.has(String(key)))queueSync();return out;};
+  Storage.prototype.removeItem=function(key){const out=rawRemove.call(this,scopedKey.call(this,key));if(this===localStorage&&SCOPED_KEYS.has(String(key)))queueSync();return out;};
+  const gate=document.getElementById('account-gate'),login=document.getElementById('account-login-form'),create=document.getElementById('account-create-form'),status=document.getElementById('account-status'),cancel=document.getElementById('account-cancel');
+  function setStatus(message,good){status.textContent=message||'';status.style.color=good?'#91ffc4':'';}
+  const setSyncStatus=t=>{const el=document.getElementById('account-sync-status');if(el)el.textContent=t;};
+  function openGate(){gate.classList.add('open');cancel.hidden=!session;login.hidden=false;create.hidden=true;setStatus('');document.getElementById('account-login-name').value='';document.getElementById('account-login-password').value='';document.getElementById('account-new-password').value='';document.getElementById('account-confirm-password').value='';}
+  function snapshot(prefix){const out={};for(const k of SCOPED_KEYS){const v=rawGet.call(localStorage,(prefix||'')+k);if(v!==null){if(k==='tf_save'){try{const save=JSON.parse(v);delete save.adminUnlocked;out[k]=JSON.stringify(save);}catch(e){out[k]=v;}}else out[k]=v;}}return out;}
+  function applySave(id,data){const prefix='sw_profile_'+id+'_';for(const k of SCOPED_KEYS){const v=data&&typeof data[k]==='string'?data[k]:null;if(v===null)rawRemove.call(localStorage,prefix+k);else rawSet.call(localStorage,prefix+k,v);}}
+  async function getApi(){if(window.SWCloudAccounts)return window.SWCloudAccounts;await new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(new Error('Could not connect to the game server. Check your connection and try again.')),18000);window.addEventListener('sw-cloud-ready',()=>{clearTimeout(timer);resolve();},{once:true});});if(!window.SWCloudAccounts)throw new Error('The cloud account service is unavailable.');return window.SWCloudAccounts;}
+  async function cloudCall(fn,args){const api=await getApi(),{data,error}=await api.rpc(fn,args);if(error)throw new Error(error.message||'Cloud account request failed.');if(!data||data.ok===false)throw new Error(data?.message||'Cloud account request failed.');return data;}
+  function storeSession(data,bootStamp){clearTimeout(syncTimer);session={accountId:data.account_id,username:data.username,token:data.token,bootStamp:bootStamp??data.updated_at??null};activeId=session.accountId;rawSet.call(localStorage,SESSION_KEY,JSON.stringify(session));}
+  async function flushSync(){if(!session||!activeId||!syncEnabled)return;clearTimeout(syncTimer);setSyncStatus('Saving online…');try{const r=await cloudCall('game_account_save',{p_token:session.token,p_save:snapshot('sw_profile_'+activeId+'_')});session.bootStamp=r.updated_at??session.bootStamp;rawSet.call(localStorage,SESSION_KEY,JSON.stringify(session));setSyncStatus('Saved online ✓');}catch(e){setSyncStatus('Cloud save failed — '+e.message);}}
+  async function signIn(){const b=document.getElementById('account-signin'),username=document.getElementById('account-login-name').value.trim(),password=document.getElementById('account-login-password').value;if(!username||!password){setStatus('Enter your player name and password.');return;}b.disabled=true;setStatus('Connecting to your account…');try{if(session&&syncEnabled)await flushSync();const d=await cloudCall('game_account_login',{p_username:username,p_password:password});storeSession(d,d.updated_at);applySave(activeId,d.save_data||{});syncEnabled=false;location.reload();}catch(e){setStatus(e.message||'Could not sign in.');}finally{b.disabled=false;}}
+  function legacySnapshot(){const legacyId=rawGet.call(localStorage,OLD_ACTIVE_KEY)||'',prefix=legacyId?'sw_profile_'+legacyId+'_':'';return snapshot(prefix);}
+  async function createAccount(){const b=document.getElementById('account-create'),username=document.getElementById('account-new-name').value.trim(),password=document.getElementById('account-new-password').value,confirmPassword=document.getElementById('account-confirm-password').value;if(!/^[A-Za-z0-9_]{3,20}$/.test(username)){setStatus('Use 3–20 letters, numbers or underscores for the name.');return;}if(password.length<8){setStatus('Use a password with at least 8 characters.');return;}if(password!==confirmPassword){setStatus('The passwords do not match.');return;}b.disabled=true;setStatus('Creating your online account…');try{const previous=session?{}:legacySnapshot();if(session&&syncEnabled)await flushSync();const d=await cloudCall('game_account_signup',{p_username:username,p_password:password});let saved=d.save_data||{},stamp=d.updated_at??null;if(Object.keys(previous).length){const r=await cloudCall('game_account_save',{p_token:d.token,p_save:previous});stamp=r.updated_at??stamp;saved=previous;}storeSession(d,stamp);applySave(activeId,saved);syncEnabled=false;location.reload();}catch(e){setStatus(e.message||'Could not create the account.');}finally{b.disabled=false;}}
+  document.getElementById('account-show-create').onclick=()=>{login.hidden=true;create.hidden=false;setStatus('');document.getElementById('account-new-name').focus();};
+  document.getElementById('account-show-login').onclick=()=>{create.hidden=true;login.hidden=false;setStatus('');};
+  document.getElementById('account-cancel').onclick=()=>{if(session){gate.classList.remove('open');setStatus('');}};
+  document.getElementById('account-signin').onclick=signIn;
+  document.getElementById('account-create').onclick=createAccount;
+  document.getElementById('account-login-password').addEventListener('keydown',e=>{if(e.key==='Enter')signIn();});
+  document.getElementById('account-confirm-password').addEventListener('keydown',e=>{if(e.key==='Enter')createAccount();});
+  async function bootCloud(){if(booting)return;booting=true;try{if(!session){gate.classList.add('open');return;}gate.classList.add('open');cancel.hidden=false;setStatus('Syncing your online save…');const d=await cloudCall('game_account_load',{p_token:session.token});const stamp=d.updated_at??null;if(stamp!==session.bootStamp){applySave(activeId,d.save_data||{});session.bootStamp=stamp;rawSet.call(localStorage,SESSION_KEY,JSON.stringify(session));syncEnabled=false;location.reload();return;}syncEnabled=true;setStatus('Signed in as '+session.username,true);setSyncStatus('Connected ✓');gate.classList.remove('open');}catch(e){syncEnabled=false;setStatus('Account sync failed: '+(e.message||'Try again.'));if(/session|expired|invalid token/i.test(e.message||'')){session=null;activeId='';rawRemove.call(localStorage,SESSION_KEY);cancel.hidden=true;}}finally{booting=false;}}
+  window.SWAccount={open:openGate,getActiveName:()=>session?.username||'',getActiveId:()=>activeId};
+  window.addEventListener('sw-cloud-ready',bootCloud);
+  document.addEventListener('DOMContentLoaded',()=>{if(session)bootCloud();else openGate();});
+  if(!session)gate.classList.add('open');
+})();
+</script>
 <!-- DEVICE PICKER: choose the layout and controls before entering the game -->
 <div id="device-picker" role="dialog" aria-modal="true" aria-labelledby="device-picker-title">
   <div class="device-picker-card">
@@ -2829,6 +2908,8 @@ body.is-phone #hud{padding:max(8px,env(safe-area-inset-top)) 8px 0;gap:5px}body.
   <div class="profile-body">
     <div class="profile-avatar-wrap" id="profileAvatar">🥋</div>
     <input class="profile-name-input" id="profileNameInput" maxlength="14" value="Player">
+    <button type="button" id="profileSwitchAccountBtn" class="profile-delete-btn" style="margin-top:10px;border-color:#bd8aff;color:#f1dcff;background:linear-gradient(120deg,#45216d,#231137)">SWITCH PLAYER PROFILE</button>
+    <small id="account-sync-status" style="display:block;margin:8px 0;color:#a9ffc9;font-weight:800">Connecting to cloud…</small>
     <div class="profile-title-badge" id="profileTitleBadge"></div>
     <div class="profile-rank-badge" id="profileRankBadge">🏆 0 Trophies</div>
     <div class="profile-stats-grid" id="profileStatsGrid"></div>
@@ -5673,7 +5754,7 @@ function loadShopSave() {
     matchesPlayed = s.matchesPlayed || 0;
     matchesWon = s.matchesWon || 0;
     bestComboEver = s.bestComboEver || 0;
-    playerUsername = s.playerUsername || 'Player';
+    playerUsername = s.playerUsername || (window.SWAccount&&window.SWAccount.getActiveName()) || 'Player';
     mastery = s.mastery || {};
     ownedTitles = s.ownedTitles || ['none'];
     equippedTitle = s.equippedTitle || 'none';
@@ -6751,6 +6832,7 @@ function renderProfile() {
 
 document.getElementById('profileOpenBtn').addEventListener('click', openProfile);
 document.getElementById('profileCloseBtn').addEventListener('click', closeProfile);
+document.getElementById('profileSwitchAccountBtn')?.addEventListener('click',()=>window.SWAccount&&window.SWAccount.open());
 document.getElementById('profileNameInput').addEventListener('change', (e) => {
   playerUsername = e.target.value.trim().slice(0,14) || 'Player';
   saveShop();
@@ -9658,7 +9740,7 @@ msgs.push((give?'Received ':'Lost ')+itemName(t,id));}
 if(coinSeen)msgs.unshift((coinNet>=0?'+':'-')+Math.abs(coinNet).toLocaleString()+' coins');
 if(!msgs.length)return;try{saveShop();}catch(e){}try{updateCoinsUI();}catch(e){}try{renderShop();}catch(e){}try{renderProfile();}catch(e){}try{showRewardPopup('💰',msgs.slice(0,3).join(' · ')+(msgs.length>3?' …':''));}catch(e){}showAdminBroadcast(msgs.slice(0,3).join(' · '),'Admin');syncPlayer();}
 async function claimActions(){if(!sb||banned)return;try{const {data,error}=await sb.rpc('claim_actions',{p_device:deviceId});if(error){console.warn('claim_actions',error.message);return;}if(Array.isArray(data)&&data.length)applyActions(data);}catch(e){}}
-async function initSupabase(){if(!SB_READY||!window.supabase)return;try{sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+async function initSupabase(){if(!SB_READY||!window.supabase)return;try{sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);window.SWCloudAccounts={rpc:(fn,args)=>sb.rpc(fn,args)};window.dispatchEvent(new Event('sw-cloud-ready'));
 checkBan();setInterval(checkBan,8000);
 const {data}=await sb.from('announcements').select('id').order('id',{ascending:false}).limit(1);lastId=(data&&data[0])?data[0].id:0;
 sb.channel('announcements-live').on('postgres_changes',{event:'INSERT',schema:'public',table:'announcements'},p=>{if(!banned)handleRow(p.new);}).subscribe(st=>console.log('Announcements realtime:',st));
