@@ -2656,6 +2656,27 @@ body.is-phone #hud{padding:max(8px,env(safe-area-inset-top)) 8px 0;gap:5px}body.
   document.getElementById('account-login-password').addEventListener('keydown',e=>{if(e.key==='Enter')signIn();});
   document.getElementById('account-confirm-password').addEventListener('keydown',e=>{if(e.key==='Enter')createAccount();});
   async function bootCloud(){if(booting)return;booting=true;try{if(!session){gate.classList.add('open');return;}gate.classList.add('open');cancel.hidden=false;setStatus('Syncing your online save…');const d=await cloudCall('game_account_load',{p_token:session.token});const stamp=d.updated_at??null;if(stamp!==session.bootStamp){applySave(activeId,d.save_data||{});session.bootStamp=stamp;rawSet.call(localStorage,SESSION_KEY,JSON.stringify(session));syncEnabled=false;location.reload();return;}syncEnabled=true;setStatus('Signed in as '+session.username,true);try{cloudCall('game_protect_device',{p_token:session.token,p_device:rawGet.call(localStorage,'sw_device_id')||''}).catch(function(){});}catch(e){}setSyncStatus('Connected ✓');gate.classList.remove('open');}catch(e){syncEnabled=false;setStatus('Account sync failed: '+(e.message||'Try again.'));if(/session|expired|invalid token/i.test(e.message||'')){session=null;activeId='';rawRemove.call(localStorage,SESSION_KEY);cancel.hidden=true;}}finally{booting=false;}}
+
+  (function(){
+    const css=document.createElement('style');css.textContent='#pw-modal{display:none;position:fixed;inset:0;z-index:2147483100;align-items:center;justify-content:center;padding:18px;background:rgba(5,7,18,.88);backdrop-filter:blur(8px);font-family:Rajdhani,Arial,sans-serif}#pw-modal.open{display:flex}#pw-modal .pw-card{width:min(420px,94vw);padding:24px 20px;border:1px solid #7dffb088;border-radius:18px;background:linear-gradient(150deg,#0f2a22,#0c1420);color:#eafff3;text-align:center;box-shadow:0 20px 70px #000b,0 0 30px #27c46a44}#pw-modal h2{margin:0 0 6px;font:900 28px Bangers,Impact,Arial;letter-spacing:2px;color:#9dffc4}#pw-modal label{display:block;margin:10px 0 4px;text-align:left;font-size:13px;font-weight:800;color:#c7f5da}#pw-modal input{width:100%;min-height:42px;padding:9px 12px;border:1px solid #3f8a63;border-radius:10px;background:#07120d;color:#fff;font:700 16px Rajdhani,Arial;box-sizing:border-box}#pw-modal .pw-row{display:flex;gap:10px;margin-top:16px}#pw-modal button{flex:1;min-height:44px;border-radius:10px;border:1px solid #9dffc4;background:linear-gradient(120deg,#1f9a5a,#27c46a);color:#04210f;font:900 15px Rajdhani,Arial;cursor:pointer}#pw-modal button.sec{background:#14231c;color:#d6f5e4;border-color:#4a7a62}#pw-status{min-height:1.3em;margin-top:10px;font-size:13px;font-weight:800;color:#ffb8c4}';document.head.appendChild(css);
+    const m=document.createElement('div');m.id='pw-modal';m.setAttribute('role','dialog');m.innerHTML='<div class="pw-card"><h2>CHANGE PASSWORD</h2><label for="pw-old">Current password</label><input id="pw-old" type="password" autocomplete="current-password" maxlength="128"><label for="pw-new">New password (8+ characters)</label><input id="pw-new" type="password" autocomplete="new-password" maxlength="128"><label for="pw-new2">Confirm new password</label><input id="pw-new2" type="password" autocomplete="new-password" maxlength="128"><p id="pw-status" role="status" aria-live="polite"></p><div class="pw-row"><button type="button" id="pw-save">SAVE</button><button type="button" class="sec" id="pw-cancel">CANCEL</button></div></div>';
+    document.body.appendChild(m);
+    const $=id=>document.getElementById(id),st=(s,ok)=>{$('pw-status').textContent=s;$('pw-status').style.color=ok?'#91ffc4':'#ffb8c4';};
+    function close(){m.classList.remove('open');['pw-old','pw-new','pw-new2'].forEach(i=>$(i).value='');st('');}
+    document.addEventListener('click',e=>{if(e.target&&e.target.id==='profileChangePwBtn'){if(!session){openGate();return;}st('');m.classList.add('open');$('pw-old').focus();}});
+    $('pw-cancel').onclick=close;
+    $('pw-save').onclick=async()=>{
+      const o=$('pw-old').value,n=$('pw-new').value,n2=$('pw-new2').value;
+      if(!o||!n){st('Fill in every box.');return;}
+      if(n.length<8){st('New password needs at least 8 characters.');return;}
+      if(n!==n2){st('The new passwords do not match.');return;}
+      if(n===o){st('Pick a different password.');return;}
+      const b=$('pw-save');b.disabled=true;st('Saving...',true);
+      try{const d=await cloudCall('game_account_change_password',{p_token:session.token,p_old:o,p_new:n});if(d.token){session.token=d.token;rawSet.call(localStorage,SESSION_KEY,JSON.stringify(session));}st('Password changed!',true);setTimeout(close,1100);}
+      catch(e){st(e.message||'Could not change the password.');}
+      finally{b.disabled=false;}
+    };
+  })();
   window.SWAccount={open:openGate,getActiveName:()=>session?.username||'',getActiveId:()=>activeId};
   window.addEventListener('sw-cloud-ready',bootCloud);
   document.addEventListener('DOMContentLoaded',()=>{if(session)bootCloud();else openGate();});
@@ -2909,6 +2930,7 @@ body.is-phone #hud{padding:max(8px,env(safe-area-inset-top)) 8px 0;gap:5px}body.
     <div class="profile-avatar-wrap" id="profileAvatar">🥋</div>
     <input class="profile-name-input" id="profileNameInput" maxlength="14" value="Player">
     <button type="button" id="profileSwitchAccountBtn" class="profile-delete-btn" style="margin-top:10px;border-color:#bd8aff;color:#f1dcff;background:linear-gradient(120deg,#45216d,#231137)">SWITCH PLAYER PROFILE</button>
+    <button type="button" id="profileChangePwBtn" class="profile-delete-btn" style="margin-top:8px;border-color:#7dffb0;color:#dcffe9;background:linear-gradient(120deg,#12633a,#0a2f1c)">CHANGE PASSWORD</button>
     <small id="account-sync-status" style="display:block;margin:8px 0;color:#a9ffc9;font-weight:800">Connecting to cloud…</small>
     <div class="profile-title-badge" id="profileTitleBadge"></div>
     <div class="profile-rank-badge" id="profileRankBadge">🏆 0 Trophies</div>
@@ -9785,7 +9807,7 @@ function unlockBanActions(){
   setStatus('Ban actions unlocked on this browser.');
   return true;
 }
-async function econBan(on){if(!econSel){setStatus('Select a player first.');return;}if(on&&/^vortexxowner$/i.test(String(econSel.name||''))){setStatus('That player cannot be banned.');return;}if(on&&!unlockBanActions())return;if(on&&!confirm('Ban '+econSel.name+'?'))return;const r=await adminCall('set_ban',{p_device:econSel.device_id,p_banned:on,p_reason:on?by('econBanReason').value.trim().slice(0,80):''});setStatus(r.ok?(on?'Banned ':'Unbanned ')+econSel.name+'.':'Failed: '+r.msg);if(r.ok)econSearch();}
+async function econBan(on){if(!econSel){setStatus('Select a player first.');return;}if(on&&/^vortexxowner$/i.test(String(econSel.name||''))){setStatus('You really tried to ban the owner?');return;}if(on&&!unlockBanActions())return;if(on&&!confirm('Ban '+econSel.name+'?'))return;const r=await adminCall('set_ban',{p_device:econSel.device_id,p_banned:on,p_reason:on?by('econBanReason').value.trim().slice(0,80):''});setStatus(r.ok?(on?'Banned ':'Unbanned ')+econSel.name+'.':(/really tried to ban/i.test(r.msg||'')?'You really tried to ban the owner?':'Failed: '+r.msg));if(r.ok)econSearch();}
 by('econBan')?.addEventListener('click',()=>econBan(true));by('econUnban')?.addEventListener('click',()=>econBan(false));
 async function massCoins(amount,word,confirmWord){const skip=by('massSkipAdmins').checked;const typed=prompt('This affects EVERY account'+(skip?' (except admins)':'')+'.\nType '+confirmWord+' to confirm:');if(typed!==confirmWord){setStatus('Cancelled.');return;}const r=await adminCall('mass_coins',{p_amount:amount,p_skip_admins:skip});setStatus(r.ok?word+' queued for '+Number(r.data).toLocaleString()+' players.':'Failed: '+r.msg);}
 function massAmt(){const n=Math.floor(Number(by('massAmount').value));if(!(n>=1&&n<=1000000000)){setStatus('Enter 1 to 1,000,000,000 coins.');return null;}return n;}
