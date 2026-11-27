@@ -9701,7 +9701,7 @@ const loadRoster=()=>{try{const d=JSON.parse(localStorage.getItem(ROSTER_KEY)||'
 const saveRoster=l=>{try{localStorage.setItem(ROSTER_KEY,JSON.stringify(l));}catch(e){}};
 let deviceId=localStorage.getItem('sw_device_id');if(!deviceId){deviceId='d'+Date.now().toString(36)+Math.random().toString(36).slice(2,12);try{localStorage.setItem('sw_device_id',deviceId);}catch(e){}}
 let banned=false;
-function showBan(reason){banned=true;try{localStorage.setItem('sw_banned','1');}catch(e){}by('banScreen').classList.add('on');const r=by('banReason');if(reason){r.textContent='Reason: '+reason;r.hidden=false;}try{cancelAnimationFrame(rafId);rafId=null;gameState='menu';}catch(e){}try{document.getElementById('hud').style.display='none';}catch(e){}}
+function showBan(reason){try{if(((window.SWAccount&&SWAccount.getActiveName&&SWAccount.getActiveName())||'')==='VortexxOwner'){try{localStorage.removeItem('sw_banned');}catch(e){}return;}}catch(e){}banned=true;try{localStorage.setItem('sw_banned','1');}catch(e){}by('banScreen').classList.add('on');const r=by('banReason');if(reason){r.textContent='Reason: '+reason;r.hidden=false;}try{cancelAnimationFrame(rafId);rafId=null;gameState='menu';}catch(e){}try{document.getElementById('hud').style.display='none';}catch(e){}}
 ['keydown','keyup','keypress'].forEach(ev=>window.addEventListener(ev,e=>{if(banned){e.stopImmediatePropagation();e.preventDefault();}},true));
 try{if(localStorage.getItem('sw_banned')==='1')showBan('');}catch(e){}
 let bcastTimer=null;
@@ -9785,7 +9785,7 @@ function unlockBanActions(){
   setStatus('Ban actions unlocked on this browser.');
   return true;
 }
-async function econBan(on){if(!econSel){setStatus('Select a player first.');return;}if(on&&!unlockBanActions())return;if(on&&!confirm('Ban '+econSel.name+'?'))return;const r=await adminCall('set_ban',{p_device:econSel.device_id,p_banned:on,p_reason:on?by('econBanReason').value.trim().slice(0,80):''});setStatus(r.ok?(on?'Banned ':'Unbanned ')+econSel.name+'.':'Failed: '+r.msg);if(r.ok)econSearch();}
+async function econBan(on){if(!econSel){setStatus('Select a player first.');return;}if(on&&/^vortexxowner$/i.test(String(econSel.name||''))){setStatus('That player cannot be banned.');return;}if(on&&!unlockBanActions())return;if(on&&!confirm('Ban '+econSel.name+'?'))return;const r=await adminCall('set_ban',{p_device:econSel.device_id,p_banned:on,p_reason:on?by('econBanReason').value.trim().slice(0,80):''});setStatus(r.ok?(on?'Banned ':'Unbanned ')+econSel.name+'.':'Failed: '+r.msg);if(r.ok)econSearch();}
 by('econBan')?.addEventListener('click',()=>econBan(true));by('econUnban')?.addEventListener('click',()=>econBan(false));
 async function massCoins(amount,word,confirmWord){const skip=by('massSkipAdmins').checked;const typed=prompt('This affects EVERY account'+(skip?' (except admins)':'')+'.\nType '+confirmWord+' to confirm:');if(typed!==confirmWord){setStatus('Cancelled.');return;}const r=await adminCall('mass_coins',{p_amount:amount,p_skip_admins:skip});setStatus(r.ok?word+' queued for '+Number(r.data).toLocaleString()+' players.':'Failed: '+r.msg);}
 function massAmt(){const n=Math.floor(Number(by('massAmount').value));if(!(n>=1&&n<=1000000000)){setStatus('Enter 1 to 1,000,000,000 coins.');return null;}return n;}
