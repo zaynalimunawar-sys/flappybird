@@ -2719,7 +2719,6 @@ body.is-phone #hud{padding:max(8px,env(safe-area-inset-top)) 8px 0;gap:5px}body.
     <div class="menu-tabs">
       <button class="menu-tab active" data-menutab="fighter">🥋 Fighter</button>
       <button class="menu-tab" data-menutab="match">⚔️ Match</button>
-      <button class="menu-tab" data-menutab="training">🎯 Training</button>
       <button class="menu-tab" data-menutab="stage">🗺️ Stage</button>
       <button class="menu-tab" data-menutab="career">🏆 Career</button>
       <button class="menu-tab" data-menutab="ranked">⭐ Ranked</button>
@@ -2768,10 +2767,6 @@ body.is-phone #hud{padding:max(8px,env(safe-area-inset-top)) 8px 0;gap:5px}body.
           <button class="cpu-btn" data-count="3">3</button>
         </div>
       </div>
-    </div>
-
-    <div class="menu-panel" data-panel="training">
-      <div class="menu-subsection"><h3>Training Mode</h3><p class="controls-hint" style="margin-top:0">Practice your moves against a dummy that will not fight back. There is no timer or knockout, so you can train as long as you want. Choose your fighter and stage in the other tabs, then start training.</p></div>
     </div>
 
     <div class="menu-panel" data-panel="stage">
@@ -3331,7 +3326,6 @@ let particles = [];
 let impactRings = [];
 let camera = { x: 0, y: 0, shake: 0 };
 let stageTimer = 180;
-let trainingMode = false;
 let timerAccum = 0;
 let lastTime = 0;
 let rafId = null;
@@ -4046,6 +4040,7 @@ class Fighter {
       }
       if (this.stocks <= 0) {
         this.dead = true;
+        triggerFinalKOCinematic(this);
       } else {
         this.respawnTimer = 1.5;
         this.x = 300 + this.id * 200;
@@ -5368,6 +5363,50 @@ function registerComboHit(attacker, defender, dmgRoll, attackType) {
 let zoomAmount = 0;
 function zoomPunch(amt) { zoomAmount = Math.max(zoomAmount, amt); }
 function updateZoom(dt) { zoomAmount = Math.max(0, zoomAmount - dt * 0.4); }
+let koSlowMoUntil = 0, koFxTimeout = 0;
+function triggerFinalKOCinematic(fighter) {
+  if (window.swOnline || performance.now() < koSlowMoUntil) return;
+  koSlowMoUntil = performance.now() + 1050;
+  hitStop = Math.max(hitStop, 0.18);
+  camera.shake = Math.max(camera.shake, 30);
+  zoomPunch(0.15);
+  flashScreen(0.32);
+  let style = document.getElementById('finalKoFxStyle');
+  if (!style) {
+    style = document.createElement('style');
+    style.id = 'finalKoFxStyle';
+    style.textContent = `
+      #finalKoFX{position:fixed;inset:0;z-index:12000;display:none;align-items:center;justify-content:center;pointer-events:none;overflow:hidden;background:radial-gradient(ellipse at center,transparent 37%,rgba(0,0,0,.34) 100%);}
+      #finalKoFX.active{display:flex;}
+      #finalKoFX:before{content:"";position:absolute;width:min(88vw,820px);aspect-ratio:1;border:5px solid #fff7bd;border-radius:50%;box-shadow:0 0 28px #ffd34d, inset 0 0 26px #ff6a35;opacity:0;transform:scale(.15);}
+      #finalKoFX.active:before{animation:finalKoRing .85s cubic-bezier(.12,.8,.24,1) both;}
+      #finalKoFX .final-ko-slash{position:absolute;width:min(86vw,900px);height:5px;background:linear-gradient(90deg,transparent,#fff,#ffe071,#ff4d67,#fff,transparent);box-shadow:0 0 16px #fff,0 0 32px #ff664d;opacity:0;transform:rotate(-12deg) scaleX(.05);}
+      #finalKoFX.active .final-ko-slash{animation:finalKoSlash .7s .04s ease-out both;}
+      #finalKoFX .final-ko-word{position:relative;text-align:center;opacity:0;transform:scale(2.8) rotate(-8deg);filter:drop-shadow(0 7px 0 #7d172d) drop-shadow(0 0 22px #ff8a4d);}
+      #finalKoFX.active .final-ko-word{animation:finalKoWord .84s .08s cubic-bezier(.12,.85,.22,1) both;}
+      #finalKoFX .final-ko-word small{display:block;color:#fff3b3;font:900 clamp(12px,2.4vw,20px) Rajdhani,Arial,sans-serif;letter-spacing:.36em;text-shadow:0 2px 5px #3a0914;}
+      #finalKoFX .final-ko-word strong{display:block;color:#fff;font:1000 clamp(62px,17vw,168px)/.9 Bangers,Impact,Arial,sans-serif;letter-spacing:.035em;-webkit-text-stroke:2px #ff714c;text-shadow:0 5px #a51c37,0 0 26px #ffd75c;}
+      @keyframes finalKoRing{0%{opacity:0;transform:scale(.15)}22%{opacity:.95}100%{opacity:0;transform:scale(1.25)}}
+      @keyframes finalKoSlash{0%{opacity:0;transform:rotate(-12deg) scaleX(.05)}24%{opacity:1}100%{opacity:0;transform:rotate(-12deg) scaleX(1.15)}}
+      @keyframes finalKoWord{0%{opacity:0;transform:scale(2.8) rotate(-8deg)}38%{opacity:1;transform:scale(.88) rotate(2deg)}58%{transform:scale(1.08) rotate(-1deg)}100%{opacity:0;transform:scale(1) translateY(-18px)}}
+      @media(prefers-reduced-motion:reduce){#finalKoFX.active:before,#finalKoFX.active .final-ko-slash,#finalKoFX.active .final-ko-word{animation-duration:.18s!important}}
+    `;
+    document.head.appendChild(style);
+  }
+  let fx = document.getElementById('finalKoFX');
+  if (!fx) {
+    fx = document.createElement('div');
+    fx.id = 'finalKoFX';
+    fx.setAttribute('aria-hidden', 'true');
+    fx.innerHTML = '<i class="final-ko-slash"></i><div class="final-ko-word"><small>FINAL STOCK</small><strong>K.O.</strong></div>';
+    document.body.appendChild(fx);
+  }
+  fx.classList.remove('active');
+  void fx.offsetWidth;
+  fx.classList.add('active');
+  clearTimeout(koFxTimeout);
+  koFxTimeout = setTimeout(() => fx.classList.remove('active'), 900);
+}
 
 // ─── STAGE HAZARD LOGIC ────────────────────────────────────────────────────────
 let lavaTickTimer = 0;
@@ -6957,9 +6996,10 @@ function startGame() {
   fighters = [];
   particles = [];
   starKOs = [];
-  stageTimer = trainingMode ? 999999 : 180;
+  stageTimer = 180;
   timerAccum = 0;
   hitStop = 0;
+  koSlowMoUntil = 0;
   flashAlpha = 0;
   hazardTimer = 0;
   lavaTickTimer = 0;
@@ -6987,17 +7027,7 @@ function startGame() {
     const cpuChar = CHARACTERS[Math.floor(Math.random()*CHARACTERS.length)];
     fighters.push(new Fighter(i+1, spawnRightX - i*90, false, difficulty, cpuChar));
   }
-  if (trainingMode && fighters[1]) {
-    const dummy = fighters[1];
-    dummy.name = "TRAINING DUMMY";
-    dummy.handleAI = function() { this.vx = 0; };
-    dummy.checkBlastZone = function() {
-      if (this.x + this.w < BLAST_ZONE.left || this.x > BLAST_ZONE.right || this.y > BLAST_ZONE.bottom || this.y + this.h < BLAST_ZONE.top) {
-        this.x = spawnRightX; this.y = -80; this.vx = 0; this.vy = 0; this.damage = 0;
-        this.visible = true; this.dead = false; this.respawnTimer = 0;
-      }
-    };
-  }  if (fighters[0].customData) {
+  if (fighters[0].customData) {
     fighters[0].color = fighters[0].customData.colors.body;
   } else {
     fighters[0].color = getEquippedSkinColor();
@@ -7039,8 +7069,8 @@ function togglePause() {
 }
 
 function checkGameOver() {
-  if (trainingMode) return;
   if (window.swOnline) { if (window.swOnlineCheck) window.swOnlineCheck(); return; }
+  if (performance.now() < koSlowMoUntil) return;
   const alive = fighters.filter(f => !f.dead);
   if (alive.length <= 1 || stageTimer <= 0) {
     gameState = 'gameover';
@@ -7202,6 +7232,7 @@ function gameLoop(timestamp) {
   rafId = requestAnimationFrame(gameLoop);
   let dt = Math.min((timestamp - lastTime) / 1000, 0.05);
   lastTime = timestamp;
+  if (performance.now() < koSlowMoUntil) dt *= 0.18;
 
   fpsCount++; fpsTimer += dt;
   if (fpsTimer >= 1) { fps = fpsCount; fpsCount = 0; fpsTimer = 0; }
@@ -7211,10 +7242,8 @@ function gameLoop(timestamp) {
 
   if (hitStop > 0) { hitStop -= dt; dt *= 0.15; }
 
-  if (!trainingMode) {
-    timerAccum += dt;
-    if (timerAccum >= 1) { stageTimer--; timerAccum -= 1; }
-  }
+  timerAccum += dt;
+  if (timerAccum >= 1) { stageTimer--; timerAccum -= 1; }
   if (!timeWarnShown && stageTimer <= 20 && stageTimer > 0) {
     timeWarnShown = true;
     showAnnouncer("TIME'S TICKING!", '#ffaa00');
@@ -7355,7 +7384,7 @@ document.querySelectorAll('.menu-tab').forEach(tab => {
     tab.classList.add('active');
     document.querySelector(`.menu-panel[data-panel="${tab.dataset.menutab}"]`).classList.add('active');
     const startBtn = document.getElementById('startBtn');
-    if (startBtn) startBtn.textContent = tab.dataset.menutab === 'training' ? 'START TRAINING' : 'FIGHT!';
+    if (startBtn) startBtn.textContent = 'FIGHT!';
     if (tab.dataset.menutab === 'career') renderCareerMap();
   });
 });
@@ -7438,13 +7467,9 @@ document.querySelectorAll('.cpu-btn').forEach(btn => {
   });
 });
 document.getElementById('startBtn').addEventListener('click', () => {
-  if (document.querySelector('.menu-panel[data-panel="ranked"].active')) { trainingMode = false; startRankedMatch(); return; }
-  trainingMode = !!document.querySelector('.menu-panel[data-panel="training"].active');
+  if (document.querySelector('.menu-panel[data-panel="ranked"].active')) { startRankedMatch(); return; }
   if (rankedActive || rankedLastMatch) cancelRankedMatch();
-  const oldCount = cpuCount, oldDifficulty = difficulty;
-  if (trainingMode) { cpuCount = 1; difficulty = 'easy'; }
   startGame();
-  cpuCount = oldCount; difficulty = oldDifficulty;
 });
 document.getElementById('resumeBtn').addEventListener('click', togglePause);
 document.getElementById('pauseMenuBtn').addEventListener('click', goToMenu);
@@ -10085,8 +10110,8 @@ renderShop=function(){if(activeShopTab==='holiday'){renderHolidayShop();return;}
 
 const checkGameOverOriginal=checkGameOver;let reported=false;
 const startGameOriginal=startGame;startGame=function(){reported=false;return startGameOriginal.apply(this,arguments);};
-checkGameOver=function(){const wasPlaying=gameState==='playing';const result=checkGameOverOriginal.apply(this,arguments);if(wasPlaying&&gameState==='gameover'&&!reported&&!window.swOnline&&!trainingMode&&eventOpen()){reported=true;questData.matches=Math.min(questDefs[0].goal,(Number(questData.matches)||0)+1);const title=(document.getElementById('go-title')?.textContent||'');if(title.includes('YOU WIN'))questData.wins=Math.min(questDefs[1].goal,(Number(questData.wins)||0)+1);saveQuests();if(activeShopTab==='holiday')renderHolidayShop();}return result;};
-const doAttackOriginal=Fighter.prototype.doAttack;Fighter.prototype.doAttack=function(type,enemies,duration,cooldown){const result=doAttackOriginal.apply(this,arguments);if(type==='special'&&this.isPlayer&&!trainingMode&&eventOpen()){questData.specials=Math.min(questDefs[2].goal,(Number(questData.specials)||0)+1);saveQuests();if(activeShopTab==='holiday')renderHolidayShop();}return result;};
+checkGameOver=function(){const wasPlaying=gameState==='playing';const result=checkGameOverOriginal.apply(this,arguments);if(wasPlaying&&gameState==='gameover'&&!reported&&!window.swOnline&&eventOpen()){reported=true;questData.matches=Math.min(questDefs[0].goal,(Number(questData.matches)||0)+1);const title=(document.getElementById('go-title')?.textContent||'');if(title.includes('YOU WIN'))questData.wins=Math.min(questDefs[1].goal,(Number(questData.wins)||0)+1);saveQuests();if(activeShopTab==='holiday')renderHolidayShop();}return result;};
+const doAttackOriginal=Fighter.prototype.doAttack;Fighter.prototype.doAttack=function(type,enemies,duration,cooldown){const result=doAttackOriginal.apply(this,arguments);if(type==='special'&&this.isPlayer&&eventOpen()){questData.specials=Math.min(questDefs[2].goal,(Number(questData.specials)||0)+1);saveQuests();if(activeShopTab==='holiday')renderHolidayShop();}return result;};
 // Remove the seasonal cosmetics from the everyday catalog; they are still equipped normally.
 let holidayWasOpen=eventOpen();
 const countdownTimer=setInterval(()=>{if(activeShopTab!=='holiday'||!document.getElementById('shop-screen').classList.contains('active'))return;const nowOpen=eventOpen();if(nowOpen!==holidayWasOpen){holidayWasOpen=nowOpen;renderHolidayShop();return;}const el=document.getElementById('holidayCountdown');if(!el)return;const left=Math.max(0,END_AT-Date.now()),d=Math.floor(left/86400000),h=Math.floor(left%86400000/3600000),m=Math.floor(left%3600000/60000),sec=Math.floor(left%60000/1000);el.textContent=nowOpen?`ENDS IN ${d}D ${String(h).padStart(2,'0')}H ${String(m).padStart(2,'0')}M ${String(sec).padStart(2,'0')}S`:'EVENT ENDED · DEC 31, 2027';},1000);
@@ -10127,13 +10152,13 @@ const pcSteps=[
  {title:'Move and jump',copy:'Learn to move around the arena and get above your opponent.',rows:[['A / D','Move left and right'],['W or SPACE','Jump; press again in the air for a double jump'],['S / ↓','Fast-fall while airborne']],tip:'Stay on the platforms and watch your position near the edge.'},
  {title:'Attack and defend',copy:'Use a mix of attacks, and block when your opponent swings.',rows:[['J','Punch'],['K','Kick'],['SHIFT','Hold to block on the ground; tap in the air to dodge']],tip:'Face your opponent before attacking so your hits go the right way.'},
  {title:'Use your powers',copy:'Every fighter has a unique special move. Build your ultimate meter by fighting.',rows:[['L','Use your fighter’s special move; use your ultimate when it is ready'],['Q','Activate Awakening when available']],tip:'Try different fighters to discover their special moves.'},
- {title:'Ready to fight?',copy:'Pick a fighter and stage, then choose Match for a CPU battle or Training to practice against a dummy.',rows:[['TIP','Start on Easy if you are new. You can change the difficulty any time.']],tip:'You can open the controls again from the menu’s How to Play button.'}
+ {title:'Ready to fight?',copy:'Pick a fighter and stage, then choose Match for a CPU battle or Career to play through the campaign.',rows:[['TIP','Start on Easy if you are new. You can change the difficulty any time.']],tip:'You can open the controls again from the menu’s How to Play button.'}
 ];
 const phoneSteps=[
  {title:'Move and jump',copy:'Use the on-screen controls to move around and reach higher platforms.',rows:[['JOYSTICK','Move left and right'],['JUMP','Tap to jump; tap again in the air for a double jump']],tip:'Hold the joystick toward the arena to stay on the platforms.'},
  {title:'Attack and defend',copy:'The action buttons sit on the right side of your screen.',rows:[['PUNCH','Quick close-range attack'],['KICK','A stronger kick'],['BLOCK','Defend against attacks']],tip:'Face your opponent before attacking so your hits go the right way.'},
  {title:'Use your powers',copy:'Each fighter has a unique special. Build your ultimate meter while fighting.',rows:[['SPECIAL','Use your fighter’s special move; use your ultimate when ready'],['AWAKEN','Tap the purple button when Awakening is available']],tip:'Try different fighters to discover their special moves.'},
- {title:'Ready to fight?',copy:'Pick a fighter and stage, then choose Match for a CPU battle or Training to practice against a dummy.',rows:[['TIP','Start on Easy if you are new. You can change the difficulty any time.']],tip:'Hold the joystick and tap attack buttons together for moving attacks.'}
+ {title:'Ready to fight?',copy:'Pick a fighter and stage, then choose Match for a CPU battle or Career to play through the campaign.',rows:[['TIP','Start on Easy if you are new. You can change the difficulty any time.']],tip:'Hold the joystick and tap attack buttons together for moving attacks.'}
 ];
 let step=0,steps=pcSteps;
 function close(){overlay.classList.remove('open');try{localStorage.setItem(KEY,'1')}catch(e){};}
